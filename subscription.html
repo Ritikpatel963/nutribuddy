@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subscription — NutriBuddy Kids</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pk:  #FF4D8F;
+  --pkl: #FFD6E8;
+  --pkd: #C0306F;
+  --pu:  #7C3AED;
+  --pul: #EDE9FE;
+  --pud: #5B21B6;
+  --ye:  #FFD600;
+  --yel: #FFFBE0;
+  --sk:  #00BFFF;
+  --skl: #DCFBFF;
+  --mn:  #00D68F;
+  --mnl: #D0FFF2;
+  --or:  #FF6B35;
+  --orl: #FFE8DF;
+  --dk:  #0D0020;
+  --wh:  #FFFFFF;
+  --cr:  #FFFBF5;
+  --border: #E6E6EE;
+  --muted: #6b6b80;
+  --sidebar-w: 270px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cr);color:var(--dk);min-height:100vh;display:flex;overflow-x:hidden;}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--wh);border-right:2px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .35s cubic-bezier(.34,1.56,.64,1);}
+.sidebar-logo{padding:26px 22px 18px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+.logo-icon{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--pk),var(--pkd));display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 6px 18px rgba(255,77,143,.3);}
+.logo-text{font-family:'Fredoka One',cursive;font-size:1.12rem;color:var(--dk);line-height:1.1;}
+.logo-text span{color:var(--pk)}
+.logo-sub{font-size:.62rem;font-weight:600;color:var(--muted)}
+.profile-block{padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;border-bottom:2px solid var(--border);}
+.avatar{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pu));display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:1.9rem;color:#fff;box-shadow:0 8px 22px rgba(255,77,143,.28);position:relative;}
+.online-dot{position:absolute;bottom:3px;right:3px;width:13px;height:13px;border-radius:50%;background:var(--mn);border:2.5px solid #fff;}
+.profile-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;color:var(--dk)}
+.profile-email{font-size:.75rem;color:var(--muted)}
+.nav-section{padding:18px 14px 4px}
+.nav-label{font-family:'Nunito',sans-serif;font-weight:900;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:6px;display:block;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:13px;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;text-decoration:none;margin-bottom:1px;position:relative;}
+.nav-item:hover{background:var(--cr);color:var(--dk)}
+.nav-item.active{background:var(--pkl);color:var(--pk);font-weight:800;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:58%;background:var(--pk);border-radius:0 4px 4px 0;}
+.nav-item svg{width:17px;height:17px;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--pk);color:#fff;border-radius:50px;padding:2px 8px;font-size:.66rem;font-weight:900;}
+.sidebar-footer{margin-top:auto;padding:14px;border-top:2px solid var(--border);}
+.logout-btn{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:13px;font-size:.86rem;font-weight:700;color:#ef4444;cursor:pointer;transition:.2s;width:100%;background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif;}
+.logout-btn:hover{background:#fff0f0}
+
+/* ═══ TOPBAR ═══ */
+.main{margin-left:var(--sidebar-w);flex:1;min-width:0;display:flex;flex-direction:column;}
+.topbar{background:var(--wh);border-bottom:2px solid var(--border);padding:0 30px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;color:var(--dk);transition:.2s;}
+.hamburger:hover{background:var(--cr)}
+.topbar-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--dk)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-search{display:flex;align-items:center;gap:8px;background:var(--cr);border:2px solid var(--border);border-radius:50px;padding:7px 16px;font-size:.82rem;color:var(--muted);transition:.2s;}
+.topbar-search:focus-within{border-color:var(--pk)}
+.topbar-search input{border:none;background:none;outline:none;font-size:.82rem;color:var(--dk);font-family:'Plus Jakarta Sans',sans-serif;width:150px}
+.icon-btn{width:38px;height:38px;border-radius:11px;background:var(--cr);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;position:relative;}
+.icon-btn:hover{background:var(--pkl);border-color:var(--pk)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--pk);border:2px solid #fff;}
+
+/* ═══ PAGE ═══ */
+.page{padding:28px 30px;flex:1}
+.page-header{margin-bottom:26px;}
+.page-header h1{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--dk);margin-bottom:3px;}
+.page-header p{font-size:.84rem;color:var(--muted)}
+
+/* ═══ CURRENT PLAN BANNER ═══ */
+.current-plan{
+  background:linear-gradient(135deg,var(--pk) 0%,var(--pu) 100%);
+  border-radius:22px;padding:28px 32px;margin-bottom:26px;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  position:relative;overflow:hidden;
+  animation:fadeUp .4s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.current-plan::before{content:'';position:absolute;right:-50px;top:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);}
+.current-plan::after{content:'';position:absolute;right:60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.06);}
+.cp-left{z-index:1}
+.cp-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:50px;font-size:.72rem;font-weight:800;font-family:'Nunito',sans-serif;margin-bottom:10px;backdrop-filter:blur(4px);}
+.cp-name{font-family:'Fredoka One',cursive;font-size:1.7rem;color:#fff;margin-bottom:5px;}
+.cp-desc{font-size:.83rem;color:rgba(255,255,255,.8);font-weight:500;}
+.cp-right{z-index:1;text-align:right;flex-shrink:0;}
+.cp-price{font-family:'Fredoka One',cursive;font-size:2.2rem;color:#fff;line-height:1;}
+.cp-period{font-size:.78rem;color:rgba(255,255,255,.75);margin-bottom:12px;}
+.cp-renew{font-size:.75rem;color:rgba(255,255,255,.7);margin-bottom:12px;}
+.cp-manage-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 20px;border-radius:50px;border:2px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.15);color:#fff;
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;
+  cursor:pointer;transition:.25s;backdrop-filter:blur(4px);
+}
+.cp-manage-btn:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.7);}
+
+/* ═══ TOGGLE ═══ */
+.billing-toggle{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-bottom:26px;
+  animation:fadeUp .45s .05s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.toggle-label{font-size:.88rem;font-weight:700;color:var(--muted);transition:.2s;}
+.toggle-label.active{color:var(--dk)}
+.toggle-pill{
+  width:52px;height:28px;border-radius:50px;
+  background:linear-gradient(135deg,var(--pk),var(--pkd));
+  position:relative;cursor:pointer;border:none;
+  box-shadow:0 4px 12px rgba(255,77,143,.3);transition:.3s;
+}
+.toggle-pill .knob{
+  position:absolute;top:3px;left:3px;
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  transition:.3s cubic-bezier(.34,1.56,.64,1);
+}
+.toggle-pill.yearly .knob{left:27px;}
+.save-badge{background:var(--mnl);color:#065f46;padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:900;font-family:'Nunito',sans-serif;}
+
+/* ═══ PLANS GRID ═══ */
+.plans-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin-bottom:26px;
+  animation:fadeUp .5s .1s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.plan-card{
+  background:var(--wh);border:2px solid var(--border);border-radius:22px;
+  padding:26px 22px;position:relative;overflow:hidden;
+  transition:.3s cubic-bezier(.34,1.1,.64,1);cursor:pointer;
+}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.08);}
+.plan-card.popular{border-color:var(--pk);box-shadow:0 8px 28px rgba(255,77,143,.15);}
+.plan-card.current-active{border-color:var(--mn);box-shadow:0 8px 28px rgba(0,214,143,.12);}
+.popular-tag{
+  position:absolute;top:16px;right:16px;
+  background:linear-gradient(135deg,var(--pk),var(--pkd));
+  color:#fff;padding:3px 11px;border-radius:50px;
+  font-size:.65rem;font-weight:900;font-family:'Nunito',sans-serif;
+}
+.current-tag{
+  position:absolute;top:16px;right:16px;
+  background:var(--mnl);color:#065f46;
+  padding:3px 11px;border-radius:50px;
+  font-size:.65rem;font-weight:900;font-family:'Nunito',sans-serif;
+}
+.plan-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px;}
+.plan-name{font-family:'Fredoka One',cursive;font-size:1.15rem;color:var(--dk);margin-bottom:4px;}
+.plan-tagline{font-size:.76rem;color:var(--muted);margin-bottom:18px;}
+.plan-price{display:flex;align-items:flex-end;gap:4px;margin-bottom:4px;}
+.plan-price .amount{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--dk);}
+.plan-price .currency{font-size:1rem;font-weight:700;color:var(--dk);margin-bottom:6px;}
+.plan-price .period{font-size:.76rem;color:var(--muted);margin-bottom:5px;}
+.plan-yearly-note{font-size:.7rem;color:var(--mn);font-weight:700;margin-bottom:18px;min-height:16px;}
+.plan-divider{height:1.5px;background:var(--border);margin-bottom:16px;border-radius:2px;}
+.feature-list{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.feature-item{display:flex;align-items:center;gap:9px;font-size:.79rem;font-weight:600;color:var(--dk);}
+.feature-item .fi-dot{width:18px;height:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.6rem;flex-shrink:0;}
+.feature-item.off{color:var(--muted);}
+.feature-item.off .fi-dot{background:var(--border);}
+.plan-btn{
+  width:100%;padding:11px;border-radius:13px;border:2px solid;
+  font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;
+  cursor:pointer;transition:.25s;
+}
+.plan-btn.outline{background:var(--wh);color:var(--pk);border-color:var(--pkl);}
+.plan-btn.outline:hover{background:var(--pkl);}
+.plan-btn.solid{background:linear-gradient(135deg,var(--pk),var(--pkd));color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(255,77,143,.3);}
+.plan-btn.solid:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(255,77,143,.45);}
+.plan-btn.ghost{background:var(--mnl);color:#065f46;border-color:var(--mnl);}
+.plan-btn.ghost:hover{background:#b6ffea;}
+
+/* ═══ BENEFITS ═══ */
+.benefits-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin-bottom:26px;
+  animation:fadeUp .55s .15s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.benefit-card{background:var(--wh);border:2px solid var(--border);border-radius:18px;padding:18px 16px;text-align:center;transition:.25s;}
+.benefit-card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.06);}
+.benefit-icon{font-size:1.6rem;margin-bottom:8px;}
+.benefit-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:var(--dk);margin-bottom:3px;}
+.benefit-desc{font-size:.72rem;color:var(--muted);}
+
+/* ═══ HISTORY TABLE ═══ */
+.history-section{
+  background:var(--wh);border:2px solid var(--border);border-radius:20px;overflow:hidden;
+  animation:fadeUp .6s .2s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.history-head{padding:18px 22px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+.history-head .h-icon{width:34px;height:34px;border-radius:10px;background:var(--pul);display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.history-head h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:var(--dk);}
+.history-table{width:100%;border-collapse:collapse;}
+.history-table th{padding:11px 22px;text-align:left;font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;border-bottom:1.5px solid var(--border);background:var(--cr);}
+.history-table td{padding:14px 22px;font-size:.83rem;border-bottom:1.5px solid var(--border);}
+.history-table tr:last-child td{border-bottom:none;}
+.history-table tr:hover td{background:var(--cr);}
+.status-chip{padding:4px 11px;border-radius:50px;font-size:.67rem;font-weight:900;font-family:'Nunito',sans-serif;}
+.s-paid{background:var(--mnl);color:#065f46;}
+.s-pending{background:var(--yel);color:#92400e;}
+.s-failed{background:#ffe4e6;color:#e11d48;}
+.inv-btn{padding:5px 12px;border-radius:8px;border:2px solid var(--pul);background:var(--wh);font-size:.72rem;font-weight:700;color:var(--pu);cursor:pointer;transition:.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.inv-btn:hover{background:var(--pul);}
+
+/* ═══ CANCEL ZONE ═══ */
+.cancel-zone{
+  background:var(--wh);border:2px solid #fecdd3;border-radius:20px;overflow:hidden;
+  margin-top:20px;
+  animation:fadeUp .65s .25s cubic-bezier(.34,1.1,.64,1) forwards;opacity:0;
+}
+.cancel-head{padding:16px 22px;border-bottom:2px solid #fecdd3;display:flex;align-items:center;gap:10px;}
+.cancel-head .c-icon{width:34px;height:34px;border-radius:10px;background:#ffe4e6;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.cancel-head h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:#9f1239;}
+.cancel-body{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.cancel-info p{font-size:.82rem;color:var(--muted);max-width:520px;line-height:1.6;}
+.cancel-btn{padding:10px 20px;border-radius:11px;border:2px solid #fecdd3;background:var(--wh);color:#e11d48;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap;}
+.cancel-btn:hover{background:#ffe4e6;}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--dk);color:#fff;padding:14px 22px;border-radius:14px;font-size:.84rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 12px 32px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:.4s cubic-bezier(.34,1.56,.64,1);z-index:300;}
+.toast.show{transform:translateY(0);opacity:1}
+.t-icon{width:26px;height:26px;border-radius:8px;background:var(--mn);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,0,32,.4);z-index:90;backdrop-filter:blur(4px);}
+.overlay.show{display:block}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1100px){.plans-grid{grid-template-columns:1fr 1fr;}.benefits-row{grid-template-columns:1fr 1fr;}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.hamburger{display:flex}}
+@media(max-width:720px){.plans-grid{grid-template-columns:1fr}.current-plan{flex-direction:column;text-align:center}.cp-right{text-align:center}}
+@media(max-width:640px){.page{padding:16px}.topbar{padding:0 16px}.topbar-search{display:none}.benefits-row{grid-template-columns:1fr 1fr}.history-table th:nth-child(3),.history-table td:nth-child(3){display:none}}
+@media(max-width:420px){.benefits-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🌿</div>
+    <div>
+      <div class="logo-text">Nutri<span>Buddy</span></div>
+      <div class="logo-sub">Kids Nutrition</div>
+    </div>
+  </div>
+  <div class="profile-block">
+    <div class="avatar">J<div class="online-dot"></div></div>
+    <div class="profile-name">Jaydafsdf</div>
+    <div class="profile-email">user@gmail.com</div>
+  </div>
+  <div style="overflow-y:auto;flex:1">
+    <div class="nav-section">
+      <span class="nav-label">Main</span>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+        Overview
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Order <span class="nbadge">4</span>
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Return Policy
+      </a>
+    </div>
+    <div class="nav-section">
+      <span class="nav-label">Account</span>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Personal Info
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Address
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Wishlist
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Change Password
+      </a>
+      <a href="#" class="nav-item active" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Subscription
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        My Coupons
+      </a>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <button class="logout-btn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title">Subscription</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h1>Subscription ⭐</h1>
+      <p>Manage your plan and billing details</p>
+    </div>
+
+    <!-- CURRENT PLAN BANNER -->
+    <div class="current-plan">
+      <div class="cp-left">
+        <div class="cp-badge">⚡ Active Plan</div>
+        <div class="cp-name">Growth Plan</div>
+        <div class="cp-desc">Unlocking the best nutrition for Jaydafsdf's little ones 🌿</div>
+      </div>
+      <div class="cp-right">
+        <div class="cp-price">₹299</div>
+        <div class="cp-period">/month</div>
+        <div class="cp-renew">🔄 Renews on May 3, 2026</div>
+        <button class="cp-manage-btn" onclick="showToast('Opening billing portal...')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Manage Billing
+        </button>
+      </div>
+    </div>
+
+    <!-- BILLING TOGGLE -->
+    <div class="billing-toggle">
+      <span class="toggle-label active" id="lbl-monthly">Monthly</span>
+      <button class="toggle-pill" id="toggleBtn" onclick="switchBilling()">
+        <div class="knob"></div>
+      </button>
+      <span class="toggle-label" id="lbl-yearly">Yearly</span>
+      <span class="save-badge">Save 30%</span>
+    </div>
+
+    <!-- PLANS GRID -->
+    <div class="plans-grid">
+
+      <!-- Starter -->
+      <div class="plan-card">
+        <div class="plan-icon" style="background:var(--skl)">🌱</div>
+        <div class="plan-name">Starter</div>
+        <div class="plan-tagline">Perfect for trying it out</div>
+        <div class="plan-price">
+          <span class="currency">₹</span>
+          <span class="amount" id="p1">0</span>
+          <span class="period">/mo</span>
+        </div>
+        <div class="plan-yearly-note" id="n1"></div>
+        <div class="plan-divider"></div>
+        <div class="feature-list">
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> 1 Child profile</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Basic meal plans</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Nutrition tracker</div>
+          <div class="feature-item off"><div class="fi-dot">—</div> Expert consultations</div>
+          <div class="feature-item off"><div class="fi-dot">—</div> Priority delivery</div>
+          <div class="feature-item off"><div class="fi-dot">—</div> Custom diet plans</div>
+        </div>
+        <button class="plan-btn outline" onclick="showToast('Downgrading to Starter...')">Get Started</button>
+      </div>
+
+      <!-- Growth (Current) -->
+      <div class="plan-card popular current-active">
+        <div class="current-tag">✓ Current</div>
+        <div class="plan-icon" style="background:var(--pkl)">🚀</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-tagline">Most popular for families</div>
+        <div class="plan-price">
+          <span class="currency">₹</span>
+          <span class="amount" id="p2">299</span>
+          <span class="period">/mo</span>
+        </div>
+        <div class="plan-yearly-note" id="n2"></div>
+        <div class="plan-divider"></div>
+        <div class="feature-list">
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> 3 Child profiles</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Advanced meal plans</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Nutrition tracker</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> 2 Expert consultations/mo</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Priority delivery</div>
+          <div class="feature-item off"><div class="fi-dot">—</div> Custom diet plans</div>
+        </div>
+        <button class="plan-btn ghost">✓ Active Plan</button>
+      </div>
+
+      <!-- Premium -->
+      <div class="plan-card popular">
+        <div class="popular-tag">⭐ Best Value</div>
+        <div class="plan-icon" style="background:var(--pul)">👑</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-tagline">Everything for power families</div>
+        <div class="plan-price">
+          <span class="currency">₹</span>
+          <span class="amount" id="p3">599</span>
+          <span class="period">/mo</span>
+        </div>
+        <div class="plan-yearly-note" id="n3"></div>
+        <div class="plan-divider"></div>
+        <div class="feature-list">
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Unlimited Child profiles</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Custom meal plans</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Advanced tracker + insights</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Unlimited consultations</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Priority delivery</div>
+          <div class="feature-item"><div class="fi-dot" style="background:var(--mnl);color:#059669">✓</div> Custom diet plans</div>
+        </div>
+        <button class="plan-btn solid" onclick="showToast('Upgrading to Premium! 🎉')">Upgrade Now</button>
+      </div>
+
+    </div>
+
+    <!-- BENEFITS ROW -->
+    <div class="benefits-row">
+      <div class="benefit-card">
+        <div class="benefit-icon">🚚</div>
+        <div class="benefit-title">Free Delivery</div>
+        <div class="benefit-desc">On all orders above ₹499</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">👩‍⚕️</div>
+        <div class="benefit-title">Expert Support</div>
+        <div class="benefit-desc">Nutritionist consultations included</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🔄</div>
+        <div class="benefit-title">Easy Cancel</div>
+        <div class="benefit-desc">No lock-in, cancel anytime</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🛡️</div>
+        <div class="benefit-title">Secure Billing</div>
+        <div class="benefit-desc">100% safe & encrypted payments</div>
+      </div>
+    </div>
+
+    <!-- BILLING HISTORY -->
+    <div class="history-section">
+      <div class="history-head">
+        <div class="h-icon">🧾</div>
+        <h3>Billing History</h3>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Invoice</th>
+              <th>Plan</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:700">#INV-0004</td>
+              <td>Growth Plan</td>
+              <td style="color:var(--muted)">Apr 3, 2026</td>
+              <td style="font-weight:700">₹299</td>
+              <td><span class="status-chip s-paid">✓ Paid</span></td>
+              <td><button class="inv-btn" onclick="showToast('Downloading invoice...')">Download</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700">#INV-0003</td>
+              <td>Growth Plan</td>
+              <td style="color:var(--muted)">Mar 3, 2026</td>
+              <td style="font-weight:700">₹299</td>
+              <td><span class="status-chip s-paid">✓ Paid</span></td>
+              <td><button class="inv-btn" onclick="showToast('Downloading invoice...')">Download</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700">#INV-0002</td>
+              <td>Starter Plan</td>
+              <td style="color:var(--muted)">Feb 3, 2026</td>
+              <td style="font-weight:700">₹0</td>
+              <td><span class="status-chip s-paid">✓ Free</span></td>
+              <td><button class="inv-btn" onclick="showToast('Downloading invoice...')">Download</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700">#INV-0001</td>
+              <td>Starter Plan</td>
+              <td style="color:var(--muted)">Jan 3, 2026</td>
+              <td style="font-weight:700">₹0</td>
+              <td><span class="status-chip s-paid">✓ Free</span></td>
+              <td><button class="inv-btn" onclick="showToast('Downloading invoice...')">Download</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CANCEL ZONE -->
+    <div class="cancel-zone">
+      <div class="cancel-head">
+        <div class="c-icon">⚠️</div>
+        <h3>Cancel Subscription</h3>
+      </div>
+      <div class="cancel-body">
+        <div class="cancel-info">
+          <p>Cancelling will downgrade your account to the Starter (Free) plan at the end of your current billing cycle on <strong>May 3, 2026</strong>. You won't be charged again and will retain access until then.</p>
+        </div>
+        <button class="cancel-btn" onclick="showToast('Cancellation request sent.')">Cancel Plan</button>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="t-icon">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<script>
+/* Sidebar */
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show');}
+function setActive(el){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');}
+
+/* Billing toggle */
+let yearly = false;
+const prices = {monthly:[0,299,599], yearly:[0,209,419]};
+const ids = ['p1','p2','p3'];
+const notes = ['n1','n2','n3'];
+const yearlyTotal = [0,2508,5028];
+
+function switchBilling(){
+  yearly = !yearly;
+  const btn = document.getElementById('toggleBtn');
+  btn.classList.toggle('yearly', yearly);
+  document.getElementById('lbl-monthly').classList.toggle('active', !yearly);
+  document.getElementById('lbl-yearly').classList.toggle('active', yearly);
+  ids.forEach((id,i)=>{
+    document.getElementById(id).textContent = yearly ? prices.yearly[i] : prices.monthly[i];
+    document.getElementById(notes[i]).textContent = yearly && prices.yearly[i] > 0 ? `₹${yearlyTotal[i]}/year — save ₹${(prices.monthly[i]-prices.yearly[i])*12}` : '';
+  });
+}
+
+/* Toast */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
