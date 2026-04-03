@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Return Policy — NutriBuddy Kids</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pk:#FF4D8F; --pkl:#FFD6E8; --pkd:#C0306F;
+  --pu:#7C3AED; --pul:#EDE9FE;
+  --ye:#FFD600; --yel:#FFFBE0;
+  --sk:#00BFFF; --skl:#DCFBFF;
+  --mn:#00D68F; --mnl:#D0FFF2;
+  --or:#FF6B35;
+  --dk:#0D0020; --dk2:#1A0A3E;
+  --wh:#FFFFFF; --cr:#FFFBF5;
+  --border:#E6E6EE; --muted:#6b6b80;
+  --sidebar-w:260px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cr);color:var(--dk);min-height:100vh;display:flex;overflow-x:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--wh);border-right:2px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.sidebar-logo{padding:22px 20px 16px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--pk),var(--pkd));display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 6px 16px rgba(255,77,143,.3)}
+.logo-text{font-family:'Fredoka One',cursive;font-size:1.08rem;color:var(--dk);line-height:1.1}
+.logo-text span{color:var(--pk)}
+.logo-sub{font-size:.6rem;font-weight:600;color:var(--muted)}
+.profile-block{padding:18px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;border-bottom:2px solid var(--border)}
+.avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pu));display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:1.7rem;color:#fff;box-shadow:0 6px 18px rgba(255,77,143,.25);position:relative}
+.avatar .dot{position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;background:var(--mn);border:2px solid #fff}
+.profile-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;color:var(--dk)}
+.profile-email{font-size:.72rem;color:var(--muted)}
+.nav-section{padding:14px 12px 2px}
+.nav-label{font-family:'Nunito',sans-serif;font-weight:900;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0 6px;margin-bottom:4px;display:block}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;font-size:.84rem;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;text-decoration:none;margin-bottom:1px;position:relative}
+.nav-item:hover{background:var(--cr);color:var(--dk)}
+.nav-item.active{background:var(--pkl);color:var(--pk);font-weight:800}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--pk);border-radius:0 4px 4px 0}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:2px solid var(--border)}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;font-size:.84rem;font-weight:700;color:#ef4444;cursor:pointer;transition:.2s;width:100%;background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.logout-btn:hover{background:#fff0f0}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--wh);border-bottom:2px solid var(--border);padding:0 26px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:7px;border-radius:9px;color:var(--dk);transition:.2s}
+.hamburger:hover{background:var(--cr)}
+.topbar-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--dk)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:10px;background:var(--cr);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;position:relative}
+.icon-btn:hover{background:var(--pkl);border-color:var(--pk)}
+.notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--pk);border:2px solid #fff}
+
+/* PAGE */
+.page{padding:24px 26px;flex:1}
+
+/* HERO */
+.policy-hero{border-radius:20px;background:linear-gradient(130deg,var(--dk2) 0%,#3d0080 60%,#1a004a 100%);padding:28px 30px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.policy-hero::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,77,143,.18),transparent 65%);right:-40px;top:-80px;pointer-events:none}
+.hero-text{position:relative;z-index:1}
+.hero-text .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,214,0,.15);border:1.5px solid rgba(255,214,0,.3);border-radius:50px;padding:4px 12px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ye);margin-bottom:12px}
+.hero-text h1{font-family:'Fredoka One',cursive;font-size:1.7rem;color:#fff;margin-bottom:8px;line-height:1.15}
+.hero-text h1 span{color:var(--ye)}
+.hero-text p{font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.6;max-width:440px}
+.hero-emoji{font-size:4.5rem;position:relative;z-index:1;animation:floatY 3s ease-in-out infinite;flex-shrink:0}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.timer-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tpill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.15);border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;color:rgba(255,255,255,.8)}
+
+/* GRID */
+.content-grid{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
+
+/* BOX */
+.box{background:var(--wh);border:2px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px}
+.box:last-child{margin-bottom:0}
+.box-head{padding:18px 22px 0}
+.box-head .sec-label{font-family:'Nunito',sans-serif;font-weight:900;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--pk);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.box-head .sec-label::before{content:'';display:block;width:18px;height:2px;background:var(--pk);border-radius:2px}
+.box-head h2{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--dk);margin-bottom:4px}
+.box-head p{font-size:.82rem;color:var(--muted);line-height:1.6;padding-bottom:14px;border-bottom:2px solid var(--border)}
+
+/* POLICY LIST */
+.policy-list{padding:4px 0}
+.policy-item{display:flex;align-items:flex-start;gap:14px;padding:16px 22px;border-bottom:1.5px solid var(--border);transition:.2s}
+.policy-item:last-child{border-bottom:none}
+.policy-item:hover{background:var(--cr)}
+.pi-check{width:28px;height:28px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.pi-body h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;color:var(--dk);margin-bottom:3px}
+.pi-body p{font-size:.78rem;color:var(--muted);line-height:1.55}
+
+/* NOT ELIGIBLE */
+.ne-head{padding:16px 22px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:9px}
+.ne-head h3{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dk)}
+.ne-item{display:flex;align-items:flex-start;gap:12px;padding:14px 22px;border-bottom:1.5px solid var(--border);transition:.2s}
+.ne-item:last-child{border-bottom:none}
+.ne-item:hover{background:var(--cr)}
+.ne-cross{width:26px;height:26px;border-radius:8px;background:#ffe4e6;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ne-body h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;color:var(--dk);margin-bottom:2px}
+.ne-body p{font-size:.76rem;color:var(--muted);line-height:1.5}
+
+/* SIDE CARDS */
+.side-card{background:var(--wh);border:2px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:14px}
+.side-card:last-child{margin-bottom:0}
+.sc-head{padding:14px 18px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.sc-head h3{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--dk)}
+.sc-body{padding:16px 18px}
+.step-list{display:flex;flex-direction:column;gap:13px}
+.step-item{display:flex;gap:12px;align-items:flex-start}
+.step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--pk),var(--pkd));color:#fff;font-family:'Fredoka One',cursive;font-size:.88rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(255,77,143,.28)}
+.step-txt h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:.83rem;color:var(--dk);margin-bottom:2px}
+.step-txt p{font-size:.74rem;color:var(--muted);line-height:1.5}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:12px;align-items:stretch;padding-bottom:14px}
+.tl-item:last-child{padding-bottom:0}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0}
+.tl-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.tl-line{flex:1;width:2px;background:var(--border);margin-top:3px}
+.tl-item:last-child .tl-line{display:none}
+.tl-content{padding-top:3px;flex:1}
+.tl-content h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:.83rem;color:var(--dk);margin-bottom:1px}
+.tl-content p{font-size:.73rem;color:var(--muted);line-height:1.5}
+.day-badge{display:inline-block;background:var(--pkl);color:var(--pkd);border-radius:50px;padding:1px 9px;font-size:.65rem;font-weight:900;font-family:'Nunito';margin-top:3px}
+
+/* CONTACT */
+.contact-card{background:linear-gradient(135deg,var(--pkl),var(--pul));border:2px solid var(--pkl);border-radius:18px;padding:18px;text-align:center}
+.contact-card .ci{font-size:2.2rem;margin-bottom:8px;display:block}
+.contact-card h3{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--dk);margin-bottom:5px}
+.contact-card p{font-size:.76rem;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.contact-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--pk),var(--pkd));color:#fff;border:none;border-radius:50px;padding:9px 20px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;cursor:pointer;text-decoration:none;transition:.3s;box-shadow:0 6px 16px rgba(255,77,143,.28);width:100%;justify-content:center}
+.contact-btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(255,77,143,.4)}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,0,32,.4);z-index:90;backdrop-filter:blur(4px)}
+.overlay.show{display:block}
+
+/* ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(16px);animation:fadeUp .5s cubic-bezier(.34,1.1,.64,1) forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+  .content-grid{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .side-card{margin-bottom:0}
+  .contact-card{grid-column:span 2}
+}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+}
+@media(max-width:680px){
+  .right-col{grid-template-columns:1fr}
+  .contact-card{grid-column:span 1}
+  .policy-hero{flex-direction:column;align-items:flex-start;gap:14px;padding:22px 20px}
+  .hero-emoji{display:none}
+  .page{padding:14px 14px}
+}
+@media(max-width:480px){
+  .hero-text h1{font-size:1.4rem}
+  .timer-pills .tpill:last-child{display:none}
+  .box-head h2{font-size:1.1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🌿</div>
+    <div>
+      <div class="logo-text">Nutri<span>Buddy</span></div>
+      <div class="logo-sub">Kids Nutrition</div>
+    </div>
+  </div>
+
+  <div class="profile-block">
+    <div class="avatar">J<div class="dot"></div></div>
+    <div class="profile-name">Jay Sharma</div>
+    <div class="profile-email">user@gmail.com</div>
+  </div>
+
+  <div style="overflow-y:auto;flex:1">
+    <div class="nav-section">
+      <span class="nav-label">Main</span>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+        Overview
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Orders
+      </a>
+      <a href="#" class="nav-item active" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Return Policy
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-label">Account</span>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Personal Info
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Address
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Wishlist
+      </a>
+      <a href="#" class="nav-item" onclick="setActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        My Coupons
+      </a>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title">Return Policy</div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="icon-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+
+    <!-- HERO -->
+    <div class="policy-hero fade-in d1">
+      <div class="hero-text">
+        <div class="badge">📦 Return & Refund Policy</div>
+        <h1>7-Day <span>Return</span> Policy</h1>
+        <p>Not satisfied? Return your product within <strong style="color:var(--ye)">7 days</strong> of delivery — no hassle, no questions asked.</p>
+        <div class="timer-pills">
+          <span class="tpill">📅 7-Day Window</span>
+          <span class="tpill">💳 5–7 Day Refund</span>
+          <span class="tpill">✅ Easy Process</span>
+        </div>
+      </div>
+      <div class="hero-emoji">📦</div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+
+      <!-- LEFT -->
+      <div>
+        <!-- Eligible -->
+        <div class="box fade-in d2">
+          <div class="box-head">
+            <div class="sec-label">Eligibility</div>
+            <h2>Return Conditions</h2>
+            <p>You can raise a return request within <strong>7 days</strong> of receiving your order. The following conditions must be met.</p>
+          </div>
+          <div class="policy-list">
+            <div class="policy-item">
+              <div class="pi-check" style="background:var(--mnl)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--mn)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="pi-body">
+                <h4>Unused & Sealed</h4>
+                <p>Product must be unused, unopened, and in its original condition.</p>
+              </div>
+            </div>
+            <div class="policy-item">
+              <div class="pi-check" style="background:var(--mnl)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--mn)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="pi-body">
+                <h4>Original Packaging & Invoice</h4>
+                <p>Return request requires the original box, packaging, and purchase invoice.</p>
+              </div>
+            </div>
+            <div class="policy-item">
+              <div class="pi-check" style="background:var(--mnl)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--mn)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="pi-body">
+                <h4>Refund in 5–7 Working Days</h4>
+                <p>Once approved, refund is credited back to your original payment method.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Not Eligible -->
+        <div class="box fade-in d3">
+          <div class="ne-head">
+            <div style="width:30px;height:30px;border-radius:9px;background:#ffe4e6;display:flex;align-items:center;justify-content:center;font-size:.95rem">❌</div>
+            <h3>Not Eligible for Return</h3>
+          </div>
+          <div class="ne-item">
+            <div class="ne-cross">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div class="ne-body">
+              <h4>Opened or Used Products</h4>
+              <p>Products that have been opened, consumed, or tampered with cannot be returned.</p>
+            </div>
+          </div>
+          <div class="ne-item">
+            <div class="ne-cross">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div class="ne-body">
+              <h4>Requests After 7 Days</h4>
+              <p>Return requests raised after 7 days of delivery will not be accepted.</p>
+            </div>
+          </div>
+          <div class="ne-item">
+            <div class="ne-cross">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div class="ne-body">
+              <h4>Missing Packaging or Invoice</h4>
+              <p>Returns without the original box or invoice cannot be processed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-col fade-in d4">
+
+        <!-- Steps -->
+        <div class="side-card">
+          <div class="sc-head">
+            <div style="width:28px;height:28px;border-radius:9px;background:var(--pkl);display:flex;align-items:center;justify-content:center;font-size:.9rem">📋</div>
+            <h3>How to Return?</h3>
+          </div>
+          <div class="sc-body">
+            <div class="step-list">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-txt"><h4>Go to My Orders</h4><p>Find the order you'd like to return.</p></div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-txt"><h4>Submit Return Request</h4><p>Click "View" and raise a return with your reason.</p></div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-txt"><h4>Pack the Product</h4><p>Repack carefully in the original packaging.</p></div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-txt"><h4>Pickup & Refund</h4><p>We'll schedule pickup and process your refund.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="side-card">
+          <div class="sc-head">
+            <div style="width:28px;height:28px;border-radius:9px;background:var(--mnl);display:flex;align-items:center;justify-content:center;font-size:.9rem">⏱️</div>
+            <h3>Refund Timeline</h3>
+          </div>
+          <div class="sc-body">
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-left"><div class="tl-dot" style="background:var(--pkl)">📨</div><div class="tl-line"></div></div>
+                <div class="tl-content"><h4>Request Submitted</h4><p>Return request raised successfully</p><span class="day-badge">Day 0</span></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-left"><div class="tl-dot" style="background:var(--yel)">🔍</div><div class="tl-line"></div></div>
+                <div class="tl-content"><h4>Review & Approval</h4><p>Our team reviews the request</p><span class="day-badge" style="background:var(--yel);color:#92400e">Day 1–2</span></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-left"><div class="tl-dot" style="background:var(--skl)">🚚</div><div class="tl-line"></div></div>
+                <div class="tl-content"><h4>Product Pickup</h4><p>Courier pickup scheduled</p><span class="day-badge" style="background:var(--skl);color:#0369a1">Day 2–3</span></div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-left"><div class="tl-dot" style="background:var(--mnl)">💳</div></div>
+                <div class="tl-content"><h4>Refund Processed</h4><p>Credited to your account</p><span class="day-badge" style="background:var(--mnl);color:#065f46">Day 5–7</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="contact-card fade-in d5">
+          <span class="ci">🤝</span>
+          <h3>Need Help?</h3>
+          <p>Our support team is available 24/7 to assist you with any return or refund queries.</p>
+          <a href="mailto:support@nutribuddy.in" class="contact-btn">💬 Contact Support</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+function setActive(el){
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>
