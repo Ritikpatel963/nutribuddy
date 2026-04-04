@@ -328,8 +328,8 @@ nav.scrolled {
 
 /* CTA Button */
 .nav-cta {
-  background: #ff9ac2 !important;
-  color: #000 !important;
+background: linear-gradient(135deg, var(--pk), #6360e2);
+  color: #ffffff !important;
   padding: 10px 20px;
   border-radius: 50px;
   font-family: 'Arial', sans-serif;
@@ -654,12 +654,12 @@ nav.scrolled {
 }
 
 .btn-box a:first-child:hover {
-  background: var(--pk);
+ background: linear-gradient(135deg, var(--pk), #6360e2);
   color: #fff;
 }
 
 .btn-box a:last-child {
-  background: linear-gradient(135deg, var(--pk), var(--pkd));
+  background: linear-gradient(135deg, var(--pk), #6360e2);
   color: #fff;
 }
 
@@ -865,7 +865,7 @@ nav.scrolled {
     }
 
     .hbtn-main {
-      background: linear-gradient(135deg, var(--pk), var(--pkd));
+     background: linear-gradient(135deg, var(--pk), #6360e2);
       color: #fff;
       box-shadow: 0 8px 28px rgba(255, 77, 143, .42)
     }
@@ -968,6 +968,11 @@ nav.scrolled {
           width: 210px;
       
     }
+     .jar-body2 img {
+          width: 410px;
+      
+    }
+    
 
     .jar-body::before {
       content: '';
@@ -3084,8 +3089,8 @@ nav.scrolled {
 }
 
 .comp-us-head {
-  background: var(--pk) !important;
-  color: #fff !important;
+  background: white !important;
+  color: #ffffff !important;
   border-radius: 8px;
 }
 
@@ -8368,14 +8373,14 @@ nav.scrolled {
 }
 
 .btn-cart:hover {
-  background: var(--pk);
+ background: linear-gradient(135deg, var(--pk), #6360e2);
   color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(255, 77, 143, .3);
 }
 
 .btn-buy {
-  background: linear-gradient(135deg, var(--pk), var(--pkd));
+ background: linear-gradient(135deg, var(--pk), #6360e2);
   color: #fff;
 }
 
@@ -9295,7 +9300,7 @@ nav.scrolled {
 }
 
 .hbtn-main {
-  background: linear-gradient(135deg, var(--pk), var(--pkd));
+  background: linear-gradient(135deg, var(--pk), #6360e2);
   color: #fff;
 }
 
