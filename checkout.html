@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — NutriBuddy Kids</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --pk:#FF4D8F; --pkl:#FFD6E8; --pkd:#C0306F;
+      --pu:#7C3AED; --pul:#EDE9FE; --pud:#5B21B6;
+      --ye:#FFD600; --yel:#FFFBE0;
+      --sk:#00BFFF; --skl:#DCFBFF;
+      --mn:#00D68F; --mnl:#D0FFF2;
+      --or:#FF6B35; --orl:#FFE8DF;
+      --dk:#0D0020; --dk2:#1A0A3E;
+      --wh:#FFFFFF; --cr:#FFFBF5;
+      --grey:#F7F7F9; --border:#EAEAEA;
+      --text-light:#6B6B80;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--grey);color:var(--dk);overflow-x:hidden;min-height:100vh}
+
+    /* ── TOPBAR ── */
+    .checkout-topbar{
+      background:var(--wh);border-bottom:2px solid var(--pkl);
+      padding:0 5%;height:64px;display:flex;align-items:center;
+      justify-content:space-between;position:sticky;top:0;z-index:100;
+      box-shadow:0 2px 16px rgba(0,0,0,.06);
+    }
+
+    .topbar-secure{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text-light);font-weight:600}
+    .topbar-secure .lock{font-size:1rem}
+    .topbar-steps{display:flex;align-items:center;gap:0}
+    .ts{display:flex;align-items:center;gap:8px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;color:#bbb;padding:0 14px;position:relative}
+    .ts.active{color:var(--pk)}
+    .ts.done{color:var(--mn)}
+    .ts-num{width:24px;height:24px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .3s}
+    .ts.active .ts-num{border-color:var(--pk);background:var(--pk);color:#fff}
+    .ts.done .ts-num{border-color:var(--mn);background:var(--mn);color:#fff}
+    .ts-arrow{color:#ddd;font-size:.9rem;padding:0 4px}
+
+    /* ── PROGRESS BAR ── */
+    .progress-strip{height:4px;background:var(--pkl);position:relative}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--pk),var(--pu),var(--sk));width:33%;transition:width .5s ease;border-radius:0 2px 2px 0}
+
+    /* ── MAIN LAYOUT ── */
+    .checkout-main{
+      max-width:1200px;margin:0 auto;
+      display:grid;grid-template-columns:1fr 400px;
+      gap:28px;padding:32px 5% 80px;align-items:start;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel{display:flex;flex-direction:column;gap:22px}
+
+    /* Cards */
+    .co-card{
+      background:var(--wh);border-radius:20px;
+      border:2px solid var(--border);
+      overflow:hidden;transition:border-color .3s;
+      box-shadow:0 2px 12px rgba(0,0,0,.04);
+    }
+    .co-card.active-card{border-color:var(--pk);box-shadow:0 4px 24px rgba(255,77,143,.12)}
+    .card-head{
+      padding:18px 24px;display:flex;align-items:center;
+      justify-content:space-between;cursor:pointer;
+      border-bottom:2px solid var(--border);
+      background:linear-gradient(135deg,rgba(255,77,143,.03),rgba(124,58,237,.02));
+    }
+    .active-card .card-head{border-color:var(--pkl)}
+    .card-head-left{display:flex;align-items:center;gap:12px}
+    .step-badge{
+      width:32px;height:32px;border-radius:50%;
+      background:linear-gradient(135deg,var(--pk),var(--pkd));
+      color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+    .step-badge.done-badge{background:linear-gradient(135deg,var(--mn),#00a870)}
+    .card-head h3{font-family: 'Nunito', sans-serif;font-size:1.1rem;color:var(--dk)}
+    .card-head .edit-link{font-size:.8rem;color:var(--pk);font-weight:700;cursor:pointer;border:none;background:none;transition:color .2s}
+    .card-head .edit-link:hover{color:var(--pkd);text-decoration:underline}
+    .card-body{padding:24px}
+
+    /* ── SECTION: LOGIN ── */
+    .login-done{display:flex;align-items:center;gap:12px;padding:16px 24px}
+    .login-done .user-ava{width:38px;height:38px;border-radius:50%;background:var(--pkl);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .login-done .user-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;color:var(--dk)}
+    .login-done .user-phone{font-size:.8rem;color:var(--text-light)}
+
+    /* ── SECTION: ADDRESS ── */
+    .addr-tabs{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+    .addr-tab{border:2px solid var(--border);border-radius:50px;padding:9px 18px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--text-light);cursor:pointer;transition:all .25s;background:white}
+    .addr-tab.active{border-color:var(--pk);background:var(--pkl);color:var(--pkd)}
+    .addr-tab:hover{border-color:var(--pkl)}
+    .saved-addresses{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+    .addr-item{
+      border:2.5px solid var(--border);border-radius:16px;padding:16px 18px;
+      display:flex;align-items:flex-start;gap:14px;cursor:pointer;
+      transition:all .3s;position:relative;background:white;
+    }
+    .addr-item:hover{border-color:var(--pkl);transform:translateY(-2px);box-shadow:0 6px 18px rgba(255,77,143,.08)}
+    .addr-item.selected{border-color:var(--pk);background:linear-gradient(135deg,rgba(255,77,143,.04),rgba(255,77,143,.01))}
+    .addr-radio{width:20px;height:20px;border-radius:50%;border:2.5px solid #ddd;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .25s}
+    .addr-item.selected .addr-radio{border-color:var(--pk);background:var(--pk)}
+    .addr-item.selected .addr-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:white}
+    .addr-info .addr-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.92rem;color:var(--dk);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+    .addr-type-tag{background:var(--pkl);color:var(--pk);font-size:.65rem;font-weight:900;padding:2px 9px;border-radius:20px;font-family:'Nunito',sans-serif}
+    .addr-info .addr-line{font-size:.84rem;color:var(--text-light);line-height:1.55}
+    .addr-info .addr-phone{font-size:.8rem;color:var(--text-light);margin-top:3px}
+    .addr-del-btn{position:absolute;top:12px;right:14px;background:none;border:none;color:#ccc;cursor:pointer;font-size:.9rem;transition:color .2s}
+    .addr-del-btn:hover{color:var(--or)}
+    .add-addr-btn{
+      border:2.5px dashed var(--pkl);border-radius:16px;padding:16px;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      cursor:pointer;color:var(--pk);font-family:'Nunito',sans-serif;font-weight:900;
+      font-size:.9rem;background:none;width:100%;transition:all .25s;
+    }
+    .add-addr-btn:hover{background:var(--pkl);border-style:solid}
+    .new-addr-form{display:none;margin-top:16px}
+    .new-addr-form.show{display:block;animation:slideDown .3s ease}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .form-grid.single{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group label{font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;color:var(--dk);letter-spacing:.3px}
+    .form-group input,.form-group select,.form-group textarea{
+      border:2px solid var(--border);border-radius:12px;
+      padding:12px 14px;font-family:'DM Sans',sans-serif;
+      font-size:.9rem;color:var(--dk);background:white;
+      outline:none;transition:border-color .2s,box-shadow .2s;
+    }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--pk);box-shadow:0 0 0 3px rgba(255,77,143,.1)}
+    .form-group input::placeholder{color:#bbb}
+    .form-group select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    .addr-type-row{display:flex;gap:10px;margin-top:4px}
+    .addr-type-btn{border:2px solid var(--border);border-radius:50px;padding:8px 16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;background:white;color:var(--text-light);transition:all .25s;display:flex;align-items:center;gap:6px}
+    .addr-type-btn.active{border-color:var(--pk);background:var(--pkl);color:var(--pkd)}
+
+    /* ── SECTION: PAYMENT ── */
+    .payment-methods{display:flex;flex-direction:column;gap:12px}
+    .pay-method{
+      border:2.5px solid var(--border);border-radius:16px;
+      overflow:hidden;transition:all .3s;background:white;
+    }
+    .pay-method.selected{border-color:var(--pk);box-shadow:0 4px 16px rgba(255,77,143,.1)}
+    .pay-head{
+      padding:16px 18px;display:flex;align-items:center;gap:14px;
+      cursor:pointer;transition:background .2s;
+    }
+    .pay-head:hover{background:rgba(255,77,143,.02)}
+    .pay-radio{width:20px;height:20px;border-radius:50%;border:2.5px solid #ddd;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s}
+    .pay-method.selected .pay-radio{border-color:var(--pk);background:var(--pk)}
+    .pay-method.selected .pay-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:white}
+    .pay-icon{font-size:1.5rem;width:38px;text-align:center}
+    .pay-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.92rem;color:var(--dk)}
+    .pay-sub{font-size:.76rem;color:var(--text-light)}
+    .pay-tags{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .pay-tag{background:var(--mnl);color:#00a870;font-size:.65rem;font-family:'Nunito',sans-serif;font-weight:900;padding:3px 9px;border-radius:20px}
+    .pay-body{display:none;padding:0 18px 18px;border-top:2px solid var(--border);padding-top:16px}
+    .pay-method.selected .pay-body{display:block}
+    .upi-input-row{display:flex;gap:10px}
+    .upi-input-row input{flex:1;border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+    .upi-input-row input:focus{border-color:var(--pk)}
+    .upi-verify-btn{background:var(--pk);color:white;border:none;border-radius:12px;padding:12px 20px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;white-space:nowrap;transition:all .2s}
+    .upi-verify-btn:hover{background:var(--pkd)}
+    .upi-apps{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+    .upi-app{border:2px solid var(--border);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .25s;background:white;font-size:.7rem;font-family:'Nunito',sans-serif;font-weight:800;color:var(--text-light);min-width:64px}
+    .upi-app:hover{border-color:var(--pk);transform:translateY(-2px)}
+    .upi-app.active{border-color:var(--pk);background:var(--pkl);color:var(--pkd)}
+	.upi-app img {
+				width: 28px;}
+    .upi-app span{font-size:1.6rem}
+    .card-row{display:grid;grid-template-columns:1fr;gap:12px}
+    .emi-options{display:flex;flex-direction:column;gap:8px}
+    .emi-item{border:2px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .25s}
+    .emi-item:hover{border-color:var(--pkl)}
+    .emi-item.active{border-color:var(--pk);background:var(--pkl)}
+    .emi-item .emi-months{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dk)}
+    .emi-item .emi-amount{font-size:.82rem;color:var(--text-light)}
+    .emi-item .emi-interest{font-family:'Nunito',sans-serif;font-weight:900;font-size:.75rem;color:var(--mn)}
+    .wallets{display:flex;gap:10px;flex-wrap:wrap}
+    .wallet-item{border:2px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .25s;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem}
+    .wallet-item:hover{border-color:var(--pkl)}
+    .wallet-item.active{border-color:var(--pk);background:var(--pkl);color:var(--pkd)}
+    .wallet-item span{font-size:1.3rem}
+    .netbank-select{width:100%;margin-top:4px}
+    .cod-note{background:var(--yel);border:2px solid var(--ye);border-radius:12px;padding:14px;font-size:.84rem;color:#907000;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+
+    /* ── OFFER STRIP ── */
+    .offer-strip{
+      background:linear-gradient(135deg,rgba(255,77,143,.08),rgba(124,58,237,.06));
+      border:2px solid var(--pkl);border-radius:14px;
+      padding:14px 16px;display:flex;align-items:center;gap:10px;
+      font-family:'Nunito',sans-serif;font-weight:800;font-size:.84rem;color:var(--pkd);
+    }
+    .offer-strip span{font-size:1.1rem}
+
+    /* ── RIGHT: ORDER SUMMARY ── */
+    .order-summary{
+      background:var(--wh);border-radius:20px;border:2px solid var(--border);
+      box-shadow:0 4px 20px rgba(0,0,0,.05);position:sticky;top:84px;
+      overflow:hidden;
+    }
+    .os-head{
+      padding:18px 22px;background:linear-gradient(135deg,var(--dk2),#2d0060);
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .os-head h3{font-family: 'Nunito', sans-serif;color:white;font-size:1.1rem}
+    .os-head .item-count{background:var(--pk);color:white;font-family:'Nunito',sans-serif;font-weight:900;font-size:.72rem;padding:3px 10px;border-radius:20px}
+    .os-body{padding:20px 22px}
+
+    /* Cart Items */
+    .cart-items{display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
+    .ci{display:flex;align-items:flex-start;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .ci:last-child{border-bottom:none;padding-bottom:0}
+	.ci-img img {
+				width: 30px !important;
+			}
+	.user-ava img {
+			width: 25px;
+		}
+    .ci-img{width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#FFF0FA,#F0E8FF);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;border:2px solid var(--pkl)}
+    .ci-info{flex:1}
+    .ci-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;color:var(--dk);margin-bottom:3px;line-height:1.4}
+    .ci-variant{font-size:.75rem;color:var(--text-light);margin-bottom:6px}
+    .ci-qty-row{display:flex;align-items:center;gap:8px}
+    .qty-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;transition:all .2s;color:var(--dk)}
+    .qty-btn:hover{border-color:var(--pk);background:var(--pkl);color:var(--pk)}
+    .qty-val{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dk);min-width:20px;text-align:center}
+    .ci-price{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--pk);text-align:right;flex-shrink:0}
+    .ci-old{font-size:.72rem;color:#bbb;text-decoration:line-through;font-family:'DM Sans',sans-serif}
+
+    /* Coupon */
+    .coupon-row{
+      border:2px dashed var(--pkl);border-radius:14px;
+      padding:14px 16px;margin-bottom:16px;
+    }
+    .coupon-row.applied{border-style:solid;border-color:var(--mn);background:var(--mnl)}
+    .coupon-label{font-family:'Nunito',sans-serif;font-weight:900;font-size:.8rem;color:var(--dk);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .coupon-input-row{display:flex;gap:8px}
+    .coupon-input{flex:1;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;background:white}
+    .coupon-input:focus{border-color:var(--pk)}
+    .coupon-apply-btn{background:linear-gradient(135deg,var(--pk),var(--pkd));color:white;border:none;border-radius:10px;padding:10px 16px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;cursor:pointer;white-space:nowrap;transition:all .2s}
+    .coupon-apply-btn:hover{transform:scale(1.04)}
+    .coupon-applied-msg{font-size:.78rem;color:#00a870;font-weight:700;margin-top:6px;display:none}
+    .coupon-applied-msg.show{display:flex;align-items:center;gap:4px}
+
+    /* Price Breakdown */
+    .price-breakdown{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+    .pb-row{display:flex;align-items:center;justify-content:space-between;font-size:.86rem}
+    .pb-label{color:var(--text-light)}
+    .pb-val{font-weight:700;color:var(--dk)}
+    .pb-val.green{color:var(--mn)}
+    .pb-val.red{color:var(--or)}
+    .pb-divider{height:1px;background:var(--border);margin:4px 0}
+    .pb-total-row{display:flex;align-items:center;justify-content:space-between}
+    .pb-total-label{font-family:'Fredoka One',cursive;font-size:1.05rem;color:var(--dk)}
+    .pb-total-val{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--pk)}
+    .tax-note{font-size:.72rem;color:var(--text-light);margin-top:2px}
+
+    /* Savings Banner */
+    .savings-banner{
+      background:linear-gradient(135deg,var(--mnl),rgba(0,214,143,.12));
+      border:2px solid var(--mn);border-radius:12px;
+      padding:10px 14px;display:flex;align-items:center;gap:8px;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:#00a870;
+      margin-bottom:16px;
+    }
+
+    /* Place Order */
+    .place-order-btn{
+      width:100%;background:linear-gradient(135deg,var(--pk),var(--pkd));
+      border:none;border-radius:16px;padding:18px;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;
+      color:white;cursor:pointer;transition:all .3s;
+      box-shadow:0 8px 28px rgba(255,77,143,.4);
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      position:relative;overflow:hidden;
+    }
+    .place-order-btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .3s}
+    .place-order-btn:hover::before{transform:translateX(0)}
+    .place-order-btn:hover{transform:translateY(-3px);box-shadow:0 14px 38px rgba(255,77,143,.55)}
+    .place-order-btn:active{transform:translateY(0)}
+
+    /* Trust Badges */
+    .trust-row{display:flex;justify-content:center;gap:16px;margin-top:14px;flex-wrap:wrap}
+    .tr-badge{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-light);font-family:'Nunito',sans-serif;font-weight:700}
+
+    /* Loyalty Points */
+    .loyalty-box{
+      background:linear-gradient(135deg,var(--yel),rgba(255,214,0,.12));
+      border:2px solid var(--ye);border-radius:14px;
+      padding:12px 16px;margin-top:14px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .loyalty-box .lb-icon{font-size:1.4rem}
+    .loyalty-box .lb-text{font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:#907000}
+    .loyalty-box .lb-pts{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--or)}
+
+    /* Payment Method Continue Button */
+    .continue-btn{
+      width:100%;background:linear-gradient(135deg,var(--pk),var(--pkd));
+      border:none;border-radius:14px;padding:16px;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;
+      color:white;cursor:pointer;margin-top:18px;transition:all .3s;
+      box-shadow:0 6px 22px rgba(255,77,143,.35);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .continue-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,77,143,.5)}
+
+    /* ══════════════════════════════════════════
+       PHONE / OTP MODAL
+    ══════════════════════════════════════════ */
+    .modal-overlay{
+      display:none;position:fixed;inset:0;z-index:9000;
+      background:rgba(13,0,32,.7);backdrop-filter:blur(10px);
+      align-items:center;justify-content:center;
+    }
+    .modal-overlay.show{display:flex;animation:fadeIn .25s ease}
+
+    .otp-modal{
+      background:white;border-radius:28px;
+      width:90%;max-width:420px;
+      overflow:hidden;
+      box-shadow:0 32px 80px rgba(0,0,0,.35);
+      animation:popUp .4s cubic-bezier(.34,1.56,.64,1);
+      border:2.5px solid var(--pkl);
+    }
+
+    /* Modal Header */
+    .om-header{
+      background:linear-gradient(135deg,var(--pk),var(--pkd));
+      padding:28px 32px 24px;
+      text-align:center;position:relative;
+    }
+    .om-header .om-close{
+      position:absolute;top:14px;right:16px;
+      background:rgba(255,255,255,.2);border:none;
+      width:30px;height:30px;border-radius:50%;
+      color:white;font-size:1rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s;
+    }
+    .om-header .om-close:hover{background:rgba(255,255,255,.35)}
+    .om-lock-icon{
+      width:56px;height:56px;border-radius:50%;
+      background:rgba(255,255,255,.2);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;margin:0 auto 12px;
+      border:2.5px solid rgba(255,255,255,.4);
+    }
+    .om-header h2{
+      font-family:'Fredoka One',cursive;
+      font-size:1.5rem;color:white;margin-bottom:4px;
+    }
+    .om-header p{font-size:.82rem;color:rgba(255,255,255,.85);line-height:1.5}
+
+    /* Modal Body */
+    .om-body{padding:28px 32px 32px}
+
+    /* Steps inside modal */
+    .om-step{display:none}
+    .om-step.active{display:block;animation:slideDown .3s ease}
+
+    /* Phone step */
+    .om-label{
+      font-family:'Nunito',sans-serif;font-weight:900;
+      font-size:.82rem;color:var(--dk);margin-bottom:8px;
+      display:flex;align-items:center;gap:6px;
+    }
+    .phone-input-wrap{
+      display:flex;border:2.5px solid var(--border);border-radius:14px;
+      overflow:hidden;transition:border-color .2s;
+    }
+    .phone-input-wrap:focus-within{border-color:var(--pk);box-shadow:0 0 0 3px rgba(255,77,143,.1)}
+    .phone-prefix{
+      background:var(--grey);padding:0 14px;
+      display:flex;align-items:center;
+      font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;
+      color:var(--dk);border-right:2px solid var(--border);
+      white-space:nowrap;
+    }
+    .phone-input-wrap input{
+      flex:1;border:none;padding:14px 14px;
+      font-family:'DM Sans',sans-serif;font-size:1rem;
+      color:var(--dk);outline:none;background:white;
+      letter-spacing:1px;
+    }
+    .phone-input-wrap input::placeholder{color:#bbb;letter-spacing:0}
+
+    /* Send OTP btn */
+    .send-otp-btn{
+      width:100%;margin-top:16px;
+      background:linear-gradient(135deg,var(--pk),var(--pkd));
+      border:none;border-radius:14px;padding:16px;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;
+      color:white;cursor:pointer;transition:all .3s;
+      box-shadow:0 6px 20px rgba(255,77,143,.35);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .send-otp-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,77,143,.5)}
+    .send-otp-btn:disabled{opacity:.6;transform:none;cursor:not-allowed}
+
+    /* OTP step */
+    .otp-sent-info{
+      background:var(--mnl);border:2px solid var(--mn);
+      border-radius:12px;padding:12px 16px;
+      font-size:.82rem;color:#007a55;
+      display:flex;align-items:center;gap:8px;
+      margin-bottom:20px;line-height:1.5;
+    }
+    .otp-boxes{display:flex;gap:10px;justify-content:center;margin:20px 0 8px}
+    .otp-box{
+      width:52px;height:60px;border:2.5px solid var(--border);
+      border-radius:14px;text-align:center;
+      font-family:'Fredoka One',cursive;font-size:1.6rem;
+      color:var(--dk);outline:none;background:white;
+      transition:all .25s;caret-color:var(--pk);
+    }
+    .otp-box:focus{border-color:var(--pk);box-shadow:0 0 0 3px rgba(255,77,143,.12);transform:scale(1.05)}
+    .otp-box.filled{border-color:var(--pk);background:var(--pkl)}
+    .otp-timer{text-align:center;font-size:.8rem;color:var(--text-light);margin-bottom:16px}
+    .otp-timer strong{color:var(--pk);font-family:'Nunito',sans-serif;font-weight:900}
+    .resend-link{color:var(--pk);cursor:pointer;font-weight:700;text-decoration:underline}
+    .resend-link:hover{color:var(--pkd)}
+    .resend-link.disabled{color:#bbb;cursor:not-allowed;text-decoration:none;pointer-events:none}
+
+    .verify-otp-btn{
+      width:100%;
+      background:linear-gradient(135deg,var(--pk),var(--pkd));
+      border:none;border-radius:14px;padding:16px;
+      font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;
+      color:white;cursor:pointer;transition:all .3s;
+      box-shadow:0 6px 20px rgba(255,77,143,.35);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    .verify-otp-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,77,143,.5)}
+    .verify-otp-btn:disabled{opacity:.6;transform:none;cursor:not-allowed}
+
+    .otp-error{
+      text-align:center;font-size:.82rem;color:var(--or);
+      font-family:'Nunito',sans-serif;font-weight:700;
+      margin-top:-4px;margin-bottom:8px;display:none;
+    }
+    .otp-error.show{display:block;animation:slideDown .2s ease}
+
+    .change-phone-link{
+      text-align:center;margin-top:12px;
+      font-size:.8rem;color:var(--text-light);
+    }
+    .change-phone-link span{color:var(--pk);cursor:pointer;font-weight:700;text-decoration:underline}
+    .change-phone-link span:hover{color:var(--pkd)}
+
+    /* ── SUCCESS OVERLAY ── */
+    .success-overlay{
+      display:none;position:fixed;inset:0;z-index:9999;
+      background:rgba(13,0,32,.85);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;
+    }
+    .success-overlay.show{display:flex;animation:fadeIn .3s ease}
+    .success-box{
+      background:white;border-radius:32px;padding:48px 40px;
+      text-align:center;max-width:440px;width:90%;
+      animation:popUp .5s cubic-bezier(.34,1.56,.64,1);
+      border:3px solid var(--pkl);
+    }
+    .success-icon{font-size:4.5rem;margin-bottom:16px;display:block;animation:bounce 1s ease infinite alternate}
+    .success-box h2{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--dk);margin-bottom:8px}
+    .success-box p{color:var(--text-light);font-size:.92rem;line-height:1.7;margin-bottom:24px}
+    .order-id-box{background:var(--pkl);border-radius:12px;padding:12px 20px;font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--pkd);margin-bottom:24px}
+    .success-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .success-btns a{padding:13px 24px;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;text-decoration:none;transition:all .25s;cursor:pointer;border:none}
+    .btn-track{background:linear-gradient(135deg,var(--pk),var(--pkd));color:white;box-shadow:0 6px 18px rgba(255,77,143,.35)}
+    .btn-home{background:var(--pkl);color:var(--pkd)}
+    .btn-track:hover,.btn-home:hover{transform:translateY(-2px)}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1024px){
+      .checkout-main{grid-template-columns:1fr;max-width:680px}
+      .order-summary{position:static}
+      .topbar-steps{display:none}
+    }
+    @media(max-width:640px){
+      .checkout-main{padding:16px 4% 60px;gap:18px}
+      .checkout-topbar{padding:0 4%;height:58px}
+      
+      .card-body{padding:16px}
+      .os-body{padding:16px 16px}
+      .form-grid{grid-template-columns:1fr}
+      .upi-apps{gap:8px}
+      .upi-app{min-width:56px;padding:8px 10px}
+      .ci-img{width:52px;height:52px;font-size:1.6rem}
+      .wallets{gap:8px}
+      .pay-tags{display:none}
+      .success-box{padding:32px 24px}
+      .om-body{padding:20px 20px 24px}
+      .om-header{padding:22px 24px 20px}
+      .otp-boxes{gap:8px}
+      .otp-box{width:44px;height:54px;font-size:1.4rem}
+    }
+
+    /* ── KEYFRAMES ── */
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popUp{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+    @keyframes bounce{from{transform:scale(1)}to{transform:scale(1.15)}}
+  </style>
+</head>
+<body>
+
+	 <nav id="mainNav">
+
+    <!-- Logo -->
+    <a href="#" class="logo-new">
+      <img src="img/logo.png" alt="NutriBuddy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+      <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--pk)">
+        NutriBuddy<sup style="font-size:.55rem;background:var(--ye);color:var(--dk);padding:2px 7px;border-radius:20px;margin-left:4px;font-family:'Nunito',sans-serif;font-weight:900">KIDS</sup>
+      </span>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Products</a></li>
+      <li><a href="#">Personalized Diet Chart</a></li>
+      <li><a href="#">Testimonials</a></li>
+    </ul>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+
+      <!-- Cart Button -->
+      <button id="cartIconBtn" title="View Cart">
+        <img src="img/shopping-cart.png" alt="Cart"
+             onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>🛒</span>')">
+        <span class="cart-count" id="cartCount">3</span>
+      </button>
+
+      <!-- CTA (Desktop) -->
+      <a href="#" class="nav-cta">Contact Us</a>
+
+      <!-- Hamburger (Mobile) -->
+      <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
+        <img src="img/menu.png" alt="Menu"
+             onerror="this.style.display='none';this.parentElement.innerHTML='<span></span><span></span><span></span>'">
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- Menu Overlay -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul>
+      <li><a href="#"><span class="link-emoji"></span> Home</a></li>
+      <li><a href="#"><span class="link-emoji"></span> About Us</a></li>
+      <li><a href="#"><span class="link-emoji"></span> Products</a></li>
+      <li><a href="#"><span class="link-emoji"></span> Personalized Diet Chart</a></li>
+      <li><a href="#"><span class="link-emoji"></span> Testimonials</a></li>
+    </ul>
+    <div class="mobile-cta-wrap">
+      <a href="#">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       CART POPUP SIDEBAR
+  ══════════════════════════════════════════ -->
+  <div id="cart-popup">
+    <div class="popup-inner">
+      <button class="close-cart" id="closeCart">✕</button>
+      <div class="cart-inner">
+        <h4 class="title-text"><span>3</span> Cart Items</h4>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>GrowStrong Gummies — 30 Day Supply</h5>
+            <h4>₹599 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>BrainBoost Chews — 30 Day Supply</h5>
+            <h4>₹649 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>DreamCalm Drops — 30 Day Supply</h5>
+            <h4>₹549 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="text-box">
+          <h5>Subtotal</h5>
+          <span>₹1,797</span>
+        </div>
+
+        <div class="btn-box">
+          <a href="#">View Cart</a>
+          <a href="#">Checkout →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ══ TOPBAR ══ -->
+<header class="checkout-topbar">
+
+  <div class="topbar-steps">
+    <div class="ts done" id="step-login"><div class="ts-num">✓</div> Login</div>
+    <div class="ts-arrow">›</div>
+    <div class="ts active" id="step-addr"><div class="ts-num">2</div> Address</div>
+    <div class="ts-arrow">›</div>
+    <div class="ts" id="step-pay"><div class="ts-num">3</div> Payment</div>
+  </div>
+  <div class="topbar-secure">
+    <span class="lock">🔒</span> 100% Secure Checkout
+  </div>
+</header>
+<div class="progress-strip"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ══ MAIN ══ -->
+<main class="checkout-main">
+
+  <!-- ══ LEFT ══ -->
+  <div class="left-panel">
+
+    <!-- STEP 1: LOGIN — DONE -->
+    <div class="co-card" id="loginCard">
+      <div class="card-head">
+        <div class="card-head-left">
+          <div class="step-badge done-badge">✓</div>
+          <h3>Login / Account</h3>
+        </div>
+        <button class="edit-link" onclick="editSection('login')">Change</button>
+      </div>
+      <div class="login-done">
+        <div class="user-ava"><img src="img/people.png" alt=""></div>
+        <div>
+          <div class="user-name">Priya Sharma</div>
+          <div class="user-phone">+91 98765 43210 · priya@email.com</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: ADDRESS -->
+    <div class="co-card active-card" id="addressCard">
+      <div class="card-head">
+        <div class="card-head-left">
+          <div class="step-badge" id="addrBadge">2</div>
+          <h3>Delivery Address</h3>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.78rem;color:var(--text-light)">2 saved addresses</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="addr-tabs">
+          <div class="addr-tab active" onclick="setAddrTab(this)">🏠 Saved Addresses</div>
+          <div class="addr-tab" onclick="setAddrTab(this)">➕ Add New</div>
+        </div>
+        <div class="saved-addresses" id="savedAddrPanel">
+          <div class="addr-item selected" onclick="selectAddr(this)">
+            <div class="addr-radio"></div>
+            <div class="addr-info">
+              <div class="addr-name">Priya Sharma <span class="addr-type-tag">🏠 Home</span></div>
+              <div class="addr-line">42, Sunshine Residency, HSR Layout Sector 3<br>Bengaluru, Karnataka – 560102</div>
+              <div class="addr-phone">📞 +91 98765 43210</div>
+            </div>
+            <button class="addr-del-btn" title="Delete">🗑</button>
+          </div>
+          <div class="addr-item" onclick="selectAddr(this)">
+            <div class="addr-radio"></div>
+            <div class="addr-info">
+              <div class="addr-name">Priya (Office) <span class="addr-type-tag" style="background:var(--skl);color:#0088bb">🏢 Work</span></div>
+              <div class="addr-line">Level 4, Prestige Tech Park, Outer Ring Road<br>Bengaluru, Karnataka – 560037</div>
+              <div class="addr-phone">📞 +91 98765 43210</div>
+            </div>
+            <button class="addr-del-btn" title="Delete">🗑</button>
+          </div>
+        </div>
+        <div id="newAddrPanel" style="display:none">
+          <div class="new-addr-form show">
+            <div class="form-grid">
+              <div class="form-group"><label>First Name *</label><input type="text" placeholder="e.g. Priya"></div>
+              <div class="form-group"><label>Last Name *</label><input type="text" placeholder="e.g. Sharma"></div>
+            </div>
+            <div class="form-grid single" style="margin-top:14px">
+              <div class="form-group"><label>Mobile Number *</label><input type="tel" placeholder="+91 XXXXX XXXXX"></div>
+            </div>
+            <div class="form-grid single" style="margin-top:14px">
+              <div class="form-group"><label>Flat / House / Apartment *</label><input type="text" placeholder="e.g. 42, Sunshine Residency"></div>
+            </div>
+            <div class="form-grid single" style="margin-top:14px">
+              <div class="form-group"><label>Street / Area / Colony *</label><input type="text" placeholder="e.g. HSR Layout, Sector 3"></div>
+            </div>
+            <div class="form-grid" style="margin-top:14px">
+              <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6" placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
+              <div class="form-group"><label>City *</label><input type="text" placeholder="City" id="cityField"></div>
+            </div>
+            <div class="form-grid" style="margin-top:14px">
+              <div class="form-group">
+                <label>State *</label>
+                <select id="stateField">
+                  <option value="">Select State</option>
+                  <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
+                  <option>Delhi</option><option>Goa</option><option>Gujarat</option>
+                  <option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option>
+                  <option selected>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
+                  <option>Maharashtra</option><option>Odisha</option><option>Punjab</option>
+                  <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
+                  <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Address Type</label>
+                <div class="addr-type-row">
+                  <button class="addr-type-btn active" onclick="toggleAddrType(this)">🏠 Home</button>
+                  <button class="addr-type-btn" onclick="toggleAddrType(this)">🏢 Work</button>
+                  <button class="addr-type-btn" onclick="toggleAddrType(this)">📍 Other</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="offer-strip" style="margin-top:18px;margin-bottom:16px">
+          <span>🚚</span>
+          <div>Your order qualifies for <strong>FREE delivery</strong> — expected by <strong>Tomorrow, 5 PM</strong>!</div>
+        </div>
+        <button class="continue-btn" onclick="goToPayment()">
+          Continue to Payment →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: PAYMENT -->
+    <div class="co-card" id="paymentCard" style="opacity:.5;pointer-events:none">
+      <div class="card-head">
+        <div class="card-head-left">
+          <div class="step-badge" id="payBadge">3</div>
+          <h3>Payment Method</h3>
+        </div>
+        <span style="font-size:.78rem;color:var(--text-light)">Choose how to pay</span>
+      </div>
+      <div class="card-body">
+        <div class="payment-methods">
+
+          <!-- UPI -->
+          <div class="pay-method selected" onclick="selectPayMethod(this,'upi')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <!-- <div class="pay-icon">📱</div> -->
+              <div>
+                <div class="pay-name">UPI</div>
+                <div class="pay-sub">PhonePe, GPay, Paytm & more</div>
+              </div>
+              <div class="pay-tags">
+                <div class="pay-tag">Instant</div>
+                <div class="pay-tag">Recommended</div>
+              </div>
+            </div>
+            <div class="pay-body">
+              <div style="margin-bottom:12px">
+                <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;color:var(--dk);margin-bottom:8px">Pay via UPI App</div>
+                <div class="upi-apps">
+                  <div class="upi-app active" onclick="selectUpiApp(event,this)"><span><img src="img/pay.jpg" alt=""></span>PhonePe</div>
+                  <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img src="img/g-pay.jpg" alt=""></span>GPay</div>
+                  <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img src="img/paytm-pay.jpg" alt=""></span>Paytm</div>
+                  <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img src="img/upi.jpg" alt=""></span>UPI</div>
+                </div>
+              </div>
+              <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;color:var(--dk);margin-bottom:8px;margin-top:14px">Or enter UPI ID</div>
+              <div class="upi-input-row">
+                <input type="text" placeholder="yourname@upi" id="upiId">
+                <button class="upi-verify-btn" onclick="verifyUPI()">Verify</button>
+              </div>
+              <div id="upiMsg" style="font-size:.78rem;margin-top:6px;display:none"></div>
+            </div>
+          </div>
+
+          <!-- Credit / Debit Card -->
+          <div class="pay-method" onclick="selectPayMethod(this,'card')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <div class="pay-icon">💳</div>
+              <div>
+                <div class="pay-name">Credit / Debit Card</div>
+                <div class="pay-sub">Visa, Mastercard, RuPay & more</div>
+              </div>
+              <div class="pay-tags"><div class="pay-tag">EMI Available</div></div>
+            </div>
+            <div class="pay-body">
+              <div class="card-row">
+                <div class="form-group"><label>Card Number *</label><input type="text" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCard(this)"></div>
+                <div class="form-grid" style="grid-template-columns:1fr 1fr">
+                  <div class="form-group"><label>Expiry (MM/YY) *</label><input type="text" placeholder="MM / YY" maxlength="5"></div>
+                  <div class="form-group"><label>CVV *</label><input type="password" placeholder="●●●" maxlength="3"></div>
+                </div>
+                <div class="form-group"><label>Name on Card *</label><input type="text" placeholder="As printed on card"></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.78rem;color:var(--text-light)">
+                <span>🔒</span> Your card data is encrypted and never stored on our servers.
+              </div>
+            </div>
+          </div>
+
+          <!-- EMI -->
+          <div class="pay-method" onclick="selectPayMethod(this,'emi')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <div class="pay-icon">📆</div>
+              <div>
+                <div class="pay-name">EMI</div>
+                <div class="pay-sub">Easy monthly instalments</div>
+              </div>
+              <div class="pay-tags"><div class="pay-tag" style="background:var(--pul);color:var(--pu)">No Cost EMI</div></div>
+            </div>
+            <div class="pay-body">
+              <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--dk);margin-bottom:10px">Select EMI Plan</div>
+              <div class="emi-options">
+                <div class="emi-item active" onclick="selectEmi(event,this)"><div><div class="emi-months">3 Months</div><div class="emi-amount">₹200/month</div></div><div class="emi-interest">No Cost EMI ✓</div></div>
+                <div class="emi-item" onclick="selectEmi(event,this)"><div><div class="emi-months">6 Months</div><div class="emi-amount">₹100/month</div></div><div class="emi-interest">No Cost EMI ✓</div></div>
+                <div class="emi-item" onclick="selectEmi(event,this)"><div><div class="emi-months">9 Months</div><div class="emi-amount">₹68/month</div></div><div class="emi-interest" style="color:var(--or)">1% interest</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallets -->
+          <div class="pay-method" onclick="selectPayMethod(this,'wallet')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <div class="pay-icon">👛</div>
+              <div>
+                <div class="pay-name">Wallets & Prepaid</div>
+                <div class="pay-sub">Mobikwik, Freecharge & more</div>
+              </div>
+            </div>
+            <div class="pay-body">
+              <div class="wallets">
+                <div class="wallet-item active" onclick="selectWallet(event,this)"><span>💙</span> Mobikwik</div>
+                <div class="wallet-item" onclick="selectWallet(event,this)"><span>🟠</span> Freecharge</div>
+                <div class="wallet-item" onclick="selectWallet(event,this)"><span>🔴</span> Airtel Pay</div>
+                <div class="wallet-item" onclick="selectWallet(event,this)"><span>🟡</span> Ola Money</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Net Banking -->
+          <div class="pay-method" onclick="selectPayMethod(this,'netbank')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <div class="pay-icon">🏦</div>
+              <div>
+                <div class="pay-name">Net Banking</div>
+                <div class="pay-sub">All Indian banks supported</div>
+              </div>
+            </div>
+            <div class="pay-body">
+              <div class="form-group">
+                <label>Select Your Bank</label>
+                <select class="netbank-select">
+                  <option>Select Bank</option>
+                  <option>State Bank of India</option><option>HDFC Bank</option>
+                  <option>ICICI Bank</option><option>Axis Bank</option>
+                  <option>Kotak Mahindra Bank</option><option>Yes Bank</option>
+                  <option>Punjab National Bank</option><option>Bank of Baroda</option>
+                  <option>Canara Bank</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- COD -->
+          <div class="pay-method" onclick="selectPayMethod(this,'cod')">
+            <div class="pay-head">
+              <div class="pay-radio"></div>
+              <div class="pay-icon">💵</div>
+              <div>
+                <div class="pay-name">Cash on Delivery</div>
+                <div class="pay-sub">Pay when your order arrives</div>
+              </div>
+              <div class="pay-tags"><div class="pay-tag" style="background:var(--orl);color:var(--or)">+₹49 fee</div></div>
+            </div>
+            <div class="pay-body">
+              <div class="cod-note">
+                <span>⚠️</span>
+                <div>A Cash on Delivery convenience fee of <strong>₹49</strong> is applicable. Keep exact change ready at delivery. COD is not available for orders above ₹3,000.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="continue-btn" onclick="openOtpModal()">
+          🔒 Place Order — ₹1,800
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /left-panel -->
+
+  <!-- ══ RIGHT: ORDER SUMMARY ══ -->
+  <div class="order-summary">
+    <div class="os-head">
+      <h3>Order Summary</h3>
+      <div class="item-count">3 Items</div>
+    </div>
+    <div class="os-body">
+      <div class="cart-items">
+        <div class="ci">
+          <div class="ci-img"><img src="img/product2.png" alt=""></div>
+          <div class="ci-info">
+            <div class="ci-name">GrowStrong Gummies — 60 Pack</div>
+            <div class="ci-variant">Mixed Berry · 7–12 Yrs</div>
+            <div class="ci-qty-row">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <div class="qty-val">1</div>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+          </div>
+          <div><div class="ci-price">₹599</div><div class="ci-old">₹799</div></div>
+        </div>
+        <div class="ci">
+          <div class="ci-img"><img src="img/product2.png" alt=""></div>
+          <div class="ci-info">
+            <div class="ci-name">BrainBoost Chews — 30 Pack</div>
+            <div class="ci-variant">Mango · 7–12 Yrs</div>
+            <div class="ci-qty-row">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <div class="qty-val">1</div>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+          </div>
+          <div><div class="ci-price">₹649</div><div class="ci-old">₹849</div></div>
+        </div>
+        <div class="ci">
+          <div class="ci-img"><img src="img/product2.png" alt=""></div>
+          <div class="ci-info">
+            <div class="ci-name">DreamCalm Drops — 30 Day</div>
+            <div class="ci-variant">Chamomile · All Ages</div>
+            <div class="ci-qty-row">
+              <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
+              <div class="qty-val">1</div>
+              <button class="qty-btn" onclick="updateQty(this,1)">+</button>
+            </div>
+          </div>
+          <div><div class="ci-price">₹549</div><div class="ci-old">₹699</div></div>
+        </div>
+      </div>
+
+      <!-- Coupon -->
+      <div class="coupon-row" id="couponRow">
+        <div class="coupon-label">🏷️ Coupon / Promo Code</div>
+        <div class="coupon-input-row">
+          <input class="coupon-input" type="text" placeholder="Enter coupon code" id="couponInput">
+          <button class="coupon-apply-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div class="coupon-applied-msg" id="couponMsg"></div>
+      </div>
+
+      <!-- Price Breakdown -->
+      <div class="price-breakdown" id="priceBreakdown">
+        <div class="pb-row">
+          <span class="pb-label">MRP (3 items)</span>
+          <span class="pb-val" style="text-decoration:line-through;color:#bbb">₹2,347</span>
+        </div>
+        <div class="pb-row">
+          <span class="pb-label">Product Discount</span>
+          <span class="pb-val green">− ₹547</span>
+        </div>
+        <div class="pb-row">
+          <span class="pb-label">Delivery Charges</span>
+          <span class="pb-val green">FREE 🎉</span>
+        </div>
+        <div class="pb-row" id="couponRow2" style="display:none">
+          <span class="pb-label">Coupon (KIDS10)</span>
+          <span class="pb-val green" id="couponDiscount">− ₹180</span>
+        </div>
+        <div class="pb-divider"></div>
+        <div class="pb-total-row">
+          <div>
+            <div class="pb-total-label">Total Amount</div>
+            <div class="tax-note">Incl. all taxes</div>
+          </div>
+          <div>
+            <div class="pb-total-val" id="totalDisplay">₹1,800</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Savings Banner -->
+      <div class="savings-banner">
+        🎉 You're saving <strong id="savingsAmt">₹547</strong> on this order!
+      </div>
+
+      <!-- Loyalty Points -->
+      <div class="loyalty-box">
+        <div class="lb-icon">🪙</div>
+        <div>
+          <div class="lb-text">You'll earn on this order</div>
+          <div class="lb-pts" id="loyaltyPoints">90 NutriBuddy Coins</div>
+        </div>
+      </div>
+
+      <!-- Place Order (shown after payment section is active) -->
+      <div id="placeOrderWrap" style="display:none;margin-top:16px">
+        <button class="place-order-btn" onclick="openOtpModal()">
+          🔒 Place Order Securely — ₹1,800
+        </button>
+        <div class="trust-row">
+          <div class="tr-badge">🔒 SSL Secure</div>
+          <div class="tr-badge">✅ FSSAI Certified</div>
+          <div class="tr-badge">🔄 Easy Returns</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════
+     PHONE / OTP MODAL
+══════════════════════════════ -->
+<div class="modal-overlay" id="otpModal">
+  <div class="otp-modal">
+
+    <!-- Header -->
+    <div class="om-header">
+      <button class="om-close" onclick="closeOtpModal()">✕</button>
+      <div class="om-lock-icon">🔒</div>
+      <h2>Verify & Pay</h2>
+      <p>Confirm your mobile number to securely place your order</p>
+    </div>
+
+    <!-- Body -->
+    <div class="om-body">
+
+      <!-- STEP A: Phone Number -->
+      <div class="om-step active" id="stepPhone">
+        <div class="om-label">📱 Mobile Number</div>
+        <div class="phone-input-wrap">
+          <div class="phone-prefix">🇮🇳 +91</div>
+          <input
+            type="tel"
+            id="phoneInput"
+            maxlength="10"
+            placeholder="Enter 10-digit number"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+          >
+        </div>
+        <div id="phoneError" style="font-size:.78rem;color:var(--or);margin-top:8px;font-family:'Nunito',sans-serif;font-weight:700;display:none"></div>
+
+        <!-- Pre-filled hint -->
+        <div style="display:flex;align-items:center;gap:6px;margin-top:12px;padding:10px 14px;background:var(--pkl);border-radius:10px;cursor:pointer" onclick="useSavedPhone()">
+          <span style="font-size:1rem">👩</span>
+          <div style="flex:1">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;color:var(--pkd)">Use saved number</div>
+            <div style="font-size:.74rem;color:var(--pkd);opacity:.8">+91 98765 43210 (Priya Sharma)</div>
+          </div>
+          <span style="font-size:.75rem;color:var(--pkd);font-weight:700">Tap →</span>
+        </div>
+
+        <button class="send-otp-btn" id="sendOtpBtn" onclick="sendOtp()">
+          Send OTP →
+        </button>
+
+        <div style="text-align:center;margin-top:12px;font-size:.76rem;color:var(--text-light)">
+          OTP will be sent via SMS to your mobile number
+        </div>
+      </div>
+
+      <!-- STEP B: OTP Verification -->
+      <div class="om-step" id="stepOtp">
+        <div class="otp-sent-info">
+          <span style="font-size:1.1rem">✅</span>
+          <div>OTP sent to <strong id="sentToNum">+91 98765 43210</strong>. Valid for <strong>10 minutes</strong>.</div>
+        </div>
+
+        <div class="om-label" style="justify-content:center">Enter 4-digit OTP</div>
+
+        <div class="otp-boxes">
+          <input class="otp-box" type="tel" maxlength="1" id="otp1" oninput="otpInput(this,null,'otp2')" onkeydown="otpKeydown(event,this,null,'otp2')">
+          <input class="otp-box" type="tel" maxlength="1" id="otp2" oninput="otpInput(this,'otp1','otp3')" onkeydown="otpKeydown(event,this,'otp1','otp3')">
+          <input class="otp-box" type="tel" maxlength="1" id="otp3" oninput="otpInput(this,'otp2','otp4')" onkeydown="otpKeydown(event,this,'otp2','otp4')">
+          <input class="otp-box" type="tel" maxlength="1" id="otp4" oninput="otpInput(this,'otp3',null)" onkeydown="otpKeydown(event,this,'otp3',null)">
+        </div>
+
+        <div class="otp-error" id="otpError">❌ Incorrect OTP. Please try again.</div>
+
+        <div class="otp-timer" id="otpTimerText">
+          Resend OTP in <strong id="timerCount">30s</strong>
+        </div>
+
+        <button class="verify-otp-btn" id="verifyOtpBtn" onclick="verifyOtp()">
+          ✅ Verify & Place Order
+        </button>
+
+        <div class="change-phone-link">
+          Wrong number? <span onclick="backToPhone()">Change mobile number</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUCCESS OVERLAY ══ -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <span class="success-icon">🎉</span>
+    <h2>Order Placed!</h2>
+    <p>Yay! Your NutriBuddy order has been placed successfully. Your little superheroes will receive their gummies soon! 🦸</p>
+    <div class="order-id-box">Order ID: NB-2025-48291</div>
+    <p style="font-size:.82rem;color:var(--text-light);margin-bottom:20px">Estimated delivery: <strong>Tomorrow, by 5 PM</strong><br>Confirmation SMS sent to +91 98765 43210</p>
+    <div class="success-btns">
+      <a class="btn-track" href="#">Track Order 📦</a>
+      <a class="btn-home" href="index.html">Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- footer -->
+<!-- ══════════════════════════════════════════
+       NEWSLETTER
+  ══════════════════════════════════════════ -->
+  <div class="newsletter reveal">
+    <span class="sec-eye">Stay in the Loop</span>
+    <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
+    <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access every week.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="Enter your email address">
+      <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer class="kiddex-footer">
+
+    <!-- Animated background blobs -->
+    <div class="footer-anim">
+      <div class="fa-dot" style="width:300px;height:300px;background:var(--pk);top:-80px;left:-80px;--dur:8s;--del:0s"></div>
+      <div class="fa-dot" style="width:200px;height:200px;background:var(--pu);bottom:-50px;right:10%;--dur:6s;--del:2s"></div>
+      <div class="fa-dot" style="width:150px;height:150px;background:var(--ye);top:40%;left:40%;--dur:10s;--del:1s"></div>
+    </div>
+
+    <!-- Widget Grid -->
+    <div class="footer-widget-area">
+
+      <!-- Brand Column -->
+      <div class="fw-brand">
+        <a href="#" class="footer-logo-text">
+          <img src="img/logo.png" alt="NutriBuddy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+          <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--pk)">NutriBuddy</span>
+        </a>
+        <ul class="footer-contact-list">
+          <li>
+            <span class="fci"><img src="img/location.png" alt="" onerror="this.outerHTML='📍'"></span>
+            42, Wellness Tower, Bengaluru – 560001, Karnataka, India
+          </li>
+          <li>
+            <span class="fci"><img src="img/phone.png" alt="" onerror="this.outerHTML='📞'"></span>
+            <a href="tel:18001234567">1800-123-4567</a> (Toll-Free)
+          </li>
+          <li>
+            <span class="fci"><img src="img/email.png" alt="" onerror="this.outerHTML='✉️'"></span>
+            <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a>
+          </li>
+        </ul>
+        <div class="footer-socials">
+          <a href="#" title="Instagram"><img src="img/instagram.png" alt="Instagram" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>📷</span>'"></a>
+          <a href="#" title="Facebook"><img src="img/facebook.png" alt="Facebook" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>📘</span>'"></a>
+          <a href="#" title="WhatsApp"><img src="img/whatsapp.png" alt="WhatsApp" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>💬</span>'"></a>
+          <a href="#" title="Twitter"><img src="img/twitter.png" alt="Twitter" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>🐦</span>'"></a>
+        </div>
+      </div>
+
+      <!-- Products Column -->
+      <div class="fw-links">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#">GrowStrong Gummies</a></li>
+          <li><a href="#">BrainBoost Chews</a></li>
+          <li><a href="#">DreamCalm Drops</a></li>
+          <li><a href="#">Subscription Packs</a></li>
+          <li><a href="#">Shop All</a></li>
+        </ul>
+      </div>
+
+      <!-- Company Column -->
+      <div class="fw-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our Ingredients</a></li>
+          <li><a href="#">Blog &amp; Tips</a></li>
+          <li><a href="#">Pediatrician Network</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Support Column -->
+      <div class="fw-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Track My Order</a></li>
+          <li><a href="#">Returns &amp; Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter Column -->
+      <div class="fw-subscribe">
+        <h4>Stay Updated</h4>
+        <p>Join 25,000+ parents getting Ayurvedic parenting tips, exclusive offers &amp; early access every week.</p>
+        <div class="subscribe-wrap">
+          <input type="email" maxlength="50" placeholder="Enter your email" class="subs-input">
+          <button class="subs-btn">Subscribe</button>
+        </div>
+      </div>
+
+    </div><!-- /footer-widget-area -->
+
+    <!-- Payment Row -->
+    <div class="footer-payment-row">
+      <p style="color:#888;font-size:.78rem;font-family:'Nunito',sans-serif;font-weight:700">Secure Payments</p>
+      <div class="footer-payment-cards">
+        <div class="payment-card"><img src="img/visa.webp" alt="Visa" onerror="this.outerHTML='<span>VISA</span>'"></div>
+        <div class="payment-card"><img src="img/upi.png" alt="UPI" onerror="this.outerHTML='<span>UPI</span>'"></div>
+        <div class="payment-card"><img src="img/phonepe.webp" alt="PhonePe" onerror="this.outerHTML='<span>PhonePe</span>'"></div>
+        <div class="payment-card"><img src="img/Paytm-logo.webp" alt="Paytm" onerror="this.outerHTML='<span>Paytm</span>'"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom-bar">
+      <div class="copyright">© 2025 <a href="#">NutriBuddy Kids</a>. All rights reserved.</div>
+      <ul class="foot-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+      </ul>
+    </div>
+
+  </footer>
+
+    <!-- ══════════════════════════════════════════
+       SCRIPTS — load order matters
+  ══════════════════════════════════════════ -->
+  <script src="./script.js" defer></script>
+<script>
+  /* ══ STEP NAVIGATION ══ */
+  function goToPayment() {
+    const addrCard  = document.getElementById('addressCard');
+    const payCard   = document.getElementById('paymentCard');
+    const addrBadge = document.getElementById('addrBadge');
+    const step2 = document.getElementById('step-addr');
+    const step3 = document.getElementById('step-pay');
+
+    addrCard.classList.remove('active-card');
+    addrBadge.textContent = '✓';
+    addrBadge.classList.add('done-badge');
+    step2.classList.remove('active'); step2.classList.add('done');
+    step2.querySelector('.ts-num').textContent = '✓';
+
+    payCard.style.opacity = '1'; payCard.style.pointerEvents = 'all';
+    payCard.classList.add('active-card');
+    step3.classList.add('active');
+
+    document.getElementById('progressFill').style.width = '66%';
+    document.getElementById('placeOrderWrap').style.display = 'block';
+
+    payCard.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function editSection(sec) {
+    if(sec === 'login') alert('Redirecting to login page…');
+  }
+
+  /* ══ ADDRESS ══ */
+  function setAddrTab(el) {
+    document.querySelectorAll('.addr-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const isSaved = el.textContent.includes('Saved');
+    document.getElementById('savedAddrPanel').style.display = isSaved ? 'flex' : 'none';
+    document.getElementById('newAddrPanel').style.display   = isSaved ? 'none' : 'block';
+  }
+
+  function selectAddr(el) {
+    document.querySelectorAll('.addr-item').forEach(a => a.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleAddrType(el) {
+    document.querySelectorAll('.addr-type-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function autoFillCity() {
+    const pin = document.getElementById('newPincode').value;
+    if(pin.length === 6) {
+      const cities = {'560102':'Bengaluru','400001':'Mumbai','110001':'Delhi','600001':'Chennai','500001':'Hyderabad'};
+      document.getElementById('cityField').value = cities[pin] || 'Auto-detected';
+    }
+  }
+
+  /* ══ PAYMENT ══ */
+  let couponApplied = false;
+  let currentTotal  = 1800;
+
+  function selectPayMethod(el, type) {
+    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+    el.classList.add('selected');
+    const codFee = type === 'cod' ? 49 : 0;
+    const total  = currentTotal + codFee;
+    document.querySelector('.continue-btn').innerHTML = `🔒 Place Order — ₹${total.toLocaleString('en-IN')}`;
+    document.querySelector('.place-order-btn').innerHTML = `🔒 Place Order Securely — ₹${total.toLocaleString('en-IN')}`;
+  }
+
+  function selectUpiApp(e, el) {
+    e.stopPropagation();
+    document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function verifyUPI() {
+    const id  = document.getElementById('upiId').value.trim();
+    const msg = document.getElementById('upiMsg');
+    msg.style.display = 'block';
+    if(id.includes('@')) {
+      msg.textContent = '✅ UPI ID verified successfully!';
+      msg.style.color = 'var(--mn)';
+    } else {
+      msg.textContent = '❌ Invalid UPI ID. Format: name@bank';
+      msg.style.color = 'var(--or)';
+    }
+  }
+
+  function selectEmi(e, el) {
+    e.stopPropagation();
+    document.querySelectorAll('.emi-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function selectWallet(e, el) {
+    e.stopPropagation();
+    document.querySelectorAll('.wallet-item').forEach(w => w.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  /* ══ COUPON ══ */
+  function applyCoupon() {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const msg  = document.getElementById('couponMsg');
+    const row2 = document.getElementById('couponRow2');
+    const totalEl   = document.getElementById('totalDisplay');
+    const savingsEl = document.getElementById('savingsAmt');
+    const loyaltyEl = document.getElementById('loyaltyPoints');
+    const couponRowEl = document.getElementById('couponRow');
+    const valid = { 'KIDS10':'₹180', 'FIRST50':'₹300', 'NUTRIBUDDY':'₹150', 'SAVE20':'₹360' };
+
+    if(valid[code]) {
+      couponApplied = true;
+      const discAmt = parseInt(valid[code].replace('₹',''));
+      currentTotal  = 1800 - discAmt;
+      msg.textContent = `✅ Coupon "${code}" applied! You save ${valid[code]}`;
+      msg.style.color = '#00a870'; msg.classList.add('show');
+      row2.style.display = 'flex';
+      document.getElementById('couponDiscount').textContent = `− ${valid[code]}`;
+      totalEl.textContent = `₹${currentTotal.toLocaleString('en-IN')}`;
+      savingsEl.textContent = `₹${(547+discAmt).toLocaleString('en-IN')}`;
+      loyaltyEl.textContent = `${Math.round(currentTotal/20)} NutriBuddy Coins`;
+      couponRowEl.classList.add('applied');
+      document.querySelector('.continue-btn').innerHTML = `🔒 Place Order — ₹${currentTotal.toLocaleString('en-IN')}`;
+      document.querySelector('.place-order-btn').innerHTML = `🔒 Place Order Securely — ₹${currentTotal.toLocaleString('en-IN')}`;
+      document.getElementById('couponInput').disabled = true;
+    } else if(code === '') {
+      msg.textContent = '⚠️ Please enter a coupon code.';
+      msg.style.color = 'var(--or)'; msg.classList.add('show');
+    } else {
+      msg.textContent = `❌ "${code}" is not a valid coupon.`;
+      msg.style.color = 'var(--or)'; msg.classList.add('show');
+    }
+  }
+
+  /* ══ QTY ══ */
+  function updateQty(btn, delta) {
+    const valEl = btn.parentElement.querySelector('.qty-val');
+    let v = parseInt(valEl.textContent) + delta;
+    if(v < 1) v = 1;
+    if(v > 10) v = 10;
+    valEl.textContent = v;
+  }
+
+  /* ══ FORMAT CARD ══ */
+  function formatCard(input) {
+    let v = input.value.replace(/\D/g,'').substring(0,16);
+    input.value = v.replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  document.getElementById('couponInput').addEventListener('keydown', e => {
+    if(e.key === 'Enter') applyCoupon();
+  });
+
+  /* ════════════════════════════════════════
+     OTP MODAL LOGIC
+  ════════════════════════════════════════ */
+  let otpTimer = null;
+  let generatedOtp = '';
+
+  function openOtpModal() {
+    // Reset to phone step
+    showStep('stepPhone');
+    document.getElementById('phoneInput').value = '';
+    document.getElementById('phoneError').style.display = 'none';
+    clearOtpBoxes();
+    document.getElementById('otpError').classList.remove('show');
+    document.getElementById('otpModal').classList.add('show');
+    setTimeout(() => document.getElementById('phoneInput').focus(), 300);
+  }
+
+  function closeOtpModal() {
+    document.getElementById('otpModal').classList.remove('show');
+    clearInterval(otpTimer);
+  }
+
+  function showStep(id) {
+    document.querySelectorAll('.om-step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function useSavedPhone() {
+    document.getElementById('phoneInput').value = '9876543210';
+    document.getElementById('phoneError').style.display = 'none';
+  }
+
+  function sendOtp() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    const errEl = document.getElementById('phoneError');
+
+    if(phone.length !== 10) {
+      errEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.';
+      errEl.style.display = 'block';
+      document.getElementById('phoneInput').focus();
+      return;
+    }
+
+    errEl.style.display = 'none';
+
+    // Generate a demo OTP (always 1234 for demo)
+    generatedOtp = '1234';
+
+    // Show the OTP step
+    document.getElementById('sentToNum').textContent = '+91 ' + phone;
+    showStep('stepOtp');
+    clearOtpBoxes();
+    document.getElementById('otpError').classList.remove('show');
+    startResendTimer();
+    setTimeout(() => document.getElementById('otp1').focus(), 200);
+  }
+
+  function backToPhone() {
+    clearInterval(otpTimer);
+    showStep('stepPhone');
+    setTimeout(() => document.getElementById('phoneInput').focus(), 200);
+  }
+
+  /* OTP box helpers */
+  function clearOtpBoxes() {
+    ['otp1','otp2','otp3','otp4'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+      el.classList.remove('filled');
+    });
+  }
+
+  function otpInput(el, prevId, nextId) {
+    el.value = el.value.replace(/\D/g,'');
+    if(el.value) {
+      el.classList.add('filled');
+      if(nextId) document.getElementById(nextId).focus();
+    } else {
+      el.classList.remove('filled');
+    }
+    // Auto-verify when all 4 filled
+    const all = ['otp1','otp2','otp3','otp4'].map(id => document.getElementById(id).value);
+    if(all.every(v => v !== '')) {
+      document.getElementById('otpError').classList.remove('show');
+    }
+  }
+
+  function otpKeydown(e, el, prevId, nextId) {
+    if(e.key === 'Backspace' && !el.value && prevId) {
+      document.getElementById(prevId).focus();
+    }
+    if(e.key === 'Enter') verifyOtp();
+  }
+
+  function verifyOtp() {
+    const entered = ['otp1','otp2','otp3','otp4']
+      .map(id => document.getElementById(id).value)
+      .join('');
+
+    if(entered.length < 4) {
+      document.getElementById('otpError').textContent = '⚠️ Please enter all 4 digits.';
+      document.getElementById('otpError').classList.add('show');
+      return;
+    }
+
+    const btn = document.getElementById('verifyOtpBtn');
+
+    if(entered === generatedOtp) {
+      // Correct OTP!
+      document.getElementById('otpError').classList.remove('show');
+      btn.textContent = '⏳ Verifying…';
+      btn.disabled = true;
+      btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
+      clearInterval(otpTimer);
+
+      setTimeout(() => {
+        closeOtpModal();
+        placeOrder();
+      }, 900);
+    } else {
+      document.getElementById('otpError').textContent = '❌ Incorrect OTP. Hint: use 1234';
+      document.getElementById('otpError').classList.add('show');
+      // Shake the boxes
+      ['otp1','otp2','otp3','otp4'].forEach(id => {
+        const el = document.getElementById(id);
+        el.style.borderColor = 'var(--or)';
+        el.style.background  = 'var(--orl)';
+        setTimeout(() => {
+          el.style.borderColor = '';
+          el.style.background  = '';
+          el.classList.remove('filled');
+          el.value = '';
+        }, 600);
+      });
+      setTimeout(() => document.getElementById('otp1').focus(), 650);
+    }
+  }
+
+  /* Resend timer */
+  function startResendTimer() {
+    let secs = 30;
+    const timerEl = document.getElementById('timerCount');
+    const timerText = document.getElementById('otpTimerText');
+    timerEl.textContent = secs + 's';
+    timerText.innerHTML = `Resend OTP in <strong id="timerCount">${secs}s</strong>`;
+
+    clearInterval(otpTimer);
+    otpTimer = setInterval(() => {
+      secs--;
+      document.getElementById('timerCount').textContent = secs + 's';
+      if(secs <= 0) {
+        clearInterval(otpTimer);
+        document.getElementById('otpTimerText').innerHTML =
+          `<span class="resend-link" onclick="resendOtp()">Resend OTP</span>`;
+      }
+    }, 1000);
+  }
+
+  function resendOtp() {
+    generatedOtp = '1234';
+    clearOtpBoxes();
+    document.getElementById('otpError').classList.remove('show');
+    startResendTimer();
+    const otp1 = document.getElementById('otp1');
+    otp1.focus();
+    // Brief visual feedback
+    const sentInfo = document.querySelector('.otp-sent-info');
+    sentInfo.style.background = 'rgba(0,214,143,.25)';
+    setTimeout(() => sentInfo.style.background = '', 800);
+  }
+
+  /* ══ PLACE ORDER (called after OTP success) ══ */
+  function placeOrder() {
+    document.getElementById('progressFill').style.width = '100%';
+    setTimeout(() => {
+      document.getElementById('successOverlay').classList.add('show');
+    }, 400);
+  }
+
+  /* Close modal on backdrop click */
+  document.getElementById('otpModal').addEventListener('click', function(e) {
+    if(e.target === this) closeOtpModal();
+  });
+
+  document.getElementById('successOverlay').addEventListener('click', function(e) {
+    if(e.target === this) this.classList.remove('show');
+  });
+</script>
+</body>
+</html>

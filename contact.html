@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us – NutriBuddy</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    /* Contact Page Specific Styles */
+    .contact-hero {
+      padding: 180px 5% 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--lbg);
+    }
+    
+    .contact-hero .blob {
+      position: absolute;
+      z-index: 0;
+      opacity: 0.6;
+      filter: blur(100px);
+    }
+    .contact-hero .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--pk);
+      top: -100px;
+      left: -100px;
+    }
+    .contact-hero .blob-2 {
+      width: 300px;
+      height: 300px;
+      background: #0000ff;
+      bottom: -100px;
+      right: -100px;
+    }
+
+    .contact-content-wrapper {
+      position: relative;
+      z-index: 2;
+    }
+
+    .contact-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      color: var(--dk);
+      margin-bottom: 20px;
+      line-height: 1.1;
+    }
+    
+    .contact-subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: #555;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 40px;
+      max-width: 1200px;
+      margin: -40px auto 80px;
+      padding: 0 5%;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 800px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+      }
+    }
+
+    /* Contact Info Cards */
+    .contact-info-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-card {
+      background: white;
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      border: 2px solid transparent;
+      transition: 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    
+    .info-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .info-card.card-email:hover { border-color: var(--pk); box-shadow: 0 10px 40px rgba(255,107,138,0.15); }
+    .info-card.card-phone:hover { border-color: var(--ye); box-shadow: 0 10px 40px rgba(255,214,0,0.15); }
+    .info-card.card-location:hover { border-color: var(--sk); box-shadow: 0 10px 40px rgba(0,191,255,0.15); }
+
+    .info-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .card-email .info-icon { background: rgba(255,107,138,0.1); color: var(--pk); }
+    .card-phone .info-icon { background: rgba(255,214,0,0.15); }
+    .card-location .info-icon { background: rgba(0,191,255,0.1); color: var(--sk); }
+
+    .info-details h3 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.3rem;
+      color: var(--dk);
+      margin-bottom: 8px;
+    }
+    
+    .info-details p, .info-details a {
+      color: #666;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .info-details a:hover {
+      color: var(--pk);
+    }
+
+    /* Contact Form */
+    .contact-form-col {
+      background: white;
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    .contact-form-col h3 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.8rem;
+      color: var(--dk);
+      margin-bottom: 10px;
+    }
+
+    .contact-form-col p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-label {
+      display: block;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      color: var(--dk);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 2px solid #eee;
+      background: #fafafa;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      color: var(--dk);
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--pk);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(255,107,138,0.1);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--pk), #6360e2);
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 50px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 20px rgba(255,107,138,0.3);
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(255,107,138,0.4);
+      background: #ff4d64; /* Slightly darker pink */
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cur"></div>
+  <div id="cur-ringcur-ring"></div>
+
+  <!-- NAVBAR -->
+  <nav id="mainNav">
+    <a href="nutribuddy.html" class="logo-new">
+      <img src="img/logo.png" alt="NutriBuddy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+      <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--pk)">
+        NutriBuddy<sup style="font-size:.55rem;background:var(--ye);color:var(--dk);padding:2px 7px;border-radius:20px;margin-left:4px;font-family:'Nunito',sans-serif;font-weight:900">KIDS</sup>
+      </span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="nutribuddy.html">Home</a></li>
+      <li><a href="#">About Us</a></li>
+      <li><a href="nutribuddy.html#products">Products</a></li>
+      <li><a href="nutribuddy.html#diet-chart">Personalized Diet Chart</a></li>
+      <li><a href="nutribuddy.html#reviews">Testimonials</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="cartIconBtn" title="View Cart">
+        <img src="img/shopping-cart.png" alt="Cart"
+             onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>🛒</span>')">
+        <span class="cart-count" id="cartCount">3</span>
+      </button>
+
+      <a href="contact.html" class="nav-cta">Contact Us</a>
+
+      <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
+        <img src="img/menu.png" alt="Menu"
+             onerror="this.style.display='none';this.parentElement.innerHTML='<span></span><span></span><span></span>'">
+      </button>
+    </div>
+  </nav>
+
+  <!-- Menu Overlay -->
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul>
+      <li><a href="nutribuddy.html"><span class="link-emoji"></span> Home</a></li>
+      <li><a href="#"><span class="link-emoji"></span> About Us</a></li>
+      <li><a href="nutribuddy.html#products"><span class="link-emoji"></span> Products</a></li>
+      <li><a href="nutribuddy.html#diet-chart"><span class="link-emoji"></span> Personalized Diet Chart</a></li>
+      <li><a href="nutribuddy.html#reviews"><span class="link-emoji"></span> Testimonials</a></li>
+    </ul>
+    <div class="mobile-cta-wrap">
+      <a href="contact.html">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- CART POPUP SIDEBAR -->
+  <div id="cart-popup">
+    <!-- Keep the cart as is from main page to avoid breaking functionality -->
+    <div class="popup-inner">
+      <button class="close-cart" id="closeCart">✕</button>
+      <div class="cart-inner">
+        <h4 class="title-text"><span>3</span> Cart Items</h4>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>GrowStrong Gummies — 30 Day Supply</h5>
+            <h4>₹599 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>BrainBoost Chews — 30 Day Supply</h5>
+            <h4>₹649 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="single-cart-box">
+          <div class="image-box"><img src="" alt=""></div>
+          <div>
+            <h5>DreamCalm Drops — 30 Day Supply</h5>
+            <h4>₹549 <span style="font-size:.75rem;color:#aaa;font-family:'DM Sans',sans-serif">× 1</span></h4>
+          </div>
+          <button>✕</button>
+        </div>
+
+        <div class="text-box">
+          <h5>Subtotal</h5>
+          <span>₹1,797</span>
+        </div>
+
+        <div class="btn-box">
+          <a href="#">View Cart</a>
+          <a href="#">Checkout →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT HERO -->
+  <section class="contact-hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="contact-content-wrapper">
+      <div class="slide-badge badge-pk" style="margin: 0 auto 20px; display: inline-block;">👋 Hello There</div>
+      <h1 class="contact-title">Let's Get In <span class="acc" style="color:var(--pk);">Touch</span></h1>
+      <p class="contact-subtitle">Have a question about our gummies, need help with your child's personalized plan, or just want to say hi? We'd love to hear from you!</p>
+    </div>
+  </section>
+
+  <!-- CONTACT GRID -->
+  <div class="contact-grid">
+    
+    <!-- Info Cards -->
+    <div class="contact-info-col">
+      <div class="info-card card-email">
+        <div class="info-icon">💌</div>
+        <div class="info-details">
+          <h3>Email Us</h3>
+          <p>We're here to help.</p>
+          <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a>
+        </div>
+      </div>
+      
+      <div class="info-card card-phone">
+        <div class="info-icon">📞</div>
+        <div class="info-details">
+          <h3>Call Us</h3>
+          <p>Mon - Fri, 9am - 6pm (IST)</p>
+          <a href="tel:18001234567">1800-123-4567</a>
+        </div>
+      </div>
+      
+      <div class="info-card card-location">
+        <div class="info-icon">🗺️</div>
+        <div class="info-details">
+          <h3>Visit Us</h3>
+          <p>42, Wellness Tower, Bengaluru – 560001, Karnataka, India</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-col">
+      <h3>Send us a Message 🚀</h3>
+      <p>Fill out the form below and our wellness team will get back to you within 24 hours.</p>
+      
+      <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Thank you for contacting us! We will get back to you soon.');">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First Name</label>
+            <input type="text" id="firstName" class="form-control" placeholder="e.g. Priya" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last Name</label>
+            <input type="text" id="lastName" class="form-control" placeholder="e.g. Sharma">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" placeholder="+91 98765 43210">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="subject">Subject</label>
+          <select id="subject" class="form-control" required>
+            <option value="" disabled selected>Select a topic...</option>
+            <option value="order">Where is my order?</option>
+            <option value="product">Question about a product</option>
+            <option value="diet">Help with Diet Chart</option>
+            <option value="wholesale">Wholesale / Partnership</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="message">Your Message</label>
+          <textarea id="message" class="form-control" placeholder="How can we help you and your little one today?" required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Send Message ✨</button>
+      </form>
+    </div>
+
+  </div> <!-- /contact-grid -->
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter reveal">
+    <span class="sec-eye">Stay in the Loop</span>
+    <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
+    <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access every week.</p>
+    <div class="nl-form">
+      <input class="nl-input" type="email" placeholder="Enter your email address">
+      <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="kiddex-footer">
+    <div class="footer-anim">
+      <div class="fa-dot" style="width:300px;height:300px;background:var(--pk);top:-80px;left:-80px;--dur:8s;--del:0s"></div>
+      <div class="fa-dot" style="width:200px;height:200px;background:var(--pu);bottom:-50px;right:10%;--dur:6s;--del:2s"></div>
+      <div class="fa-dot" style="width:150px;height:150px;background:var(--ye);top:40%;left:40%;--dur:10s;--del:1s"></div>
+    </div>
+    <div class="footer-widget-area">
+      <div class="fw-brand">
+        <a href="nutribuddy.html" class="footer-logo-text">
+          <img src="img/logo.png" alt="NutriBuddy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+          <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--pk)">NutriBuddy</span>
+        </a>
+        <ul class="footer-contact-list">
+          <li>
+            <span class="fci"><img src="img/location.png" alt="" onerror="this.outerHTML='📍'"></span>
+            42, Wellness Tower, Bengaluru – 560001, Karnataka, India
+          </li>
+          <li>
+            <span class="fci"><img src="img/phone.png" alt="" onerror="this.outerHTML='📞'"></span>
+            <a href="tel:18001234567">1800-123-4567</a> (Toll-Free)
+          </li>
+          <li>
+            <span class="fci"><img src="img/email.png" alt="" onerror="this.outerHTML='✉️'"></span>
+            <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a>
+          </li>
+        </ul>
+        <div class="footer-socials">
+          <a href="#" title="Instagram"><img src="img/instagram.png" alt="Instagram" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>📷</span>'"></a>
+          <a href="#" title="Facebook"><img src="img/facebook.png" alt="Facebook" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>📘</span>'"></a>
+          <a href="#" title="WhatsApp"><img src="img/whatsapp.png" alt="WhatsApp" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>💬</span>'"></a>
+          <a href="#" title="Twitter"><img src="img/twitter.png" alt="Twitter" onerror="this.outerHTML='<span style=\'font-size:1.5rem\'>🐦</span>'"></a>
+        </div>
+      </div>
+
+      <div class="fw-links">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="#">GrowStrong Gummies</a></li>
+          <li><a href="#">BrainBoost Chews</a></li>
+          <li><a href="#">DreamCalm Drops</a></li>
+          <li><a href="#">Subscription Packs</a></li>
+          <li><a href="#">Shop All</a></li>
+        </ul>
+      </div>
+
+      <div class="fw-links">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our Ingredients</a></li>
+          <li><a href="#">Blog &amp; Tips</a></li>
+          <li><a href="#">Pediatrician Network</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="fw-links">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Track My Order</a></li>
+          <li><a href="#">Returns &amp; Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <div class="fw-subscribe">
+        <h4>Stay Updated</h4>
+        <p>Join 25,000+ parents getting Ayurvedic parenting tips, exclusive offers &amp; early access every week.</p>
+        <div class="subscribe-wrap">
+          <input type="email" maxlength="50" placeholder="Enter your email" class="subs-input">
+          <button class="subs-btn">Subscribe</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-payment-row">
+      <p style="color:#888;font-size:.78rem;font-family:'Nunito',sans-serif;font-weight:700">Secure Payments</p>
+      <div class="footer-payment-cards">
+        <div class="payment-card"><img src="img/visa.webp" alt="Visa" onerror="this.outerHTML='<span>VISA</span>'"></div>
+        <div class="payment-card"><img src="img/upi.png" alt="UPI" onerror="this.outerHTML='<span>UPI</span>'"></div>
+        <div class="payment-card"><img src="img/phonepe.webp" alt="PhonePe" onerror="this.outerHTML='<span>PhonePe</span>'"></div>
+        <div class="payment-card"><img src="img/Paytm-logo.webp" alt="Paytm" onerror="this.outerHTML='<span>Paytm</span>'"></div>
+      </div>
+    </div>
+    <div class="footer-bottom-bar">
+      <div class="copyright">© 2025 <a href="#">NutriBuddy Kids</a>. All rights reserved.</div>
+      <ul class="foot-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>
