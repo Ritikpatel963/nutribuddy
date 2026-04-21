@@ -24,8 +24,12 @@ use App\Http\Controllers\Admin\NewsletterSubscriberController as AdminNewsletter
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ProductVariantController as AdminProductVariantController;
+use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
+use App\Http\Controllers\Admin\IngredientCategoryController as AdminIngredientCategoryController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TaxRateController as AdminTaxRateController;
+use App\Models\Ingredient;
+use App\Models\IngredientCategory;
 
 
 Route::middleware('auth')->controller(DashboardController::class)->group(function () {
@@ -211,7 +215,9 @@ Route::prefix('cryptocurrency')->group(function () {
 
 Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth')->group(function () {
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('products', AdminProductController::class);
+    Route::resource('ingredients', AdminIngredientController::class);
     Route::patch('products/{product}/inventory', [AdminProductController::class, 'updateInventory'])->name('products.inventory.update');
     Route::resource('variants', AdminProductVariantController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::patch('variants/{variant}/inventory', [AdminProductVariantController::class, 'updateInventory'])->name('variants.inventory.update');
@@ -254,7 +260,109 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth')->
 // Frontend Routes
 Route::view('/', 'pages.index')->name('home');
 Route::view('/about', 'pages.about-us')->name('about');
-Route::view('/product', 'pages.product')->name('product');
+Route::get('/product', function () {
+    $resolveIngredientMeta = function (?IngredientCategory $category): array {
+        $normalized = strtolower(trim(($category?->slug ?? '') . ' ' . ($category?->name ?? '')));
+        $filterKey = match (true) {
+            str_contains($normalized, 'ayur') => 'ay',
+            str_contains($normalized, 'vit') => 'vi',
+            str_contains($normalized, 'min') => 'mi',
+            str_contains($normalized, 'extract') => 'ex',
+            str_contains($normalized, 'base') => 'ba',
+            default => substr(preg_replace('/[^a-z]/', '', strtolower($category?->slug ?: $category?->name ?: 'other')), 0, 2) ?: 'ot',
+        };
+
+        $meta = match ($filterKey) {
+            'ay' => ['dot_color' => '#00D68F', 'badge_bg' => 'rgba(0,214,143,.12)', 'emoji_bg' => 'rgba(0,214,143,.1)'],
+            'vi' => ['dot_color' => '#00BFFF', 'badge_bg' => 'rgba(0,191,255,.12)', 'emoji_bg' => 'rgba(0,191,255,.1)'],
+            'mi' => ['dot_color' => '#FFD600', 'badge_bg' => 'rgba(255,214,0,.12)', 'emoji_bg' => 'rgba(255,214,0,.1)'],
+            'ex' => ['dot_color' => '#FF6B35', 'badge_bg' => 'rgba(255,107,53,.12)', 'emoji_bg' => 'rgba(255,107,53,.1)'],
+            'ba' => ['dot_color' => 'rgba(255,255,255,.4)', 'badge_bg' => 'rgba(255,255,255,.06)', 'emoji_bg' => 'rgba(255,255,255,.05)'],
+            default => ['dot_color' => '#7C3AED', 'badge_bg' => 'rgba(124,58,237,.12)', 'emoji_bg' => 'rgba(124,58,237,.1)'],
+        };
+
+        return [
+            'key' => $filterKey,
+            'name' => $category?->name ?: 'Other',
+            'dot_color' => $meta['dot_color'],
+            'badge_bg' => $meta['badge_bg'],
+            'emoji_bg' => $meta['emoji_bg'],
+        ];
+    };
+
+    $categories = IngredientCategory::where('is_active', true)
+        ->withCount(['ingredients as ingredients_count' => fn ($query) => $query->where('is_active', true)])
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get();
+
+    $ingredientCategories = $categories
+        ->map(function (IngredientCategory $category) use ($resolveIngredientMeta) {
+            $meta = $resolveIngredientMeta($category);
+
+            return [
+                'key' => $meta['key'],
+                'name' => $meta['name'],
+                'count' => (int) $category->ingredients_count,
+                'dot_color' => $meta['dot_color'],
+            ];
+        })
+        ->values();
+
+    $ingredients = Ingredient::with(['category', 'benefits'])
+        ->where('is_active', true)
+        ->orderBy('sort_order')
+        ->orderBy('id')
+        ->get()
+        ->map(function (Ingredient $ingredient) use ($resolveIngredientMeta) {
+            $meta = $resolveIngredientMeta($ingredient->category);
+            $name = trim((string) ($ingredient->main_heading ?: $ingredient->short_heading ?: 'Ingredient'));
+            $shortName = trim((string) ($ingredient->short_heading ?: $ingredient->main_heading ?: $name));
+            $benefits = $ingredient->benefits
+                ->pluck('heading')
+                ->filter(fn ($heading) => filled($heading))
+                ->values()
+                ->all();
+
+            return [
+                'id' => 'ingredient-' . $ingredient->id,
+                'name' => $name,
+                'shortName' => $shortName,
+                'emoji' => '',
+                'cat' => $meta['key'],
+                'catLabel' => $meta['name'],
+                'latin' => $shortName,
+                'desc' => (string) ($ingredient->description ?: ''),
+                'benefits' => $benefits,
+                'dosage' => trim(collect([$ingredient->dosage_heading_one, $ingredient->dosage_heading_two])->filter()->implode(' • ')) ?: 'Details available in ingredient panel',
+                'badgeColor' => $meta['dot_color'],
+                'badgeBg' => $meta['badge_bg'],
+                'emojiBg' => $meta['emoji_bg'],
+                'image' => $ingredient->icon_path ? asset('storage/' . $ingredient->icon_path) : null,
+            ];
+        })
+        ->values();
+
+    $ayurvedicCount = (int) data_get($ingredientCategories->firstWhere('key', 'ay'), 'count', 0);
+    $vitaminCount = (int) data_get($ingredientCategories->firstWhere('key', 'vi'), 'count', 0);
+    $mineralCount = (int) data_get($ingredientCategories->firstWhere('key', 'mi'), 'count', 0);
+
+    $summaryStats = [
+        ['value' => $ingredients->count(), 'label' => 'Total Ingredients', 'color' => '#FF4D8F'],
+        ['value' => $ayurvedicCount, 'label' => 'Ayurvedic Herbs', 'color' => '#00D68F'],
+        ['value' => $vitaminCount, 'label' => 'Vitamins', 'color' => '#00BFFF'],
+        ['value' => $mineralCount, 'label' => 'Minerals', 'color' => '#FFD600'],
+        ['value' => 0, 'label' => 'Artificial Colors', 'color' => '#FF6B35'],
+        ['value' => 0, 'label' => 'Gelatin / Animal', 'color' => '#7C3AED'],
+    ];
+
+    return view('pages.product', [
+        'ingredientCategoryFilters' => $ingredientCategories,
+        'ingredientTotalCount' => $ingredients->count(),
+        'ingredientItems' => $ingredients,
+        'ingredientSummaryStats' => $summaryStats,
+    ]);
+})->name('product');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/checkout', 'pages.checkout')->name('checkout');

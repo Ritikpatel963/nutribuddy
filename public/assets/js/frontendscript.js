@@ -1027,7 +1027,7 @@ window.buyNow = buyNow;
 
 (function () {
   // ── Ingredient Data ──
-  const ingredients = [
+  const fallbackIngredients = [
     // Ayurvedic (ay)
     { id:'ashwagandha', name:'Ashwagandha (KSM-66®)', emoji:'', cat:'ay', catLabel:'Ayurvedic', latin:'Withania somnifera',
       desc:'The king of Ayurvedic adaptogens. KSM-66® is the most clinically studied Ashwagandha extract — proven to reduce cortisol, support growth, enhance immunity, and improve sleep quality in children.',
@@ -1139,6 +1139,45 @@ window.buyNow = buyNow;
       dosage:'Coating agent', badgeColor:'rgba(255,255,255,.4)', badgeBg:'rgba(255,255,255,.06)', emojiBg:'rgba(255,255,255,.05)' }
   ];
 
+  function readIngredientPayload() {
+    const payloadEl = document.getElementById('nbIngredientsData');
+    if (!payloadEl) return null;
+
+    try {
+      const parsed = JSON.parse(payloadEl.textContent || '[]');
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (error) {
+      console.warn('Unable to parse ingredient payload.', error);
+      return null;
+    }
+  }
+
+  function normalizeIngredient(item, index) {
+    const safeBenefits = Array.isArray(item && item.benefits)
+      ? item.benefits.filter(Boolean)
+      : [];
+
+    return {
+      id: item && item.id ? item.id : `ingredient-${index}`,
+      name: item && item.name ? item.name : (item && item.shortName ? item.shortName : 'Ingredient'),
+      shortName: item && item.shortName ? item.shortName : (item && item.name ? item.name : 'Ingredient'),
+      emoji: item && item.emoji ? item.emoji : '',
+      cat: item && item.cat ? item.cat : 'ot',
+      catLabel: item && item.catLabel ? item.catLabel : 'Other',
+      latin: item && item.latin ? item.latin : (item && item.shortName ? item.shortName : ''),
+      desc: item && item.desc ? item.desc : '',
+      benefits: safeBenefits,
+      dosage: item && item.dosage ? item.dosage : 'Details available in ingredient panel',
+      badgeColor: item && item.badgeColor ? item.badgeColor : '#7C3AED',
+      badgeBg: item && item.badgeBg ? item.badgeBg : 'rgba(124,58,237,.12)',
+      emojiBg: item && item.emojiBg ? item.emojiBg : 'rgba(124,58,237,.1)',
+      image: item && item.image ? item.image : ''
+    };
+  }
+
+  const liveIngredients = readIngredientPayload();
+  const ingredients = (liveIngredients && liveIngredients.length ? liveIngredients : fallbackIngredients).map(normalizeIngredient);
+
   const listEl    = document.getElementById('nbList');
   const detailEl  = document.getElementById('nbDetailCards');
   const emptyEl   = document.getElementById('nbDetailEmpty');
@@ -1174,12 +1213,16 @@ window.buyNow = buyNow;
   function renderDetailCards() {
     detailEl.innerHTML = ingredients.map(i => `
       <div class="nb-detail-card" data-detail="${i.id}">
-        <div class="nb-detail-header">
-          <div class="nb-detail-emoji" style="background:${i.emojiBg}">${i.emoji}</div>
-          <div>
+        <div class="nb-detail-header" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div style="width:72px;height:72px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <img src="${i.image || 'img/logo.png'}" alt="${i.name}" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="flex:1;min-width:220px;">
             <div class="nb-detail-name">${i.name}</div>
-            <div class="nb-detail-latin">${i.latin}</div>
-            <div class="nb-detail-cat-badge" style="background:${i.badgeBg};color:${i.badgeColor}">${i.catLabel}</div>
+            <div class="nb-detail-latin">${i.latin || ''}</div>
+            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <div class="nb-detail-cat-badge" style="background:${i.badgeBg};color:${i.badgeColor}">${i.catLabel}</div>
+            </div>
           </div>
         </div>
         <div class="nb-detail-desc">${i.desc}</div>
