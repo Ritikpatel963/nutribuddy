@@ -1,6 +1,6 @@
 <nav id="mainNav">
     <a href="{{ route('home') }}" class="logo-new">
-        <img src="{{ asset('img/logo.png') }}" alt="NutriBuddy"
+        <img src="{{ \App\Models\Setting::get('side_section_logo') ? asset('storage/' . \App\Models\Setting::get('side_section_logo')) : asset('img/logo.png') }}" alt="NutriBuddy"
             onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
         <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--pk)">
             NutriBuddy<sup
