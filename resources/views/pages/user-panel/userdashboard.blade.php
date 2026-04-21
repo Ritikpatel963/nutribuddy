@@ -23,7 +23,7 @@
       <!-- WELCOME BANNER -->
       <div class="welcome-banner d1">
         <div class="welcome-text" style="position:relative;z-index:1">
-          <h2>Welcome back, <span>Jaydafsdf!</span> 👋</h2>
+          <h2>Welcome back, <span>{{ Auth::user()->name }}!</span> 👋</h2>
           <p>Here's a quick overview of your account activity.<br>You have <strong style="color:var(--ye)">2 pending
               orders</strong> awaiting delivery.</p>
         </div>

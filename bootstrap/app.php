@@ -11,10 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectTo(
-            guests: '/authentication/signin',
-            users: '/'
-        );
+        $middleware->redirectTo(function ($request) {
+            if ($request->is('admin') || $request->is('admin/*')) {
+                return route('signin');
+            }
+            return route('frontend.login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

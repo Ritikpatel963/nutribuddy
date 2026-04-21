@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'otp',
+        'otp_expires_at',
     ];
 
     /**
@@ -46,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'otp_expires_at' => 'datetime',
         ];
     }
 

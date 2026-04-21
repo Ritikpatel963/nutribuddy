@@ -3,9 +3,9 @@
 @endphp
 
 <div class="profile-block">
-    <div class="avatar">J<div class="online-dot"></div></div>
-    <div class="profile-name">Jaydafsdf</div>
-    <div class="profile-email">user@gmail.com</div>
+    <div class="avatar">{{ substr(Auth::user()->name, 0, 1) }}<div class="online-dot"></div></div>
+    <div class="profile-name">{{ Auth::user()->name }}</div>
+    <div class="profile-email">{{ Auth::user()->email }}</div>
 </div>
 <div style="overflow-y:auto;flex:1">
     <div class="nav-section">
@@ -118,12 +118,15 @@
     </div>
 </div>
 <div class="sidebar-footer">
-    <button class="logout-btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-        </svg>
-        Logout
-    </button>
+    <form action="{{ route('frontend.logout') }}" method="POST" id="sidebarLogoutForm">
+        @csrf
+        <button type="submit" class="logout-btn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+        </button>
+    </form>
 </div>

@@ -23,6 +23,39 @@
             <span class="cart-count" id="cartCount">3</span>
         </button>
 
+        <div class="profile-dropdown">
+            <button class="nav-icon-link profile-btn" title="Account">
+                <img src="{{ asset('img/user.png') }}" alt="Profile" style="width:24px;height:24px;border-radius:50%;"
+                    onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>👤</span>')">
+            </button>
+            <div class="dropdown-content">
+                @auth
+                    <div class="user-info-box">
+                        <span class="user-name">{{ Auth::user()->name }}</span>
+                        <span class="user-role">{{ ucfirst(Auth::user()->role) }}</span>
+                    </div>
+                    <hr>
+                    <a href="{{ route('userdashboard') }}">
+                        <iconify-icon icon="solar:widget-outline"></iconify-icon> Dashboard
+                    </a>
+                    <a href="{{ route('personal-info') }}">
+                        <iconify-icon icon="solar:user-outline"></iconify-icon> My Profile
+                    </a>
+                    <hr>
+                    <form action="{{ route('frontend.logout') }}" method="POST" id="logoutForm">
+                        @csrf
+                        <a href="#" onclick="document.getElementById('logoutForm').submit();" class="logout-link">
+                            <iconify-icon icon="solar:logout-outline"></iconify-icon> Logout
+                        </a>
+                    </form>
+                @else
+                    <a href="{{ route('frontend.login') }}" class="login-link">
+                        <iconify-icon icon="solar:login-outline"></iconify-icon> Login
+                    </a>
+                @endauth
+            </div>
+        </div>
+
         <a href="{{ route('contact') }}" class="nav-cta">Contact Us</a>
 
         <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
@@ -31,6 +64,130 @@
         </button>
     </div>
 </nav>
+
+<style>
+    /* Profile Dropdown Styles */
+    .profile-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .profile-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s;
+    }
+
+    .profile-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background-color: #fff;
+        min-width: 220px;
+        box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+        z-index: 1000;
+        border-radius: 16px;
+        padding: 12px 0;
+        margin-top: 12px; /* Visual gap */
+        border: 1px solid rgba(255, 107, 156, 0.1);
+        animation: fadeInDown 0.3s ease;
+    }
+
+    /* Invisible bridge to prevent losing hover when moving mouse across the gap */
+    .profile-dropdown::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 20px; /* Bridge height covers the 12px gap + overlap */
+        display: none;
+    }
+
+    .profile-dropdown:hover::after {
+        display: block;
+    }
+
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content a {
+        color: #444;
+        padding: 12px 20px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .dropdown-content a:hover {
+        background-color: rgba(255, 107, 156, 0.05);
+        color: var(--pk);
+        padding-left: 25px;
+    }
+
+    .dropdown-content hr {
+        border: 0;
+        border-top: 1px solid #f0f0f0;
+        margin: 8px 0;
+    }
+
+    .user-info-box {
+        padding: 10px 20px 15px;
+        display: flex;
+        flex-direction: column;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 8px;
+    }
+
+    .user-name {
+        font-weight: 800;
+        color: #333;
+        font-size: 1rem;
+        font-family: 'Fredoka One', cursive;
+        color: var(--pk);
+    }
+
+    .user-role {
+        font-size: 0.75rem;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 2px;
+    }
+
+    .logout-link {
+        color: #ff4757 !important;
+    }
+
+    .logout-link:hover {
+        background-color: #fff1f2 !important;
+    }
+
+    .login-link {
+        font-weight: 700 !important;
+        color: var(--pk) !important;
+    }
+</style>
 
 <div class="menu-overlay" id="menuOverlay"></div>
 

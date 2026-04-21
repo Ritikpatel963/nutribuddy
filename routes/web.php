@@ -1,20 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AiapplicationController;
-use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\ChartController;
-use App\Http\Controllers\ComponentpageController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FormsController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\TableController;
-use App\Http\Controllers\UsersController;
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\RoleandaccessController;
-use App\Http\Controllers\CryptocurrencyController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\AiapplicationController;
+use App\Http\Controllers\Frontend\ChartController;
+use App\Http\Controllers\Frontend\ComponentpageController;
+use App\Http\Controllers\Frontend\FormsController;
+use App\Http\Controllers\Frontend\TableController;
+use App\Http\Controllers\Frontend\BlogController;
+use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Admin\AuthenticationController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\RoleandaccessController;
+use App\Http\Controllers\Admin\CryptocurrencyController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ContactLeadController as AdminContactLeadController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -71,7 +72,7 @@ Route::prefix('aiapplication')->group(function () {
     });
 });
 
-// Authentication
+// Admin Authentication
 Route::prefix('authentication')->group(function () {
     Route::controller(AuthenticationController::class)->group(function () {
         Route::get('/forgotpassword', 'forgotPassword')->name('forgotPassword');
@@ -79,6 +80,16 @@ Route::prefix('authentication')->group(function () {
         Route::post('/login', 'login')->name('admin.login.post');
         Route::post('/logout', 'logout')->name('admin.logout');
         Route::get('/signup', 'signup')->name('signup');
+    });
+});
+
+// User (Frontend) Authentication
+Route::name('frontend.')->group(function () {
+    Route::controller(\App\Http\Controllers\Frontend\AuthController::class)->group(function () {
+        Route::get('/login', 'showLogin')->name('login');
+        Route::post('/send-otp', 'sendOtp')->name('sendOtp');
+        Route::post('/verify-otp', 'verifyOtp')->name('verifyOtp');
+        Route::post('/logout', 'logout')->name('logout');
     });
 });
 
@@ -258,7 +269,7 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth')->
 
 
 // Frontend Routes
-Route::view('/', 'pages.index')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about-us')->name('about');
 Route::get('/product', function () {
     $resolveIngredientMeta = function (?IngredientCategory $category): array {
@@ -291,7 +302,7 @@ Route::get('/product', function () {
     };
 
     $categories = IngredientCategory::where('is_active', true)
-        ->withCount(['ingredients as ingredients_count' => fn ($query) => $query->where('is_active', true)])
+        ->withCount(['ingredients as ingredients_count' => fn($query) => $query->where('is_active', true)])
         ->orderBy('sort_order')
         ->orderBy('name')
         ->get();
@@ -320,7 +331,7 @@ Route::get('/product', function () {
             $shortName = trim((string) ($ingredient->short_heading ?: $ingredient->main_heading ?: $name));
             $benefits = $ingredient->benefits
                 ->pluck('heading')
-                ->filter(fn ($heading) => filled($heading))
+                ->filter(fn($heading) => filled($heading))
                 ->values()
                 ->all();
 
@@ -363,15 +374,13 @@ Route::get('/product', function () {
         'ingredientSummaryStats' => $summaryStats,
     ]);
 })->name('product');
+Route::get('/product', [\App\Http\Controllers\Frontend\ProductController::class, 'index'])->name('product');
+Route::get('/product/{slug}', [\App\Http\Controllers\Frontend\ProductController::class, 'show'])->name('product.show');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/checkout', 'pages.checkout')->name('checkout');
-Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
-Route::view('/order', 'pages.user-panel.order')->name('order');
-Route::view('/personal-info', 'pages.user-panel.personal-info')->name('personal-info');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/return-policy', 'pages.return-policy')->name('return-policy');
-Route::view('/subscription', 'pages.user-panel.subscription')->name('subscription');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
 
@@ -382,3 +391,17 @@ Route::view('/supplement', 'pages.user-panel.supplement')->name('supplement');
 Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-profile');
 Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
 Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
+Route::middleware('auth')->group(function () {
+    Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
+    Route::view('/order', 'pages.user-panel.order')->name('order');
+    Route::view('/personal-info', 'pages.user-panel.personal-info')->name('personal-info');
+    Route::view('/subscription', 'pages.user-panel.subscription')->name('subscription');
+    Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
+    Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
+    Route::view('/meal-plan', 'pages.user-panel.meal-plan')->name('meal-plan');
+    Route::view('/health-scores', 'pages.user-panel.health-scores')->name('health-scores');
+    Route::view('/supplement', 'pages.user-panel.supplement')->name('supplement');
+    Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-profile');
+    Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
+    Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
+});

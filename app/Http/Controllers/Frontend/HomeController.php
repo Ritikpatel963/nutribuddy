@@ -1,11 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontend;
+
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+    public function index()
+    {
+        $featuredProducts = \App\Models\Product::where('is_active', true)
+            ->with(['primaryImage', 'category', 'images'])
+            ->get();
+
+        return view('pages.index', compact('featuredProducts'));
+    }
+
     public function calendar()
     {
         return view('calendar');

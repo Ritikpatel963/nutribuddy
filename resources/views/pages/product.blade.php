@@ -1,129 +1,127 @@
-﻿@extends('layouts.main')
+@extends('layouts.main')
 @section('title', "NutriBuddy – India's #1 Kids Wellness Gummy")
 
 @section('content')
-    <!-- ══ PRODUCT HERO ══ -->
     <div class="pdp-hero">
 
         <!-- LEFT: Gallery -->
         <div class="pdp-gallery">
             <div class="main-img-wrap">
-                <div class="badge-bestseller">Best Seller</div>
-                <div class="badge-discount">25% OFF</div>
-                <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1"><img
-                        src="img/product2.png" alt=""></div>
-                <!-- <div class="floating-badges">
-                  <div class="float-badge fb1"> Ayurveda-Backed</div>
-                  <div class="float-badge fb2">✅ 0 Additives</div>
-                  <div class="float-badge fb3">👶 Age 2–14</div>
-                </div> -->
+                @if($product->is_featured)
+                    <div class="badge-bestseller">Best Seller</div>
+                @endif
+                @if($product->compare_at_price > $product->base_price)
+                    @php 
+                        $discount = round((($product->compare_at_price - $product->base_price) / $product->compare_at_price) * 100);
+                    @endphp
+                    <div class="badge-discount">{{ $discount }}% OFF</div>
+                @endif
+                
+                <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
+                    @if($product->primaryImage)
+                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" id="mainPdpImage">
+                    @else
+                        <img src="{{ asset('img/product2.png') }}" alt="{{ $product->name }}" id="mainPdpImage">
+                    @endif
+                </div>
             </div>
             <div class="thumb-row">
-                <div class="thumb active"> <img src="img/product2.png" alt=""></div>
-                <div class="thumb"> <img src="img/p1.jpeg" alt=""></div>
-                <div class="thumb"> <img src="img/p2-hover.jpeg" alt=""></div>
-                <div class="thumb"> <img src="img/product2.png" alt=""></div>
-                <div class="thumb"> <img src="img/p1.jpeg" alt=""></div>
-                <div class="thumb"> <img src="img/p1.jpeg" alt=""></div>
-                <div class="thumb"> <img src="img/p1.jpeg" alt=""></div>
+                @foreach($product->images as $image)
+                    <div class="thumb {{ $image->is_primary ? 'active' : '' }}" onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}">
+                    </div>
+                @endforeach
+                @if($product->images->count() == 0)
+                    <div class="thumb active"> <img src="{{ asset('img/product2.png') }}" alt=""></div>
+                    <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
+                @endif
             </div>
         </div>
 
         <!-- RIGHT: Info -->
         <div class="pdp-info">
-            <div class="pdp-cat">Immunity & Growth · Kids 2–14 yrs</div>
-            <h1 class="pdp-name">GrowStrong Gummies</h1>
+            <div class="pdp-cat">{{ $product->category->name ?? 'Immunity & Growth' }} · Kids 2–14 yrs</div>
+            <h1 class="pdp-name">{{ $product->name }}</h1>
             <div class="pdp-rating">
-                <div class="stars">★★★★★</div>
-                <div class="rating-val">4.9</div>
+                <div class="stars">
+                    @php $rating = $product->reviews->avg('rating') ?? 4.9; @endphp
+                    @for($i=0; $i<5; $i++)
+                        {{ $i < $rating ? '★' : '☆' }}
+                    @endfor
+                </div>
+                <div class="rating-val">{{ number_format($rating, 1) }}</div>
                 <div class="rating-divider"></div>
-                <div class="rating-count">2,841 Verified Reviews</div>
+                <div class="rating-count">{{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} Verified Reviews</div>
             </div>
 
             <!-- Price -->
             <div class="price-box">
                 <div class="price-row">
-                    <div class="price-now">₹599</div>
-                    <div class="price-old">₹799</div>
-                    <div class="price-save">Save ₹200</div>
+                    <div class="price-now">₹{{ number_format($product->base_price, 0) }}</div>
+                    @if($product->compare_at_price > $product->base_price)
+                        <div class="price-old">₹{{ number_format($product->compare_at_price, 0) }}</div>
+                        <div class="price-save">Save ₹{{ number_format($product->compare_at_price - $product->base_price, 0) }}</div>
+                    @endif
                 </div>
                 <div class="price-note">Inclusive of all taxes · Free shipping on this order</div>
                 <div class="cashback-row">
                     <span>🪙</span>
-                    <span>Get 30 NB Coins on this purchase!</span>
+                    <span>Get {{ round($product->base_price * 0.05) }} NB Coins on this purchase!</span>
                 </div>
             </div>
             <div class="arrange">
-                <!-- Age Selector -->
+                <!-- Age Group -->
                 <div class="variant-block">
-                    <!-- <div class="variant-label">Select Age: <strong id="selectedAge">2–6 yrs</strong></div> -->
                     <div class="variant-label">Age Group: </div>
                     <div class="variant-row">
-                        <div class="vopt active" onclick="selectVariant(this,'selectedAge','2–17 yrs')">2–17 Yrs</div>
-                        <!-- <div class="vopt" onclick="selectVariant(this,'selectedAge','7–12 yrs')">7–12 Yrs</div>
-                  <div class="vopt" onclick="selectVariant(this,'selectedAge','13–14 yrs')">13–14 Yrs</div> -->
+                        <div class="vopt active">2–17 Yrs</div>
                     </div>
                 </div>
 
-                <!-- Flavor Selector -->
+                @if($product->is_variant_enabled && $product->variants->count() > 0)
+                <!-- Variant Selector -->
                 <div class="variant-block">
-                    <div class="variant-label">Select Flavour: </div>
-                    <div class="variant-row" id="flavorRow">
-                        <!-- <div class="flavor-opt active" onclick="selectFlavor(this,'Mixed Berry')">
-                    <div class="flavor-emoji">🍓</div>
-                    <div class="flavor-name">Mixed Berry</div>
-                  </div> -->
-                        <div class="qty-opt" onclick="selectFlavor(this,'Mango Blast')">
-                            <div class="flavor-name">Mango Blast</div>
-                        </div>
-                        <!-- <div class="flavor-opt" onclick="selectFlavor(this,'Orange Citrus')">
-                    <div class="flavor-emoji">🍊</div>
-                    <div class="flavor-name">Orange Citrus</div>
-                  </div> -->
-                        <!-- <div class="flavor-opt" onclick="selectFlavor(this,'Watermelon')">
-                    <div class="flavor-emoji">🍉</div>
-                    <div class="flavor-name">Watermelon</div>
-                  </div> -->
+                    <div class="variant-label">Select Options: </div>
+                    <div class="variant-row">
+                        @foreach($product->variants as $variant)
+                            <div class="qty-opt {{ $loop->first ? 'active' : '' }}" onclick="selectVariant(this,'{{ $variant->id }}')">
+                                <div class="flavor-name">{{ $variant->name }}</div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-
-                <!-- Pack Size -->
+                @else
+                <!-- Static Fallback for Flavor/Pack -->
                 <div class="variant-block">
                     <div class="variant-label">Pack Size: </div>
                     <div class="variant-row">
-                        <div class="qty-opt" onclick="selectQtyOpt(this,'selectedQty','30 Gummies')">30 Gummies</div>
-                        <!-- <div class="qty-opt active" onclick="selectQtyOpt(this,'selectedQty','60 Gummies')">
-                    60 Gummies
-                    <div class="saving-tag">Save 10%</div>
-                  </div>
-                  <div class="qty-opt" onclick="selectQtyOpt(this,'selectedQty','90 Gummies')">
-                    90 Gummies
-                    <div class="saving-tag">Save 15%</div>
-                  </div> -->
+                        <div class="qty-opt active">30 Gummies</div>
                     </div>
                 </div>
+                @endif
             </div>
+
             <div class="variant-block">
-                <div class="variant-label">Multivitamin Immunity Gummies Features </div>
+                <div class="variant-label">{{ $product->name }} Features </div>
                 <div class="variant-row" id="flavorRow">
                     <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="img/sugar.png" alt=""></div>
+                        <div class="flavor-emoji"> <img src="{{ asset('img/sugar.png') }}" alt=""></div>
                         <div class="flavor-name">No Added Sugar</div>
                     </div>
                     <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="img/no-preservatives.png" alt=""></div>
+                        <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt=""></div>
                         <div class="flavor-name">No Preservatives</div>
                     </div>
                     <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="img/no-artificial-colours.png" alt=""> </div>
+                        <div class="flavor-emoji"> <img src="{{ asset('img/no-artificial-colours.png') }}" alt=""> </div>
                         <div class="flavor-name">No Colours<br>Added</div>
                     </div>
                     <div class="flavor-opt active">
-                        <div class="flavor-emoji"><img src="img/natural.png" alt=""></div>
+                        <div class="flavor-emoji"><img src="{{ asset('img/natural.png') }}" alt=""></div>
                         <div class="flavor-name">Rooted in <br> Ayurveda</div>
                     </div>
                     <div class="flavor-opt active">
-                        <div class="flavor-emoji"><img src="img/tag.png" alt=""></div>
+                        <div class="flavor-emoji"><img src="{{ asset('img/tag.png') }}" alt=""></div>
                         <div class="flavor-name">No Gelatin <br> Plant Based Pectin</div>
                     </div>
                 </div>
@@ -143,8 +141,8 @@
 
             <!-- CTAs -->
             <div class="cta-row">
-                <button class="btn-cart" onclick="addToCart()">Add to Cart</button>
-                <button class="btn-buy" onclick="buyNow()">Buy Now</button>
+                <button class="btn-cart" onclick="addToCart('{{ $product->id }}')">Add to Cart</button>
+                <button class="btn-buy" onclick="buyNow('{{ $product->id }}')">Buy Now</button>
             </div>
 
             <!-- Guarantees -->
@@ -168,42 +166,46 @@
 
             <!-- Product Highlights -->
             <div class="highlights">
-                <h4>Why Parents Love GrowStrong</h4>
+                <h4>Why Parents Love {{ $product->name }}</h4>
                 <ul class="highlight-list">
-                    <li>
-                        <div class="hl-dot"></div>Ashwagandha (KSM-66®) + Vitamin D3 + Zinc — clinically proven formula
-                    </li>
-                    <li>
-                        <div class="hl-dot"></div>Supports immunity, height, bone density & overall energy in one gummy
-                    </li>
-                    <li>
-                        <div class="hl-dot"></div>Zero gelatin · 100% Vegetarian · No artificial colours or flavours
-                    </li>
-                    <li>
-                        <div class="hl-dot"></div>Tastes so good kids ask for it every morning — guaranteed!
-                    </li>
-                    <li>
-                        <div class="hl-dot"></div>FSSAI Certified · Third-party lab tested every single batch
-                    </li>
-                    <li>
-                        <div class="hl-dot"></div>Recommended by 50+ certified pediatricians across India
-                    </li>
+                    @php 
+                        $features = $product->description ? explode("\n", $product->description) : [];
+                        $features = array_filter(array_map('trim', $features));
+                    @endphp
+                    @if(count($features) > 0)
+                        @foreach(array_slice($features, 0, 6) as $feature)
+                            <li><div class="hl-dot"></div>{{ preg_replace('/^[•\-\*]\s*/', '', $feature) }}</li>
+                        @endforeach
+                    @else
+                        {{-- Fallback --}}
+                        <li><div class="hl-dot"></div>Ashwagandha (KSM-66®) + Vitamin D3 + Zinc — clinically proven formula</li>
+                        <li><div class="hl-dot"></div>Supports immunity, height, bone density & overall energy in one gummy</li>
+                        <li><div class="hl-dot"></div>Zero gelatin · 100% Vegetarian · No artificial colours or flavours</li>
+                        <li><div class="hl-dot"></div>Tastes so good kids ask for it every morning — guaranteed!</li>
+                    @endif
                 </ul>
             </div>
         </div>
     </div>
 
 
-    <!-- product main starting end -->
-
-    <!-- product real result -->
+    <!-- ══ DESCRIPTION & DETAILS ══ -->
+    <section class="section-wrap reveal">
+        <div style="max-width:1200px;margin:0 auto;">
+            <h2 class="sec-title">Product <span class="acc">Details</span></h2>
+            <div class="pdp-description" style="line-height: 1.8; color: var(--dk); font-size: 1.1rem;">
+                {!! nl2br(e($product->description)) !!}
+            </div>
+        </div>
+    </section>
 
     <!-- ══ HOW IT TRANSFORMS ══ -->
     <section class="section-wrap transform-section reveal">
         <div style="max-width:1200px;margin:0 auto;">
             <span class="sec-eye">Real Results</span>
             <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
-            <p class="sec-sub">90 days of GrowStrong — visible, measurable, life-changing results reported by thousands of
+            <p class="sec-sub">90 days of {{ $product->name }} — visible, measurable, life-changing results reported by thousands of
+                parents.</p>�� visible, measurable, life-changing results reported by thousands of
                 parents.</p>
             <div class="transform-grid">
                 <div class="transform-visual">
