@@ -685,35 +685,29 @@
         </div>
 
         <!-- ── Category Filter (desktop) ── -->
+        @php
+            $categoryFilters = $ingredientCategoryFilters ?? collect();
+            $totalIngredientCount = $ingredientTotalCount ?? 0;
+            $ingredientItems = $ingredientItems ?? collect();
+            $ingredientSummaryStats = $ingredientSummaryStats ?? [];
+        @endphp
         <div class="nb-cat-row">
             <button class="nb-cat-pill nb-active" onclick="nbFilter('all',this)">
-                <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All (22)
+                <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All ({{ $totalIngredientCount }})
             </button>
-            <button class="nb-cat-pill" onclick="nbFilter('ay',this)">
-                <span class="nb-cat-dot" style="background:#00D68F"></span> Ayurvedic (3)
-            </button>
-            <button class="nb-cat-pill" onclick="nbFilter('vi',this)">
-                <span class="nb-cat-dot" style="background:#00BFFF"></span>💊 Vitamins (7)
-            </button>
-            <button class="nb-cat-pill" onclick="nbFilter('mi',this)">
-                <span class="nb-cat-dot" style="background:#FFD600"></span>🪨 Minerals (5)
-            </button>
-            <button class="nb-cat-pill" onclick="nbFilter('ex',this)">
-                <span class="nb-cat-dot" style="background:#FF6B35"></span>🍃 Extracts (5)
-            </button>
-            <button class="nb-cat-pill" onclick="nbFilter('ba',this)">
-                <span class="nb-cat-dot" style="background:rgba(255,255,255,.4)"></span>⚗️ Base (5)
-            </button>
+            @foreach ($categoryFilters as $filter)
+                <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
+                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }} ({{ $filter['count'] }})
+                </button>
+            @endforeach
         </div>
 
         <!-- ── Mobile Tabs ── -->
         <div class="nb-mobile-tabs" id="nbMobTabs">
-            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All (22)</button>
-            <button class="nb-mob-tab" onclick="nbMobFilter('ay',this)"> Ayurvedic</button>
-            <button class="nb-mob-tab" onclick="nbMobFilter('vi',this)">💊 Vitamins</button>
-            <button class="nb-mob-tab" onclick="nbMobFilter('mi',this)">🪨 Minerals</button>
-            <button class="nb-mob-tab" onclick="nbMobFilter('ex',this)">🍃 Extracts</button>
-            <button class="nb-mob-tab" onclick="nbMobFilter('ba',this)">⚗️ Base</button>
+            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All ({{ $totalIngredientCount }})</button>
+            @foreach ($categoryFilters as $filter)
+                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }} ({{ $filter['count'] }})</button>
+            @endforeach
         </div>
 
         <!-- ── Mobile Accordion Cards ── -->
@@ -730,7 +724,7 @@
                     <div class="nb-list-head-icon">📋</div>
                     <div>
                         <h4>Full Ingredient List</h4>
-                        <p>22 ingredients · click to explore</p>
+                        <p>{{ $totalIngredientCount }} ingredients · click to explore</p>
                     </div>
                 </div>
                 <div class="nb-list-scroll" id="nbList">
@@ -756,37 +750,19 @@
         <!-- ── Summary Bar ── -->
         <div class="nb-summary-bar">
             <div class="nb-summary-inner">
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#FF4D8F">22</div>
-                    <div class="nb-stat-l">Total Ingredients</div>
-                </div>
-                <div class="nb-sdiv"></div>
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#00D68F">3</div>
-                    <div class="nb-stat-l">Ayurvedic Herbs</div>
-                </div>
-                <div class="nb-sdiv"></div>
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#00BFFF">7</div>
-                    <div class="nb-stat-l">Vitamins</div>
-                </div>
-                <div class="nb-sdiv"></div>
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#FFD600">5</div>
-                    <div class="nb-stat-l">Minerals</div>
-                </div>
-                <div class="nb-sdiv"></div>
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#FF6B35">0</div>
-                    <div class="nb-stat-l">Artificial Colors</div>
-                </div>
-                <div class="nb-sdiv"></div>
-                <div class="nb-stat">
-                    <div class="nb-stat-n" style="color:#7C3AED">0</div>
-                    <div class="nb-stat-l">Gelatin / Animal</div>
-                </div>
+                @foreach ($ingredientSummaryStats as $stat)
+                    <div class="nb-stat">
+                        <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
+                        <div class="nb-stat-l">{{ $stat['label'] }}</div>
+                    </div>
+                    @if (! $loop->last)
+                        <div class="nb-sdiv"></div>
+                    @endif
+                @endforeach
             </div>
         </div>
+
+        <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
 
     </section>
 
