@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\NewsletterSubscriberController as AdminNewsletter
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ProductVariantController as AdminProductVariantController;
+use App\Http\Controllers\Admin\IngredientController as AdminIngredientController;
+use App\Http\Controllers\Admin\IngredientCategoryController as AdminIngredientCategoryController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TaxRateController as AdminTaxRateController;
 
@@ -211,7 +213,9 @@ Route::prefix('cryptocurrency')->group(function () {
 
 Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth')->group(function () {
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('products', AdminProductController::class);
+    Route::resource('ingredients', AdminIngredientController::class);
     Route::patch('products/{product}/inventory', [AdminProductController::class, 'updateInventory'])->name('products.inventory.update');
     Route::resource('variants', AdminProductVariantController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::patch('variants/{variant}/inventory', [AdminProductVariantController::class, 'updateInventory'])->name('variants.inventory.update');

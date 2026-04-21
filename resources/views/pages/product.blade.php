@@ -785,11 +785,6 @@
                     <div class="nb-stat-n" style="color:#7C3AED">0</div>
                     <div class="nb-stat-l">Gelatin / Animal</div>
                 </div>
-                <div class="nb-sdiv nb-hide-sm"></div>
-                <div class="nb-summary-cta nb-hide-sm">
-                    <p>Every batch third-party lab tested. Full transparency always.</p>
-                    <button class="nb-lab-btn">📄 View Lab Report</button>
-                </div>
             </div>
         </div>
 
