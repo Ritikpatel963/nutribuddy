@@ -8,7 +8,12 @@ use App\Http\Controllers\Frontend\ComponentpageController;
 use App\Http\Controllers\Frontend\FormsController;
 use App\Http\Controllers\Frontend\TableController;
 use App\Http\Controllers\Frontend\BlogController;
+use App\Http\Controllers\Frontend\CartController as FrontendCartController;
+use App\Http\Controllers\Frontend\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\UserOrderController;
+use App\Http\Controllers\Frontend\UserReturnController;
+use App\Http\Controllers\Frontend\UserAddressController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InvoiceController;
@@ -392,6 +397,36 @@ Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-pro
 Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
 Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
 Route::middleware('auth')->group(function () {
+    Route::prefix('/user/cart')->name('user.cart.')->group(function () {
+        Route::get('/', [FrontendCartController::class, 'index'])->name('index');
+        Route::post('/', [FrontendCartController::class, 'store'])->name('store');
+        Route::patch('/items/{itemId}', [FrontendCartController::class, 'update'])->name('items.update');
+        Route::delete('/items/{itemId}', [FrontendCartController::class, 'destroy'])->name('items.destroy');
+    });
+
+    Route::prefix('/user/checkout')->name('user.checkout.')->group(function () {
+        Route::post('/summary', [FrontendCheckoutController::class, 'summary'])->name('summary');
+        Route::post('/place-order', [FrontendCheckoutController::class, 'placeOrder'])->name('place-order');
+    });
+
+    Route::prefix('/user/addresses')->name('user.addresses.')->group(function () {
+        Route::get('/', [UserAddressController::class, 'index'])->name('index');
+        Route::post('/', [UserAddressController::class, 'store'])->name('store');
+        Route::delete('/{address}', [UserAddressController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('/user/orders')->name('user.orders.')->group(function () {
+        Route::get('/', [UserOrderController::class, 'index'])->name('index');
+        Route::get('/{order}/detail', [UserOrderController::class, 'detailPage'])->name('detail-page');
+        Route::get('/{order}/invoice-page', [UserOrderController::class, 'invoicePage'])->name('invoice-page');
+        Route::get('/{order}/invoice-download', [UserOrderController::class, 'invoiceDownload'])->name('invoice-download');
+        Route::get('/{order}', [UserOrderController::class, 'show'])->name('show');
+        Route::get('/{order}/invoice', [UserOrderController::class, 'invoice'])->name('invoice');
+        Route::patch('/{order}/cancel', [UserOrderController::class, 'cancel'])->name('cancel');
+        Route::get('/returns', [UserReturnController::class, 'index'])->name('returns.index');
+        Route::post('/{order}/returns', [UserReturnController::class, 'store'])->name('returns.store');
+    });
+
     Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
     Route::view('/order', 'pages.user-panel.order')->name('order');
     Route::view('/personal-info', 'pages.user-panel.personal-info')->name('personal-info');
@@ -405,3 +440,5 @@ Route::middleware('auth')->group(function () {
     Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
     Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
 });
+
+Route::view('/cart', 'pages.cart')->name('cart.page');

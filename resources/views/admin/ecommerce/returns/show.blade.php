@@ -24,12 +24,24 @@
                             <h6 class="text-secondary-light fw-medium mb-8">Order Associated:</h6>
                             <a href="{{ route('admin.ecommerce.orders.show', $orderReturn->order_id) }}" class="mb-0 fw-bold text-dark">#{{ $orderReturn->order->order_number }}</a>
                         </div>
+                        <div class="col-md-6">
+                            <h6 class="text-secondary-light fw-medium mb-8">Refund Amount:</h6>
+                            <p class="mb-0 fw-bold">INR {{ number_format($orderReturn->refund_amount, 2) }}</p>
+                        </div>
                         <div class="col-12">
                             <h6 class="text-secondary-light fw-medium mb-8">Reason for Return:</h6>
                             <div class="p-16 radius-8 bg-light border">
                                 {{ $orderReturn->reason }}
                             </div>
                         </div>
+                        @if ($orderReturn->admin_note)
+                            <div class="col-12">
+                                <h6 class="text-secondary-light fw-medium mb-8">Admin Note:</h6>
+                                <div class="p-16 radius-8 bg-light border">
+                                    {{ $orderReturn->admin_note }}
+                                </div>
+                            </div>
+                        @endif
                     </div>
 
                     <h6 class="text-md fw-bold mb-16">Customer Information</h6>

@@ -25,7 +25,7 @@
         <!-- WELCOME BANNER -->
         <div class="welcome-banner d1">
           <div class="welcome-text" style="position:relative;z-index:1">
-            <h2>Welcome back, <span>Jaydafsdf!</span> 👋</h2>
+            <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
             <p>Check your return policy and recent support updates here.</p>
           </div>
           <div class="welcome-right">
@@ -263,6 +263,38 @@
               <a href="mailto:support@nutribuddy.in" class="contact-btn">💬 Contact Support</a>
             </div>
 
+            <div class="side-card" style="margin-top:16px;">
+              <div class="sc-head">
+                <div
+                  style="width:28px;height:28px;border-radius:9px;background:var(--pkl);display:flex;align-items:center;justify-content:center;font-size:.9rem">
+                  ↩️</div>
+                <h3>Raise Return Request</h3>
+              </div>
+              <div class="sc-body">
+                <form id="returnRequestForm">
+                  <select id="returnOrderSelect" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;" required>
+                    <option value="">Select Delivered Order</option>
+                  </select>
+                  <textarea id="returnReasonInput" class="contact-btn" style="width:100%;min-height:90px;border:none;text-align:left;"
+                    placeholder="Write your return reason..." required></textarea>
+                  <button type="submit" class="contact-btn" style="margin-top:10px;border:none;cursor:pointer;">Submit Return Request</button>
+                </form>
+                <p id="returnFormMessage" style="margin-top:10px;font-size:.85rem;"></p>
+              </div>
+            </div>
+
+            <div class="side-card" style="margin-top:16px;">
+              <div class="sc-head">
+                <div
+                  style="width:28px;height:28px;border-radius:9px;background:var(--mnl);display:flex;align-items:center;justify-content:center;font-size:.9rem">
+                  📦</div>
+                <h3>My Return Requests</h3>
+              </div>
+              <div class="sc-body" id="myReturnsContainer">
+                <p>No return requests found.</p>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -273,6 +305,90 @@
     
 
     <script>
+    const returnApiConfig = {
+      ordersUrl: @json(route('user.orders.index')),
+      returnsUrl: @json(route('user.orders.returns.index')),
+      createReturnUrlTemplate: @json(route('user.orders.returns.store', ['order' => '__ORDER_ID__'])),
+      csrfToken: @json(csrf_token())
+    };
+
+    function renderReturns(returns) {
+      const container = document.getElementById('myReturnsContainer');
+      if (!returns.length) {
+        container.innerHTML = '<p>No return requests found.</p>';
+        return;
+      }
+
+      container.innerHTML = returns.map(function(item) {
+        const orderNumber = item.order ? item.order.order_number : '-';
+        return `<div style="padding:10px 0;border-bottom:1px solid var(--line,#eee);">
+          <p><strong>${item.return_number}</strong> - ${String(item.status || '').toUpperCase()}</p>
+          <p style="font-size:.82rem;color:var(--mu,#666)">Order: ${orderNumber}</p>
+        </div>`;
+      }).join('');
+    }
+
+    function renderDeliveredOrders(orders) {
+      const select = document.getElementById('returnOrderSelect');
+      const delivered = orders.filter(function(order) { return order.status === 'delivered'; });
+      select.innerHTML = '<option value="">Select Delivered Order</option>';
+      delivered.forEach(function(order) {
+        const option = document.createElement('option');
+        option.value = order.id;
+        option.textContent = `${order.order_number} - ₹${Number(order.grand_total || 0).toFixed(2)}`;
+        select.appendChild(option);
+      });
+    }
+
+    async function loadReturnData() {
+      const [ordersResponse, returnsResponse] = await Promise.all([
+        fetch(returnApiConfig.ordersUrl, { headers: { 'Accept': 'application/json' } }),
+        fetch(returnApiConfig.returnsUrl, { headers: { 'Accept': 'application/json' } })
+      ]);
+
+      if (ordersResponse.ok) {
+        const ordersPayload = await ordersResponse.json();
+        renderDeliveredOrders(ordersPayload.data || []);
+      }
+
+      if (returnsResponse.ok) {
+        const returnsPayload = await returnsResponse.json();
+        renderReturns(returnsPayload.data || []);
+      }
+    }
+
+    async function submitReturnRequest(event) {
+      event.preventDefault();
+      const orderId = document.getElementById('returnOrderSelect').value;
+      const reason = document.getElementById('returnReasonInput').value.trim();
+      const message = document.getElementById('returnFormMessage');
+
+      if (!orderId || reason.length < 10) {
+        message.textContent = 'Select an order and enter at least 10 characters reason.';
+        return;
+      }
+
+      const response = await fetch(returnApiConfig.createReturnUrlTemplate.replace('__ORDER_ID__', orderId), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': returnApiConfig.csrfToken
+        },
+        body: JSON.stringify({ reason: reason })
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(function() { return {}; });
+        message.textContent = payload.message || 'Unable to submit return request.';
+        return;
+      }
+
+      message.textContent = 'Return request submitted successfully.';
+      document.getElementById('returnReasonInput').value = '';
+      await loadReturnData();
+    }
+
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('show');
@@ -285,6 +401,14 @@
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
       el.classList.add('active');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('returnRequestForm');
+      if (form) {
+        form.addEventListener('submit', submitReturnRequest);
+      }
+      loadReturnData();
+    });
   </script>
 
     @endpush

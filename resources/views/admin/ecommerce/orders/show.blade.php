@@ -38,6 +38,16 @@
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Fulfillment Status</label>
+                            <select name="fulfillment_status" class="form-select" required>
+                                @foreach ($fulfillmentStatuses as $fulfillmentStatus)
+                                    <option value="{{ $fulfillmentStatus }}" {{ $order->fulfillment_status === $fulfillmentStatus ? 'selected' : '' }}>
+                                        {{ ucfirst(str_replace('_', ' ', $fulfillmentStatus)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Admin Note</label>
                             <textarea name="admin_note" rows="4" class="form-control">{{ $order->admin_note }}</textarea>
                         </div>
@@ -60,6 +70,8 @@
                         <div class="col-md-6"><strong>Email:</strong> {{ $order->customer_email ?: 'N/A' }}</div>
                         <div class="col-md-6"><strong>Payment:</strong> {{ strtoupper($order->payment_method) }} / {{ ucfirst($order->payment_status) }}</div>
                         <div class="col-md-6"><strong>Status:</strong> {{ ucfirst($order->status) }}</div>
+                        <div class="col-md-6"><strong>Fulfillment:</strong> {{ ucfirst(str_replace('_', ' ', $order->fulfillment_status)) }}</div>
+                        <div class="col-md-6"><strong>Coupon:</strong> {{ $order->coupon_code ?: 'N/A' }}</div>
                         <div class="col-12">
                             <strong>Shipping Address:</strong>
                             <div>
@@ -119,10 +131,31 @@
                     <div class="row g-3">
                         <div class="col-md-6"><strong>Subtotal:</strong> INR {{ number_format((float) $order->subtotal, 2) }}</div>
                         <div class="col-md-6"><strong>Tax:</strong> INR {{ number_format((float) $order->tax_total, 2) }}</div>
+                        <div class="col-md-6"><strong>GST:</strong> INR {{ number_format((float) $order->gst_total, 2) }}</div>
+                        <div class="col-md-6"><strong>CGST / SGST / IGST:</strong> INR {{ number_format((float) $order->cgst_total, 2) }} / INR {{ number_format((float) $order->sgst_total, 2) }} / INR {{ number_format((float) $order->igst_total, 2) }}</div>
                         <div class="col-md-6"><strong>Discount:</strong> INR {{ number_format((float) $order->discount_total, 2) }}</div>
                         <div class="col-md-6"><strong>Shipping:</strong> INR {{ number_format((float) $order->shipping_total, 2) }}</div>
                         <div class="col-md-12"><h5 class="mb-0">Grand Total: INR {{ number_format((float) $order->grand_total, 2) }}</h5></div>
                     </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Status Timeline</h5>
+                </div>
+                <div class="card-body">
+                    @forelse ($order->statusHistories as $history)
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div><strong>{{ ucfirst($history->to_status) }}</strong> at {{ optional($history->created_at)->format('d M Y H:i') }}</div>
+                            <div class="text-muted">From: {{ ucfirst($history->from_status ?? 'new') }} | Fulfillment: {{ ucfirst(str_replace('_', ' ', $history->to_fulfillment_status ?? 'n/a')) }}</div>
+                            @if ($history->note)
+                                <div>{{ $history->note }}</div>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="mb-0">No status history available.</p>
+                    @endforelse
                 </div>
             </div>
         </div>

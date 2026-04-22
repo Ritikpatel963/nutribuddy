@@ -33,28 +33,28 @@
                     <div class="sum-card">
                         <div class="sum-icon" style="background:var(--mnl)">📦</div>
                         <div>
-                            <div class="s-num">4</div>
+                            <div class="s-num" id="totalOrdersCount">0</div>
                             <div class="s-lbl">Total Orders</div>
                         </div>
                     </div>
                     <div class="sum-card">
                         <div class="sum-icon" style="background:var(--yel)">⏳</div>
                         <div>
-                            <div class="s-num">2</div>
+                            <div class="s-num" id="pendingOrdersCount">0</div>
                             <div class="s-lbl">Pending</div>
                         </div>
                     </div>
                     <div class="sum-card">
                         <div class="sum-icon" style="background:var(--mnl)">✅</div>
                         <div>
-                            <div class="s-num">1</div>
+                            <div class="s-num" id="deliveredOrdersCount">0</div>
                             <div class="s-lbl">Delivered</div>
                         </div>
                     </div>
                     <div class="sum-card">
                         <div class="sum-icon" style="background:#ffe4e6">❌</div>
                         <div>
-                            <div class="s-num">1</div>
+                            <div class="s-num" id="cancelledOrdersCount">0</div>
                             <div class="s-lbl">Cancelled</div>
                         </div>
                     </div>
@@ -77,10 +77,10 @@
                                 oninput="filterOrders()">
                         </div>
                         <div class="filter-tabs">
-                            <button class="ftab active" onclick="filterTab(this,'all')">All (4)</button>
-                            <button class="ftab" onclick="filterTab(this,'pending')">Pending (2)</button>
-                            <button class="ftab" onclick="filterTab(this,'delivered')">Delivered (1)</button>
-                            <button class="ftab" onclick="filterTab(this,'cancelled')">Cancelled (1)</button>
+                            <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
+                            <button class="ftab" id="tab-pending" onclick="filterTab(this,'pending')">Pending (0)</button>
+                            <button class="ftab" id="tab-delivered" onclick="filterTab(this,'delivered')">Delivered (0)</button>
+                            <button class="ftab" id="tab-cancelled" onclick="filterTab(this,'cancelled')">Cancelled (0)</button>
                         </div>
                     </div>
                 </div>
@@ -88,16 +88,16 @@
                 <!-- WELCOME BANNER -->
                 <div class="welcome-banner d1">
                     <div class="welcome-text" style="position:relative;z-index:1">
-                        <h2>Welcome back, <span>Jaydafsdf!</span> 👋</h2>
+                        <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
                         <p>Review your recent orders and track packages in one place.</p>
                     </div>
                     <div class="welcome-right">
                         <div class="banner-stat">
-                            <div class="bs-num">4</div>
+                            <div class="bs-num" id="bannerOrdersCount">0</div>
                             <div class="bs-lbl">Orders</div>
                         </div>
                         <div class="banner-stat">
-                            <div class="bs-num">2</div>
+                            <div class="bs-num" id="bannerPendingCount">0</div>
                             <div class="bs-lbl">Pending</div>
                         </div>
                         <div class="banner-emoji">📦</div>
@@ -117,257 +117,12 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="ordersBody">
-                                <tr data-status="pending">
-                                    <td>
-                                        <span class="order-id">ORD-1774942041747</span>
-                                        <span class="order-product"> Immunity Gummies × 2</span>
-                                    </td>
-                                    <td>3/31/2026</td>
-                                    <td class="amount-cell"><strong>₹2,828.46</strong><small>Prepaid</small></td>
-                                    <td><span class="status-badge s-pending">PENDING</span></td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <a href="#" class="act-btn act-view">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                    <circle cx="12" cy="12" r="3" />
-                                                </svg>
-                                                View
-                                            </a>
-                                            <button class="act-btn act-cancel"
-                                                onclick="openCancelModal('ORD-1774942041747')">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                                </svg>
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr data-status="pending">
-                                    <td>
-                                        <span class="order-id">ORD-1774668404749</span>
-                                        <span class="order-product">🧠 Brain Boost Chews × 1</span>
-                                    </td>
-                                    <td>3/28/2026</td>
-                                    <td class="amount-cell"><strong>₹588.00</strong><small>Prepaid</small></td>
-                                    <td><span class="status-badge s-pending">PENDING</span></td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <a href="#" class="act-btn act-view">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                    <circle cx="12" cy="12" r="3" />
-                                                </svg>
-                                                View
-                                            </a>
-                                            <button class="act-btn act-cancel"
-                                                onclick="openCancelModal('ORD-1774668404749')">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                                </svg>
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr data-status="delivered">
-                                    <td>
-                                        <span class="order-id">ORD-1774331569477</span>
-                                        <span class="order-product">💊 Multi Vitamin × 1</span>
-                                    </td>
-                                    <td>3/24/2026</td>
-                                    <td class="amount-cell"><strong>₹472.00</strong><small>COD</small></td>
-                                    <td><span class="status-badge s-delivered">DELIVERED</span></td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <a href="#" class="act-btn act-view">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                    <circle cx="12" cy="12" r="3" />
-                                                </svg>
-                                                View
-                                            </a>
-                                            <a href="#" class="act-btn act-review">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <polygon
-                                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                                </svg>
-                                                Review
-                                            </a>
-                                            <a href="#" class="act-btn act-reorder">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <polyline points="23 4 23 10 17 10" />
-                                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                                                </svg>
-                                                Reorder
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr data-status="cancelled">
-                                    <td>
-                                        <span class="order-id">ORD-1774331118451</span>
-                                        <span class="order-product"> Ashwagandha Pack × 1</span>
-                                    </td>
-                                    <td>3/24/2026</td>
-                                    <td class="amount-cell"><strong>₹224.20</strong><small>Prepaid · Refunded</small></td>
-                                    <td><span class="status-badge s-cancelled">CANCELLED</span></td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            <a href="#" class="act-btn act-view">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                    <circle cx="12" cy="12" r="3" />
-                                                </svg>
-                                                View
-                                            </a>
-                                            <a href="#" class="act-btn act-reorder">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5">
-                                                    <polyline points="23 4 23 10 17 10" />
-                                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                                                </svg>
-                                                Reorder
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <tbody id="ordersBody"></tbody>
                         </table>
                     </div>
 
                     <!-- MOBILE CARDS -->
-                    <div class="mobile-orders" id="mobileOrders">
-                        <!-- card 1 -->
-                        <div class="m-order-card" data-status="pending">
-                            <div class="m-card-top">
-                                <div>
-                                    <div class="m-id">ORD-1774942041747</div>
-                                    <div class="m-date"> Immunity Gummies × 2 · 31 Mar 2026</div>
-                                </div>
-                                <span class="status-badge s-pending">PENDING</span>
-                            </div>
-                            <div class="m-card-mid">
-                                <div class="m-amount">₹2,828.46</div>
-                                <small style="color:var(--muted);font-size:.73rem">Prepaid</small>
-                            </div>
-                            <div class="m-card-actions">
-                                <a href="#" class="act-btn act-view">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2.5">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>View
-                                </a>
-                                <button class="act-btn act-cancel" onclick="openCancelModal('ORD-1774942041747')">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2.5">
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                    </svg>Cancel
-                                </button>
-                            </div>
-                        </div>
-                        <!-- card 2 -->
-                        <div class="m-order-card" data-status="pending">
-                            <div class="m-card-top">
-                                <div>
-                                    <div class="m-id">ORD-1774668404749</div>
-                                    <div class="m-date">🧠 Brain Boost Chews × 1 · 28 Mar 2026</div>
-                                </div>
-                                <span class="status-badge s-pending">PENDING</span>
-                            </div>
-                            <div class="m-card-mid">
-                                <div class="m-amount">₹588.00</div>
-                                <small style="color:var(--muted);font-size:.73rem">Prepaid</small>
-                            </div>
-                            <div class="m-card-actions">
-                                <a href="#" class="act-btn act-view">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2.5">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>View
-                                </a>
-                                <button class="act-btn act-cancel" onclick="openCancelModal('ORD-1774668404749')">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2.5">
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                    </svg>Cancel
-                                </button>
-                            </div>
-                        </div>
-                        <!-- card 3 -->
-                        <div class="m-order-card" data-status="delivered">
-                            <div class="m-card-top">
-                                <div>
-                                    <div class="m-id">ORD-1774331569477</div>
-                                    <div class="m-date">💊 Multi Vitamin × 1 · 24 Mar 2026</div>
-                                </div>
-                                <span class="status-badge s-delivered">DELIVERED</span>
-                            </div>
-                            <div class="m-card-mid">
-                                <div class="m-amount">₹472.00</div>
-                                <small style="color:var(--muted);font-size:.73rem">COD</small>
-                            </div>
-                            <div class="m-card-actions">
-                                <a href="#" class="act-btn act-view"><svg width="13" height="13"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>View</a>
-                                <a href="#" class="act-btn act-review"><svg width="13" height="13"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <polygon
-                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>Review</a>
-                                <a href="#" class="act-btn act-reorder"><svg width="13" height="13"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <polyline points="23 4 23 10 17 10" />
-                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                                    </svg>Reorder</a>
-                            </div>
-                        </div>
-                        <!-- card 4 -->
-                        <div class="m-order-card" data-status="cancelled">
-                            <div class="m-card-top">
-                                <div>
-                                    <div class="m-id">ORD-1774331118451</div>
-                                    <div class="m-date"> Ashwagandha Pack × 1 · 24 Mar 2026</div>
-                                </div>
-                                <span class="status-badge s-cancelled">CANCELLED</span>
-                            </div>
-                            <div class="m-card-mid">
-                                <div class="m-amount">₹224.20</div>
-                                <small style="color:var(--muted);font-size:.73rem">Prepaid · Refunded</small>
-                            </div>
-                            <div class="m-card-actions">
-                                <a href="#" class="act-btn act-view"><svg width="13" height="13"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>View</a>
-                                <a href="#" class="act-btn act-reorder"><svg width="13" height="13"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <polyline points="23 4 23 10 17 10" />
-                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                                    </svg>Reorder</a>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="mobile-orders" id="mobileOrders"></div>
 
                     <!-- empty state (hidden by default) -->
                     <div class="empty-state" id="emptyState" style="display:none">
@@ -379,7 +134,7 @@
 
                     <!-- pagination -->
                     <div class="pagination">
-                        <span class="pag-info">Showing 4 of 4 orders</span>
+                        <span class="pag-info" id="ordersPaginationInfo">Showing 0 of 0 orders</span>
                         <div class="pag-btns">
                             <button class="pag-btn">‹</button>
                             <button class="pag-btn active">1</button>
@@ -405,6 +160,136 @@
             function setActive(el) {
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 el.classList.add('active');
+            }
+
+            const apiConfig = {
+                listUrl: @json(route('user.orders.index')),
+                invoiceUrlTemplate: @json(route('user.orders.invoice', ['order' => '__ORDER_ID__'])),
+                detailUrlTemplate: @json(route('user.orders.show', ['order' => '__ORDER_ID__'])),
+                detailPageUrlTemplate: @json(route('user.orders.detail-page', ['order' => '__ORDER_ID__'])),
+                invoicePageUrlTemplate: @json(route('user.orders.invoice-page', ['order' => '__ORDER_ID__'])),
+                cancelUrlTemplate: @json(route('user.orders.cancel', ['order' => '__ORDER_ID__'])),
+                csrfToken: @json(csrf_token())
+            };
+
+            let allOrders = [];
+
+            function statusClass(status) {
+                if (status === 'delivered') return 's-delivered';
+                if (status === 'cancelled') return 's-cancelled';
+                return 's-pending';
+            }
+
+            function money(value) {
+                return `₹${Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+
+            function dateText(value) {
+                const dt = new Date(value);
+                return Number.isNaN(dt.getTime()) ? '-' : dt.toLocaleDateString('en-IN');
+            }
+
+            function renderActions(order) {
+                const viewBtn = `<a href="${apiConfig.detailPageUrlTemplate.replace('__ORDER_ID__', order.id)}" class="act-btn act-view">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>View</a>`;
+
+                const invoiceBtn = `<a href="${apiConfig.invoicePageUrlTemplate.replace('__ORDER_ID__', order.id)}" class="act-btn act-review">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M9 14l2 2 4-4"></path><path d="M21 12c0 1.66-4.03 6-9 6s-9-4.34-9-6 4.03-6 9-6 9 4.34 9 6z"></path>
+                    </svg>Invoice</a>`;
+
+                const canCancel = ['pending', 'confirmed', 'processing', 'packed'].includes(order.status);
+                const cancelBtn = canCancel
+                    ? `<button class="act-btn act-cancel" onclick="openCancelModal('${order.order_number}', ${order.id})">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>Cancel</button>`
+                    : '';
+
+                return `${viewBtn}${invoiceBtn}${cancelBtn}`;
+            }
+
+            function renderOrders(orders) {
+                const body = document.getElementById('ordersBody');
+                const mobile = document.getElementById('mobileOrders');
+                body.innerHTML = '';
+                mobile.innerHTML = '';
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.dataset.status = order.status;
+                    row.innerHTML = `
+                        <td>
+                            <span class="order-id">${order.order_number}</span>
+                            <span class="order-product">${(order.items_count || 0)} item(s)</span>
+                        </td>
+                        <td>${dateText(order.placed_at || order.created_at)}</td>
+                        <td class="amount-cell"><strong>${money(order.grand_total)}</strong><small>${String(order.payment_method || '').toUpperCase()}</small></td>
+                        <td><span class="status-badge ${statusClass(order.status)}">${String(order.status || '').toUpperCase()}</span></td>
+                        <td><div class="actions-cell">${renderActions(order)}</div></td>
+                    `;
+                    body.appendChild(row);
+
+                    const card = document.createElement('div');
+                    card.className = 'm-order-card';
+                    card.dataset.status = order.status;
+                    card.innerHTML = `
+                        <div class="m-card-top">
+                            <div>
+                                <div class="m-id">${order.order_number}</div>
+                                <div class="m-date">${(order.items_count || 0)} item(s) · ${dateText(order.placed_at || order.created_at)}</div>
+                            </div>
+                            <span class="status-badge ${statusClass(order.status)}">${String(order.status || '').toUpperCase()}</span>
+                        </div>
+                        <div class="m-card-mid">
+                            <div class="m-amount">${money(order.grand_total)}</div>
+                            <small style="color:var(--muted);font-size:.73rem">${String(order.payment_method || '').toUpperCase()}</small>
+                        </div>
+                        <div class="m-card-actions">${renderActions(order)}</div>
+                    `;
+                    mobile.appendChild(card);
+                });
+
+                document.getElementById('ordersPaginationInfo').textContent = `Showing ${orders.length} of ${orders.length} orders`;
+            }
+
+            function updateStats(orders) {
+                const counts = {
+                    total: orders.length,
+                    pending: orders.filter(o => o.status === 'pending').length,
+                    delivered: orders.filter(o => o.status === 'delivered').length,
+                    cancelled: orders.filter(o => o.status === 'cancelled').length,
+                };
+
+                document.getElementById('totalOrdersCount').textContent = counts.total;
+                document.getElementById('pendingOrdersCount').textContent = counts.pending;
+                document.getElementById('deliveredOrdersCount').textContent = counts.delivered;
+                document.getElementById('cancelledOrdersCount').textContent = counts.cancelled;
+                document.getElementById('bannerOrdersCount').textContent = counts.total;
+                document.getElementById('bannerPendingCount').textContent = counts.pending;
+
+                document.getElementById('tab-all').textContent = `All (${counts.total})`;
+                document.getElementById('tab-pending').textContent = `Pending (${counts.pending})`;
+                document.getElementById('tab-delivered').textContent = `Delivered (${counts.delivered})`;
+                document.getElementById('tab-cancelled').textContent = `Cancelled (${counts.cancelled})`;
+            }
+
+            async function loadOrders() {
+                const response = await fetch(apiConfig.listUrl, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) {
+                    return;
+                }
+
+                const payload = await response.json();
+                allOrders = payload.data || [];
+                renderOrders(allOrders);
+                updateStats(allOrders);
+                checkEmpty();
             }
 
             // filter tabs
@@ -446,39 +331,44 @@
 
             // cancel modal
             let pendingCancel = null;
+            let pendingCancelOrderId = null;
 
-            function openCancelModal(orderId) {
-                pendingCancel = orderId;
-                document.getElementById('cancelOrderId').textContent = orderId;
+            function openCancelModal(orderNumber, orderId) {
+                pendingCancel = orderNumber;
+                pendingCancelOrderId = orderId;
+                document.getElementById('cancelOrderId').textContent = orderNumber;
                 document.getElementById('cancelModal').classList.add('show');
             }
 
             function closeModal() {
                 pendingCancel = null;
+                pendingCancelOrderId = null;
                 document.getElementById('cancelModal').classList.remove('show');
             }
 
-            function confirmCancel() {
-                if (pendingCancel) {
-                    // find the row and update
-                    document.querySelectorAll('#ordersBody tr').forEach(tr => {
-                        if (tr.querySelector('.order-id')?.textContent === pendingCancel) {
-                            tr.querySelector('.status-badge').className = 'status-badge s-cancelled';
-                            tr.querySelector('.status-badge').textContent = 'CANCELLED';
-                            tr.dataset.status = 'cancelled';
-                            const actions = tr.querySelector('.actions-cell');
-                            actions.innerHTML = `
-          <a href="#" class="act-btn act-view"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</a>
-          <a href="#" class="act-btn act-reorder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Reorder</a>
-        `;
-                        }
-                    });
-                }
+            async function confirmCancel() {
+                if (!pendingCancelOrderId) return;
+                const url = apiConfig.cancelUrlTemplate.replace('__ORDER_ID__', pendingCancelOrderId);
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': apiConfig.csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
                 closeModal();
+                if (response.ok) {
+                    await loadOrders();
+                }
             }
             // close modal on backdrop click
             document.getElementById('cancelModal').addEventListener('click', function(e) {
                 if (e.target === this) closeModal()
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                loadOrders();
             });
         </script>
     @endpush

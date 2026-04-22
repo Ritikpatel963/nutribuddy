@@ -12,6 +12,8 @@ class HomeController extends Controller
     {
         $featuredProducts = \App\Models\Product::where('is_active', true)
             ->with(['primaryImage', 'category', 'images'])
+            ->latest()
+            ->limit(3)
             ->get();
 
         return view('pages.index', compact('featuredProducts'));

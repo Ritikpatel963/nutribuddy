@@ -24,16 +24,16 @@
       <div class="welcome-banner d1">
         <div class="welcome-text" style="position:relative;z-index:1">
           <h2>Welcome back, <span>{{ Auth::user()->name }}!</span> 👋</h2>
-          <p>Here's a quick overview of your account activity.<br>You have <strong style="color:var(--ye)">2 pending
+          <p id="udWelcomeLine">Here's a quick overview of your account activity.<br>You have <strong style="color:var(--ye)">0 pending
               orders</strong> awaiting delivery.</p>
         </div>
         <div class="welcome-right">
           <div class="banner-stat">
-            <div class="bs-num">₹4,112</div>
+            <div class="bs-num" id="udTotalSpent">₹0</div>
             <div class="bs-lbl">Total Spent</div>
           </div>
           <div class="banner-stat">
-            <div class="bs-num">4</div>
+            <div class="bs-num" id="udOrdersCount">0</div>
             <div class="bs-lbl">Orders</div>
           </div>
           <div class="banner-emoji"></div>
@@ -51,7 +51,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">4</div>
+            <div class="num" id="udStatTotal">0</div>
             <div class="lbl">Total Orders</div>
           </div>
         </div>
@@ -63,7 +63,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">1</div>
+            <div class="num" id="udStatCompleted">0</div>
             <div class="lbl">Completed</div>
           </div>
         </div>
@@ -75,7 +75,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">2</div>
+            <div class="num" id="udStatPending">0</div>
             <div class="lbl">Pending</div>
           </div>
         </div>
@@ -88,7 +88,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">1</div>
+            <div class="num" id="udStatCancelled">0</div>
             <div class="lbl">Cancelled</div>
           </div>
         </div>
@@ -145,7 +145,7 @@
         <div class="box">
           <div class="box-head">
             <h3>📋 Recent Orders</h3>
-            <a href="#" class="view-all">View All</a>
+            <a href="{{ route('order') }}" class="view-all">View All</a>
           </div>
           <div style="overflow-x:auto">
             <table class="orders-table">
@@ -157,32 +157,7 @@
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><span class="order-id">ORD-1774942041747</span></td>
-                  <td>31 Mar 2026</td>
-                  <td><strong>₹2,828</strong></td>
-                  <td><span class="status-badge s-pending">PENDING</span></td>
-                </tr>
-                <tr>
-                  <td><span class="order-id">ORD-1774668404749</span></td>
-                  <td>28 Mar 2026</td>
-                  <td><strong>₹588</strong></td>
-                  <td><span class="status-badge s-pending">PENDING</span></td>
-                </tr>
-                <tr>
-                  <td><span class="order-id">ORD-1774331569477</span></td>
-                  <td>24 Mar 2026</td>
-                  <td><strong>₹472</strong></td>
-                  <td><span class="status-badge s-delivered">DELIVERED</span></td>
-                </tr>
-                <tr>
-                  <td><span class="order-id">ORD-1774331118451</span></td>
-                  <td>24 Mar 2026</td>
-                  <td><strong>₹224</strong></td>
-                  <td><span class="status-badge s-cancelled">CANCELLED</span></td>
-                </tr>
-              </tbody>
+              <tbody id="udRecentOrdersBody"></tbody>
             </table>
           </div>
         </div>
@@ -418,3 +393,72 @@
     </script>
   @endpush
 @endsection
+
+@push('scripts')
+<script>
+  (function () {
+    const ordersUrl = @json(route('user.orders.index'));
+
+    function money(value) {
+      return `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    }
+
+    function dateText(value) {
+      const dt = new Date(value);
+      return Number.isNaN(dt.getTime()) ? '-' : dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function badgeClass(status) {
+      if (status === 'delivered') return 's-delivered';
+      if (status === 'cancelled') return 's-cancelled';
+      return 's-pending';
+    }
+
+    async function loadDashboardOrders() {
+      const res = await fetch(ordersUrl, { headers: { 'Accept': 'application/json' } });
+      if (res.status === 401 || res.status === 419) {
+        window.location.href = '/login';
+        return;
+      }
+      if (!res.ok) return;
+
+      const payload = await res.json();
+      const orders = payload.data || [];
+
+      const total = orders.length;
+      const completed = orders.filter(o => o.status === 'delivered').length;
+      const cancelled = orders.filter(o => o.status === 'cancelled').length;
+      const pending = orders.filter(o => ['pending','confirmed','processing','packed','shipped'].includes(o.status)).length;
+      const totalSpent = orders.reduce((sum, o) => sum + Number(o.grand_total || 0), 0);
+
+      document.getElementById('udOrdersCount').textContent = total;
+      document.getElementById('udStatTotal').textContent = total;
+      document.getElementById('udStatCompleted').textContent = completed;
+      document.getElementById('udStatPending').textContent = pending;
+      document.getElementById('udStatCancelled').textContent = cancelled;
+      document.getElementById('udTotalSpent').textContent = money(totalSpent);
+      document.getElementById('udWelcomeLine').innerHTML =
+        `Here's a quick overview of your account activity.<br>You have <strong style="color:var(--ye)">${pending} pending orders</strong> awaiting delivery.`;
+
+      const body = document.getElementById('udRecentOrdersBody');
+      body.innerHTML = '';
+      orders.slice(0, 4).forEach(o => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="order-id">${o.order_number}</span></td>
+          <td>${dateText(o.placed_at || o.created_at)}</td>
+          <td><strong>${money(o.grand_total)}</strong></td>
+          <td><span class="status-badge ${badgeClass(o.status)}">${String(o.status || '').toUpperCase()}</span></td>
+        `;
+        body.appendChild(tr);
+      });
+
+      if (!orders.length) {
+        body.innerHTML = `<tr><td colspan="4" style="padding:14px 10px;color:var(--muted)">No orders yet.</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDashboardOrders);
+  })();
+</script>
+@endpush

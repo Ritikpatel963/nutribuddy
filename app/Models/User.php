@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function cart(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Cart::class);
+    }
+
     public function supportTickets(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SupportTicket::class);

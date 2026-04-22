@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 class Coupon extends Model
 {
@@ -43,5 +44,32 @@ class Coupon extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function usages(): HasMany
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
+
+    public function isCurrentlyValid(): bool
+    {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        $now = Carbon::now();
+        if ($this->starts_at && $now->lt($this->starts_at)) {
+            return false;
+        }
+
+        if ($this->ends_at && $now->gt($this->ends_at)) {
+            return false;
+        }
+
+        if ($this->usage_limit !== null && $this->used_count >= $this->usage_limit) {
+            return false;
+        }
+
+        return true;
     }
 }

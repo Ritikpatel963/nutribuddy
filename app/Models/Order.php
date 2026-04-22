@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -13,12 +14,15 @@ class Order extends Model
 
     protected $fillable = [
         'order_number',
+        'checkout_token',
         'user_id',
         'coupon_id',
         'status',
+        'fulfillment_status',
         'payment_status',
         'payment_method',
         'currency',
+        'coupon_code',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -33,9 +37,14 @@ class Order extends Model
         'shipping_country',
         'subtotal',
         'tax_total',
+        'gst_total',
+        'cgst_total',
+        'sgst_total',
+        'igst_total',
         'discount_total',
         'shipping_total',
         'grand_total',
+        'pricing_snapshot',
         'customer_note',
         'admin_note',
         'placed_at',
@@ -46,9 +55,14 @@ class Order extends Model
         return [
             'subtotal' => 'decimal:2',
             'tax_total' => 'decimal:2',
+            'gst_total' => 'decimal:2',
+            'cgst_total' => 'decimal:2',
+            'sgst_total' => 'decimal:2',
+            'igst_total' => 'decimal:2',
             'discount_total' => 'decimal:2',
             'shipping_total' => 'decimal:2',
             'grand_total' => 'decimal:2',
+            'pricing_snapshot' => 'array',
             'placed_at' => 'datetime',
         ];
     }
@@ -76,5 +90,15 @@ class Order extends Model
     public function returns(): HasMany
     {
         return $this->hasMany(OrderReturn::class);
+    }
+
+    public function latestPayment(): HasOne
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
+    }
+
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class)->latest();
     }
 }

@@ -1838,8 +1838,8 @@
                 <div class="login-done">
                     <div class="user-ava"><img src="img/people.png" alt=""></div>
                     <div>
-                        <div class="user-name">Priya Sharma</div>
-                        <div class="user-phone">+91 98765 43210 · priya@email.com</div>
+                        <div class="user-name">{{ auth()->user()->name ?? 'User' }}</div>
+                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }} · {{ auth()->user()->email ?? '—' }}</div>
                     </div>
                 </div>
             </div>
@@ -1860,29 +1860,7 @@
                         <div class="addr-tab active" onclick="setAddrTab(this)">🏠 Saved Addresses</div>
                         <div class="addr-tab" onclick="setAddrTab(this)">➕ Add New</div>
                     </div>
-                    <div class="saved-addresses" id="savedAddrPanel">
-                        <div class="addr-item selected" onclick="selectAddr(this)">
-                            <div class="addr-radio"></div>
-                            <div class="addr-info">
-                                <div class="addr-name">Priya Sharma <span class="addr-type-tag">🏠 Home</span></div>
-                                <div class="addr-line">42, Sunshine Residency, HSR Layout Sector 3<br>Bengaluru, Karnataka –
-                                    560102</div>
-                                <div class="addr-phone">📞 +91 98765 43210</div>
-                            </div>
-                            <button class="addr-del-btn" title="Delete">🗑</button>
-                        </div>
-                        <div class="addr-item" onclick="selectAddr(this)">
-                            <div class="addr-radio"></div>
-                            <div class="addr-info">
-                                <div class="addr-name">Priya (Office) <span class="addr-type-tag"
-                                        style="background:var(--skl);color:#0088bb">🏢 Work</span></div>
-                                <div class="addr-line">Level 4, Prestige Tech Park, Outer Ring Road<br>Bengaluru, Karnataka
-                                    – 560037</div>
-                                <div class="addr-phone">📞 +91 98765 43210</div>
-                            </div>
-                            <button class="addr-del-btn" title="Delete">🗑</button>
-                        </div>
-                    </div>
+                    <div class="saved-addresses" id="savedAddrPanel"></div>
                     <div id="newAddrPanel" style="display:none">
                         <div class="new-addr-form show">
                             <div class="form-grid">
@@ -1947,6 +1925,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div style="margin-top:14px;">
+                                <button type="button" class="continue-btn" onclick="saveNewAddress()" style="width:auto;padding:10px 18px;">
+                                    Save Address
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="offer-strip" style="margin-top:18px;margin-bottom:16px">
@@ -1954,7 +1937,7 @@
                         <div>Your order qualifies for <strong>FREE delivery</strong> — expected by <strong>Tomorrow, 5
                                 PM</strong>!</div>
                     </div>
-                    <button class="continue-btn" onclick="goToPayment()">
+                    <button class="continue-btn" id="addressContinueBtn" onclick="goToPayment()">
                         Continue to Payment →
                     </button>
                 </div>
@@ -1973,7 +1956,7 @@
                     <div class="payment-methods">
 
                         <!-- UPI -->
-                        <div class="pay-method selected" onclick="selectPayMethod(this,'upi')">
+                        <div class="pay-method" data-method="upi" onclick="selectPayMethod(this,'upi')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <!-- <div class="pay-icon">📱</div> -->
@@ -2014,7 +1997,7 @@
                         </div>
 
                         <!-- Credit / Debit Card -->
-                        <div class="pay-method" onclick="selectPayMethod(this,'card')">
+                        <div class="pay-method" data-method="card" onclick="selectPayMethod(this,'card')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">💳</div>
@@ -2048,7 +2031,7 @@
                         </div>
 
                         <!-- EMI -->
-                        <div class="pay-method" onclick="selectPayMethod(this,'emi')">
+                        <div class="pay-method" data-method="emi" onclick="selectPayMethod(this,'emi')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">📆</div>
@@ -2091,7 +2074,7 @@
                         </div>
 
                         <!-- Wallets -->
-                        <div class="pay-method" onclick="selectPayMethod(this,'wallet')">
+                        <div class="pay-method" data-method="wallet" onclick="selectPayMethod(this,'wallet')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">👛</div>
@@ -2115,7 +2098,7 @@
                         </div>
 
                         <!-- Net Banking -->
-                        <div class="pay-method" onclick="selectPayMethod(this,'netbank')">
+                        <div class="pay-method" data-method="netbank" onclick="selectPayMethod(this,'netbank')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">🏦</div>
@@ -2144,7 +2127,7 @@
                         </div>
 
                         <!-- COD -->
-                        <div class="pay-method" onclick="selectPayMethod(this,'cod')">
+                        <div class="pay-method selected" id="payMethodCod" data-method="cod" onclick="selectPayMethod(this,'cod')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">💵</div>
@@ -2167,7 +2150,7 @@
 
                     </div>
 
-                    <button class="continue-btn" onclick="openOtpModal()">
+                    <button class="continue-btn" id="paymentPlaceBtn" onclick="openOtpModal()">
                         🔒 Place Order — ₹1,800
                     </button>
                 </div>
@@ -2182,56 +2165,7 @@
                 <div class="item-count">3 Items</div>
             </div>
             <div class="os-body">
-                <div class="cart-items">
-                    <div class="ci">
-                        <div class="ci-img"><img src="img/product2.png" alt=""></div>
-                        <div class="ci-info">
-                            <div class="ci-name">GrowStrong Gummies — 60 Pack</div>
-                            <div class="ci-variant">Mixed Berry · 7–12 Yrs</div>
-                            <div class="ci-qty-row">
-                                <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
-                                <div class="qty-val">1</div>
-                                <button class="qty-btn" onclick="updateQty(this,1)">+</button>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="ci-price">₹599</div>
-                            <div class="ci-old">₹799</div>
-                        </div>
-                    </div>
-                    <div class="ci">
-                        <div class="ci-img"><img src="img/product2.png" alt=""></div>
-                        <div class="ci-info">
-                            <div class="ci-name">BrainBoost Chews — 30 Pack</div>
-                            <div class="ci-variant">Mango · 7–12 Yrs</div>
-                            <div class="ci-qty-row">
-                                <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
-                                <div class="qty-val">1</div>
-                                <button class="qty-btn" onclick="updateQty(this,1)">+</button>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="ci-price">₹649</div>
-                            <div class="ci-old">₹849</div>
-                        </div>
-                    </div>
-                    <div class="ci">
-                        <div class="ci-img"><img src="img/product2.png" alt=""></div>
-                        <div class="ci-info">
-                            <div class="ci-name">DreamCalm Drops — 30 Day</div>
-                            <div class="ci-variant">Chamomile · All Ages</div>
-                            <div class="ci-qty-row">
-                                <button class="qty-btn" onclick="updateQty(this,-1)">−</button>
-                                <div class="qty-val">1</div>
-                                <button class="qty-btn" onclick="updateQty(this,1)">+</button>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="ci-price">₹549</div>
-                            <div class="ci-old">₹699</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="cart-items" id="checkoutCartItems"></div>
 
                 <!-- Coupon -->
                 <div class="coupon-row" id="couponRow">
@@ -2564,6 +2498,7 @@
                     function selectAddr(el) {
                         document.querySelectorAll('.addr-item').forEach(a => a.classList.remove('selected'));
                         el.classList.add('selected');
+                        window.__selectedAddressId = el.getAttribute('data-address-id') || '';
                     }
 
                     function toggleAddrType(el) {
@@ -2586,15 +2521,36 @@
                     }
 
                     /* ══ PAYMENT ══ */
-                    let couponApplied = false;
-                    let currentTotal = 1800;
+                    const api = {
+                        cartUrl: '/user/cart',
+                        addressesUrl: '/user/addresses',
+                        checkoutSummaryUrl: '/user/checkout/summary',
+                        placeOrderUrl: '/user/checkout/place-order',
+                        csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    };
+
+                    window.__selectedAddressId = '';
+                    window.__checkoutToken = '';
+                    window.__couponCode = '';
+                    let currentTotal = 0;
 
                     function selectPayMethod(el, type) {
+                        if (type !== 'cod') {
+                            alert('Only Cash on Delivery is available right now.');
+                            const cod = document.getElementById('payMethodCod');
+                            if (cod) {
+                                document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+                                cod.classList.add('selected');
+                            }
+                            type = 'cod';
+                        }
+
                         document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
                         el.classList.add('selected');
-                        const codFee = type === 'cod' ? 49 : 0;
+                        const codFee = 49;
                         const total = currentTotal + codFee;
-                        document.querySelector('.continue-btn').innerHTML = `🔒 Place Order — ₹${total.toLocaleString('en-IN')}`;
+                        const payBtn = document.getElementById('paymentPlaceBtn');
+                        if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${total.toLocaleString('en-IN')}`;
                         document.querySelector('.place-order-btn').innerHTML =
                             `🔒 Place Order Securely — ₹${total.toLocaleString('en-IN')}`;
                     }
@@ -2631,7 +2587,7 @@
                     }
 
                     /* ══ COUPON ══ */
-                    function applyCoupon() {
+                    async function applyCoupon() {
                         const code = document.getElementById('couponInput').value.trim().toUpperCase();
                         const msg = document.getElementById('couponMsg');
                         const row2 = document.getElementById('couponRow2');
@@ -2639,40 +2595,53 @@
                         const savingsEl = document.getElementById('savingsAmt');
                         const loyaltyEl = document.getElementById('loyaltyPoints');
                         const couponRowEl = document.getElementById('couponRow');
-                        const valid = {
-                            'KIDS10': '₹180',
-                            'FIRST50': '₹300',
-                            'NUTRIBUDDY': '₹150',
-                            'SAVE20': '₹360'
-                        };
 
-                        if (valid[code]) {
-                            couponApplied = true;
-                            const discAmt = parseInt(valid[code].replace('₹', ''));
-                            currentTotal = 1800 - discAmt;
-                            msg.textContent = `✅ Coupon "${code}" applied! You save ${valid[code]}`;
-                            msg.style.color = '#00a870';
-                            msg.classList.add('show');
-                            row2.style.display = 'flex';
-                            document.getElementById('couponDiscount').textContent = `− ${valid[code]}`;
-                            totalEl.textContent = `₹${currentTotal.toLocaleString('en-IN')}`;
-                            savingsEl.textContent = `₹${(547+discAmt).toLocaleString('en-IN')}`;
-                            loyaltyEl.textContent = `${Math.round(currentTotal/20)} NutriBuddy Coins`;
-                            couponRowEl.classList.add('applied');
-                            document.querySelector('.continue-btn').innerHTML =
-                                `🔒 Place Order — ₹${currentTotal.toLocaleString('en-IN')}`;
-                            document.querySelector('.place-order-btn').innerHTML =
-                                `🔒 Place Order Securely — ₹${currentTotal.toLocaleString('en-IN')}`;
-                            document.getElementById('couponInput').disabled = true;
-                        } else if (code === '') {
-                            msg.textContent = '⚠️ Please enter a coupon code.';
-                            msg.style.color = 'var(--or)';
-                            msg.classList.add('show');
-                        } else {
-                            msg.textContent = `❌ "${code}" is not a valid coupon.`;
-                            msg.style.color = 'var(--or)';
-                            msg.classList.add('show');
+                        msg.classList.add('show');
+                        msg.style.color = 'var(--text-light)';
+                        msg.textContent = 'Applying coupon...';
+
+                        const res = await fetch(api.checkoutSummaryUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                            },
+                            body: JSON.stringify({ coupon_code: code || null })
+                        });
+
+                        if (res.status === 401 || res.status === 419) {
+                            window.location.href = '/login';
+                            return;
                         }
+
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            msg.style.color = 'var(--or)';
+                            msg.textContent = payload.message || 'Invalid coupon.';
+                            return;
+                        }
+
+                        window.__couponCode = code;
+                        window.__checkoutToken = payload.checkout_token || '';
+
+                        const pricing = payload.pricing || {};
+                        currentTotal = Number(pricing.grand_total || 0);
+
+                        msg.style.color = '#00a870';
+                        msg.textContent = code ? `✅ Coupon "${code}" applied!` : '✅ Totals updated.';
+                        row2.style.display = code ? 'flex' : 'none';
+                        document.getElementById('couponDiscount').textContent = code ? `− ₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}` : '− ₹0';
+                        totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN')}`;
+                        savingsEl.textContent = `₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}`;
+                        loyaltyEl.textContent = `${Math.round(currentTotal / 20)} NutriBuddy Coins`;
+                        couponRowEl.classList.add('applied');
+
+                        const totalWithCod = currentTotal + 49;
+                        const payBtn = document.getElementById('paymentPlaceBtn');
+                        if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
+                        const pob = document.querySelector('.place-order-btn');
+                        if (pob) pob.innerHTML = `🔒 Place Order Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
                     }
 
                     /* ══ QTY ══ */
@@ -2866,12 +2835,229 @@
                     }
 
                     /* ══ PLACE ORDER (called after OTP success) ══ */
-                    function placeOrder() {
+                    async function placeOrder() {
+                        const addressId = window.__selectedAddressId;
+                        if (!addressId) {
+                            alert('Please select a delivery address.');
+                            return;
+                        }
+
+                        if (!window.__checkoutToken) {
+                            await applyCoupon();
+                        }
+
+                        const res = await fetch(api.placeOrderUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                            },
+                            body: JSON.stringify({
+                                address_id: Number(addressId),
+                                coupon_code: window.__couponCode || null,
+                                payment_method: 'cod',
+                                checkout_token: window.__checkoutToken || ''
+                            })
+                        });
+
+                        if (res.status === 401 || res.status === 419) {
+                            window.location.href = '/login';
+                            return;
+                        }
+
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            alert(payload.message || 'Unable to place order.');
+                            return;
+                        }
+
+                        const orderNumber = payload.order?.order_number || '';
+                        const box = document.querySelector('#successOverlay .order-id-box');
+                        if (box && orderNumber) box.textContent = `Order ID: ${orderNumber}`;
+
                         document.getElementById('progressFill').style.width = '100%';
-                        setTimeout(() => {
-                            document.getElementById('successOverlay').classList.add('show');
-                        }, 400);
+                        setTimeout(() => document.getElementById('successOverlay').classList.add('show'), 400);
                     }
+
+                    async function loadAddresses() {
+                        const res = await fetch(api.addressesUrl, { headers: { 'Accept': 'application/json' } });
+                        if (res.status === 401 || res.status === 419) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        if (!res.ok) return;
+
+                        const payload = await res.json().catch(() => ({}));
+                        const addresses = payload.data || [];
+                        const panel = document.getElementById('savedAddrPanel');
+                        panel.innerHTML = '';
+
+                        if (!addresses.length) {
+                            panel.innerHTML = `<div style="padding:14px;color:var(--text-light)">No saved address. Please add a new address.</div>`;
+                            window.__selectedAddressId = '';
+                            return;
+                        }
+
+                        addresses.forEach((a, idx) => {
+                            const div = document.createElement('div');
+                            div.className = 'addr-item' + (idx === 0 ? ' selected' : '');
+                            div.setAttribute('data-address-id', a.id);
+                            div.setAttribute('onclick', 'selectAddr(this)');
+                            div.innerHTML = `
+                                <div class="addr-radio"></div>
+                                <div class="addr-info">
+                                    <div class="addr-name">${a.full_name} <span class="addr-type-tag">🏠 ${a.label || 'Saved'}</span></div>
+                                    <div class="addr-line">${a.address_line_1}${a.address_line_2 ? (', ' + a.address_line_2) : ''}<br>${a.city}, ${a.state} – ${a.postal_code}</div>
+                                    <div class="addr-phone">📞 +91 ${a.phone}</div>
+                                </div>
+                                <button class="addr-del-btn" type="button" title="Delete">🗑</button>
+                            `;
+                            div.querySelector('button').addEventListener('click', async (e) => {
+                                e.stopPropagation();
+                                await fetch(`${api.addressesUrl}/${a.id}`, {
+                                    method: 'DELETE',
+                                    headers: { ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {}) }
+                                });
+                                loadAddresses();
+                            });
+                            panel.appendChild(div);
+                        });
+
+                        window.__selectedAddressId = String(addresses[0].id);
+                    }
+
+                    async function loadCartSummary() {
+                        const res = await fetch(api.cartUrl, { headers: { 'Accept': 'application/json' } });
+                        if (res.status === 401 || res.status === 419) {
+                            window.location.href = '/login';
+                            return;
+                        }
+                        if (!res.ok) return;
+
+                        const payload = await res.json().catch(() => ({}));
+                        const items = payload.cart?.items || [];
+                        const pricing = payload.pricing || {};
+                        currentTotal = Number(pricing.grand_total || 0);
+
+                        const totalEl = document.getElementById('totalDisplay');
+                        if (totalEl) totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN')}`;
+
+                        const itemsCount = document.querySelector('.item-count');
+                        if (itemsCount) itemsCount.textContent = `${items.length} Items`;
+
+                        const cartWrap = document.getElementById('checkoutCartItems');
+                        if (cartWrap) {
+                            cartWrap.innerHTML = '';
+                            if (!items.length) {
+                                cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
+                            } else {
+                                items.forEach(it => {
+                                    const name = it.product?.name || 'Product';
+                                    const qty = it.quantity || 1;
+                                    const price = it.product_variant ? it.product_variant.price : it.product?.base_price;
+                                    const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product.primary_image.image_path) : 'img/product2.png';
+
+                                    const row = document.createElement('div');
+                                    row.className = 'ci';
+                                    row.innerHTML = `
+                                      <div class="ci-img"><img src="${img}" alt=""></div>
+                                      <div class="ci-info">
+                                        <div class="ci-name">${name}</div>
+                                        <div class="ci-variant">${it.product_variant?.name || ''}</div>
+                                        <div class="ci-qty-row">
+                                          <div class="qty-val">${qty}</div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div class="ci-price">₹${Number(price || 0).toLocaleString('en-IN')}</div>
+                                      </div>
+                                    `;
+                                    cartWrap.appendChild(row);
+                                });
+                            }
+                        }
+
+                        // generate a token for idempotency
+                        window.__checkoutToken = window.__checkoutToken || '';
+                        if (!window.__checkoutToken) {
+                            const sumRes = await fetch(api.checkoutSummaryUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                                },
+                                body: JSON.stringify({ coupon_code: null })
+                            });
+                            const sumPayload = await sumRes.json().catch(() => ({}));
+                            window.__checkoutToken = sumPayload.checkout_token || '';
+                        }
+
+                        // COD only: update button with fee
+                        const totalWithCod = currentTotal + 49;
+                        const payBtn = document.getElementById('paymentPlaceBtn');
+                        if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
+                        const pob = document.querySelector('.place-order-btn');
+                        if (pob) pob.innerHTML = `🔒 Place Order Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+                    }
+
+                    async function saveNewAddress() {
+                        const firstName = document.querySelector('#newAddrPanel input[placeholder="e.g. Priya"]')?.value?.trim() || '';
+                        const lastName = document.querySelector('#newAddrPanel input[placeholder="e.g. Sharma"]')?.value?.trim() || '';
+                        const phoneRaw = document.querySelector('#newAddrPanel input[placeholder="+91 XXXXX XXXXX"]')?.value?.trim() || '';
+                        const line1 = document.querySelector('#newAddrPanel input[placeholder="e.g. 42, Sunshine Residency"]')?.value?.trim() || '';
+                        const line2 = document.querySelector('#newAddrPanel input[placeholder="e.g. HSR Layout, Sector 3"]')?.value?.trim() || '';
+                        const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
+                        const city = document.getElementById('cityField')?.value?.trim() || '';
+                        const state = document.getElementById('stateField')?.value?.trim() || '';
+                        const activeTypeBtn = document.querySelector('.addr-type-btn.active');
+                        const label = activeTypeBtn ? activeTypeBtn.textContent.replace(/[^\w\s]/g, '').trim() : 'Home';
+
+                        const phone = phoneRaw.replace(/\D/g, '').slice(-10);
+                        if (!firstName || !phone || !line1 || !postalCode || !city || !state) {
+                            alert('Please fill all required address fields.');
+                            return;
+                        }
+
+                        const res = await fetch(api.addressesUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                            },
+                            body: JSON.stringify({
+                                label: label || 'Home',
+                                full_name: `${firstName} ${lastName}`.trim(),
+                                phone: phone,
+                                email: '{{ auth()->user()->email ?? "" }}',
+                                address_line_1: line1,
+                                address_line_2: line2,
+                                city: city,
+                                state: state,
+                                postal_code: postalCode,
+                                country: 'India'
+                            })
+                        });
+
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            alert(payload.message || 'Unable to save address.');
+                            return;
+                        }
+
+                        await loadAddresses();
+                        const savedTab = Array.from(document.querySelectorAll('.addr-tab')).find(t => t.textContent.includes('Saved'));
+                        if (savedTab) setAddrTab(savedTab);
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                        loadAddresses();
+                        loadCartSummary();
+                        const cod = document.getElementById('payMethodCod');
+                        if (cod) selectPayMethod(cod, 'cod');
+                    });
 
                     /* Close modal on backdrop click */
                     document.getElementById('otpModal').addEventListener('click', function(e) {
