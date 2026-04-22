@@ -145,7 +145,7 @@ class CheckoutController extends Controller
                     'tax_amount' => $lineItem['tax_amount'],
                     'gst_amount' => $lineItem['tax_amount'],
                     'discount_amount' => 0,
-                    'line_total' => ($lineItem['unit_price'] * $lineItem['quantity']) + $lineItem['tax_amount'],
+                    'line_total' => $lineItem['unit_price'] * $lineItem['quantity'],
                     'item_snapshot' => [
                         'product_slug' => $product->slug,
                         'variant_name' => $variant?->name,

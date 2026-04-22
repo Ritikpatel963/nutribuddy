@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Carbon;
 
 class CouponController extends Controller
 {
@@ -36,6 +37,8 @@ class CouponController extends Controller
 
         $validated['code'] = strtoupper(trim($validated['code']));
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['starts_at'] = $this->normalizeDateInput($validated['starts_at'] ?? null, false);
+        $validated['ends_at'] = $this->normalizeDateInput($validated['ends_at'] ?? null, true);
 
         Coupon::create($validated);
 
@@ -60,6 +63,8 @@ class CouponController extends Controller
 
         $validated['code'] = strtoupper(trim($validated['code']));
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['starts_at'] = $this->normalizeDateInput($validated['starts_at'] ?? null, false);
+        $validated['ends_at'] = $this->normalizeDateInput($validated['ends_at'] ?? null, true);
 
         $coupon->update($validated);
 
@@ -71,5 +76,16 @@ class CouponController extends Controller
         $coupon->delete();
 
         return back()->with('success', 'Coupon deleted successfully.');
+    }
+
+    private function normalizeDateInput(?string $value, bool $endOfDay = false): ?Carbon
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $date = Carbon::createFromFormat('Y-m-d', $value, config('app.timezone'));
+
+        return $endOfDay ? $date->endOfDay() : $date->startOfDay();
     }
 }

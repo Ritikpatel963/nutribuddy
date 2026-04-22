@@ -14,136 +14,135 @@
         <div style="width:36px"></div>
     </div>
     <!-- Wrapper removed to match ud-layout -->
-        <!-- Cancel Confirm Modal -->
-        <div class="modal-backdrop" id="cancelModal">
-            <div class="modal">
-                <h3>Cancel Order? 🤔</h3>
-                <p>Are you sure you want to cancel order <strong id="cancelOrderId"></strong>? This action cannot be undone.
-                </p>
-                <div class="modal-btns">
-                    <button class="m-btn-cancel" onclick="closeModal()">Keep Order</button>
-                    <button class="m-btn-confirm" onclick="confirmCancel()">Yes, Cancel</button>
+    <!-- Cancel Confirm Modal -->
+    <div class="modal-backdrop" id="cancelModal">
+        <div class="modal">
+            <h3>Cancel Order? 🤔</h3>
+            <p>Are you sure you want to cancel order <strong id="cancelOrderId"></strong>? This action cannot be undone.
+            </p>
+            <div class="modal-btns">
+                <button class="m-btn-cancel" onclick="closeModal()">Keep Order</button>
+                <button class="m-btn-confirm" onclick="confirmCancel()">Yes, Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- ════════════ MAIN ════════════ -->
+    <div class="page">
+        <!-- SUMMARY STRIP -->
+        <div class="summary-strip fade-in d1">
+            <div class="sum-card">
+                <div class="sum-icon" style="background:var(--mnl)">📦</div>
+                <div>
+                    <div class="s-num" id="totalOrdersCount">0</div>
+                    <div class="s-lbl">Total Orders</div>
+                </div>
+            </div>
+            <div class="sum-card">
+                <div class="sum-icon" style="background:var(--yel)">⏳</div>
+                <div>
+                    <div class="s-num" id="pendingOrdersCount">0</div>
+                    <div class="s-lbl">Pending</div>
+                </div>
+            </div>
+            <div class="sum-card">
+                <div class="sum-icon" style="background:var(--mnl)">✅</div>
+                <div>
+                    <div class="s-num" id="deliveredOrdersCount">0</div>
+                    <div class="s-lbl">Delivered</div>
+                </div>
+            </div>
+            <div class="sum-card">
+                <div class="sum-icon" style="background:#ffe4e6">❌</div>
+                <div>
+                    <div class="s-num" id="cancelledOrdersCount">0</div>
+                    <div class="s-lbl">Cancelled</div>
                 </div>
             </div>
         </div>
-        <!-- ════════════ MAIN ════════════ -->
-            <div class="page">
-               <!-- SUMMARY STRIP -->
-                <div class="summary-strip fade-in d1">
-                    <div class="sum-card">
-                        <div class="sum-icon" style="background:var(--mnl)">📦</div>
-                        <div>
-                            <div class="s-num" id="totalOrdersCount">0</div>
-                            <div class="s-lbl">Total Orders</div>
-                        </div>
-                    </div>
-                    <div class="sum-card">
-                        <div class="sum-icon" style="background:var(--yel)">⏳</div>
-                        <div>
-                            <div class="s-num" id="pendingOrdersCount">0</div>
-                            <div class="s-lbl">Pending</div>
-                        </div>
-                    </div>
-                    <div class="sum-card">
-                        <div class="sum-icon" style="background:var(--mnl)">✅</div>
-                        <div>
-                            <div class="s-num" id="deliveredOrdersCount">0</div>
-                            <div class="s-lbl">Delivered</div>
-                        </div>
-                    </div>
-                    <div class="sum-card">
-                        <div class="sum-icon" style="background:#ffe4e6">❌</div>
-                        <div>
-                            <div class="s-num" id="cancelledOrdersCount">0</div>
-                            <div class="s-lbl">Cancelled</div>
-                        </div>
-                    </div>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header fade-in d2">
+            <div class="page-header-left">
+                <h1>My Orders 📋</h1>
+                <p>Track and manage all your NutriBuddy purchases</p>
+            </div>
+            <div class="page-header-right">
+                <div class="search-bar">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" color="var(--muted)">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" placeholder="Search by order ID..." id="searchInput" oninput="filterOrders()">
                 </div>
-
-                <!-- PAGE HEADER -->
-                <div class="page-header fade-in d2">
-                    <div class="page-header-left">
-                        <h1>My Orders 📋</h1>
-                        <p>Track and manage all your NutriBuddy purchases</p>
-                    </div>
-                    <div class="page-header-right">
-                        <div class="search-bar">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2.5" color="var(--muted)">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                            <input type="text" placeholder="Search by order ID..." id="searchInput"
-                                oninput="filterOrders()">
-                        </div>
-                        <div class="filter-tabs">
-                            <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
-                            <button class="ftab" id="tab-pending" onclick="filterTab(this,'pending')">Pending (0)</button>
-                            <button class="ftab" id="tab-delivered" onclick="filterTab(this,'delivered')">Delivered (0)</button>
-                            <button class="ftab" id="tab-cancelled" onclick="filterTab(this,'cancelled')">Cancelled (0)</button>
-                        </div>
-                    </div>
+                <div class="filter-tabs">
+                    <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
+                    <button class="ftab" id="tab-pending" onclick="filterTab(this,'pending')">Pending (0)</button>
+                    <button class="ftab" id="tab-delivered" onclick="filterTab(this,'delivered')">Delivered (0)</button>
+                    <button class="ftab" id="tab-cancelled" onclick="filterTab(this,'cancelled')">Cancelled (0)</button>
                 </div>
+            </div>
+        </div>
 
-                <!-- WELCOME BANNER -->
-                <div class="welcome-banner d1">
-                    <div class="welcome-text" style="position:relative;z-index:1">
-                        <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
-                        <p>Review your recent orders and track packages in one place.</p>
-                    </div>
-                    <div class="welcome-right">
-                        <div class="banner-stat">
-                            <div class="bs-num" id="bannerOrdersCount">0</div>
-                            <div class="bs-lbl">Orders</div>
-                        </div>
-                        <div class="banner-stat">
-                            <div class="bs-num" id="bannerPendingCount">0</div>
-                            <div class="bs-lbl">Pending</div>
-                        </div>
-                        <div class="banner-emoji">📦</div>
-                    </div>
+        <!-- WELCOME BANNER -->
+        <div class="welcome-banner d1">
+            <div class="welcome-text" style="position:relative;z-index:1">
+                <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
+                <p>Review your recent orders and track packages in one place.</p>
+            </div>
+            <div class="welcome-right">
+                <div class="banner-stat">
+                    <div class="bs-num" id="bannerOrdersCount">0</div>
+                    <div class="bs-lbl">Orders</div>
                 </div>
-
-                <!-- ORDERS TABLE (desktop) -->
-                <div class="orders-card fade-in d3">
-                    <div style="overflow-x:auto">
-                        <table class="orders-table" id="ordersTable">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ordersBody"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- MOBILE CARDS -->
-                    <div class="mobile-orders" id="mobileOrders"></div>
-
-                    <!-- empty state (hidden by default) -->
-                    <div class="empty-state" id="emptyState" style="display:none">
-                        <span class="empty-icon">📭</span>
-                        <h3>No orders found</h3>
-                        <p>We couldn't find any orders matching your filter.</p>
-                        <a href="#" class="shop-btn">🛒 Shop Now</a>
-                    </div>
-
-                    <!-- pagination -->
-                    <div class="pagination">
-                        <span class="pag-info" id="ordersPaginationInfo">Showing 0 of 0 orders</span>
-                        <div class="pag-btns">
-                            <button class="pag-btn">‹</button>
-                            <button class="pag-btn active">1</button>
-                            <button class="pag-btn">›</button>
-                        </div>
-                    </div>
+                <div class="banner-stat">
+                    <div class="bs-num" id="bannerPendingCount">0</div>
+                    <div class="bs-lbl">Pending</div>
                 </div>
+                <div class="banner-emoji">📦</div>
+            </div>
+        </div>
 
-            </div><!-- /page -->
+        <!-- ORDERS TABLE (desktop) -->
+        <div class="orders-card fade-in d3">
+            <div style="overflow-x:auto">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersBody"></tbody>
+                </table>
+            </div>
+
+            <!-- MOBILE CARDS -->
+            <div class="mobile-orders" id="mobileOrders"></div>
+
+            <!-- empty state (hidden by default) -->
+            <div class="empty-state" id="emptyState" style="display:none">
+                <span class="empty-icon">📭</span>
+                <h3>No orders found</h3>
+                <p>We couldn't find any orders matching your filter.</p>
+                <a href="#" class="shop-btn">🛒 Shop Now</a>
+            </div>
+
+            <!-- pagination -->
+            <div class="pagination">
+                <span class="pag-info" id="ordersPaginationInfo">Showing 0 of 0 orders</span>
+                <div class="pag-btns">
+                    <button class="pag-btn">‹</button>
+                    <button class="pag-btn active">1</button>
+                    <button class="pag-btn">›</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /page -->
     @push('scripts')
         <script>
             // sidebar
@@ -202,12 +201,12 @@
                     </svg>Invoice</a>`;
 
                 const canCancel = ['pending', 'confirmed', 'processing', 'packed'].includes(order.status);
-                const cancelBtn = canCancel
-                    ? `<button class="act-btn act-cancel" onclick="openCancelModal('${order.order_number}', ${order.id})">
+                const cancelBtn = canCancel ?
+                    `<button class="act-btn act-cancel" onclick="openCancelModal('${order.order_number}', ${order.id})">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>Cancel</button>`
-                    : '';
+                        </svg>Cancel</button>` :
+                    '';
 
                 return `${viewBtn}${invoiceBtn}${cancelBtn}`;
             }
@@ -253,7 +252,8 @@
                     mobile.appendChild(card);
                 });
 
-                document.getElementById('ordersPaginationInfo').textContent = `Showing ${orders.length} of ${orders.length} orders`;
+                document.getElementById('ordersPaginationInfo').textContent =
+                    `Showing ${orders.length} of ${orders.length} orders`;
             }
 
             function updateStats(orders) {
@@ -279,7 +279,9 @@
 
             async function loadOrders() {
                 const response = await fetch(apiConfig.listUrl, {
-                    headers: { 'Accept': 'application/json' }
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
                 if (!response.ok) {
                     return;

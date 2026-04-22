@@ -15,15 +15,27 @@
     </div>
 
     <div class="page">
-        <div class="orders-card fade-in d1" style="padding:20px">
-            <h2 style="margin-bottom:10px">Order {{ $order->order_number }}</h2>
-            <p>Status: <strong>{{ strtoupper($order->status) }}</strong> | Fulfillment: <strong>{{ strtoupper($order->fulfillment_status) }}</strong></p>
-            <p>Placed at: {{ optional($order->placed_at)->format('d M Y h:i A') ?? '-' }}</p>
-            <p>Total: <strong>₹{{ number_format($order->grand_total, 2) }}</strong></p>
+        <div class="orders-card fade-in d1 order-detail-card">
+            <div class="order-detail-head">
+                <div>
+                    <h2>Order {{ $order->order_number }}</h2>
+                    <p>Placed at: {{ optional($order->placed_at)->format('d M Y h:i A') ?? '-' }}</p>
+                </div>
+                <div class="order-detail-total">₹{{ number_format($order->grand_total, 2) }}</div>
+            </div>
+            <div class="order-detail-meta">
+                <span class="status-badge {{ $order->status === 'delivered' ? 's-delivered' : ($order->status === 'cancelled' ? 's-cancelled' : 's-pending') }}">
+                    {{ strtoupper($order->status) }}
+                </span>
+                <span class="status-badge {{ $order->fulfillment_status === 'fulfilled' ? 's-delivered' : 's-pending' }}">
+                    {{ strtoupper($order->fulfillment_status) }}
+                </span>
+                <span class="order-pill">{{ strtoupper($order->payment_method ?? 'cod') }}</span>
+            </div>
         </div>
 
-        <div class="orders-card fade-in d2" style="padding:20px; margin-top:16px">
-            <h3 style="margin-bottom:10px">Items</h3>
+        <div class="orders-card fade-in d2 order-detail-card">
+            <h3 class="card-title">Items</h3>
             <table class="orders-table">
                 <thead>
                     <tr>
@@ -50,19 +62,23 @@
             </table>
         </div>
 
-        <div class="orders-card fade-in d3" style="padding:20px; margin-top:16px">
-            <h3 style="margin-bottom:10px">Order Timeline</h3>
+        <div class="orders-card fade-in d3 order-detail-card">
+            <h3 class="card-title">Order Timeline</h3>
+            <div class="order-timeline">
             @forelse($order->statusHistories as $history)
-                <p>
-                    {{ optional($history->created_at)->format('d M Y h:i A') }} -
-                    {{ strtoupper($history->from_status ?? 'NEW') }} to {{ strtoupper($history->to_status) }}
+                <div class="timeline-item">
+                    <div class="timeline-time">{{ optional($history->created_at)->format('d M Y h:i A') }}</div>
+                    <div class="timeline-content">
+                    <strong>{{ strtoupper($history->from_status ?? 'NEW') }} → {{ strtoupper($history->to_status) }}</strong>
                     @if($history->note)
-                        ({{ $history->note }})
+                        <span>{{ $history->note }}</span>
                     @endif
-                </p>
+                    </div>
+                </div>
             @empty
-                <p>No status timeline available.</p>
+                <p class="timeline-empty">No status timeline available.</p>
             @endforelse
+            </div>
         </div>
     </div>
 

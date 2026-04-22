@@ -90,7 +90,7 @@
                         <span class="icon">
                             <iconify-icon icon="solar:calendar-linear"></iconify-icon>
                         </span>
-                        <input type="datetime-local" name="starts_at" class="form-control">
+                        <input type="date" name="starts_at" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -99,7 +99,7 @@
                         <span class="icon">
                             <iconify-icon icon="solar:calendar-linear"></iconify-icon>
                         </span>
-                        <input type="datetime-local" name="ends_at" class="form-control">
+                        <input type="date" name="ends_at" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -158,8 +158,8 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <small class="text-secondary-light">From: {{ $coupon->starts_at ? \Carbon\Carbon::parse($coupon->starts_at)->format('d M y') : 'Anytime' }}</small>
-                                        <small class="text-secondary-light">To: {{ $coupon->ends_at ? \Carbon\Carbon::parse($coupon->ends_at)->format('d M y') : 'No Expiry' }}</small>
+                                        <small class="text-secondary-light">From: {{ $coupon->starts_at ? $coupon->starts_at->timezone(config('app.timezone'))->format('d M Y') : 'Anytime' }}</small>
+                                        <small class="text-secondary-light">To: {{ $coupon->ends_at ? $coupon->ends_at->timezone(config('app.timezone'))->format('d M Y') : 'No Expiry' }}</small>
                                     </div>
                                 </td>
                                 <td>
@@ -183,8 +183,8 @@
                                             data-max_discount_amount="{{ $coupon->max_discount_amount }}"
                                             data-usage_limit="{{ $coupon->usage_limit }}"
                                             data-usage_limit_per_user="{{ $coupon->usage_limit_per_user }}"
-                                            data-starts_at="{{ $coupon->starts_at ? \Carbon\Carbon::parse($coupon->starts_at)->format('Y-m-d\TH:i') : '' }}"
-                                            data-ends_at="{{ $coupon->ends_at ? \Carbon\Carbon::parse($coupon->ends_at)->format('Y-m-d\TH:i') : '' }}"
+                                            data-starts_at="{{ $coupon->starts_at ? $coupon->starts_at->timezone(config('app.timezone'))->format('Y-m-d') : '' }}"
+                                            data-ends_at="{{ $coupon->ends_at ? $coupon->ends_at->timezone(config('app.timezone'))->format('Y-m-d') : '' }}"
                                             data-is_active="{{ $coupon->is_active }}"
                                             data-action="{{ route('admin.ecommerce.coupons.update', $coupon) }}">
                                             <iconify-icon icon="lucide:edit"></iconify-icon> Edit
@@ -295,7 +295,7 @@
                                     <span class="icon">
                                         <iconify-icon icon="solar:calendar-linear"></iconify-icon>
                                     </span>
-                                    <input type="datetime-local" name="starts_at" id="edit_coupon_starts_at" class="form-control">
+                                    <input type="date" name="starts_at" id="edit_coupon_starts_at" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -304,7 +304,7 @@
                                     <span class="icon">
                                         <iconify-icon icon="solar:calendar-linear"></iconify-icon>
                                     </span>
-                                    <input type="datetime-local" name="ends_at" id="edit_coupon_ends_at" class="form-control">
+                                    <input type="date" name="ends_at" id="edit_coupon_ends_at" class="form-control">
                                 </div>
                             </div>
                             <div class="col-12 d-flex justify-content-end mt-4">

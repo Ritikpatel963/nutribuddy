@@ -758,7 +758,7 @@
             <button class="itab" data-ing="3"> <img src="img/amla.webp" alt=""> Amla</button>
             <button class="itab" data-ing="4"> <img src="img/vitamins.webp" alt=""> Algal Dha</button>
             <button class="itab" data-ing="5"> <img src="img/vitamins.webp" alt=""> Vitamins</button>
-            <button class="itab" data-ing="6"> <img src="img/Minerals.webp" alt=""> Minerals</button>
+            <button class="itab" data-ing="6"> <img src="img/vitamins.webp" alt=""> Minerals</button>
         </div>
 
         <div class="ing-panels">

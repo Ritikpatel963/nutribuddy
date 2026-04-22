@@ -27,7 +27,11 @@ class PricingService
             /** @var TaxRate|null $taxRate */
             $taxRate = $product->taxRate;
             $taxPercent = (float) ($taxRate?->rate ?? 0);
-            $lineTax = ($lineSubTotal * $taxPercent) / 100;
+            // Storefront prices are tax-inclusive, so extract GST from the price
+            // instead of adding it on top again during checkout.
+            $lineTax = $taxPercent > 0
+                ? ($lineSubTotal * $taxPercent) / (100 + $taxPercent)
+                : 0.0;
             $lineShipping = ((float) ($product->shipping_price ?? 0)) * $quantity;
 
             $subtotal += $lineSubTotal;
@@ -61,17 +65,20 @@ class PricingService
         }
 
         $taxableAmount = max(0, $subtotal - $discountTotal);
-        $gstTotal = $taxTotal;
+        $effectiveTaxTotal = $subtotal > 0
+            ? ($taxTotal * $taxableAmount) / $subtotal
+            : 0.0;
+        $gstTotal = $effectiveTaxTotal;
         $cgstTotal = round($gstTotal / 2, 2);
         $sgstTotal = round($gstTotal / 2, 2);
         $igstTotal = 0.0;
-        $grandTotal = $taxableAmount + $taxTotal + $shippingTotal;
+        $grandTotal = $taxableAmount + $shippingTotal;
 
         return [
             'line_items' => $lineItems,
             'subtotal' => round($subtotal, 2),
             'discount_total' => round($discountTotal, 2),
-            'tax_total' => round($taxTotal, 2),
+            'tax_total' => round($effectiveTaxTotal, 2),
             'gst_total' => round($gstTotal, 2),
             'cgst_total' => round($cgstTotal, 2),
             'sgst_total' => round($sgstTotal, 2),

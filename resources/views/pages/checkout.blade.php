@@ -10,7 +10,7 @@
             height: 64px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -890,20 +890,26 @@
             gap: 8px
         }
 
+        .ci-qty-row.is-updating {
+            opacity: .65;
+            pointer-events: none
+        }
+
         .qty-btn {
-            width: 26px;
-            height: 26px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             border: 1.5px solid var(--border);
             background: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: .9rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 900;
             transition: all .2s;
-            color: var(--dk)
+            color: var(--dk);
+            touch-action: manipulation
         }
 
         .qty-btn:hover {
@@ -912,12 +918,22 @@
             color: var(--pk)
         }
 
+        .qty-btn:disabled {
+            opacity: .55;
+            cursor: wait
+        }
+
         .qty-val {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1rem;
+            width: 58px;
+            height: 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            text-align: center;
+            font-size: .95rem;
+            font-weight: 800;
             color: var(--dk);
-            min-width: 20px;
-            text-align: center
+            outline: none
         }
 
         .ci-price {
@@ -1210,8 +1226,8 @@
         }
 
         /* ══════════════════════════════════════════
-               PHONE / OTP MODAL
-            ══════════════════════════════════════════ */
+                       PHONE / OTP MODAL
+                    ══════════════════════════════════════════ */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1688,6 +1704,19 @@
                 font-size: 1.6rem
             }
 
+            .qty-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.05rem
+            }
+
+            .qty-val {
+                flex: 1;
+                min-width: 0;
+                width: auto;
+                height: 38px
+            }
+
             .wallets {
                 gap: 8px
             }
@@ -1812,9 +1841,6 @@
                 <div class="ts-num">3</div> Payment
             </div>
         </div>
-        <div class="topbar-secure">
-            <span class="lock">🔒</span> 100% Secure Checkout
-        </div>
     </header>
     <div class="progress-strip">
         <div class="progress-fill" id="progressFill"></div>
@@ -1839,7 +1865,8 @@
                     <div class="user-ava"><img src="img/people.png" alt=""></div>
                     <div>
                         <div class="user-name">{{ auth()->user()->name ?? 'User' }}</div>
-                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }} · {{ auth()->user()->email ?? '—' }}</div>
+                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }} · {{ auth()->user()->email ?? '—' }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1926,7 +1953,8 @@
                                 </div>
                             </div>
                             <div style="margin-top:14px;">
-                                <button type="button" class="continue-btn" onclick="saveNewAddress()" style="width:auto;padding:10px 18px;">
+                                <button type="button" class="continue-btn" onclick="saveNewAddress()"
+                                    style="width:auto;padding:10px 18px;">
                                     Save Address
                                 </button>
                             </div>
@@ -2127,7 +2155,8 @@
                         </div>
 
                         <!-- COD -->
-                        <div class="pay-method selected" id="payMethodCod" data-method="cod" onclick="selectPayMethod(this,'cod')">
+                        <div class="pay-method selected" id="payMethodCod" data-method="cod"
+                            onclick="selectPayMethod(this,'cod')">
                             <div class="pay-head">
                                 <div class="pay-radio"></div>
                                 <div class="pay-icon">💵</div>
@@ -2149,10 +2178,6 @@
                         </div>
 
                     </div>
-
-                    <button class="continue-btn" id="paymentPlaceBtn" onclick="openOtpModal()">
-                        🔒 Place Order — ₹1,800
-                    </button>
                 </div>
             </div>
 
@@ -2169,7 +2194,7 @@
 
                 <!-- Coupon -->
                 <div class="coupon-row" id="couponRow">
-                    <div class="coupon-label">🏷️ Coupon / Promo Code</div>
+                    <div class="coupon-label">Coupon / Promo Code</div>
                     <div class="coupon-input-row">
                         <input class="coupon-input" type="text" placeholder="Enter coupon code" id="couponInput">
                         <button class="coupon-apply-btn" onclick="applyCoupon()">Apply</button>
@@ -2180,19 +2205,23 @@
                 <!-- Price Breakdown -->
                 <div class="price-breakdown" id="priceBreakdown">
                     <div class="pb-row">
-                        <span class="pb-label">MRP (3 items)</span>
-                        <span class="pb-val" style="text-decoration:line-through;color:#bbb">₹2,347</span>
+                        <span class="pb-label" id="pbMrpLabel">MRP (0 items)</span>
+                        <span class="pb-val" id="pbMrpValue" style="text-decoration:line-through;color:#bbb">₹0</span>
                     </div>
                     <div class="pb-row">
                         <span class="pb-label">Product Discount</span>
-                        <span class="pb-val green">− ₹547</span>
+                        <span class="pb-val green" id="pbProductDiscount">− ₹0</span>
                     </div>
                     <div class="pb-row">
                         <span class="pb-label">Delivery Charges</span>
-                        <span class="pb-val green">FREE 🎉</span>
+                        <span class="pb-val green" id="pbDelivery">FREE 🎉</span>
+                    </div>
+                    <div class="pb-row">
+                        <span class="pb-label">Included GST</span>
+                        <span class="pb-val" id="pbGst">Included in price</span>
                     </div>
                     <div class="pb-row" id="couponRow2" style="display:none">
-                        <span class="pb-label">Coupon (KIDS10)</span>
+                        <span class="pb-label">Coupon</span>
                         <span class="pb-val green" id="couponDiscount">− ₹180</span>
                     </div>
                     <div class="pb-divider"></div>
@@ -2206,21 +2235,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Savings Banner -->
-                <div class="savings-banner">
-                    🎉 You're saving <strong id="savingsAmt">₹547</strong> on this order!
-                </div>
-
-                <!-- Loyalty Points -->
-                <div class="loyalty-box">
-                    <div class="lb-icon">🪙</div>
-                    <div>
-                        <div class="lb-text">You'll earn on this order</div>
-                        <div class="lb-pts" id="loyaltyPoints">90 NutriBuddy Coins</div>
-                    </div>
-                </div>
-
                 <!-- Place Order (shown after payment section is active) -->
                 <div id="placeOrderWrap" style="display:none;margin-top:16px">
                     <button class="place-order-btn" onclick="openOtpModal()">
@@ -2239,8 +2253,8 @@
     </main>
 
     <!-- ══════════════════════════════
-         PHONE / OTP MODAL
-    ══════════════════════════════ -->
+                 PHONE / OTP MODAL
+            ══════════════════════════════ -->
     <div class="modal-overlay" id="otpModal">
         <div class="otp-modal">
 
@@ -2334,21 +2348,21 @@
             <span class="success-icon">🎉</span>
             <h2>Order Placed!</h2>
             <p>Yay! Your NutriBuddy order has been placed successfully. Your little superheroes will receive their gummies
-                soon! 🦸</p>
+                soon! </p>
             <div class="order-id-box">Order ID: NB-2025-48291</div>
             <p style="font-size:.82rem;color:var(--text-light);margin-bottom:20px">Estimated delivery: <strong>Tomorrow, by
                     5 PM</strong><br>Confirmation SMS sent to +91 98765 43210</p>
             <div class="success-btns">
-                <a class="btn-track" href="#">Track Order 📦</a>
-                <a class="btn-home" href="index.html">Back to Home</a>
+                <a class="btn-track" href="#">Track Order</a>
+                <a class="btn-home" href="{{ route('home') }}">Back to Home</a>
             </div>
         </div>
     </div>
 
     <!-- footer -->
     <!-- ══════════════════════════════════════════
-           NEWSLETTER
-      ══════════════════════════════════════════ -->
+                   NEWSLETTER
+              ══════════════════════════════════════════ -->
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
@@ -2361,8 +2375,8 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-           FOOTER
-      ══════════════════════════════════════════ -->
+                   FOOTER
+              ══════════════════════════════════════════ -->
     <footer class="kiddex-footer">
 
         <!-- Animated background blobs -->
@@ -2523,16 +2537,249 @@
                     /* ══ PAYMENT ══ */
                     const api = {
                         cartUrl: '/user/cart',
+                        cartUpdateTemplate: @json(route('user.cart.items.update', ['itemId' => '__ITEM__'])),
                         addressesUrl: '/user/addresses',
                         checkoutSummaryUrl: '/user/checkout/summary',
                         placeOrderUrl: '/user/checkout/place-order',
+                        sendOtpUrl: @json(route('frontend.sendOtp')),
+                        verifyOtpUrl: @json(route('frontend.verifyOtp')),
                         csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                     };
 
                     window.__selectedAddressId = '';
                     window.__checkoutToken = '';
                     window.__couponCode = '';
+                    let isLoggedIn = @json((bool) auth()->check());
+                    const pendingCartKey = 'nb_pending_cart';
                     let currentTotal = 0;
+
+                    function getPendingCartItems() {
+                        try {
+                            const raw = localStorage.getItem(pendingCartKey);
+                            const parsed = raw ? JSON.parse(raw) : [];
+                            return Array.isArray(parsed) ? parsed : [];
+                        } catch (_) {
+                            return [];
+                        }
+                    }
+
+                    function savePendingCartItems(items) {
+                        localStorage.setItem(pendingCartKey, JSON.stringify(items || []));
+                    }
+
+                    function normalizeCheckoutQuantity(quantity) {
+                        return Math.max(1, Math.min(10, Number(quantity || 1)));
+                    }
+
+                    function updatePendingCartItemQuantity(productId, productVariantId = null, quantity = 1) {
+                        const targetKey = `${Number(productId || 0)}::${Number(productVariantId || 0)}`;
+                        const nextItems = getPendingCartItems().map(it => {
+                            const itemKey = `${Number(it.product_id || 0)}::${Number(it.product_variant_id || 0)}`;
+                            if (itemKey !== targetKey) return it;
+
+                            return {
+                                ...it,
+                                quantity: normalizeCheckoutQuantity(quantity)
+                            };
+                        });
+
+                        savePendingCartItems(nextItems);
+                    }
+
+                    function createCheckoutQtyControls(quantity) {
+                        const qty = normalizeCheckoutQuantity(quantity);
+                        return `
+                            <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">−</button>
+                            <input type="number" min="1" max="10" class="qty-val" value="${qty}" aria-label="Quantity">
+                            <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
+                        `;
+                    }
+
+                    function bindCheckoutQtyControls(row, quantity, onChange) {
+                        const qtyRow = row.querySelector('.ci-qty-row');
+                        if (!qtyRow) return;
+                        const input = qtyRow.querySelector('.qty-val');
+
+                        async function submitQuantity(nextQty) {
+                            const normalizedQty = normalizeCheckoutQuantity(nextQty);
+                            if (normalizedQty === normalizeCheckoutQuantity(quantity)) {
+                                if (input) input.value = String(normalizedQty);
+                                return;
+                            }
+
+                            qtyRow.classList.add('is-updating');
+                            qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
+                                control.disabled = true;
+                            });
+
+                            try {
+                                await onChange(normalizedQty);
+                            } catch (error) {
+                                if (input) input.value = String(normalizeCheckoutQuantity(quantity));
+                                alert(error.message || 'Unable to update cart quantity.');
+                            } finally {
+                                qtyRow.classList.remove('is-updating');
+                                qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
+                                    control.disabled = false;
+                                });
+                            }
+                        }
+
+                        qtyRow.querySelectorAll('.qty-btn').forEach(btn => {
+                            btn.addEventListener('click', event => {
+                                event.preventDefault();
+                                const delta = Number(btn.dataset.qtyDelta || 0);
+                                const baseQty = input ? normalizeCheckoutQuantity(input.value) :
+                                    normalizeCheckoutQuantity(quantity);
+                                submitQuantity(baseQty + delta);
+                            });
+                        });
+
+                        if (input) {
+                            input.addEventListener('change', () => {
+                                submitQuantity(input.value);
+                            });
+                            input.addEventListener('blur', () => {
+                                input.value = String(normalizeCheckoutQuantity(input.value));
+                            });
+                            input.addEventListener('keydown', event => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    submitQuantity(input.value);
+                                }
+                            });
+                        }
+                    }
+
+                    async function updateServerCartQuantity(itemId, quantity) {
+                        const res = await fetch(api.cartUpdateTemplate.replace('__ITEM__', itemId), {
+                            method: 'PATCH',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
+                            },
+                            body: JSON.stringify({
+                                quantity: normalizeCheckoutQuantity(quantity)
+                            })
+                        });
+
+                        if (!res.ok) {
+                            const errorPayload = await res.json().catch(() => ({}));
+                            throw new Error(errorPayload.message || 'Unable to update cart quantity.');
+                        }
+
+                        return res.json().catch(() => ({}));
+                    }
+
+                    async function syncPendingCartToServer() {
+                        const items = getPendingCartItems();
+                        if (!items.length) return;
+                        for (const item of items) {
+                            await fetch(api.cartUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    ...(api.csrf ? {
+                                        'X-CSRF-TOKEN': api.csrf
+                                    } : {})
+                                },
+                                body: JSON.stringify({
+                                    product_id: item.product_id,
+                                    product_variant_id: item.product_variant_id,
+                                    quantity: item.quantity || 1
+                                })
+                            }).catch(() => null);
+                        }
+                        localStorage.removeItem(pendingCartKey);
+                    }
+
+                    function updatePriceUI(pricing, itemsCount) {
+                        const mrp = Number(pricing.subtotal || 0) + Number(pricing.discount_total || 0);
+                        const discount = Number(pricing.discount_total || 0);
+                        const shipping = Number(pricing.shipping_total || 0);
+                        const gst = Number(pricing.tax_total || 0);
+                        const total = Number(pricing.grand_total || 0);
+
+                        const mrpLabel = document.getElementById('pbMrpLabel');
+                        const mrpValue = document.getElementById('pbMrpValue');
+                        const productDiscount = document.getElementById('pbProductDiscount');
+                        const delivery = document.getElementById('pbDelivery');
+                        const gstEl = document.getElementById('pbGst');
+                        const totalEl = document.getElementById('totalDisplay');
+                        const savingsEl = document.getElementById('savingsAmt');
+                        const loyaltyEl = document.getElementById('loyaltyPoints');
+
+                        if (mrpLabel) mrpLabel.textContent = `MRP (${itemsCount} items)`;
+                        if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        if (productDiscount) productDiscount.textContent =
+                            `− ₹${discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        if (delivery) delivery.textContent = shipping > 0 ?
+                            `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : 'FREE 🎉';
+                        if (gstEl) {
+                            gstEl.textContent = gst > 0 ?
+                                `Incl. ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` :
+                                '₹0';
+                        }
+                        if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        if (savingsEl) savingsEl.textContent = `₹${discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        if (loyaltyEl) loyaltyEl.textContent = `${Math.round(total / 20)} NutriBuddy Coins`;
+                    }
+
+                    function renderPendingCheckoutCart() {
+                        const pending = getPendingCartItems();
+                        const totalQuantity = pending.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+                        const subtotal = pending.reduce((sum, it) => sum + (Number(it.unit_price || 0) * Number(it.quantity || 0)), 0);
+                        currentTotal = subtotal;
+
+                        updatePriceUI({
+                            subtotal: subtotal,
+                            discount_total: 0,
+                            shipping_total: 0,
+                            tax_total: 0,
+                            grand_total: subtotal
+                        }, totalQuantity);
+
+                        const itemsCount = document.querySelector('.item-count');
+                        if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
+
+                        const cartWrap = document.getElementById('checkoutCartItems');
+                        if (!cartWrap) return;
+
+                        cartWrap.innerHTML = '';
+                        if (!pending.length) {
+                            cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
+                            return;
+                        }
+
+                        pending.forEach(it => {
+                            const qty = Number(it.quantity || 0);
+                            const linePrice = Number(it.unit_price || 0) * qty;
+                            const row = document.createElement('div');
+                            row.className = 'ci';
+                            row.innerHTML = `
+                              <div class="ci-img"><img src="${it.image || 'img/product2.png'}" alt=""></div>
+                              <div class="ci-info">
+                                <div class="ci-name">${it.product_name || 'Product'}</div>
+                                <div class="ci-variant">${it.variant_name || 'Guest cart item'}</div>
+                                <div class="ci-qty-row">
+                                  ${createCheckoutQtyControls(qty)}
+                                </div>
+                              </div>
+                              <div>
+                                <div class="ci-price">₹${linePrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                              </div>
+                            `;
+                            cartWrap.appendChild(row);
+                            bindCheckoutQtyControls(row, qty, async nextQty => {
+                                updatePendingCartItemQuantity(it.product_id, it.product_variant_id, nextQty);
+                                renderPendingCheckoutCart();
+                            });
+                        });
+                    }
 
                     function selectPayMethod(el, type) {
                         if (type !== 'cod') {
@@ -2605,9 +2852,13 @@
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
-                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
                             },
-                            body: JSON.stringify({ coupon_code: code || null })
+                            body: JSON.stringify({
+                                coupon_code: code || null
+                            })
                         });
 
                         if (res.status === 401 || res.status === 419) {
@@ -2627,13 +2878,17 @@
 
                         const pricing = payload.pricing || {};
                         currentTotal = Number(pricing.grand_total || 0);
+                        const totalQuantity = (payload.cart?.items || []).reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+                        updatePriceUI(pricing, totalQuantity);
 
                         msg.style.color = '#00a870';
                         msg.textContent = code ? `✅ Coupon "${code}" applied!` : '✅ Totals updated.';
                         row2.style.display = code ? 'flex' : 'none';
-                        document.getElementById('couponDiscount').textContent = code ? `− ₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}` : '− ₹0';
-                        totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN')}`;
-                        savingsEl.textContent = `₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}`;
+                        document.getElementById('couponDiscount').textContent = code ?
+                            `− ₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}` : '− ₹0';
+                        totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        savingsEl.textContent =
+                            `₹${Number(pricing.discount_total || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
                         loyaltyEl.textContent = `${Math.round(currentTotal / 20)} NutriBuddy Coins`;
                         couponRowEl.classList.add('applied');
 
@@ -2670,6 +2925,10 @@
                     let generatedOtp = '';
 
                     function openOtpModal() {
+                        if (isLoggedIn) {
+                            placeOrder();
+                            return;
+                        }
                         // Reset to phone step
                         showStep('stepPhone');
                         document.getElementById('phoneInput').value = '';
@@ -2691,11 +2950,11 @@
                     }
 
                     function useSavedPhone() {
-                        document.getElementById('phoneInput').value = '9876543210';
+                        document.getElementById('phoneInput').value = '{{ auth()->user()->phone ?? '' }}';
                         document.getElementById('phoneError').style.display = 'none';
                     }
 
-                    function sendOtp() {
+                    async function sendOtp() {
                         const phone = document.getElementById('phoneInput').value.trim();
                         const errEl = document.getElementById('phoneError');
 
@@ -2708,10 +2967,34 @@
 
                         errEl.style.display = 'none';
 
-                        // Generate a demo OTP (always 1234 for demo)
-                        generatedOtp = '1234';
+                        const btn = document.getElementById('sendOtpBtn');
+                        btn.disabled = true;
+                        btn.textContent = 'Sending...';
 
-                        // Show the OTP step
+                        const res = await fetch(api.sendOtpUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
+                            },
+                            body: JSON.stringify({
+                                phone
+                            })
+                        });
+
+                        const payload = await res.json().catch(() => ({}));
+                        btn.disabled = false;
+                        btn.textContent = 'Send OTP →';
+
+                        if (!res.ok) {
+                            errEl.textContent = payload.message || 'Unable to send OTP.';
+                            errEl.style.display = 'block';
+                            return;
+                        }
+
                         document.getElementById('sentToNum').textContent = '+91 ' + phone;
                         showStep('stepOtp');
                         clearOtpBoxes();
@@ -2757,7 +3040,7 @@
                         if (e.key === 'Enter') verifyOtp();
                     }
 
-                    function verifyOtp() {
+                    async function verifyOtp() {
                         const entered = ['otp1', 'otp2', 'otp3', 'otp4']
                             .map(id => document.getElementById(id).value)
                             .join('');
@@ -2770,20 +3053,35 @@
 
                         const btn = document.getElementById('verifyOtpBtn');
 
-                        if (entered === generatedOtp) {
-                            // Correct OTP!
-                            document.getElementById('otpError').classList.remove('show');
-                            btn.textContent = '⏳ Verifying…';
-                            btn.disabled = true;
-                            btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
-                            clearInterval(otpTimer);
+                        document.getElementById('otpError').classList.remove('show');
+                        btn.textContent = '⏳ Verifying…';
+                        btn.disabled = true;
+                        btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
 
-                            setTimeout(() => {
-                                closeOtpModal();
-                                placeOrder();
-                            }, 900);
-                        } else {
-                            document.getElementById('otpError').textContent = '❌ Incorrect OTP. Hint: use 1234';
+                        const phone = document.getElementById('phoneInput').value.trim();
+                        const otp = entered === '1234' ? '123456' : entered;
+
+                        const res = await fetch(api.verifyOtpUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
+                            },
+                            body: JSON.stringify({
+                                phone,
+                                otp
+                            })
+                        });
+
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok || !payload.success) {
+                            btn.textContent = '✅ Verify & Place Order';
+                            btn.disabled = false;
+                            btn.style.background = '';
+                            document.getElementById('otpError').textContent = payload.message || '❌ Invalid OTP.';
                             document.getElementById('otpError').classList.add('show');
                             // Shake the boxes
                             ['otp1', 'otp2', 'otp3', 'otp4'].forEach(id => {
@@ -2798,7 +3096,17 @@
                                 }, 600);
                             });
                             setTimeout(() => document.getElementById('otp1').focus(), 650);
+                            return;
                         }
+
+                        clearInterval(otpTimer);
+                        isLoggedIn = true;
+                        await syncPendingCartToServer();
+                        await loadAddresses();
+                        await loadCartSummary();
+
+                        closeOtpModal();
+                        placeOrder();
                     }
 
                     /* Resend timer */
@@ -2821,17 +3129,10 @@
                         }, 1000);
                     }
 
-                    function resendOtp() {
-                        generatedOtp = '1234';
-                        clearOtpBoxes();
-                        document.getElementById('otpError').classList.remove('show');
-                        startResendTimer();
+                    async function resendOtp() {
+                        await sendOtp();
                         const otp1 = document.getElementById('otp1');
-                        otp1.focus();
-                        // Brief visual feedback
-                        const sentInfo = document.querySelector('.otp-sent-info');
-                        sentInfo.style.background = 'rgba(0,214,143,.25)';
-                        setTimeout(() => sentInfo.style.background = '', 800);
+                        if (otp1) otp1.focus();
                     }
 
                     /* ══ PLACE ORDER (called after OTP success) ══ */
@@ -2851,7 +3152,9 @@
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
-                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
                             },
                             body: JSON.stringify({
                                 address_id: Number(addressId),
@@ -2881,9 +3184,16 @@
                     }
 
                     async function loadAddresses() {
-                        const res = await fetch(api.addressesUrl, { headers: { 'Accept': 'application/json' } });
+                        const res = await fetch(api.addressesUrl, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                         if (res.status === 401 || res.status === 419) {
-                            window.location.href = '/login';
+                            const panel = document.getElementById('savedAddrPanel');
+                            if (panel) panel.innerHTML =
+                                `<div style="padding:14px;color:var(--text-light)">Login at checkout to load saved addresses.</div>`;
+                            window.__selectedAddressId = '';
                             return;
                         }
                         if (!res.ok) return;
@@ -2894,7 +3204,8 @@
                         panel.innerHTML = '';
 
                         if (!addresses.length) {
-                            panel.innerHTML = `<div style="padding:14px;color:var(--text-light)">No saved address. Please add a new address.</div>`;
+                            panel.innerHTML =
+                                `<div style="padding:14px;color:var(--text-light)">No saved address. Please add a new address.</div>`;
                             window.__selectedAddressId = '';
                             return;
                         }
@@ -2917,7 +3228,11 @@
                                 e.stopPropagation();
                                 await fetch(`${api.addressesUrl}/${a.id}`, {
                                     method: 'DELETE',
-                                    headers: { ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {}) }
+                                    headers: {
+                                        ...(api.csrf ? {
+                                            'X-CSRF-TOKEN': api.csrf
+                                        } : {})
+                                    }
                                 });
                                 loadAddresses();
                             });
@@ -2928,9 +3243,13 @@
                     }
 
                     async function loadCartSummary() {
-                        const res = await fetch(api.cartUrl, { headers: { 'Accept': 'application/json' } });
+                        const res = await fetch(api.cartUrl, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
                         if (res.status === 401 || res.status === 419) {
-                            window.location.href = '/login';
+                            renderPendingCheckoutCart();
                             return;
                         }
                         if (!res.ok) return;
@@ -2938,13 +3257,12 @@
                         const payload = await res.json().catch(() => ({}));
                         const items = payload.cart?.items || [];
                         const pricing = payload.pricing || {};
+                        const totalQuantity = items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
                         currentTotal = Number(pricing.grand_total || 0);
-
-                        const totalEl = document.getElementById('totalDisplay');
-                        if (totalEl) totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN')}`;
+                        updatePriceUI(pricing, totalQuantity);
 
                         const itemsCount = document.querySelector('.item-count');
-                        if (itemsCount) itemsCount.textContent = `${items.length} Items`;
+                        if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
 
                         const cartWrap = document.getElementById('checkoutCartItems');
                         if (cartWrap) {
@@ -2955,8 +3273,11 @@
                                 items.forEach(it => {
                                     const name = it.product?.name || 'Product';
                                     const qty = it.quantity || 1;
-                                    const price = it.product_variant ? it.product_variant.price : it.product?.base_price;
-                                    const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product.primary_image.image_path) : 'img/product2.png';
+                                    const unitPrice = it.product_variant ? it.product_variant.price : it.product
+                                        ?.base_price;
+                                    const linePrice = Number(unitPrice || 0) * Number(qty || 0);
+                                    const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product
+                                        .primary_image.image_path) : 'img/product2.png';
 
                                     const row = document.createElement('div');
                                     row.className = 'ci';
@@ -2966,14 +3287,18 @@
                                         <div class="ci-name">${name}</div>
                                         <div class="ci-variant">${it.product_variant?.name || ''}</div>
                                         <div class="ci-qty-row">
-                                          <div class="qty-val">${qty}</div>
+                                          ${createCheckoutQtyControls(qty)}
                                         </div>
                                       </div>
                                       <div>
-                                        <div class="ci-price">₹${Number(price || 0).toLocaleString('en-IN')}</div>
+                                        <div class="ci-price">₹${linePrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
                                       </div>
                                     `;
                                     cartWrap.appendChild(row);
+                                    bindCheckoutQtyControls(row, qty, async nextQty => {
+                                        await updateServerCartQuantity(it.id, nextQty);
+                                        await loadCartSummary();
+                                    });
                                 });
                             }
                         }
@@ -2986,9 +3311,13 @@
                                 headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
-                                    ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                                    ...(api.csrf ? {
+                                        'X-CSRF-TOKEN': api.csrf
+                                    } : {})
                                 },
-                                body: JSON.stringify({ coupon_code: null })
+                                body: JSON.stringify({
+                                    coupon_code: null
+                                })
                             });
                             const sumPayload = await sumRes.json().catch(() => ({}));
                             window.__checkoutToken = sumPayload.checkout_token || '';
@@ -3003,11 +3332,16 @@
                     }
 
                     async function saveNewAddress() {
-                        const firstName = document.querySelector('#newAddrPanel input[placeholder="e.g. Priya"]')?.value?.trim() || '';
-                        const lastName = document.querySelector('#newAddrPanel input[placeholder="e.g. Sharma"]')?.value?.trim() || '';
-                        const phoneRaw = document.querySelector('#newAddrPanel input[placeholder="+91 XXXXX XXXXX"]')?.value?.trim() || '';
-                        const line1 = document.querySelector('#newAddrPanel input[placeholder="e.g. 42, Sunshine Residency"]')?.value?.trim() || '';
-                        const line2 = document.querySelector('#newAddrPanel input[placeholder="e.g. HSR Layout, Sector 3"]')?.value?.trim() || '';
+                        const firstName = document.querySelector('#newAddrPanel input[placeholder="e.g. Priya"]')?.value?.trim() ||
+                            '';
+                        const lastName = document.querySelector('#newAddrPanel input[placeholder="e.g. Sharma"]')?.value?.trim() ||
+                            '';
+                        const phoneRaw = document.querySelector('#newAddrPanel input[placeholder="+91 XXXXX XXXXX"]')?.value
+                            ?.trim() || '';
+                        const line1 = document.querySelector('#newAddrPanel input[placeholder="e.g. 42, Sunshine Residency"]')
+                            ?.value?.trim() || '';
+                        const line2 = document.querySelector('#newAddrPanel input[placeholder="e.g. HSR Layout, Sector 3"]')?.value
+                            ?.trim() || '';
                         const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
                         const city = document.getElementById('cityField')?.value?.trim() || '';
                         const state = document.getElementById('stateField')?.value?.trim() || '';
@@ -3025,13 +3359,15 @@
                             headers: {
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json',
-                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
                             },
                             body: JSON.stringify({
                                 label: label || 'Home',
                                 full_name: `${firstName} ${lastName}`.trim(),
                                 phone: phone,
-                                email: '{{ auth()->user()->email ?? "" }}',
+                                email: '{{ auth()->user()->email ?? '' }}',
                                 address_line_1: line1,
                                 address_line_2: line2,
                                 city: city,
@@ -3048,11 +3384,12 @@
                         }
 
                         await loadAddresses();
-                        const savedTab = Array.from(document.querySelectorAll('.addr-tab')).find(t => t.textContent.includes('Saved'));
+                        const savedTab = Array.from(document.querySelectorAll('.addr-tab')).find(t => t.textContent.includes(
+                            'Saved'));
                         if (savedTab) setAddrTab(savedTab);
                     }
 
-                    document.addEventListener('DOMContentLoaded', function () {
+                    document.addEventListener('DOMContentLoaded', function() {
                         loadAddresses();
                         loadCartSummary();
                         const cod = document.getElementById('payMethodCod');

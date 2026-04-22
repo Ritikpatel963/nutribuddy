@@ -26,7 +26,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function store(CartStoreRequest $request): JsonResponse
+    public function store(CartStoreRequest $request, PricingService $pricingService): JsonResponse
     {
         $validated = $request->validated();
 
@@ -58,10 +58,19 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Item added to cart successfully.']);
+        $cart->load(['items.product.taxRate', 'items.productVariant']);
+        $pricing = $pricingService->calculate($cart->items);
+        $cartCount = (int) $cart->items->sum('quantity');
+
+        return response()->json([
+            'message' => 'Item added to cart successfully.',
+            'cart' => $cart,
+            'pricing' => $pricing,
+            'cart_count' => $cartCount,
+        ]);
     }
 
-    public function update(CartUpdateRequest $request, int $itemId): JsonResponse
+    public function update(CartUpdateRequest $request, int $itemId, PricingService $pricingService): JsonResponse
     {
         $validated = $request->validated();
 
@@ -70,16 +79,34 @@ class CartController extends Controller
         $this->assertInventoryForQuantity($item->product_id, $item->product_variant_id, (int) $validated['quantity']);
         $item->update(['quantity' => (int) $validated['quantity']]);
 
-        return response()->json(['message' => 'Cart item updated successfully.']);
+        $cart->load(['items.product.taxRate', 'items.productVariant']);
+        $pricing = $pricingService->calculate($cart->items);
+        $cartCount = (int) $cart->items->sum('quantity');
+
+        return response()->json([
+            'message' => 'Cart item updated successfully.',
+            'cart' => $cart,
+            'pricing' => $pricing,
+            'cart_count' => $cartCount,
+        ]);
     }
 
-    public function destroy(Request $request, int $itemId): JsonResponse
+    public function destroy(Request $request, int $itemId, PricingService $pricingService): JsonResponse
     {
         $cart = $this->resolveUserCart($request);
         $item = $cart->items()->findOrFail($itemId);
         $item->delete();
 
-        return response()->json(['message' => 'Cart item removed successfully.']);
+        $cart->load(['items.product.taxRate', 'items.productVariant']);
+        $pricing = $pricingService->calculate($cart->items);
+        $cartCount = (int) $cart->items->sum('quantity');
+
+        return response()->json([
+            'message' => 'Cart item removed successfully.',
+            'cart' => $cart,
+            'pricing' => $pricing,
+            'cart_count' => $cartCount,
+        ]);
     }
 
     private function resolveUserCart(Request $request): Cart

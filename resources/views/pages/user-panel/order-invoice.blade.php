@@ -15,24 +15,24 @@
     </div>
 
     <div class="page">
-        <div class="orders-card fade-in d1" style="padding:20px">
-            <h2 style="margin-bottom:10px">{{ $invoiceNumber }}</h2>
-            <p>Order: <strong>{{ $order->order_number }}</strong></p>
-            <p>Customer: <strong>{{ $order->customer_name }}</strong></p>
-            <p>Payment: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
-            <p style="margin-top:12px;">
-                <a href="{{ route('user.orders.invoice-download', $order) }}" class="act-btn act-review">Download Invoice</a>
-            </p>
+        <div class="orders-card fade-in d1 invoice-hero">
+            <div>
+                <h2>{{ $invoiceNumber }}</h2>
+                <p>Order: <strong>{{ $order->order_number }}</strong></p>
+                <p>Customer: <strong>{{ $order->customer_name }}</strong></p>
+                <p>Payment: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
+            </div>
+            <a href="{{ route('user.orders.invoice-download', $order) }}" class="nav-cta">Download Invoice</a>
         </div>
 
-        <div class="orders-card fade-in d2" style="padding:20px; margin-top:16px">
-            <h3 style="margin-bottom:10px">Amount Breakdown</h3>
-            <p>Subtotal: ₹{{ number_format($order->subtotal, 2) }}</p>
-            <p>Discount: ₹{{ number_format($order->discount_total, 2) }}</p>
-            <p>Tax: ₹{{ number_format($order->tax_total, 2) }}</p>
-            <p>GST: ₹{{ number_format($order->gst_total, 2) }}</p>
-            <p>Shipping: ₹{{ number_format($order->shipping_total, 2) }}</p>
-            <p><strong>Grand Total: ₹{{ number_format($order->grand_total, 2) }}</strong></p>
+        <div class="orders-card fade-in d2 invoice-breakdown">
+            <h3 class="card-title">Amount Breakdown</h3>
+            <div class="invoice-row"><span>Subtotal</span><strong>₹{{ number_format($order->subtotal, 2) }}</strong></div>
+            <div class="invoice-row"><span>Discount</span><strong>₹{{ number_format($order->discount_total, 2) }}</strong></div>
+            <div class="invoice-row"><span>Tax</span><strong>₹{{ number_format($order->tax_total, 2) }}</strong></div>
+            <div class="invoice-row"><span>GST</span><strong>₹{{ number_format($order->gst_total, 2) }}</strong></div>
+            <div class="invoice-row"><span>Shipping</span><strong>₹{{ number_format($order->shipping_total, 2) }}</strong></div>
+            <div class="invoice-row total"><span>Grand Total</span><strong>₹{{ number_format($order->grand_total, 2) }}</strong></div>
         </div>
     </div>
 
