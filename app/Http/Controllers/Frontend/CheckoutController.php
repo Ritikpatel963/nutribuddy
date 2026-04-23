@@ -49,6 +49,7 @@ class CheckoutController extends Controller
         }
 
         return response()->json([
+            'cart' => $cart,
             'coupon' => $coupon,
             'pricing' => $pricing,
             'checkout_token' => (string) Str::uuid(),

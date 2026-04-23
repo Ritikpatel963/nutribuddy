@@ -1436,7 +1436,7 @@
         }
 
         .otp-box {
-            width: 52px;
+            width: 46px;
             height: 60px;
             border: 2.5px solid var(--border);
             border-radius: 14px;
@@ -1742,7 +1742,7 @@
             }
 
             .otp-box {
-                width: 44px;
+                width: 40px;
                 height: 54px;
                 font-size: 1.4rem
             }
@@ -1865,7 +1865,7 @@
                     <div class="user-ava"><img src="img/people.png" alt=""></div>
                     <div>
                         <div class="user-name">{{ auth()->user()->name ?? 'User' }}</div>
-                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }} · {{ auth()->user()->email ?? '—' }}
+                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }}
                         </div>
                     </div>
                 </div>
@@ -1945,10 +1945,10 @@
                                 <div class="form-group">
                                     <label>Address Type</label>
                                     <div class="addr-type-row">
-                                        <button class="addr-type-btn active" onclick="toggleAddrType(this)">🏠
+                                        <button class="addr-type-btn active" onclick="toggleAddrType(this)">
                                             Home</button>
-                                        <button class="addr-type-btn" onclick="toggleAddrType(this)">🏢 Work</button>
-                                        <button class="addr-type-btn" onclick="toggleAddrType(this)">📍 Other</button>
+                                        <button class="addr-type-btn" onclick="toggleAddrType(this)"> Work</button>
+                                        <button class="addr-type-btn" onclick="toggleAddrType(this)"> Other</button>
                                     </div>
                                 </div>
                             </div>
@@ -1960,13 +1960,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="offer-strip" style="margin-top:18px;margin-bottom:16px">
-                        <span>🚚</span>
-                        <div>Your order qualifies for <strong>FREE delivery</strong> — expected by <strong>Tomorrow, 5
-                                PM</strong>!</div>
-                    </div>
                     <button class="continue-btn" id="addressContinueBtn" onclick="goToPayment()">
-                        Continue to Payment →
+                        Continue to Payment 
                     </button>
                 </div>
             </div>
@@ -1982,178 +1977,7 @@
                 </div>
                 <div class="card-body">
                     <div class="payment-methods">
-
                         <!-- UPI -->
-                        <div class="pay-method" data-method="upi" onclick="selectPayMethod(this,'upi')">
-                            <div class="pay-head">
-                                <div class="pay-radio"></div>
-                                <!-- <div class="pay-icon">📱</div> -->
-                                <div>
-                                    <div class="pay-name">UPI</div>
-                                    <div class="pay-sub">PhonePe, GPay, Paytm & more</div>
-                                </div>
-                                <div class="pay-tags">
-                                    <div class="pay-tag">Instant</div>
-                                    <div class="pay-tag">Recommended</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div style="margin-bottom:12px">
-                                    <div
-                                        style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;color:var(--dk);margin-bottom:8px">
-                                        Pay via UPI App</div>
-                                    <div class="upi-apps">
-                                        <div class="upi-app active" onclick="selectUpiApp(event,this)"><span><img
-                                                    src="img/pay.jpg" alt=""></span>PhonePe</div>
-                                        <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img
-                                                    src="img/g-pay.jpg" alt=""></span>GPay</div>
-                                        <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img
-                                                    src="img/paytm-pay.jpg" alt=""></span>Paytm</div>
-                                        <div class="upi-app" onclick="selectUpiApp(event,this)"><span><img
-                                                    src="img/upi.jpg" alt=""></span>UPI</div>
-                                    </div>
-                                </div>
-                                <div
-                                    style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;color:var(--dk);margin-bottom:8px;margin-top:14px">
-                                    Or enter UPI ID</div>
-                                <div class="upi-input-row">
-                                    <input type="text" placeholder="yourname@upi" id="upiId">
-                                    <button class="upi-verify-btn" onclick="verifyUPI()">Verify</button>
-                                </div>
-                                <div id="upiMsg" style="font-size:.78rem;margin-top:6px;display:none"></div>
-                            </div>
-                        </div>
-
-                        <!-- Credit / Debit Card -->
-                        <div class="pay-method" data-method="card" onclick="selectPayMethod(this,'card')">
-                            <div class="pay-head">
-                                <div class="pay-radio"></div>
-                                <div class="pay-icon">💳</div>
-                                <div>
-                                    <div class="pay-name">Credit / Debit Card</div>
-                                    <div class="pay-sub">Visa, Mastercard, RuPay & more</div>
-                                </div>
-                                <div class="pay-tags">
-                                    <div class="pay-tag">EMI Available</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div class="card-row">
-                                    <div class="form-group"><label>Card Number *</label><input type="text"
-                                            placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCard(this)">
-                                    </div>
-                                    <div class="form-grid" style="grid-template-columns:1fr 1fr">
-                                        <div class="form-group"><label>Expiry (MM/YY) *</label><input type="text"
-                                                placeholder="MM / YY" maxlength="5"></div>
-                                        <div class="form-group"><label>CVV *</label><input type="password"
-                                                placeholder="●●●" maxlength="3"></div>
-                                    </div>
-                                    <div class="form-group"><label>Name on Card *</label><input type="text"
-                                            placeholder="As printed on card"></div>
-                                </div>
-                                <div
-                                    style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:.78rem;color:var(--text-light)">
-                                    <span>🔒</span> Your card data is encrypted and never stored on our servers.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- EMI -->
-                        <div class="pay-method" data-method="emi" onclick="selectPayMethod(this,'emi')">
-                            <div class="pay-head">
-                                <div class="pay-radio"></div>
-                                <div class="pay-icon">📆</div>
-                                <div>
-                                    <div class="pay-name">EMI</div>
-                                    <div class="pay-sub">Easy monthly instalments</div>
-                                </div>
-                                <div class="pay-tags">
-                                    <div class="pay-tag" style="background:var(--pul);color:var(--pu)">No Cost EMI</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div
-                                    style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--dk);margin-bottom:10px">
-                                    Select EMI Plan</div>
-                                <div class="emi-options">
-                                    <div class="emi-item active" onclick="selectEmi(event,this)">
-                                        <div>
-                                            <div class="emi-months">3 Months</div>
-                                            <div class="emi-amount">₹200/month</div>
-                                        </div>
-                                        <div class="emi-interest">No Cost EMI ✓</div>
-                                    </div>
-                                    <div class="emi-item" onclick="selectEmi(event,this)">
-                                        <div>
-                                            <div class="emi-months">6 Months</div>
-                                            <div class="emi-amount">₹100/month</div>
-                                        </div>
-                                        <div class="emi-interest">No Cost EMI ✓</div>
-                                    </div>
-                                    <div class="emi-item" onclick="selectEmi(event,this)">
-                                        <div>
-                                            <div class="emi-months">9 Months</div>
-                                            <div class="emi-amount">₹68/month</div>
-                                        </div>
-                                        <div class="emi-interest" style="color:var(--or)">1% interest</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Wallets -->
-                        <div class="pay-method" data-method="wallet" onclick="selectPayMethod(this,'wallet')">
-                            <div class="pay-head">
-                                <div class="pay-radio"></div>
-                                <div class="pay-icon">👛</div>
-                                <div>
-                                    <div class="pay-name">Wallets & Prepaid</div>
-                                    <div class="pay-sub">Mobikwik, Freecharge & more</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div class="wallets">
-                                    <div class="wallet-item active" onclick="selectWallet(event,this)"><span>💙</span>
-                                        Mobikwik</div>
-                                    <div class="wallet-item" onclick="selectWallet(event,this)"><span>🟠</span> Freecharge
-                                    </div>
-                                    <div class="wallet-item" onclick="selectWallet(event,this)"><span>🔴</span> Airtel Pay
-                                    </div>
-                                    <div class="wallet-item" onclick="selectWallet(event,this)"><span>🟡</span> Ola Money
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Net Banking -->
-                        <div class="pay-method" data-method="netbank" onclick="selectPayMethod(this,'netbank')">
-                            <div class="pay-head">
-                                <div class="pay-radio"></div>
-                                <div class="pay-icon">🏦</div>
-                                <div>
-                                    <div class="pay-name">Net Banking</div>
-                                    <div class="pay-sub">All Indian banks supported</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div class="form-group">
-                                    <label>Select Your Bank</label>
-                                    <select class="netbank-select">
-                                        <option>Select Bank</option>
-                                        <option>State Bank of India</option>
-                                        <option>HDFC Bank</option>
-                                        <option>ICICI Bank</option>
-                                        <option>Axis Bank</option>
-                                        <option>Kotak Mahindra Bank</option>
-                                        <option>Yes Bank</option>
-                                        <option>Punjab National Bank</option>
-                                        <option>Bank of Baroda</option>
-                                        <option>Canara Bank</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- COD -->
                         <div class="pay-method selected" id="payMethodCod" data-method="cod"
                             onclick="selectPayMethod(this,'cod')">
@@ -2164,16 +1988,7 @@
                                     <div class="pay-name">Cash on Delivery</div>
                                     <div class="pay-sub">Pay when your order arrives</div>
                                 </div>
-                                <div class="pay-tags">
-                                    <div class="pay-tag" style="background:var(--orl);color:var(--or)">+₹49 fee</div>
-                                </div>
-                            </div>
-                            <div class="pay-body">
-                                <div class="cod-note">
-                                    <span>⚠️</span>
-                                    <div>A Cash on Delivery convenience fee of <strong>₹49</strong> is applicable. Keep
-                                        exact change ready at delivery. COD is not available for orders above ₹3,000.</div>
-                                </div>
+                                <div class="pay-tags"></div>
                             </div>
                         </div>
 
@@ -2288,7 +2103,9 @@
                         <div style="flex:1">
                             <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;color:var(--pkd)">
                                 Use saved number</div>
-                            <div style="font-size:.74rem;color:var(--pkd);opacity:.8">+91 98765 43210 (Priya Sharma)</div>
+                            <div style="font-size:.74rem;color:var(--pkd);opacity:.8">
+                                {{ auth()->user()?->phone ? '+91 ' . auth()->user()->phone : 'Use your login mobile number' }}
+                            </div>
                         </div>
                         <span style="font-size:.75rem;color:var(--pkd);font-weight:700">Tap →</span>
                     </div>
@@ -2310,7 +2127,7 @@
                                 minutes</strong>.</div>
                     </div>
 
-                    <div class="om-label" style="justify-content:center">Enter 4-digit OTP</div>
+                    <div class="om-label" style="justify-content:center">Enter 6-digit OTP</div>
 
                     <div class="otp-boxes">
                         <input class="otp-box" type="tel" maxlength="1" id="otp1"
@@ -2320,7 +2137,11 @@
                         <input class="otp-box" type="tel" maxlength="1" id="otp3"
                             oninput="otpInput(this,'otp2','otp4')" onkeydown="otpKeydown(event,this,'otp2','otp4')">
                         <input class="otp-box" type="tel" maxlength="1" id="otp4"
-                            oninput="otpInput(this,'otp3',null)" onkeydown="otpKeydown(event,this,'otp3',null)">
+                            oninput="otpInput(this,'otp3','otp5')" onkeydown="otpKeydown(event,this,'otp3','otp5')">
+                        <input class="otp-box" type="tel" maxlength="1" id="otp5"
+                            oninput="otpInput(this,'otp4','otp6')" onkeydown="otpKeydown(event,this,'otp4','otp6')">
+                        <input class="otp-box" type="tel" maxlength="1" id="otp6"
+                            oninput="otpInput(this,'otp5',null)" onkeydown="otpKeydown(event,this,'otp5',null)">
                     </div>
 
                     <div class="otp-error" id="otpError">❌ Incorrect OTP. Please try again.</div>
@@ -2515,6 +2336,104 @@
                         window.__selectedAddressId = el.getAttribute('data-address-id') || '';
                     }
 
+                    function getNewAddressPayload() {
+                        const firstName = document.querySelector('#newAddrPanel input[placeholder="e.g. Priya"]')?.value?.trim() ||
+                            '';
+                        const lastName = document.querySelector('#newAddrPanel input[placeholder="e.g. Sharma"]')?.value?.trim() ||
+                            '';
+                        const phoneRaw = document.querySelector('#newAddrPanel input[placeholder="+91 XXXXX XXXXX"]')?.value
+                            ?.trim() || '';
+                        const line1 = document.querySelector('#newAddrPanel input[placeholder="e.g. 42, Sunshine Residency"]')
+                            ?.value?.trim() || '';
+                        const line2 = document.querySelector('#newAddrPanel input[placeholder="e.g. HSR Layout, Sector 3"]')?.value
+                            ?.trim() || '';
+                        const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
+                        const city = document.getElementById('cityField')?.value?.trim() || '';
+                        const state = document.getElementById('stateField')?.value?.trim() || '';
+                        const activeTypeBtn = document.querySelector('.addr-type-btn.active');
+                        const label = activeTypeBtn ? activeTypeBtn.textContent.replace(/[^\w\s]/g, '').trim() : 'Home';
+                        const phone = phoneRaw.replace(/\D/g, '').slice(-10);
+
+                        return {
+                            label: label || 'Home',
+                            full_name: `${firstName} ${lastName}`.trim(),
+                            phone,
+                            email: '{{ auth()->user()->email ?? '' }}',
+                            address_line_1: line1,
+                            address_line_2: line2,
+                            city,
+                            state,
+                            postal_code: postalCode,
+                            country: 'India'
+                        };
+                    }
+
+                    function hasRequiredNewAddressFields(payload = {}) {
+                        return !!(payload.full_name && payload.phone && payload.address_line_1 && payload.postal_code && payload.city &&
+                            payload.state);
+                    }
+
+                    async function persistNewAddress(payload, options = {}) {
+                        const res = await fetch(api.addressesUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const responsePayload = await res.json().catch(() => ({}));
+                        if (!res.ok) {
+                            if (!options.silent) {
+                                alert(responsePayload.message || 'Unable to save address.');
+                            }
+                            return null;
+                        }
+
+                        return responsePayload.data || null;
+                    }
+
+                    function getFirstSavedAddressId() {
+                        return document.querySelector('#savedAddrPanel .addr-item')?.getAttribute('data-address-id') || '';
+                    }
+
+                    async function ensureCheckoutAddressReady() {
+                        if (window.__selectedAddressId) {
+                            return true;
+                        }
+
+                        const pendingAddress = getNewAddressPayload();
+                        if (hasRequiredNewAddressFields(pendingAddress)) {
+                            const createdAddress = await persistNewAddress(pendingAddress, {
+                                silent: true
+                            });
+                            if (createdAddress?.id) {
+                                window.__selectedAddressId = String(createdAddress.id);
+                            }
+                        }
+
+                        await loadAddresses();
+
+                        if (!window.__selectedAddressId) {
+                            const firstAddressId = getFirstSavedAddressId();
+                            if (firstAddressId) {
+                                window.__selectedAddressId = String(firstAddressId);
+                                const firstAddressEl = document.querySelector(
+                                    `#savedAddrPanel .addr-item[data-address-id="${firstAddressId}"]`
+                                );
+                                if (firstAddressEl) {
+                                    selectAddr(firstAddressEl);
+                                }
+                            }
+                        }
+
+                        return !!window.__selectedAddressId;
+                    }
+
                     function toggleAddrType(el) {
                         document.querySelectorAll('.addr-type-btn').forEach(b => b.classList.remove('active'));
                         el.classList.add('active');
@@ -2550,8 +2469,23 @@
                     window.__checkoutToken = '';
                     window.__couponCode = '';
                     let isLoggedIn = @json((bool) auth()->check());
+                    let isApplyingCoupon = false;
+                    let isVerifyingOtp = false;
+                    let isPlacingOrder = false;
                     const pendingCartKey = 'nb_pending_cart';
                     let currentTotal = 0;
+
+                    function updateCsrfToken(token) {
+                        if (!token) {
+                            return;
+                        }
+
+                        api.csrf = token;
+                        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                        if (csrfMeta) {
+                            csrfMeta.setAttribute('content', token);
+                        }
+                    }
 
                     function getPendingCartItems() {
                         try {
@@ -2698,7 +2632,7 @@
                     }
 
                     function updatePriceUI(pricing, itemsCount) {
-                        const mrp = Number(pricing.subtotal || 0) + Number(pricing.discount_total || 0);
+                        const mrp = Number(pricing.subtotal || 0);
                         const discount = Number(pricing.discount_total || 0);
                         const shipping = Number(pricing.shipping_total || 0);
                         const gst = Number(pricing.tax_total || 0);
@@ -2794,8 +2728,7 @@
 
                         document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
                         el.classList.add('selected');
-                        const codFee = 49;
-                        const total = currentTotal + codFee;
+                        const total = currentTotal;
                         const payBtn = document.getElementById('paymentPlaceBtn');
                         if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${total.toLocaleString('en-IN')}`;
                         document.querySelector('.place-order-btn').innerHTML =
@@ -2833,6 +2766,58 @@
                         el.classList.add('active');
                     }
 
+                    async function ensureCheckoutToken(couponCode = null, options = {}) {
+                        const normalizedCode = typeof couponCode === 'string' ? couponCode.trim().toUpperCase() : '';
+                        const forceRefresh = !!options.forceRefresh;
+
+                        if (!forceRefresh && window.__checkoutToken) {
+                            return {
+                                success: true,
+                                token: window.__checkoutToken,
+                                payload: null
+                            };
+                        }
+
+                        const res = await fetch(api.checkoutSummaryUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? {
+                                    'X-CSRF-TOKEN': api.csrf
+                                } : {})
+                            },
+                            body: JSON.stringify({
+                                coupon_code: normalizedCode || null
+                            })
+                        });
+
+                        if (res.status === 401 || res.status === 419) {
+                            return {
+                                success: false,
+                                requiresLogin: true,
+                                message: 'Login at checkout to continue.'
+                            };
+                        }
+
+                        const payload = await res.json().catch(() => ({}));
+                        if (!res.ok || !payload.checkout_token) {
+                            return {
+                                success: false,
+                                payload,
+                                message: payload.message || 'Unable to prepare checkout. Please try again.'
+                            };
+                        }
+
+                        window.__checkoutToken = payload.checkout_token;
+
+                        return {
+                            success: true,
+                            token: window.__checkoutToken,
+                            payload
+                        };
+                    }
+
                     /* ══ COUPON ══ */
                     async function applyCoupon() {
                         const code = document.getElementById('couponInput').value.trim().toUpperCase();
@@ -2847,34 +2832,24 @@
                         msg.style.color = 'var(--text-light)';
                         msg.textContent = 'Applying coupon...';
 
-                        const res = await fetch(api.checkoutSummaryUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                ...(api.csrf ? {
-                                    'X-CSRF-TOKEN': api.csrf
-                                } : {})
-                            },
-                            body: JSON.stringify({
-                                coupon_code: code || null
-                            })
+                        const tokenState = await ensureCheckoutToken(code, {
+                            forceRefresh: true
                         });
-
-                        if (res.status === 401 || res.status === 419) {
-                            window.location.href = '/login';
-                            return;
-                        }
-
-                        const payload = await res.json().catch(() => ({}));
-                        if (!res.ok) {
+                        if (tokenState.requiresLogin) {
                             msg.style.color = 'var(--or)';
-                            msg.textContent = payload.message || 'Invalid coupon.';
+                            msg.textContent = 'Login at checkout to apply coupon.';
+                            openOtpModal();
                             return;
                         }
 
+                        if (!tokenState.success) {
+                            msg.style.color = 'var(--or)';
+                            msg.textContent = tokenState.message || 'Invalid coupon.';
+                            return;
+                        }
+
+                        const payload = tokenState.payload || {};
                         window.__couponCode = code;
-                        window.__checkoutToken = payload.checkout_token || '';
 
                         const pricing = payload.pricing || {};
                         currentTotal = Number(pricing.grand_total || 0);
@@ -2892,7 +2867,7 @@
                         loyaltyEl.textContent = `${Math.round(currentTotal / 20)} NutriBuddy Coins`;
                         couponRowEl.classList.add('applied');
 
-                        const totalWithCod = currentTotal + 49;
+                        const totalWithCod = currentTotal;
                         const payBtn = document.getElementById('paymentPlaceBtn');
                         if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
                         const pob = document.querySelector('.place-order-btn');
@@ -2922,7 +2897,7 @@
                        OTP MODAL LOGIC
                     ════════════════════════════════════════ */
                     let otpTimer = null;
-                    let generatedOtp = '';
+                    const otpFieldIds = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'];
 
                     function openOtpModal() {
                         if (isLoggedIn) {
@@ -3011,7 +2986,7 @@
 
                     /* OTP box helpers */
                     function clearOtpBoxes() {
-                        ['otp1', 'otp2', 'otp3', 'otp4'].forEach(id => {
+                        otpFieldIds.forEach(id => {
                             const el = document.getElementById(id);
                             el.value = '';
                             el.classList.remove('filled');
@@ -3026,8 +3001,7 @@
                         } else {
                             el.classList.remove('filled');
                         }
-                        // Auto-verify when all 4 filled
-                        const all = ['otp1', 'otp2', 'otp3', 'otp4'].map(id => document.getElementById(id).value);
+                        const all = otpFieldIds.map(id => document.getElementById(id).value);
                         if (all.every(v => v !== '')) {
                             document.getElementById('otpError').classList.remove('show');
                         }
@@ -3041,12 +3015,12 @@
                     }
 
                     async function verifyOtp() {
-                        const entered = ['otp1', 'otp2', 'otp3', 'otp4']
+                        const entered = otpFieldIds
                             .map(id => document.getElementById(id).value)
                             .join('');
 
-                        if (entered.length < 4) {
-                            document.getElementById('otpError').textContent = '⚠️ Please enter all 4 digits.';
+                        if (entered.length < otpFieldIds.length) {
+                            document.getElementById('otpError').textContent = '⚠️ Please enter all 6 digits.';
                             document.getElementById('otpError').classList.add('show');
                             return;
                         }
@@ -3059,7 +3033,7 @@
                         btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
 
                         const phone = document.getElementById('phoneInput').value.trim();
-                        const otp = entered === '1234' ? '123456' : entered;
+                        const otp = entered;
 
                         const res = await fetch(api.verifyOtpUrl, {
                             method: 'POST',
@@ -3084,7 +3058,7 @@
                             document.getElementById('otpError').textContent = payload.message || '❌ Invalid OTP.';
                             document.getElementById('otpError').classList.add('show');
                             // Shake the boxes
-                            ['otp1', 'otp2', 'otp3', 'otp4'].forEach(id => {
+                            otpFieldIds.forEach(id => {
                                 const el = document.getElementById(id);
                                 el.style.borderColor = 'var(--or)';
                                 el.style.background = 'var(--orl)';
@@ -3101,12 +3075,26 @@
 
                         clearInterval(otpTimer);
                         isLoggedIn = true;
+                        updateCsrfToken(payload.csrf_token || '');
                         await syncPendingCartToServer();
-                        await loadAddresses();
-                        await loadCartSummary();
+
+                        const hasAddressReady = await ensureCheckoutAddressReady();
+                        const couponInput = document.getElementById('couponInput');
+                        if (couponInput && couponInput.value.trim()) {
+                            window.__checkoutToken = '';
+                            await applyCoupon();
+                        } else {
+                            await loadCartSummary();
+                        }
 
                         closeOtpModal();
-                        placeOrder();
+
+                        if (!hasAddressReady) {
+                            alert('Login successful. Please add or select a delivery address to place the order.');
+                            return;
+                        }
+
+                        await placeOrder();
                     }
 
                     /* Resend timer */
@@ -3131,7 +3119,7 @@
 
                     async function resendOtp() {
                         await sendOtp();
-                        const otp1 = document.getElementById('otp1');
+                        const otp1 = document.getElementById(otpFieldIds[0]);
                         if (otp1) otp1.focus();
                     }
 
@@ -3144,7 +3132,17 @@
                         }
 
                         if (!window.__checkoutToken) {
-                            await applyCoupon();
+                            const tokenState = await ensureCheckoutToken(window.__couponCode || null, {
+                                forceRefresh: true
+                            });
+                            if (tokenState.requiresLogin) {
+                                openOtpModal();
+                                return;
+                            }
+                            if (!tokenState.success) {
+                                alert(tokenState.message || 'Unable to prepare checkout. Please try again.');
+                                return;
+                            }
                         }
 
                         const res = await fetch(api.placeOrderUrl, {
@@ -3165,7 +3163,7 @@
                         });
 
                         if (res.status === 401 || res.status === 419) {
-                            window.location.href = '/login';
+                            openOtpModal();
                             return;
                         }
 
@@ -3174,6 +3172,8 @@
                             alert(payload.message || 'Unable to place order.');
                             return;
                         }
+
+                        updateCsrfToken(payload.csrf_token || '');
 
                         const orderNumber = payload.order?.order_number || '';
                         const box = document.querySelector('#successOverlay .order-id-box');
@@ -3306,25 +3306,14 @@
                         // generate a token for idempotency
                         window.__checkoutToken = window.__checkoutToken || '';
                         if (!window.__checkoutToken) {
-                            const sumRes = await fetch(api.checkoutSummaryUrl, {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                    ...(api.csrf ? {
-                                        'X-CSRF-TOKEN': api.csrf
-                                    } : {})
-                                },
-                                body: JSON.stringify({
-                                    coupon_code: null
-                                })
-                            });
-                            const sumPayload = await sumRes.json().catch(() => ({}));
-                            window.__checkoutToken = sumPayload.checkout_token || '';
+                            const tokenState = await ensureCheckoutToken(window.__couponCode || null);
+                            if (tokenState.requiresLogin) {
+                                return;
+                            }
                         }
 
                         // COD only: update button with fee
-                        const totalWithCod = currentTotal + 49;
+                        const totalWithCod = currentTotal;
                         const payBtn = document.getElementById('paymentPlaceBtn');
                         if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
                         const pob = document.querySelector('.place-order-btn');
@@ -3332,58 +3321,19 @@
                     }
 
                     async function saveNewAddress() {
-                        const firstName = document.querySelector('#newAddrPanel input[placeholder="e.g. Priya"]')?.value?.trim() ||
-                            '';
-                        const lastName = document.querySelector('#newAddrPanel input[placeholder="e.g. Sharma"]')?.value?.trim() ||
-                            '';
-                        const phoneRaw = document.querySelector('#newAddrPanel input[placeholder="+91 XXXXX XXXXX"]')?.value
-                            ?.trim() || '';
-                        const line1 = document.querySelector('#newAddrPanel input[placeholder="e.g. 42, Sunshine Residency"]')
-                            ?.value?.trim() || '';
-                        const line2 = document.querySelector('#newAddrPanel input[placeholder="e.g. HSR Layout, Sector 3"]')?.value
-                            ?.trim() || '';
-                        const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
-                        const city = document.getElementById('cityField')?.value?.trim() || '';
-                        const state = document.getElementById('stateField')?.value?.trim() || '';
-                        const activeTypeBtn = document.querySelector('.addr-type-btn.active');
-                        const label = activeTypeBtn ? activeTypeBtn.textContent.replace(/[^\w\s]/g, '').trim() : 'Home';
-
-                        const phone = phoneRaw.replace(/\D/g, '').slice(-10);
-                        if (!firstName || !phone || !line1 || !postalCode || !city || !state) {
+                        const payload = getNewAddressPayload();
+                        if (!hasRequiredNewAddressFields(payload)) {
                             alert('Please fill all required address fields.');
                             return;
                         }
 
-                        const res = await fetch(api.addressesUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                                ...(api.csrf ? {
-                                    'X-CSRF-TOKEN': api.csrf
-                                } : {})
-                            },
-                            body: JSON.stringify({
-                                label: label || 'Home',
-                                full_name: `${firstName} ${lastName}`.trim(),
-                                phone: phone,
-                                email: '{{ auth()->user()->email ?? '' }}',
-                                address_line_1: line1,
-                                address_line_2: line2,
-                                city: city,
-                                state: state,
-                                postal_code: postalCode,
-                                country: 'India'
-                            })
-                        });
-
-                        const payload = await res.json().catch(() => ({}));
-                        if (!res.ok) {
-                            alert(payload.message || 'Unable to save address.');
+                        const address = await persistNewAddress(payload);
+                        if (!address?.id) {
                             return;
                         }
 
                         await loadAddresses();
+                        window.__selectedAddressId = String(address.id);
                         const savedTab = Array.from(document.querySelectorAll('.addr-tab')).find(t => t.textContent.includes(
                             'Saved'));
                         if (savedTab) setAddrTab(savedTab);

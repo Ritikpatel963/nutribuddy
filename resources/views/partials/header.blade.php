@@ -250,21 +250,22 @@
 
 <div id="cart-popup">
     <div class="popup-inner">
-        <button class="close-cart" id="closeCart">✕</button>
+        <button type="button" class="close-cart" id="closeCart" aria-label="Close cart">&times;</button>
         <div class="cart-inner">
-            <h4 class="title-text"><span id="cartPopupCount">0</span> Cart Items</h4>
+            <h4 class="title-text"> Cart Items <span id="cartPopupCount">0</span></h4>
 
             <div id="cartPopupItems"></div>
 
             <div class="text-box">
                 <h5>Subtotal</h5>
-                <span id="cartPopupSubtotal">₹0</span>
+                <span id="cartPopupSubtotal">Rs. 0</span>
             </div>
 
             <div class="btn-box">
                 <a href="{{ route('cart.page') }}">View Cart</a>
-                <a href="{{ route('checkout') }}">Checkout →</a>
+                <a href="{{ route('checkout') }}">Checkout &rarr;</a>
             </div>
         </div>
     </div>
 </div>
+

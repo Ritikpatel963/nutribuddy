@@ -139,7 +139,7 @@
         }
 
         .origin-section {
-            padding: 90px 5%;
+            padding: 70px 5%;
             background: var(--cr);
             position: relative;
         }
@@ -312,6 +312,10 @@
             box-shadow: 0 8px 24px rgba(255, 77, 143, .09);
         }
 
+        .prob-icon img {
+            height: 43px;
+        }
+
         .prob-icon {
             width: 46px;
             height: 46px;
@@ -339,7 +343,7 @@
         }
 
         .origin {
-            padding: 100px 6%;
+            padding: 65px 6%;
             background: #fff
         }
 
@@ -459,30 +463,12 @@
             }
         }
 
-        .gap-section {
+        /* ── Discovery Section ── */
+        .discovery-section {
             padding: 90px 5%;
-            background: linear-gradient(160deg, #FFF5FF 0%, #F0E8FF 40%, #FFDCF0 70%, #FFF5E0 100%);
+            background: #f7def6;
             position: relative;
             overflow: hidden;
-        }
-
-        .gap-section::before {
-            content: '';
-            position: absolute;
-            width: 480px;
-            height: 480px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 77, 143, .07), transparent 60%);
-            top: -140px;
-            right: -100px;
-            animation: blobMorph 12s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        .gap-header {
-            text-align: center;
-            max-width: 680px;
-            margin: 0 auto 60px;
         }
 
         .paragraph {
@@ -492,98 +478,305 @@
             margin-bottom: 18px;
         }
 
-        .gap-header .sec-eye {
-            font-family: 'Nunito', sans-serif;
-            font-size: .88rem;
-            font-weight: 900;
-            letter-spacing: 2.2px;
-            text-transform: uppercase;
-            color: var(--pk);
-            margin-bottom: 12px;
-            display: block;
+        .disc-header {
+            max-width: 60%;
+            margin-bottom: 52px;
         }
 
-        .gap-header h2 {
-            font-family: 'Fredoka One', cursive;
-            font-size: clamp(2rem, 3vw, 2.8rem);
-            color: var(--dk);
-            line-height: 1.12;
-            margin-bottom: 14px;
-        }
-
-        .gap-header h2 .acc {
-            color: var(--pu);
-        }
-
-        .gap-header p {
-            font-size: .97rem;
-            color: #666;
-            line-height: 1.75;
-        }
-
-        .gap-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 22px;
-            margin: 0 auto;
-        }
-
-        .gap-grid .gap-card {
-            flex: 1 1 285px;
-            max-width: 320px;
-        }
-
-        .gap-card {
-            background: white;
-            border-radius: 28px;
-            padding: 32px 28px;
-            border: 2.5px solid var(--pkl);
-            box-shadow: 0 8px 28px rgba(0, 0, 0, .05);
-            transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .gap-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--bar-color, linear-gradient(90deg, var(--pk), var(--pkd)));
-            border-radius: 28px 28px 0 0;
-        }
-
-        .gap-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--pk);
-            box-shadow: 0 24px 50px rgba(255, 77, 143, .14);
-        }
-
-        .gap-card-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            display: flex;
+        .disc-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.9rem;
+            gap: 7px;
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 50px;
+            padding: 7px 16px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .72rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             margin-bottom: 20px;
         }
 
-        .gap-card h3 {
+        .disc-header h2 {
             font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            color: var(--dk);
-            margin-bottom: 10px;
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: #1a1a2e;
+            line-height: 1.08;
+            margin-bottom: 16px;
         }
 
-        .gap-card p {
-            font-size: .88rem;
+        .disc-header h2 .gap-accent {
+            color: #FF6B6B;
+        }
+
+        .disc-header p {
+            font-size: .95rem;
             color: #666;
-            line-height: 1.7;
+            line-height: 1.75;
+
+        }
+
+        /* Split layout */
+        .disc-body {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Left featured card */
+        .disc-featured {
+            border-radius: 28px;
+            background: linear-gradient(145deg, #00C9A7 0%, #00B4D8 100%);
+            padding: 36px 30px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 180, 216, .28);
+            min-height: 420px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .disc-featured::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .08);
+            pointer-events: none;
+        }
+
+        .disc-feat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .disc-feat-num {
+            font-family: 'Fredoka One', cursive;
+            font-size: 5rem;
+            line-height: 1;
+            color: rgba(255, 255, 255, .9);
+        }
+
+        .disc-feat-icon img {
+            height: 43px !important;
+        }
+
+        .disc-feat-icon {
+            width: 66px;
+            height: 61px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .disc-feat-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.55rem;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 18px;
+        }
+
+        .disc-feat-label {
+            font-family: 'Nunito', sans-serif;
+            font-size: .65rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .65);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .disc-feat-body {
+            font-size: .85rem;
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.65;
+            margin-bottom: 14px;
+        }
+
+        .disc-feat-fix {
+            background: rgba(255, 255, 255, .18);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: .83rem;
+            color: #fff;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .disc-feat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, .22);
+            border: 1px solid rgba(255, 255, 255, .35);
+            border-radius: 50px;
+            padding: 6px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .76rem;
+            color: #fff;
+        }
+
+        .disc-feat-credit {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .55);
+            margin-top: 14px;
+            line-height: 1.5;
+        }
+
+        /* Right list */
+        .disc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .disc-item {
+            background: #fff;
+            border: 1.5px solid #EBEBEB;
+            border-radius: 20px;
+            padding: 20px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            cursor: pointer;
+            transition: all .3s cubic-bezier(.34, 1.3, .64, 1);
+            position: relative;
+        }
+
+        .disc-item:hover,
+        .disc-item.active {
+            border-color: #1a1a2e;
+            box-shadow: 0 8px 28px rgba(26, 26, 46, .1);
+            transform: translateX(4px);
+        }
+
+        .disc-item-num {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .disc-item-body {
+            flex: 1;
+        }
+
+        .disc-item-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .disc-item-title {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            color: #1a1a2e;
+        }
+
+        .disc-gap-tag {
+            font-family: 'Nunito', sans-serif;
+            font-size: .62rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 50px;
+            background: #F0F0F0;
+            color: #999;
+        }
+
+        .disc-item-desc {
+            font-size: .84rem;
+            color: #777;
+            line-height: 1.6;
+        }
+
+        .disc-item-fix {
+            font-size: .82rem;
+            color: #1a1a2e;
+            font-weight: 700;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .disc-item.active .disc-item-fix {
+            display: block;
+        }
+
+        .disc-item-arrow {
+            font-size: 1rem;
+            color: #ccc;
+            flex-shrink: 0;
+            align-self: center;
+            transition: color .3s, transform .3s;
+        }
+
+        .disc-item:hover .disc-item-arrow,
+        .disc-item.active .disc-item-arrow {
+            color: #1a1a2e;
+            transform: translateX(3px);
+        }
+
+        /* num colours */
+        .disc-num-1 {
+            background: #FF8C42;
+        }
+
+        .disc-num-2 {
+            background: linear-gradient(135deg, #00C9A7, #00B4D8);
+        }
+
+        .disc-num-3 {
+            background: #A855F7;
+        }
+
+        .disc-num-4 {
+            background: #EC4899;
+        }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .disc-body {
+                grid-template-columns: 1fr;
+            }
+
+            .disc-featured {
+                min-height: unset;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .discovery-section {
+                padding: 60px 5%;
+            }
+
+            .disc-feat-num {
+                font-size: 3.5rem;
+            }
         }
 
         .formula-section {
@@ -660,7 +853,7 @@
             justify-content: center;
             gap: 16px;
             flex-wrap: wrap;
-            max-width: 900px;
+
             margin: 0 auto 60px;
             position: relative;
             z-index: 2;
@@ -670,13 +863,12 @@
             background: rgba(255, 255, 255, .06);
             border: 1.5px solid rgba(255, 255, 255, .12);
             border-radius: 24px;
-            padding: 26px 28px;
+            padding: 26px 20px;
             text-align: center;
-            min-width: 160px;
             transition: all .3s;
             flex: 1;
-            min-width: 140px;
-            max-width: 200px;
+            min-width: 160px;
+          
         }
 
         .feq-item:hover {
@@ -686,8 +878,20 @@
 
         .feq-icon {
             font-size: 2.4rem;
-            margin-bottom: 10px;
-            display: block;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .feq-icon img {
+            width: 150px;
+            height: 140px;
+
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .feq-title {
@@ -711,15 +915,16 @@
         }
 
         .formula-result {
-            margin: 0 auto;
-            background: linear-gradient(135deg, rgba(255, 77, 143, .15), rgba(255, 214, 0, .1));
-            border: 2px solid rgba(255, 214, 0, .25);
-            border-radius: 28px;
-            padding: 36px;
+            /* margin: 0 auto;
+                background: linear-gradient(135deg, rgba(255, 77, 143, .15), rgba(255, 214, 0, .1));
+                border: 2px solid rgba(255, 214, 0, .25);
+                border-radius: 28px;
+                padding: 36px;
+
+                position: relative;
+                z-index: 2;
+                box-shadow: 0 0 60px rgba(255, 77, 143, .15); */
             text-align: center;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 0 60px rgba(255, 77, 143, .15);
         }
 
         .formula-result h3 {
@@ -736,7 +941,7 @@
         }
 
         .closing-section {
-            padding: 90px 5%;
+            padding: 36px 5%;
             background: linear-gradient(145deg, #FFF0FA 0%, #F0E5FF 50%, #FFDCF0 100%);
             position: relative;
             overflow: hidden;
@@ -993,7 +1198,7 @@
             }
 
             .origin-section,
-            .gap-section,
+            .discovery-section,
             .formula-section,
             .why-section,
             .closing-section {
@@ -1045,18 +1250,83 @@
                 min-width: 80px;
             }
 
-            .gap-card,
+            .disc-item,
             .wc {
-                padding: 24px 18px;
+                padding: 18px 16px;
             }
+        }
+
+        .stat-boxes {
+            display: flex;
+              gap: 12px;
+            margin-top: 25px;
+        }
+
+        .stat-box {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--pkl);
+            box-shadow: 0 10px 25px rgba(255, 77, 143, 0.1);
+        }
+
+        .stat-icon img {
+            height: 43px;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .pu-bg {
+            background: var(--pul);
+        }
+
+        .mn-bg {
+            background: var(--mnl);
+        }
+
+        .stat-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.9rem;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .stat-text strong {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: var(--dk);
+            display: block;
+            margin-bottom: 4px;
+            font-weight: normal;
         }
     </style>
 @endpush
 
 @section('content')
     <!-- ══════════════════════════════════════════
-                     HERO
-                ══════════════════════════════════════════ -->
+                             HERO
+                        ══════════════════════════════════════════ -->
     <section class="about-hero">
         <div class="hero-badge"> Our Story</div>
 
@@ -1116,9 +1386,20 @@
                         the gap between what children need and what's available is enormous — and the market wasn't
                         doing anything about it.
                     </p>
-                    <div class="op-pills">
-                        <span class="op-pill pu">👨‍⚕️ 200+ Pediatricians</span>
-                        <span class="op-pill mn">👪 1,000+ Parents</span>
+                    <div class="stat-boxes">
+                        <div class="stat-box">
+                            <div class="stat-icon pu-bg"><img src="img/pediatrician.png" alt=""></div>
+                            <div class="stat-text"><strong>200+</strong>Pediatricians</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon mn-bg"><img src="img/family.png" alt=""></div>
+                            <div class="stat-text"><strong>1,000+</strong>Parents</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon mn-bg"><img src="img/rating.png" alt=""></div>
+                            <div class="stat-text"><strong>1,000+</strong>Customer</div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -1128,8 +1409,8 @@
         </div>
     </section>
     <!-- ══════════════════════════════════════════
-                     ORIGIN STORY
-                ══════════════════════════════════════════ -->
+                             ORIGIN STORY
+                        ══════════════════════════════════════════ -->
     <section class="origin-section">
         <div class="origin-grid">
 
@@ -1148,14 +1429,14 @@
                         hidden sugars, and zero transparency. None of it felt right for our child.
                     </p>
                     <div class="story-pills">
-                        <div class="spill">🧒 Real Parent Story</div>
-                        <div class="spill">🏥 Doctor's Advice</div>
-                        <div class="spill">💡 A Better Way</div>
+                        <div class="spill">Real Parent Story</div>
+                        <div class="spill">Doctor's Advice</div>
+                        <div class="spill">A Better Way</div>
                     </div>
                 </div>
 
                 <div class="float-accent fa-1">
-                    🏅 Pediatrician Approved
+                    Pediatrician Approved
                 </div>
                 <div class="float-accent fa-2">
                     Zero Hidden Sugars
@@ -1171,14 +1452,11 @@
                     wasn't getting the right nutrients consistently. Most parents face this daily but
                     don't know where to turn.
                 </p>
-                <p>
-                    We spoke to 200+ pediatricians and 1,000+ parents across India. The finding was
-                    unanimous: the gap between what children need and what's available is enormous.
-                </p>
+
 
                 <div class="problem-cards">
                     <div class="prob-card">
-                        <div class="prob-icon" style="background:var(--pkl)">🧪</div>
+                        <div class="prob-icon" style="background:var(--pkl)"><img src="img/dermal.png" alt=""></div>
                         <div>
                             <h4>Products Full of Fillers</h4>
                             <p>Most children's supplements are 70% filler, sugar, and artificial colour. Parents deserve
@@ -1187,7 +1465,7 @@
                         </div>
                     </div>
                     <div class="prob-card">
-                        <div class="prob-icon" style="background:var(--skl)">🩺</div>
+                        <div class="prob-icon" style="background:var(--skl)"><img src="img/health.png" alt=""></div>
                         <div>
                             <h4>Incomplete Medical Guidance</h4>
                             <p>Doctors advise supplements but rarely guide parents to safe, high-quality options. The gap is
@@ -1195,7 +1473,7 @@
                         </div>
                     </div>
                     <div class="prob-card">
-                        <div class="prob-icon" style="background:var(--mnl)"></div>
+                        <div class="prob-icon" style="background:var(--mnl)"><img src="img/planet-earth.png" alt=""></div>
                         <div>
                             <h4>Nature vs. Chemistry</h4>
                             <p>Ayurveda and modern science don't have to compete — combined thoughtfully, they're the most
@@ -1213,72 +1491,133 @@
 
 
     <!-- ══════════════════════════════════════════
-                     THE GAP WE DISCOVERED
-                ══════════════════════════════════════════ -->
-    <section class="gap-section">
+                             THE DISCOVERY SECTION
+                        ══════════════════════════════════════════ -->
+    <section class="discovery-section">
 
-        <div class="gap-header reveal">
-            <span class="sec-eye">The Discovery</span>
-            <h2>The Gap We Found — <span class="acc">And Fixed</span></h2>
+        <!-- Header -->
+        <div class="disc-header reveal">
+            <div class="disc-badge">✦ The Discovery</div>
+            <h2>The gap we found — and fixed.</h2>
             <p>
-                After months of research, lab testing, and consulting paediatricians and Ayurvedic
-                practitioners, we identified four critical gaps in children's nutrition products available in India.
+                After months of research, lab testing, and consulting paediatricians and
+                Ayurvedic practitioners, we identified four critical gaps in children's
+                nutrition products available in India.
             </p>
         </div>
 
-        <div class="gap-grid">
-            <div class="gap-card reveal reveal-d1" style="--bar-color: linear-gradient(90deg, var(--pk), var(--pkd))">
-                <div class="gap-card-icon" style="background:var(--pkl)">🏷️</div>
-                <h3>Misleading Labels</h3>
-                <p>Products claim to be "natural" while hiding synthetic additives, artificial sweeteners, and low-quality
-                    fillers behind complex ingredient names.</p>
+        <!-- Body: featured card + list -->
+        <div class="disc-body">
+
+            <!-- LEFT: Featured rotating card -->
+            <div class="disc-featured reveal" id="discFeatured">
+                <div>
+                    <div class="disc-feat-top">
+                        <div class="disc-feat-num" id="featNum">01</div>
+                        <div class="disc-feat-icon"><img src="img/analysis.png" alt=""></div>
+                    </div>
+                    <div class="disc-feat-title" id="featTitle">The Hidden Sugar Trap</div>
+
+                    <span class="disc-feat-label">The Problem</span>
+                    <p class="disc-feat-body" id="featProblem">
+                        Most kids' nutrition drinks pack 8–14g of sugar per serving —
+                        disguised as flavour.
+                    </p>
+
+                    <span class="disc-feat-label">Our Fix</span>
+                    <div class="disc-feat-fix" id="featFix">
+                        We use monk fruit + stevia at safe levels, giving great taste
+                        with zero added sugar.
+                    </div>
+
+                    <div class="disc-feat-badge" id="featBadge">
+                        🍃 Zero added sugar
+                    </div>
+                </div>
+                <p class="disc-feat-credit">Formulated with paediatricians and Ayurvedic practitioners across India.</p>
             </div>
 
-            <div class="gap-card reveal reveal-d2" style="--bar-color: linear-gradient(90deg, var(--pu), var(--pud))">
-                <div class="gap-card-icon" style="background:var(--pul)">🔬</div>
-                <h3>No Science Behind Claims</h3>
-                <p>Most products make bold claims without clinical backing. We insist every NutriBuddy formula is tested,
-                    validated, and peer-reviewed before launch.</p>
-            </div>
+            <!-- RIGHT: Gap list -->
+            <div class="disc-list">
 
-            <div class="gap-card reveal reveal-d3" style="--bar-color: linear-gradient(90deg, var(--sk), #0088bb)">
-                <div class="gap-card-icon" style="background:var(--skl)">👶</div>
-                <h3>Not Made for Indian Kids</h3>
-                <p>Western formulas ignore the dietary patterns and specific deficiencies common in Indian children — like
-                    Vitamin D3, B12, and iron gaps from vegetarian diets.</p>
-            </div>
+                <div class="disc-item reveal reveal-d1 active" data-index="0" data-num="01"
+                    data-title="The Hidden Sugar Trap" data-tag="GAP #01"
+                    data-desc="Most kids' nutrition drinks pack 8–14g of sugar per serving — disguised as flavour."
+                    data-fix="We use monk fruit + stevia at safe levels — zero added sugar.">
+                    <div class="disc-item-num disc-num-1">01</div>
+                    <div class="disc-item-body">
+                        <div class="disc-item-head">
+                            <span class="disc-item-title">The Hidden Sugar Trap</span>
+                            <span class="disc-gap-tag">GAP #01</span>
+                        </div>
+                        <p class="disc-item-desc">Most kids' nutrition drinks pack 8–14g of sugar per serving — disguised as
+                            flavour.</p>
+                        <p class="disc-item-fix">— We use monk fruit + stevia at safe levels — zero added sugar.</p>
+                    </div>
+                    <span class="disc-item-arrow">→</span>
+                </div>
 
-            <div class="gap-card reveal reveal-d1" style="--bar-color: linear-gradient(90deg, var(--mn), #00a870)">
-                <div class="gap-card-icon" style="background:var(--mnl)">🌱</div>
-                <h3>Ayurveda Ignored</h3>
-                <p>India has 5,000 years of plant-based medicine. Brahmi, Ashwagandha, Amla — these work. We combined them
-                    with
-                    modern bioavailability science.</p>
-            </div>
+                <div class="disc-item reveal reveal-d2" data-index="1" data-num="02"
+                    data-title="Nutrients That Don't Absorb" data-tag="GAP #02"
+                    data-desc="Iron and calcium on the label rarely reach the bloodstream ."
+                    data-fix="— Chelated minerals + Ayurvedic carriers like ghee and pippali .">
+                    <div class="disc-item-num disc-num-2">02</div>
+                    <div class="disc-item-body">
+                        <div class="disc-item-head">
+                            <span class="disc-item-title">Nutrients That Don't Absorb</span>
+                            <span class="disc-gap-tag">GAP #02</span>
+                        </div>
+                        <p class="disc-item-desc">Iron and calcium on the label rarely reach the bloodstream.</p>
+                        <p class="disc-item-fix">— Chelated minerals + Ayurvedic carriers like ghee
+                            .</p>
+                    </div>
+                    <span class="disc-item-arrow">→</span>
+                </div>
 
-            <div class="gap-card reveal reveal-d2" style="--bar-color: linear-gradient(90deg, var(--or), #c04010)">
-                <div class="gap-card-icon" style="background:var(--orl)">😬</div>
-                <h3>Kids Refuse to Take It</h3>
-                <p>Even the best supplement fails if kids won't eat it. We spent 8 months on taste trials until we got
-                    flavours
-                    that children actually ask for.</p>
-            </div>
+                <div class="disc-item reveal reveal-d3" data-index="2" data-num="03" data-title="The Ingredient Maze"
+                    data-tag="GAP #03"
+                    data-desc="Long lists of artificial colors, preservatives and 'natural identical' flavors hide in fine print."
+                    data-fix="— We list every ingredient in plain language — no jargon, no surprises.">
+                    <div class="disc-item-num disc-num-3">03</div>
+                    <div class="disc-item-body">
+                        <div class="disc-item-head">
+                            <span class="disc-item-title">The Ingredient Maze</span>
+                            <span class="disc-gap-tag">GAP #03</span>
+                        </div>
+                        <p class="disc-item-desc">Long lists of artificial colors, preservatives and 'natural identical'
+                            flavors hide in fine print.</p>
+                        <p class="disc-item-fix">— We list every ingredient in plain language — no jargon, no surprises.</p>
+                    </div>
+                    <span class="disc-item-arrow">→</span>
+                </div>
 
-            <div class="gap-card reveal reveal-d3" style="--bar-color: linear-gradient(90deg, var(--ye), var(--or))">
-                <div class="gap-card-icon" style="background:var(--yel)">💰</div>
-                <h3>Affordable & Accessible</h3>
-                <p>Premium child nutrition shouldn't be a luxury. We cut overheads, not quality — making world-class
-                    formulas
-                    available to every Indian family.</p>
-            </div>
-        </div>
+                <div class="disc-item reveal reveal-d4" data-index="3" data-num="04" data-title="Built For Indian Kids"
+                    data-tag="GAP #04"
+                    data-desc="Global brands are formulated for Western diets — not dal-chawal, not Indian climates, not our gut flora."
+                    data-fix="— Our formulas are co-developed with Indian paediatricians for Indian bodies.">
+                    <div class="disc-item-num disc-num-4">04</div>
+                    <div class="disc-item-body">
+                        <div class="disc-item-head">
+                            <span class="disc-item-title">Built For Indian Kids</span>
+                            <span class="disc-gap-tag">GAP #04</span>
+                        </div>
+                        <p class="disc-item-desc">Global brands are formulated for Western diets — not dal-chawal, not
+                            Indian climates, not our gut flora.</p>
+                        <p class="disc-item-fix">— Our formulas are co-developed with Indian paediatricians for Indian
+                            bodies.</p>
+                    </div>
+                    <span class="disc-item-arrow">→</span>
+                </div>
+
+            </div><!-- /disc-list -->
+        </div><!-- /disc-body -->
 
     </section>
 
 
     <!-- ══════════════════════════════════════════
-                     OUR FORMULA
-                ══════════════════════════════════════════ -->
+                             OUR FORMULA
+                        ══════════════════════════════════════════ -->
     <section class="formula-section">
 
         <div class="formula-header reveal">
@@ -1289,38 +1628,39 @@
                 two years to perfect.
             </p>
         </div>
+        <!-- hide part -->
+        <div class="formula-eq reveal reveal-d1">
+            <div class="feq-item">
+                <span class="feq-icon"><img src="img/rishi.jpg" alt=""></span>
+                <div class="feq-title">Ayurvedic Wisdom</div>
+                <div class="feq-sub">5,000 years of plant-based healing, distilled</div>
+            </div>
 
-        <!-- <div class="formula-eq reveal reveal-d1">
-                    <div class="feq-item">
-                      <span class="feq-icon"></span>
-                      <div class="feq-title">Ayurvedic Wisdom</div>
-                      <div class="feq-sub">5,000 years of plant-based healing, distilled</div>
-                    </div>
+            <div class="feq-op">+</div>
 
-                    <div class="feq-op">+</div>
+            <div class="feq-item">
+                <span class="feq-icon"><img src="img/labs.jpeg" alt=""></span>
+                <div class="feq-title">Modern Science</div>
+                <div class="feq-sub">Clinical validation & optimal bioavailability</div>
+            </div>
 
-                    <div class="feq-item">
-                      <span class="feq-icon">🔬</span>
-                      <div class="feq-title">Modern Science</div>
-                      <div class="feq-sub">Clinical validation & optimal bioavailability</div>
-                    </div>
+            <div class="feq-op">+</div>
 
-                    <div class="feq-op">+</div>
+            <div class="feq-item">
+                <span class="feq-icon"><img src="img/cidss.png" alt=""></span>
+                <div class="feq-title">Kid-Approved Taste</div>
+                <div class="feq-sub">8 months of flavour trials with real children</div>
+            </div>
 
-                    <div class="feq-item">
-                      <span class="feq-icon">🍭</span>
-                      <div class="feq-title">Kid-Approved Taste</div>
-                      <div class="feq-sub">8 months of flavour trials with real children</div>
-                    </div>
+            <div class="feq-op">=</div>
 
-                    <div class="feq-op">=</div>
-
-                    <div class="feq-item" style="background:rgba(255,214,0,.1);border-color:rgba(255,214,0,.3)">
-                      <span class="feq-icon">⭐</span>
-                      <div class="feq-title" style="color:var(--ye)">NutriBuddy</div>
-                      <div class="feq-sub">Products your child will love and thrive on</div>
-                    </div>
-                  </div> -->
+            <div class="feq-item" style="background:rgba(255,214,0,.1);border-color:rgba(255,214,0,.3)">
+                <span class="feq-icon"><img src="img/gummies.jpeg" alt=""></span>
+                <div class="feq-title" style="color:var(--ye)">NutriBuddy</div>
+                <div class="feq-sub">Products your child will love and thrive on</div>
+            </div>
+        </div>
+        <!-- hide -->
 
         <div class="formula-result reveal reveal-d2">
             <h3>The Result? Products kids ask for by name.</h3>
@@ -1333,11 +1673,11 @@
     </section>
 
     <!-- ══════════════════════════════════════════
-                     CLOSING CTA
-                ══════════════════════════════════════════ -->
+                             CLOSING CTA
+                        ══════════════════════════════════════════ -->
     <section class="closing-section">
         <div class="closing-inner reveal">
-            <span class="closing-emoji">🤗</span>
+            <!-- <span class="closing-emoji"></span> -->
 
             <h2>
                 Because Your Child Deserves<br>
@@ -1373,51 +1713,94 @@
             <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
         </div>
     </div>
-    @push('scripts')
-        <script>
-            // Scroll Reveal
-            const revObs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        e.target.classList.add('visible');
-                        revObs.unobserve(e.target);
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            document.querySelectorAll('.reveal').forEach(r => revObs.observe(r));
-
-            // Counter animation
-            const countObs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (!e.isIntersecting) return;
-                    const el = e.target;
-                    const raw = el.textContent;
-                    const hasK = raw.includes('K');
-                    const hasStar = raw.includes('★');
-                    const hasPct = raw.includes('%');
-                    const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
-                    let start = 0;
-                    const dur = 1600,
-                        steps = 60,
-                        inc = num / steps;
-                    const iv = setInterval(() => {
-                        start = Math.min(start + inc, num);
-                        let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
-                        if (hasK) display += 'K+';
-                        else if (hasStar) display += '★';
-                        else if (hasPct) display += '%';
-                        else display += '+';
-                        el.textContent = display;
-                        if (start >= num) clearInterval(iv);
-                    }, dur / steps);
-                    countObs.unobserve(el);
-                });
-            }, {
-                threshold: 0.5
-            });
-            document.querySelectorAll('.hstat-num').forEach(el => countObs.observe(el));
-        </script>
-    @endpush
 @endsection
+@push('scripts')
+    <script>
+        // Scroll Reveal
+        const revObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    revObs.unobserve(e.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        document.querySelectorAll('.reveal').forEach(r => revObs.observe(r));
+
+        // Counter animation
+        const countObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                const el = e.target;
+                const raw = el.textContent;
+                const hasK = raw.includes('K');
+                const hasStar = raw.includes('★');
+                const hasPct = raw.includes('%');
+                const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
+                let start = 0;
+                const dur = 1600,
+                    steps = 60,
+                    inc = num / steps;
+                const iv = setInterval(() => {
+                    start = Math.min(start + inc, num);
+                    let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
+                    if (hasK) display += 'K+';
+                    else if (hasStar) display += '★';
+                    else if (hasPct) display += '%';
+                    else display += '+';
+                    el.textContent = display;
+                    if (start >= num) clearInterval(iv);
+                }, dur / steps);
+                countObs.unobserve(el);
+            });
+        }, {
+            threshold: 0.5
+        });
+        document.querySelectorAll('.hstat-num').forEach(el => countObs.observe(el));
+
+        // Discovery section – interactive featured card
+        (function () {
+            const items = document.querySelectorAll('.disc-item');
+            const featNum = document.getElementById('featNum');
+            const featTitle = document.getElementById('featTitle');
+            const featProblem = document.getElementById('featProblem');
+            const featFix = document.getElementById('featFix');
+            const featBadge = document.getElementById('featBadge');
+
+            const badges = [
+                ' Zero added sugar',
+                ' 3× absorption',
+                ' Full transparency',
+                '🇮🇳 Made for India'
+            ];
+
+            if (!featNum) return; // safety guard
+
+            items.forEach(item => {
+                item.addEventListener('click', () => {
+                    items.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    const idx = parseInt(item.dataset.index);
+                    featNum.textContent = item.dataset.num;
+                    featTitle.textContent = item.dataset.title;
+                    featProblem.textContent = item.dataset.desc;
+                    featFix.textContent = item.dataset.fix;
+                    featBadge.textContent = badges[idx] || badges[0];
+
+                    // Smooth fade transition on the featured card
+                    const card = document.getElementById('discFeatured');
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(8px)';
+                    setTimeout(() => {
+                        card.style.transition = 'opacity .35s ease, transform .35s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 60);
+                });
+            });
+        })();
+    </script>
+@endpush

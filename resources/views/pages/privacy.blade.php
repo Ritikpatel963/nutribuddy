@@ -3,7 +3,6 @@
 
 @push('styles')
     <style>
-        /* ── HERO BANNER ── */
         .page-hero {
             background: linear-gradient(135deg, var(--dk) 0%, #260050 50%, #0d0030 100%);
             padding: 130px 5% 56px;
@@ -21,7 +20,7 @@
             height: 360px;
             background: radial-gradient(circle, rgba(255, 77, 143, .12), transparent 65%);
             border-radius: 50%;
-            pointer-events: none
+            pointer-events: none;
         }
 
         .page-hero::after {
@@ -33,7 +32,7 @@
             height: 280px;
             background: radial-gradient(circle, rgba(124, 58, 237, .1), transparent 65%);
             border-radius: 50%;
-            pointer-events: none
+            pointer-events: none;
         }
 
         .hero-eyebrow {
@@ -46,7 +45,7 @@
             margin-bottom: 12px;
             display: block;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .hero-title {
@@ -56,21 +55,21 @@
             margin-bottom: 14px;
             position: relative;
             z-index: 2;
-            line-height: 1.1
+            line-height: 1.1;
         }
 
         .hero-title span {
-            color: var(--ye)
+            color: var(--ye);
         }
 
         .hero-subtitle {
             font-size: .95rem;
             color: rgba(255, 255, 255, .55);
-            max-width: 520px;
+            max-width: 720px;
             margin: 0 auto 24px;
             line-height: 1.7;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .hero-meta {
@@ -80,7 +79,7 @@
             gap: 20px;
             flex-wrap: wrap;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .meta-pill {
@@ -91,1081 +90,111 @@
             font-family: 'Nunito', sans-serif;
             font-weight: 800;
             font-size: .75rem;
-            color: rgba(255, 255, 255, .7);
-            display: flex;
-            align-items: center;
-            gap: 6px
+            color: rgba(255, 255, 255, .75);
         }
 
-        .pp-layout {
+        .privacy-text-wrap {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 5% 80px;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 36px;
-            align-items: start;
-
+            padding: 48px 5% 80px;
         }
 
-        /* ── STICKY TOC ── */
-        .pp-toc {
-            position: sticky;
-            top: 122px;
-            background: white;
-            border-radius: 28px;
-            border: 2.5px solid var(--pp-pkl);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, .06);
-            overflow: hidden;
+        .privacy-block {
+            background: linear-gradient(145deg, #fff, #fff7fc);
+            border: 2px solid var(--pkl);
+            border-radius: 24px;
+            box-shadow: 0 10px 28px rgba(26, 10, 62, .08);
+            padding: 42px 44px;
         }
 
-        .pp-toc-head {
-            background: linear-gradient(135deg, var(--pp-pk), var(--pp-pkd));
-            padding: 20px 22px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .privacy-block h2 {
+            font-family: 'Nunito', sans-serif;
+            font-size: clamp(2rem, 3.5vw, 2.9rem);
+            font-weight: 700;
+            color: var(--dk);
+            line-height: 1.15;
+            margin-bottom: 20px;
         }
 
-        .pp-toc-head h4 {
+        .privacy-block h3 {
             font-family: 'Fredoka One', cursive;
-            font-size: 1.05rem;
-            color: white;
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            color: var(--pu);
+            font-weight: 400;
+            margin: 34px 0 14px;
         }
 
-        .pp-toc-head-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, .2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .9rem;
-            flex-shrink: 0;
-        }
-
-        .pp-toc-list {
-            padding: 10px 0 14px;
-        }
-
-        .pp-toc-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            text-decoration: none;
+        .privacy-block p {
+            font-family: 'DM Sans', sans-serif;
             color: #666;
-            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        .privacy-block a {
+            color: var(--pk);
             font-weight: 700;
-            font-size: .82rem;
-            border-left: 3px solid transparent;
-            transition: all .2s;
-            line-height: 1.4;
-        }
-
-        .pp-toc-link:hover {
-            color: var(--pp-pk);
-            background: var(--pp-pkl);
-            border-left-color: var(--pp-pk);
-            padding-left: 24px;
-        }
-
-        .pp-toc-link.active {
-            color: var(--pp-pk);
-            border-left-color: var(--pp-pk);
-            background: rgba(255, 77, 143, .04);
-        }
-
-        .pp-toc-num {
-            width: 20px;
-            height: 20px;
-            background: var(--pp-pkl);
-            color: var(--pp-pkd);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .62rem;
-            font-weight: 900;
-            flex-shrink: 0;
-        }
-
-        .pp-toc-link:hover .pp-toc-num {
-            background: var(--pp-pk);
-            color: white;
-        }
-
-        .pp-toc-link.active .pp-toc-num {
-            background: var(--pp-pk);
-            color: white;
-        }
-
-        .pp-toc-footer {
-            padding: 14px 20px;
-            border-top: 1.5px solid var(--pp-pkl);
-            font-size: .72rem;
-            color: #aaa;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-        }
-
-        /* ── CONTENT ── */
-        .pp-content {
-            min-width: 0;
-        }
-
-        .pp-section {
-            margin-bottom: 52px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity .6s ease, transform .6s ease;
-            scroll-margin-top: 120px;
-        }
-
-        .pp-section.pp-vis {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .pp-section-head {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 22px;
-            padding-bottom: 16px;
-            border-bottom: 2.5px solid var(--pp-pkl);
-        }
-
-        .pp-s-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
-
-        .pp-section h2 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.45rem;
-            color: var(--pp-dk);
-        }
-
-        .pp-section p {
-            font-size: .93rem;
-            color: #555;
-            line-height: 1.82;
-            margin-bottom: 16px;
-        }
-
-        .pp-section p:last-child {
-            margin-bottom: 0;
-        }
-
-        .pp-section strong {
-            color: var(--pp-dk);
-            font-weight: 700;
-        }
-
-        .pp-section ul {
-            list-style: none;
-            margin: 14px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .pp-section ul li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: .91rem;
-            color: #555;
-            line-height: 1.7;
-        }
-
-        .pp-section ul li::before {
-            content: '›';
-            color: var(--pp-pk);
-            font-size: 1.1rem;
-            font-weight: 900;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .pp-highlight {
-            background: linear-gradient(135deg, rgba(255, 77, 143, .05), rgba(124, 58, 237, .04));
-            border: 2px solid var(--pp-pkl);
-            border-left: 4px solid var(--pp-pk);
-            border-radius: 0 18px 18px 0;
-            padding: 18px 22px;
-            margin: 18px 0;
-            font-size: .91rem;
-            color: #555;
-            line-height: 1.75;
-        }
-
-        .pp-highlight strong {
-            color: var(--pp-pk);
-        }
-
-        .pp-info-box {
-            background: var(--pp-yel);
-            border: 2px solid rgba(255, 214, 0, .4);
-            border-radius: 18px;
-            padding: 18px 22px;
-            margin: 18px 0;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            font-size: .88rem;
-            color: #555;
-            line-height: 1.7;
-        }
-
-        .pp-info-box .pp-ib-ico {
-            font-size: 1.4rem;
-            flex-shrink: 0;
-        }
-
-        .pp-table-wrap {
-            overflow-x: auto;
-            border-radius: 18px;
-            border: 2.5px solid var(--pp-pkl);
-            margin: 18px 0;
-        }
-
-        .pp-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            min-width: 500px;
-        }
-
-        .pp-table th {
-            background: linear-gradient(135deg, var(--pp-pk), var(--pp-pkd));
-            color: white;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .82rem;
-            padding: 14px 18px;
-            text-align: left;
-        }
-
-        .pp-table td {
-            padding: 13px 18px;
-            font-size: .85rem;
-            color: #555;
-            border-bottom: 1px solid var(--pp-pkl);
-            line-height: 1.6;
-        }
-
-        .pp-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .pp-table tr:hover td {
-            background: rgba(255, 77, 143, .03);
-        }
-
-        .pp-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .68rem;
-        }
-
-        .pp-tag.grn {
-            background: var(--pp-mnl);
-            color: #00a870;
-        }
-
-        .pp-tag.pk {
-            background: var(--pp-pkl);
-            color: var(--pp-pkd);
-        }
-
-        .pp-tag.ye {
-            background: var(--pp-yel);
-            color: #907000;
-        }
-
-        .pp-contact-box {
-            background: linear-gradient(135deg, var(--pp-dk2), #2d0060);
-            border-radius: 28px;
-            padding: 36px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 22px;
-        }
-
-        .pp-contact-item {
-            background: rgba(255, 255, 255, .06);
-            border: 1px solid rgba(255, 255, 255, .1);
-            border-radius: 18px;
-            padding: 22px;
-            transition: all .25s;
-        }
-
-        .pp-contact-item:hover {
-            background: rgba(255, 255, 255, .1);
-            transform: translateY(-3px);
-        }
-
-        .pp-contact-item .pp-ci-ico {
-            font-size: 1.6rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .pp-contact-item .pp-ci-label {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .72rem;
-            color: rgba(255, 255, 255, .4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .pp-contact-item .pp-ci-val {
-            font-family: 'Fredoka One', cursive;
-            font-size: .95rem;
-            color: white;
-        }
-
-        .pp-contact-item a {
-            color: var(--pp-pk);
             text-decoration: none;
         }
 
-        .pp-contact-item a:hover {
+        .privacy-block a:hover {
+            color: var(--pkd);
             text-decoration: underline;
         }
 
-        /* ── QUICK SUMMARY CARD ── */
-        .pp-summary-card {
-            background: linear-gradient(135deg, rgba(255, 77, 143, .06), rgba(124, 58, 237, .05));
-            border: 2.5px solid var(--pp-pkl);
-            border-radius: 28px;
-            padding: 32px;
-            margin-bottom: 44px;
-        }
-
-        .pp-summary-card h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.25rem;
-            color: var(--pp-dk);
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .pp-summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .pp-sg-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding: 12px 14px;
-            background: white;
-            border-radius: 14px;
-            border: 2px solid #f5f5f5;
-            font-size: .83rem;
-            color: #555;
-            line-height: 1.55;
-        }
-
-        .pp-sg-item .pp-sgi-ico {
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .pp-sg-item strong {
-            display: block;
-            color: var(--pp-dk);
-            font-size: .78rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            margin-bottom: 2px;
-        }
-
-        /* ── BACK TO TOP ── */
-        .pp-back-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 100;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--pp-pk), var(--pp-pkd));
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 6px 22px rgba(255, 77, 143, .4);
-            transition: all .3s;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .pp-back-top.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .pp-back-top:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(255, 77, 143, .55);
-        }
-
-        /* ── FOOTER ── */
-        .pp-footer-bar {
-            background: #06000F;
-            padding: 26px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .pp-footer-copy {
-            font-size: .8rem;
-            color: #666;
-        }
-
-        .pp-footer-copy a {
-            color: var(--pp-pk);
-            text-decoration: none;
-        }
-
-        .pp-footer-links {
-            display: flex;
-            gap: 18px;
-            list-style: none;
-        }
-
-        .pp-footer-links a {
-            color: #666;
-            text-decoration: none;
-            font-size: .78rem;
-            transition: color .2s;
-        }
-
-        .pp-footer-links a:hover {
-            color: var(--pp-pk);
-        }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 900px) {
-            .pp-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .pp-toc {
-                position: static;
-                margin-bottom: 32px;
-            }
-
-            .pp-nav-links,
-            .pp-nav-cta {
-                display: none;
-            }
-
-            .pp-hamburger {
-                display: flex;
-            }
-
-            .pp-mobile-menu {
-                display: block;
-            }
+        .privacy-block p:last-child {
+            margin-bottom: 0;
         }
 
         @media (max-width: 640px) {
-            .pp-summary-grid {
-                grid-template-columns: 1fr;
+            .privacy-block {
+                padding: 28px 22px;
             }
 
-            .pp-contact-box {
-                grid-template-columns: 1fr;
-            }
-
-            .pp-footer-bar {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .pp-footer-links {
-                justify-content: center;
-            }
-
-            .pp-hero {
-                padding-top: 100px;
-            }
-
-            .pp-layout {
-                padding: 40px 5% 60px;
+            .privacy-text-wrap {
+                padding: 34px 5% 56px;
             }
         }
     </style>
 @endpush
 
 @section('content')
-
-
-    <!-- HERO -->
     <div class="page-hero">
         <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
         <h1 class="hero-title">Privacy &amp; <span>Policy</span></h1>
-        <p class="hero-subtitle">Please read these terms carefully before using our website or purchasing our products. They
-            govern your relationship with NutriBuddy.</p>
+        <p class="hero-subtitle">Please read this policy carefully to understand how we collect, use, and protect your
+            personal information.</p>
         <div class="hero-meta">
-            <div class="meta-pill">📅 Last Updated: June 1, 2025</div>
-            <div class="meta-pill">🏢 NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">🇮🇳 Governed by Indian Law</div>
+            <div class="meta-pill">Last Updated: June 1, 2025</div>
+            <div class="meta-pill">NutriBuddy Kids Pvt. Ltd.</div>
+            <div class="meta-pill">Governed by Indian Law</div>
         </div>
     </div>
 
-    <!-- LAYOUT -->
-    <div class="pp-layout ">
+    <section class="privacy-text-wrap">
+        <div class="privacy-block">
+            <h2>Privacy Policy</h2>
 
-        <!-- TABLE OF CONTENTS -->
-        <aside>
-            <div class="pp-toc">
-                <div class="pp-toc-head">
-                    <div class="pp-toc-head-icon">📋</div>
-                    <h4>Quick Navigation</h4>
-                </div>
-                <div class="pp-toc-list">
-                    <a href="#s1" class="pp-toc-link active"><span class="pp-toc-num">1</span>Quick Summary</a>
-                    <a href="#s2" class="pp-toc-link"><span class="pp-toc-num">2</span>Information We Collect</a>
-                    <a href="#s3" class="pp-toc-link"><span class="pp-toc-num">3</span>How We Use It</a>
-                    <a href="#s4" class="pp-toc-link"><span class="pp-toc-num">4</span>Sharing & Disclosure</a>
-                    <a href="#s5" class="pp-toc-link"><span class="pp-toc-num">5</span>Cookies & Tracking</a>
-                    <a href="#s6" class="pp-toc-link"><span class="pp-toc-num">6</span>Data Security</a>
-                    <a href="#s7" class="pp-toc-link"><span class="pp-toc-num">7</span>Children's Privacy</a>
-                    <a href="#s8" class="pp-toc-link"><span class="pp-toc-num">8</span>Your Rights</a>
-                    <a href="#s9" class="pp-toc-link"><span class="pp-toc-num">9</span>Data Retention</a>
-                    <a href="#s10" class="pp-toc-link"><span class="pp-toc-num">10</span>Third-Party Services</a>
-                    <a href="#s11" class="pp-toc-link"><span class="pp-toc-num">11</span>Policy Updates</a>
-                    <a href="#s12" class="pp-toc-link"><span class="pp-toc-num">12</span>Contact Us</a>
-                </div>
-                <div class="pp-toc-footer">📄 ~8 min read · Plain language</div>
-            </div>
-        </aside>
+            <p>We collect the email addresses of those who communicate with us via email, aggregate information on what
+                pages users access or visit, and information volunteered by users (such as survey information and/or
+                site registrations). The information we collect is used to improve the content on our website and the
+                quality of our service. We do not share or sell your information to other organizations for commercial
+                purposes, except to provide products or services you have requested, when we have your permission, or
+                under legal requirements.</p>
 
-        <!-- CONTENT -->
-        <main class="pp-content">
+            <p>We may transfer information about you if NutriBuddy is acquired by or merged with another company. In
+                this event, NutriBuddy will notify you before information about you is transferred and becomes subject
+                to a different privacy policy.</p>
 
-            <!-- QUICK SUMMARY -->
-            <div id="s1" class="pp-summary-card pp-section">
-                <h3>📌 Quick Summary — What You Need to Know</h3>
-                <div class="pp-summary-grid">
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">🚫</span>
-                        <div><strong>We Never Sell Your Data</strong>Your personal information is never sold to
-                            advertisers, data brokers, or any third parties.</div>
-                    </div>
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">🔒</span>
-                        <div><strong>Bank-Grade Encryption</strong>All data is encrypted at rest and in transit using
-                            industry-standard AES-256 encryption.</div>
-                    </div>
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">👶</span>
-                        <div><strong>Children's Data Protected</strong>We collect children's health data only from
-                            parents and never use it for marketing or profiling.</div>
-                    </div>
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">✂️</span>
-                        <div><strong>You Can Delete Everything</strong>Email us anytime and we'll permanently delete all
-                            your data within 30 days.</div>
-                    </div>
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">🍪</span>
-                        <div><strong>Minimal Cookies</strong>We use only essential and performance cookies. No invasive
-                            ad tracking or third-party profiling cookies.</div>
-                    </div>
-                    <div class="pp-sg-item">
-                        <span class="pp-sgi-ico">🇮🇳</span>
-                        <div><strong>DPDP Act 2023 Compliant</strong>We comply fully with India's Digital Personal Data
-                            Protection Act, 2023.</div>
-                    </div>
-                </div>
-            </div>
+            <h3>Information Gathering and Usage</h3>
 
-            <!-- SECTION 1 -->
-            <div id="s2" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,77,143,.1)">📝</div>
-                    <h2>Information We Collect</h2>
-                </div>
-                <p>We collect information only when necessary to provide you with our products and services. Here's
-                    exactly what we collect and why:</p>
+            <p>When you register for NutriBuddy, we may ask for information such as your name, company name, email
+                address, billing address, and payment details. Members who sign up for a free account are not required
+                to enter payment details.</p>
 
-                <div class="pp-table-wrap">
-                    <table class="pp-table">
-                        <thead>
-                            <tr>
-                                <th>Type of Data</th>
-                                <th>What We Collect</th>
-                                <th>Why</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Account Information</strong></td>
-                                <td>Name, email, phone, address, password (hashed)</td>
-                                <td>To create your account and process orders</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Child Profile</strong></td>
-                                <td>Child's name, age, gender, health goals (parent-provided)</td>
-                                <td>To personalize supplement recommendations</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Order Details</strong></td>
-                                <td>Products ordered, delivery address, payment method (not card numbers)</td>
-                                <td>To fulfill and track your orders</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Health Information</strong></td>
-                                <td>Dietary preferences, allergies, health goals (optional)</td>
-                                <td>To generate personalized diet charts</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Device & Usage</strong></td>
-                                <td>IP address, browser type, pages visited, time on site</td>
-                                <td>To improve website performance and security</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Communications</strong></td>
-                                <td>Support tickets, emails, WhatsApp messages</td>
-                                <td>To resolve your queries and improve our service</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="pp-highlight">
-                    <strong>Important:</strong> We never collect your child's precise biometric data, genetic
-                    information, or location data without explicit consent. Health goal information entered in our diet
-                    chart tool is used solely to generate your personalized plan and is not shared with any third party.
-                </div>
-            </div>
-
-            <!-- SECTION 2 -->
-            <div id="s3" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(0,191,255,.1)">⚙️</div>
-                    <h2>How We Use Your Information</h2>
-                </div>
-                <p>We use your information for the following specific purposes only:</p>
-                <ul>
-                    <li><strong>Order Fulfillment:</strong> Processing purchases, arranging delivery, sending order
-                        confirmations and tracking information.</li>
-                    <li><strong>Personalization:</strong> Generating your child's personalized diet chart and supplement
-                        recommendations based on information you provide.</li>
-                    <li><strong>Customer Support:</strong> Responding to your queries, resolving issues, and improving
-                        our products based on feedback.</li>
-                    <li><strong>Safety & Compliance:</strong> Detecting fraudulent transactions, ensuring platform
-                        security, and complying with applicable Indian laws and regulations.</li>
-                    <li><strong>Service Improvement:</strong> Analyzing aggregate (anonymized) usage patterns to improve
-                        our website, app, and product formulations.</li>
-                    <li><strong>Communications:</strong> Sending transactional emails (order updates), and, only if
-                        you've opted in, newsletters and promotional offers.</li>
-                </ul>
-                <div class="pp-info-box">
-                    <span class="pp-ib-ico">💡</span>
-                    <div>We will <strong>never</strong> use your child's health data for advertising, profiling, or any
-                        purpose beyond providing the service you specifically requested. You can opt out of marketing
-                        communications at any time by clicking "Unsubscribe" in any email or by emailing
-                        hello@nutribuddy.in.</div>
-                </div>
-            </div>
-
-            <!-- SECTION 3 -->
-            <div id="s4" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(0,214,143,.1)">🤝</div>
-                    <h2>Sharing & Disclosure</h2>
-                </div>
-                <p>We take data sharing seriously. We only share your data when it's strictly necessary to provide our
-                    service:</p>
-                <ul>
-                    <li><strong>Delivery Partners:</strong> Your name and delivery address are shared with courier
-                        partners (Delhivery, Shiprocket) to fulfill orders. They are contractually prohibited from using
-                        this data for any other purpose.</li>
-                    <li><strong>Payment Processors:</strong> Payment data is processed directly by our payment partners
-                        (Razorpay, Stripe). We never store your card details on our servers.</li>
-                    <li><strong>Cloud Infrastructure:</strong> Our website and databases are hosted on AWS India (Mumbai
-                        region), which maintains SOC 2 Type II and ISO 27001 certifications.</li>
-                    <li><strong>Analytics:</strong> We use anonymized, aggregated data with Google Analytics. No
-                        personal identifiers are included. IP addresses are anonymized.</li>
-                    <li><strong>Legal Requirements:</strong> We may disclose data if required by a court order, law
-                        enforcement request, or other legal obligation under Indian law. We will notify you unless
-                        prohibited.</li>
-                </ul>
-                <div class="pp-highlight">
-                    <strong>We will never:</strong> Sell your data to any third party, share your child's health
-                    information with advertisers, provide data to data brokers, or share information for any purpose
-                    beyond what is described above.
-                </div>
-            </div>
-
-            <!-- SECTION 4 -->
-            <div id="s5" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,214,0,.12)">🍪</div>
-                    <h2>Cookies & Tracking Technologies</h2>
-                </div>
-                <p>We use cookies to make our website work properly and to understand how it's being used. Here's a
-                    plain-language breakdown:</p>
-                <div class="pp-table-wrap">
-                    <table class="pp-table">
-                        <thead>
-                            <tr>
-                                <th>Cookie Type</th>
-                                <th>Purpose</th>
-                                <th>Can You Opt Out?</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Essential Cookies</strong></td>
-                                <td>Login sessions, shopping cart, security tokens. Required for the site to function.
-                                </td>
-                                <td><span class="pp-tag ye">⚠️ Required</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Performance Cookies</strong></td>
-                                <td>Anonymous usage analytics (Google Analytics with IP anonymization). Helps us improve
-                                    the site.</td>
-                                <td><span class="pp-tag grn">✅ Yes</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Preference Cookies</strong></td>
-                                <td>Remembering your language, diet preferences, and display settings.</td>
-                                <td><span class="pp-tag grn">✅ Yes</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Marketing Cookies</strong></td>
-                                <td>We do <strong>not</strong> use advertising or retargeting cookies. No third-party ad
-                                    networks.</td>
-                                <td><span class="pp-tag grn">✅ N/A — None Used</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p>You can manage cookie preferences through your browser settings at any time. Essential cookies cannot
-                    be disabled as they are required for the website to function correctly.</p>
-            </div>
-
-            <!-- SECTION 5 -->
-            <div id="s6" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(124,58,237,.1)">🛡️</div>
-                    <h2>Data Security</h2>
-                </div>
-                <p>We invest heavily in protecting your data. Our security measures include:</p>
-                <ul>
-                    <li><strong>AES-256 Encryption:</strong> All data is encrypted at rest. All data in transit is
-                        protected by TLS 1.3.</li>
-                    <li><strong>Password Hashing:</strong> Passwords are hashed using bcrypt with a high cost factor. We
-                        never store plain-text passwords.</li>
-                    <li><strong>Payment Security:</strong> We are PCI-DSS compliant. Card processing is handled entirely
-                        by Razorpay — we never see or store your card details.</li>
-                    <li><strong>Access Controls:</strong> Employee access to customer data is strictly limited on a
-                        need-to-know basis with multi-factor authentication required.</li>
-                    <li><strong>Regular Audits:</strong> We conduct quarterly security audits and annual penetration
-                        testing by certified third-party security firms.</li>
-                    <li><strong>Breach Response:</strong> In the event of a data breach, we will notify affected users
-                        within 72 hours as required by Indian law.</li>
-                </ul>
-                <div class="pp-info-box">
-                    <span class="pp-ib-ico">🔔</span>
-                    <div>Despite our best efforts, no online system is 100% secure. We recommend using a strong, unique
-                        password for your NutriBuddy account and enabling two-factor authentication when available.
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION 6 -->
-            <div id="s7" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,77,143,.1)">👶</div>
-                    <h2>Children's Privacy</h2>
-                </div>
-                <p>NutriBuddy is a service for parents of children aged 2–14. We take children's privacy with the utmost
-                    seriousness and comply fully with India's DPDP Act 2023 regarding children's data.</p>
-                <ul>
-                    <li>All information about children on our platform is provided by and collected from parents or
-                        legal guardians — not from children directly.</li>
-                    <li>Children's health data (age, goals, dietary preferences) is used solely to generate personalized
-                        recommendations and diet charts for the child.</li>
-                    <li>We <strong>never</strong> use children's data for advertising, profiling, targeting, or any
-                        commercial purpose beyond direct service delivery.</li>
-                    <li>We do not knowingly allow children under 18 to create their own accounts or interact with our
-                        services without parental oversight.</li>
-                    <li>Parents can request access to, correction of, or deletion of all data relating to their child at
-                        any time.</li>
-                </ul>
-                <div class="pp-highlight">
-                    <strong>Special Protection:</strong> Children's health and dietary information receives our highest
-                    level of data protection — isolated storage, enhanced encryption, and the most restrictive access
-                    controls of any data category on our platform.
-                </div>
-            </div>
-
-            <!-- SECTION 7 -->
-            <div id="s8" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,214,0,.12)">⚖️</div>
-                    <h2>Your Rights Under DPDP Act 2023</h2>
-                </div>
-                <p>Under India's Digital Personal Data Protection Act, 2023, you have the following rights as a Data
-                    Principal:</p>
-                <ul>
-                    <li><strong>Right to Information:</strong> Know what personal data we hold about you and how it is
-                        being processed.</li>
-                    <li><strong>Right to Correction:</strong> Request correction of any inaccurate or incomplete
-                        personal data we hold.</li>
-                    <li><strong>Right to Erasure:</strong> Request deletion of your personal data. We will comply within
-                        30 days unless a legal obligation requires us to retain it.</li>
-                    <li><strong>Right to Withdraw Consent:</strong> Withdraw your consent for processing at any time.
-                        This will not affect the lawfulness of processing prior to withdrawal.</li>
-                    <li><strong>Right to Grievance Redressal:</strong> Lodge a complaint with our Grievance Officer
-                        (details in Section 12) or with the Data Protection Board of India.</li>
-                    <li><strong>Right to Nomination:</strong> Nominate another individual to exercise your rights on
-                        your behalf in case of death or incapacity.</li>
-                </ul>
-                <p>To exercise any of these rights, email us at <strong>privacy@nutribuddy.in</strong> with the subject
-                    line "Privacy Rights Request". We will respond within 14 business days.</p>
-            </div>
-
-            <!-- SECTION 8 -->
-            <div id="s9" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(0,191,255,.1)">🗓️</div>
-                    <h2>Data Retention</h2>
-                </div>
-                <p>We retain your data only for as long as necessary to provide our services or to meet legal
-                    obligations:</p>
-                <div class="pp-table-wrap">
-                    <table class="pp-table">
-                        <thead>
-                            <tr>
-                                <th>Data Type</th>
-                                <th>Retention Period</th>
-                                <th>Reason</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Account Information</td>
-                                <td>Until account deletion + 90 days</td>
-                                <td>Account recovery grace period</td>
-                            </tr>
-                            <tr>
-                                <td>Order Records</td>
-                                <td>7 years from order date</td>
-                                <td>Indian Accounting & GST regulations</td>
-                            </tr>
-                            <tr>
-                                <td>Child Health Data</td>
-                                <td>Until account deletion, no longer</td>
-                                <td>No legal obligation to retain</td>
-                            </tr>
-                            <tr>
-                                <td>Support Communications</td>
-                                <td>2 years from last interaction</td>
-                                <td>Service quality and legal disputes</td>
-                            </tr>
-                            <tr>
-                                <td>Analytics Data</td>
-                                <td>26 months (anonymized)</td>
-                                <td>Industry standard for Google Analytics</td>
-                            </tr>
-                            <tr>
-                                <td>Payment Records</td>
-                                <td>7 years</td>
-                                <td>RBI and GST compliance requirements</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p>When the retention period expires, we securely and permanently delete or anonymize your data. You can
-                    request early deletion by emailing us at privacy@nutribuddy.in.</p>
-            </div>
-
-            <!-- SECTION 9 -->
-            <div id="s10" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,107,53,.1)">🔗</div>
-                    <h2>Third-Party Services</h2>
-                </div>
-                <p>Our website and services integrate with the following third-party providers. Each is bound by their
-                    own privacy policies and our data processing agreements:</p>
-                <ul>
-                    <li><strong>Razorpay:</strong> Payment processing. Subject to Razorpay's Privacy Policy. PCI-DSS
-                        Level 1 certified.</li>
-                    <li><strong>Delhivery / Shiprocket:</strong> Logistics and delivery. Only your name, address, and
-                        phone number are shared.</li>
-                    <li><strong>AWS (Mumbai Region):</strong> Cloud infrastructure. ISO 27001 certified, India-based
-                        data residency.</li>
-                    <li><strong>Google Analytics:</strong> Website analytics with IP anonymization enabled. No
-                        cross-site tracking.</li>
-                    <li><strong>Freshdesk:</strong> Customer support ticketing. Communications with our support team are
-                        stored here.</li>
-                    <li><strong>SendGrid:</strong> Transactional email delivery (order confirmations, password resets).
-                    </li>
-                </ul>
-                <p>Our website may contain links to third-party websites. We are not responsible for the privacy
-                    practices of those sites. We encourage you to review their privacy policies before sharing any
-                    personal information.</p>
-            </div>
-
-            <!-- SECTION 10 -->
-            <div id="s11" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(0,214,143,.1)">🔄</div>
-                    <h2>Policy Updates</h2>
-                </div>
-                <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology,
-                    or legal requirements. When we make significant changes, we will:</p>
-                <ul>
-                    <li>Post the updated policy on this page with a new "Last Updated" date.</li>
-                    <li>Send an email notification to all registered users at least 14 days before the changes take
-                        effect.</li>
-                    <li>For material changes involving children's data, require explicit re-consent from parents before
-                        the change takes effect.</li>
-                </ul>
-                <p>Your continued use of NutriBuddy's services after the effective date of an updated policy constitutes
-                    your acceptance of the changes. If you do not agree with the updated policy, you may delete your
-                    account by contacting us.</p>
-                <div class="pp-info-box">
-                    <span class="pp-ib-ico">📧</span>
-                    <div>The easiest way to stay informed about policy updates is to ensure your email address in your
-                        account settings is current and that you haven't unsubscribed from our transactional emails
-                        (policy updates are never marketing emails).</div>
-                </div>
-            </div>
-
-            <!-- SECTION 11 — CONTACT -->
-            <div id="s12" class="pp-section">
-                <div class="pp-section-head">
-                    <div class="pp-s-icon" style="background:rgba(255,77,143,.1)">📬</div>
-                    <h2>Contact Us</h2>
-                </div>
-                <p>For any privacy-related questions, requests, or complaints, please contact our dedicated privacy team
-                    or our Grievance Officer as required under DPDP Act 2023:</p>
-                <div class="pp-contact-box">
-                    <div class="pp-contact-item">
-                        <span class="pp-ci-ico">📧</span>
-                        <span class="pp-ci-label">Privacy & Data Requests</span>
-                        <div class="pp-ci-val"><a href="mailto:privacy@nutribuddy.in">privacy@nutribuddy.in</a></div>
-                    </div>
-                    <div class="pp-contact-item">
-                        <span class="pp-ci-ico">👤</span>
-                        <span class="pp-ci-label">Grievance Officer (DPDP Act)</span>
-                        <div class="pp-ci-val">Vikram Patel, Head of Compliance</div>
-                    </div>
-                    <div class="pp-contact-item">
-                        <span class="pp-ci-ico">📞</span>
-                        <span class="pp-ci-label">Toll-Free</span>
-                        <div class="pp-ci-val"><a href="tel:18001234567">1800-123-4567</a></div>
-                    </div>
-                    <div class="pp-contact-item">
-                        <span class="pp-ci-ico">📍</span>
-                        <span class="pp-ci-label">Registered Address</span>
-                        <div class="pp-ci-val">42, Wellness Tower, Bengaluru – 560001, Karnataka, India</div>
-                    </div>
-                </div>
-                <p style="margin-top:20px">We aim to respond to all privacy requests within <strong>14 business
-                        days</strong>. For complaints that we cannot resolve to your satisfaction, you may contact the
-                    Data Protection Board of India at <a href="https://dpboard.gov.in"
-                        style="color:var(--pp-pk)">dpboard.gov.in</a>.</p>
-            </div>
-
-        </main>
-    </div>
-
-
-
-
-    @push('scripts')
-        <script>
-            // Hamburger
-            const ppHam = document.getElementById('hamburgerBtn');
-            const ppMob = document.getElementById('mobileMenu');
-            ppHam && ppHam.addEventListener('click', () => {
-                ppMob.classList.toggle('open');
-                const spans = ppHam.querySelectorAll('span');
-                ppHam.classList.toggle('active');
-                if (ppHam.classList.contains('active')) {
-                    spans[0].style.transform = 'translateY(7.5px) rotate(45deg)';
-                    spans[1].style.opacity = '0';
-                    spans[2].style.transform = 'translateY(-7.5px) rotate(-45deg)';
-                } else {
-                    spans.forEach(s => {
-                        s.style.transform = '';
-                        s.style.opacity = '';
-                    });
-                }
-            });
-
-            // Reveal sections
-            const ppRevObs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        e.target.classList.add('pp-vis');
-                    }
-                });
-            }, {
-                threshold: .08
-            });
-            document.querySelectorAll('.pp-section').forEach(s => ppRevObs.observe(s));
-
-            // TOC active state
-            const ppSections = document.querySelectorAll('[id^="s"]');
-            const ppLinks = document.querySelectorAll('.pp-toc-link');
-            const ppTocObs = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        ppLinks.forEach(l => l.classList.remove('active'));
-                        const active = document.querySelector('.pp-toc-link[href="#' + e.target.id + '"]');
-                        if (active) active.classList.add('active');
-                    }
-                });
-            }, {
-                threshold: 0.2
-            });
-            ppSections.forEach(s => ppTocObs.observe(s));
-
-            // Back to top
-            const ppBtt = document.getElementById('ppBackTop');
-            window.addEventListener('scroll', () => {
-                if (ppBtt) ppBtt.classList.toggle('show', window.scrollY > 400);
-            });
-        </script>
-    @endpush
+            <p>NutriBuddy uses collected information for the following general purposes: products and services
+                provision, billing, identification and authentication, service improvement, contact, and research.</p>
+        </div>
+    </section>
 @endsection

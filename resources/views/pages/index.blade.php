@@ -307,20 +307,7 @@
                             $features = array_filter(array_map('trim', $features));
                         @endphp
                         
-                        @if(count($features) > 0)
-                            <div class="newcarda">
-                                @foreach(array_slice($features, 0, 2) as $feature)
-                                    <span><i>✔</i> {{ $feature }}</span>
-                                @endforeach
-                            </div>
-                            @if(count($features) > 2)
-                            <div class="newcarda">
-                                @foreach(array_slice($features, 2, 2) as $feature)
-                                    <span><i>✔</i> {{ $feature }}</span>
-                                @endforeach
-                            </div>
-                            @endif
-                        @else
+                      
                             <div class="newcarda">
                                 <span><i>🛡️</i> Boosts Immunity</span>
                                 <span><i>📈</i> Supports Growth</span>
@@ -329,7 +316,7 @@
                                 <span><i>⚡</i> Increases Energy</span>
                                 <span><i>😊</i> Improves Mood</span>
                             </div>
-                        @endif
+                       
                     </div>
                     <div class="pc-foot">
                         <div class="pc-price">
@@ -795,9 +782,6 @@
                         <div class="ptag">Better Sleep</div>
                         <div class="ptag">More Energy</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> In a clinical study, children taking Ashwagandha
-                        showed 27%
-                        improvement in physical endurance in just 8 weeks. Real superhero stuff!</div>
                 </div>
             </div>
 
@@ -831,9 +815,6 @@
                         <div class="ptag">Calm Alertness</div>
                         <div class="ptag">Better Grades</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> A 12-week study showed Brahmi improved children's
-                        cognitive
-                        test scores by up to 38%. Ancient wisdom, scientifically validated!</div>
                 </div>
             </div>
 
@@ -868,9 +849,6 @@
                         <div class="ptag">Joint Support</div>
                         <div class="ptag">Cell Protection</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> Curcumin has 300+ published studies behind it. The
-                        most
-                        researched Ayurvedic compound in the world — we use the most potent form available!</div>
                 </div>
             </div>
 
@@ -904,9 +882,6 @@
                         <div class="ptag">Skin Health</div>
                         <div class="ptag">Super Immunity</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> Amla is one of the only fruits where Vitamin C
-                        survives both
-                        cooking AND drying. Ancient people used it as a year-round health store before refrigerators!</div>
                 </div>
             </div>
 
@@ -941,9 +916,6 @@
                         <div class="ptag">Focus & Attention</div>
                         <div class="ptag">Reading Skills</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> DHA makes up 97% of all Omega-3 fat in the brain.
-                        Children
-                        who get adequate DHA score significantly higher on cognitive tests from age 3 onwards.</div>
                 </div>
             </div>
 
@@ -979,9 +951,6 @@
                         <div class="ptag">Better Sleep</div>
                         <div class="ptag">More Energy</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> In a clinical study, children taking Ashwagandha
-                        showed 27%
-                        improvement in physical endurance in just 8 weeks. Real superhero stuff!</div>
                 </div>
             </div>
 
@@ -1016,9 +985,6 @@
                         <div class="ptag">Calm Alertness</div>
                         <div class="ptag">Better Grades</div>
                     </div>
-                    <div class="ing-fact"><strong>Fun Fact:</strong> A 12-week study showed Brahmi improved children's
-                        cognitive
-                        test scores by up to 38%. Ancient wisdom, scientifically validated!</div>
                 </div>
             </div>
 

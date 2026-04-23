@@ -36,6 +36,7 @@ class UserAddressController extends Controller
 
         $validated['user_id'] = $request->user()->id;
         $validated['country'] = $validated['country'] ?? 'India';
+        $validated['email'] = $validated['email'] ?: $request->user()->email;
 
         $address = CustomerAddress::create($validated);
 
@@ -50,4 +51,3 @@ class UserAddressController extends Controller
         return response()->json(['message' => 'Address deleted.']);
     }
 }
-

@@ -129,7 +129,18 @@ function getPendingCartItems() {
   try {
     const raw = localStorage.getItem(PENDING_CART_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+
+    const normalized = parsed.map(it => ({
+      ...it,
+      unit_price: normalizePendingUnitPrice(it?.unit_price)
+    }));
+
+    if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
+      savePendingCartItems(normalized);
+    }
+
+    return normalized;
   } catch (_) {
     return [];
   }
@@ -197,75 +208,105 @@ function formatCartMoney(value, maximumFractionDigits = 2) {
   return `Rs. ${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits })}`;
 }
 
+function extractDisplayedPrice(value) {
+  const text = String(value || '');
+  const match = text.match(/\d[\d,]*(?:\.\d+)?/);
+  if (!match) return 0;
+  return Number(match[0].replace(/,/g, '')) || 0;
+}
+
+function normalizePendingUnitPrice(value) {
+  const price = Number(value || 0);
+  if (!Number.isFinite(price) || price <= 0) return 0;
+  if (price < 100000) return price;
+
+  const digits = String(Math.round(price)).replace(/\D/g, '');
+  if (digits.length < 6) return price;
+
+  const recovered = Number(digits.slice(0, Math.ceil(digits.length / 2))) || 0;
+  return recovered > 0 ? recovered : price;
+}
+
 function normalizeCartImage(src) {
   if (!src) return '/img/product2.png';
   if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
   return `/${src.replace(/^\/+/, '')}`;
 }
 
-function createPopupQuantityField(quantity, onCommit, onDecrease, onIncrease) {
+function clampQty(v) {
+  return Math.max(1, Math.min(10, parseInt(v, 10) || 1));
+}
+
+function createPopupQuantityField(quantity, onCommit) {
+  const qty = clampQty(quantity);
   const wrap = document.createElement('div');
-  wrap.style.display = 'inline-flex';
-  wrap.style.alignItems = 'center';
-  wrap.style.gap = '8px';
-  wrap.style.marginTop = '8px';
+  wrap.className = 'ci-qty-row';
+  wrap.innerHTML = `
+    <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">&minus;</button>
+    <input type="number" min="1" max="10" class="qty-val" value="${qty}" aria-label="Quantity">
+    <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
+  `;
 
-  const btnBaseStyle = 'width:26px;height:26px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--dk);font-weight:800;cursor:pointer;';
+  const input = wrap.querySelector('.qty-val');
+  let currentQty = qty;
 
-  const minus = document.createElement('button');
-  minus.type = 'button';
-  minus.textContent = '-';
-  minus.style.cssText = btnBaseStyle;
-  minus.addEventListener('click', onDecrease);
+  async function submit(nextVal) {
+    const next = clampQty(nextVal);
+    if (next === currentQty) { input.value = currentQty; return; }
 
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.min = '1';
-  input.value = String(quantity);
-  input.style.cssText = 'width:46px;height:28px;border:1px solid var(--border);border-radius:10px;text-align:center;font-weight:800;color:var(--dk);background:#fff;';
-  input.addEventListener('change', () => onCommit(input.value));
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      onCommit(input.value);
+    wrap.classList.add('is-updating');
+    wrap.querySelectorAll('.qty-btn, .qty-val').forEach(el => el.disabled = true);
+
+    try {
+      await onCommit(next);
+      currentQty = next;
+      input.value = next;
+    } catch (err) {
+      input.value = currentQty;
+    } finally {
+      wrap.classList.remove('is-updating');
+      wrap.querySelectorAll('.qty-btn, .qty-val').forEach(el => el.disabled = false);
     }
+  }
+
+  wrap.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      submit(clampQty(input.value) + Number(btn.dataset.qtyDelta || 0));
+    });
   });
 
-  const plus = document.createElement('button');
-  plus.type = 'button';
-  plus.textContent = '+';
-  plus.style.cssText = btnBaseStyle;
-  plus.addEventListener('click', onIncrease);
-
-  wrap.appendChild(minus);
-  wrap.appendChild(input);
-  wrap.appendChild(plus);
+  input.addEventListener('change', () => submit(input.value));
+  input.addEventListener('blur',   () => submit(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(input.value); } });
 
   return wrap;
 }
 
 function resolveCartItemMeta(productId, productVariantId = null, sourceEl = null) {
-  const productPageName = document.querySelector('.pdp-name');
+  const productPageName  = document.querySelector('.pdp-name');
   const productPagePrice = document.querySelector('.price-now');
   const productPageImage = document.getElementById('mainPdpImage');
-  const selectedVariant = document.querySelector('.qty-opt.active .flavor-name, .qty-opt.active');
+  const selectedVariant  = document.querySelector('.qty-opt.active .flavor-name, .qty-opt.active');
 
   if (productPageName && productPagePrice) {
     return {
       product_name: productPageName.textContent.trim(),
       variant_name: productVariantId ? (selectedVariant?.textContent || '').trim() : '',
       image: normalizeCartImage(productPageImage?.getAttribute('src') || ''),
-      unit_price: Number((productPagePrice.textContent || '').replace(/[^0-9.]/g, '')) || 0,
+      unit_price: extractDisplayedPrice(productPagePrice.textContent || ''),
       product_url: window.location.pathname
     };
   }
 
   const card = sourceEl ? sourceEl.closest('.pc') : null;
+  const cardPriceNow = card?.querySelector('.pc-price-now');
   if (card) {
     return {
       product_name: card.querySelector('.pc-name')?.textContent?.trim() || 'Product',
       variant_name: '',
       image: normalizeCartImage(card.querySelector('.default-img, .hover-img, img')?.getAttribute('src') || ''),
-      unit_price: Number((card.querySelector('.pc-price')?.textContent || '').replace(/[^0-9.]/g, '')) || 0,
+      unit_price: extractDisplayedPrice(cardPriceNow?.textContent || card.querySelector('.pc-price')?.textContent || ''),
       product_url: card.querySelector('.pc-name a, .pc-emoji')?.getAttribute('href') || '/product'
     };
   }
@@ -330,9 +371,7 @@ async function syncPendingCartToServer() {
       })
     }).catch(() => null);
 
-    if (!res || !res.ok) {
-      return false;
-    }
+    if (!res || !res.ok) return false;
   }
 
   localStorage.removeItem(PENDING_CART_KEY);
@@ -348,9 +387,7 @@ async function updateServerCartItemQuantity(itemId, quantity) {
       'Content-Type': 'application/json',
       ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {})
     },
-    body: JSON.stringify({
-      quantity: Math.max(1, Number(quantity || 1))
-    })
+    body: JSON.stringify({ quantity: Math.max(1, Number(quantity || 1)) })
   }).catch(() => null);
 
   return !!(res && res.ok);
@@ -379,19 +416,9 @@ if (cartIconBtn) {
 }
 if (closeCartBtn) closeCartBtn.addEventListener('click', () => cartPopup.classList.remove('open'));
 
-window.addEventListener('pageshow', () => {
-  syncCartCount();
-});
-
-window.addEventListener('focus', () => {
-  syncCartCount();
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    syncCartCount();
-  }
-});
+window.addEventListener('pageshow', () => syncCartCount());
+window.addEventListener('focus',    () => syncCartCount());
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncCartCount(); });
 
 document.addEventListener('click', e => {
   if (cartPopup && cartPopup.classList.contains('open')) {
@@ -403,7 +430,7 @@ document.addEventListener('click', e => {
 
 async function loadCartPopup() {
   const itemsWrap = document.getElementById('cartPopupItems');
-  const countEl = document.getElementById('cartPopupCount');
+  const countEl   = document.getElementById('cartPopupCount');
   const subtotalEl = document.getElementById('cartPopupSubtotal');
   if (!itemsWrap || !countEl || !subtotalEl) return;
 
@@ -411,11 +438,13 @@ async function loadCartPopup() {
 
   try {
     const res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
+
     if (res.status === 401 || res.status === 419) {
+      /* ── Guest / pending cart ── */
       const pendingItems = getPendingCartItems();
       const pendingCount = getPendingCartCount();
       if (cartCountEl) cartCountEl.textContent = String(pendingCount);
-      countEl.textContent = String(pendingCount);
+      countEl.textContent   = String(pendingCount);
       subtotalEl.textContent = formatCartMoney(getPendingCartSubtotal());
 
       if (!pendingItems.length) {
@@ -425,54 +454,44 @@ async function loadCartPopup() {
 
       itemsWrap.innerHTML = '';
       pendingItems.forEach(it => {
-        const qty = Number(it.quantity || 0);
+        const qty = Number(it.quantity || 1);
         const row = document.createElement('div');
         row.className = 'single-cart-box';
         row.innerHTML = `
           <div class="image-box"><img src="${normalizeCartImage(it.image)}" alt=""></div>
-          <div>
+          <div class="cart-popup-content">
             <h5>${it.product_name || 'Product'}</h5>
             <h4>${formatCartMoney(it.unit_price)}</h4>
           </div>
-          <button type="button" class="cart-remove-btn" aria-label="Remove">x</button>
+          <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
         `;
-        const content = row.querySelector('div:nth-child(2)');
-        content.appendChild(createPopupQuantityField(
-          qty,
-          (value) => {
-            updatePendingCartItemQuantity(it.product_id, it.product_variant_id, value);
-            loadCartPopup();
-          },
-          (e) => {
-            e.stopPropagation();
-            if (qty <= 1) return;
-            updatePendingCartItemQuantity(it.product_id, it.product_variant_id, qty - 1);
-            loadCartPopup();
-          },
-          (e) => {
-            e.stopPropagation();
-            updatePendingCartItemQuantity(it.product_id, it.product_variant_id, qty + 1);
-            loadCartPopup();
-          }
-        ));
-        row.querySelector('.cart-remove-btn').addEventListener('click', (e) => {
+        const content = row.querySelector('.cart-popup-content');
+        content.appendChild(createPopupQuantityField(qty, async value => {
+          updatePendingCartItemQuantity(it.product_id, it.product_variant_id, value);
+          if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
+          loadCartPopup();
+        }));
+        row.querySelector('.cart-remove-btn').addEventListener('click', e => {
           e.stopPropagation();
           removePendingCartItem(it.product_id, it.product_variant_id);
+          if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
           loadCartPopup();
         });
         itemsWrap.appendChild(row);
       });
       return;
     }
+
     if (!res.ok) throw new Error('cart');
 
-    const payload = await res.json().catch(() => ({}));
-    const items = payload.cart?.items || [];
+    /* ── Authenticated cart ── */
+    const payload  = await res.json().catch(() => ({}));
+    const items    = payload.cart?.items || [];
     const subtotal = payload.pricing?.subtotal || 0;
+    const count    = getCartCount(items);
 
-    const count = getCartCount(items);
     if (cartCountEl) cartCountEl.textContent = String(count);
-    countEl.textContent = String(count);
+    countEl.textContent    = String(count);
     subtotalEl.textContent = formatCartMoney(subtotal);
 
     if (!items.length) {
@@ -482,52 +501,48 @@ async function loadCartPopup() {
 
     itemsWrap.innerHTML = '';
     items.forEach(it => {
-      const name = it.product?.name || 'Product';
-      const qty = Number(it.quantity || 1);
+      const name  = it.product?.name || 'Product';
+      const qty   = Number(it.quantity || 1);
       const price = it.product_variant ? it.product_variant.price : it.product?.base_price;
-      const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product.primary_image.image_path) : '/img/product2.png';
+      const img   = it.product?.primary_image?.image_path
+        ? '/storage/' + it.product.primary_image.image_path
+        : '/img/product2.png';
 
       const row = document.createElement('div');
       row.className = 'single-cart-box';
       row.innerHTML = `
         <div class="image-box"><img src="${img}" alt=""></div>
-        <div>
+        <div class="cart-popup-content">
           <h5>${name}</h5>
           <h4>${formatCartMoney(price)}</h4>
         </div>
-        <button type="button" class="cart-remove-btn" aria-label="Remove">x</button>
+        <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
       `;
-      const content = row.querySelector('div:nth-child(2)');
-      content.appendChild(createPopupQuantityField(
-        qty,
-        async (value) => {
+      const content = row.querySelector('.cart-popup-content');
+      content.appendChild(createPopupQuantityField(qty, async value => {
+        row.classList.add('is-updating');
+        try {
           const ok = await updateServerCartItemQuantity(it.id, value);
           if (ok) loadCartPopup();
-        },
-        async (e) => {
-          e.stopPropagation();
-          if (qty <= 1) return;
-          const ok = await updateServerCartItemQuantity(it.id, qty - 1);
-          if (ok) loadCartPopup();
-        },
-        async (e) => {
-          e.stopPropagation();
-          const ok = await updateServerCartItemQuantity(it.id, qty + 1);
-          if (ok) loadCartPopup();
+        } finally {
+          row.classList.remove('is-updating');
         }
-      ));
-      row.querySelector('.cart-remove-btn').addEventListener('click', async (e) => {
+      }));
+      row.querySelector('.cart-remove-btn').addEventListener('click', async e => {
         e.stopPropagation();
+        row.classList.add('is-updating');
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         await fetch(`/user/cart/items/${it.id}`, {
           method: 'DELETE',
           headers: { 'Accept': 'application/json', ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}) }
         });
         loadCartPopup();
+        syncCartCount();
       });
       itemsWrap.appendChild(row);
     });
-  } catch (e) {
+
+  } catch (_) {
     itemsWrap.innerHTML = '<div style="padding:10px;color:#888;font-size:.9rem;">Unable to load cart.</div>';
   }
 }
@@ -535,23 +550,17 @@ async function loadCartPopup() {
 /* ══════════════════════════════════════════
    PRODUCT GALLERY
 ══════════════════════════════════════════ */
-const thumbs = document.querySelectorAll('.thumb');
+const thumbs    = document.querySelectorAll('.thumb');
 const mainImgWrap = document.querySelector('.main-img-wrap .p-image');
 
-thumbs.forEach((thumb, index) => {
+thumbs.forEach(thumb => {
   thumb.addEventListener('click', () => {
-    // Remove active from all thumbs
     thumbs.forEach(t => t.classList.remove('active'));
-    // Add active to clicked thumb
     thumb.classList.add('active');
-    // Change main image src
     const thumbImg = thumb.querySelector('img');
     if (thumbImg && mainImgWrap) {
-      const newSrc = thumbImg.src;
       const mainImage = mainImgWrap.querySelector('img');
-      if (mainImage) {
-        mainImage.src = newSrc;
-      }
+      if (mainImage) mainImage.src = thumbImg.src;
     }
   });
 });
@@ -773,7 +782,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
   const viewport = document.getElementById('reelsViewport');
   const btnPrev  = document.getElementById('reelPrev');
   const btnNext  = document.getElementById('reelNext');
-  const dots     = Array.from(document.querySelectorAll('.reels-dot'));
+  const reelDots = Array.from(document.querySelectorAll('.reels-dot'));
   if (!track || !viewport) return;
 
   const cards    = Array.from(track.querySelectorAll('.reel'));
@@ -792,44 +801,38 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     return Math.max(0, cards.length - perView());
   }
 
-  function updateDots() {
+  function updateReelDots() {
     const max = maxIndex();
-    dots.forEach((d, i) => {
+    reelDots.forEach((d, i) => {
       d.style.display = i <= max ? '' : 'none';
       d.classList.toggle('active', i === current);
     });
   }
 
-  function goTo(idx) {
+  function goToReel(idx) {
     current = Math.max(0, Math.min(idx, maxIndex()));
     const cw     = cards[0] ? cards[0].offsetWidth : 200;
     const offset = current * (cw + GAP);
     track.style.transform = 'translateX(-' + offset + 'px)';
-
-    updateDots();
+    updateReelDots();
     if (btnPrev) btnPrev.disabled = current === 0;
     if (btnNext) btnNext.disabled = current >= maxIndex();
   }
 
-  if (btnPrev) btnPrev.addEventListener('click', () => goTo(current - 1));
-  if (btnNext) btnNext.addEventListener('click', () => goTo(current + 1));
-  dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.index)));
+  if (btnPrev) btnPrev.addEventListener('click', () => goToReel(current - 1));
+  if (btnNext) btnNext.addEventListener('click', () => goToReel(current + 1));
+  reelDots.forEach(d => d.addEventListener('click', () => goToReel(+d.dataset.index)));
 
-  function refresh() {
-    goTo(Math.min(current, maxIndex()));
-  }
-
+  function refresh() { goToReel(Math.min(current, maxIndex())); }
   window.addEventListener('load', refresh);
   document.addEventListener('DOMContentLoaded', refresh);
   refresh();
 
   let touchStartX = 0;
-  viewport.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-  }, { passive: true });
-  viewport.addEventListener('touchend', e => {
+  viewport.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  viewport.addEventListener('touchend',   e => {
     const dx = touchStartX - e.changedTouches[0].clientX;
-    if (Math.abs(dx) > 40) goTo(dx > 0 ? current + 1 : current - 1);
+    if (Math.abs(dx) > 40) goToReel(dx > 0 ? current + 1 : current - 1);
   });
 
   let resizeTimer;
@@ -862,9 +865,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     if (activeReel === idx) activeReel = -1;
   }
 
-  function stopAllReels() {
-    cards.forEach((_, i) => stopReel(i));
-  }
+  function stopAllReels() { cards.forEach((_, i) => stopReel(i)); }
 
   cards.forEach(r => {
     r.addEventListener('click', () => {
@@ -883,7 +884,7 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
   const testiSection = document.querySelector('.testi-section');
   if (testiSection) rvObs.observe(testiSection);
 
-  goTo(0);
+  goToReel(0);
 })();
 
 
@@ -933,7 +934,7 @@ document.querySelectorAll('.faq-q').forEach(btn => {
       const d = document.createElement('button');
       d.className = 'imgcar-dot' + (i === cur ? ' active' : '');
       d.setAttribute('aria-label', 'Slide ' + (i + 1));
-      d.addEventListener('click', () => goTo(i));
+      d.addEventListener('click', () => goToCert(i));
       dotsW.appendChild(d);
     }
   }
@@ -951,7 +952,7 @@ document.querySelectorAll('.faq-q').forEach(btn => {
     dotsW.querySelectorAll('.imgcar-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
   }
 
-  function goTo(idx) {
+  function goToCert(idx) {
     cur = ((idx % totalPages()) + totalPages()) % totalPages();
     render();
     restartAuto();
@@ -964,7 +965,7 @@ document.querySelectorAll('.faq-q').forEach(btn => {
     if (pct >= 100) {
       if (pbar) pbar.style.width = '0%';
       t0 = null;
-      goTo(cur + 1);
+      goToCert(cur + 1);
       return;
     }
     raf = requestAnimationFrame(tick);
@@ -980,8 +981,8 @@ document.querySelectorAll('.faq-q').forEach(btn => {
     if (pbar) pbar.style.width = '0%';
   }
 
-  if (btnP) btnP.addEventListener('click', () => goTo(cur - 1));
-  if (btnN) btnN.addEventListener('click', () => goTo(cur + 1));
+  if (btnP) btnP.addEventListener('click', () => goToCert(cur - 1));
+  if (btnN) btnN.addEventListener('click', () => goToCert(cur + 1));
   vp.addEventListener('mouseenter', stopAuto);
   vp.addEventListener('mouseleave', restartAuto);
 
@@ -989,13 +990,13 @@ document.querySelectorAll('.faq-q').forEach(btn => {
   vp.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
   vp.addEventListener('touchend',   e => {
     const dx = tx - e.changedTouches[0].clientX;
-    if (Math.abs(dx) > 40) goTo(dx > 0 ? cur + 1 : cur - 1);
+    if (Math.abs(dx) > 40) goToCert(dx > 0 ? cur + 1 : cur - 1);
   });
 
-  let resizeTimer;
+  let certResizeTimer;
   window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
+    clearTimeout(certResizeTimer);
+    certResizeTimer = setTimeout(() => {
       if (cur >= totalPages()) cur = totalPages() - 1;
       buildDots();
       render();
@@ -1076,7 +1077,7 @@ function goStep(step) {
     const s = document.getElementById('sp' + i);
     if (!s) continue;
     s.classList.remove('active', 'done');
-    if (i < step)       { s.classList.add('done');   s.querySelector('.sp-ball').textContent = '✓'; }
+    if (i < step)        { s.classList.add('done');   s.querySelector('.sp-ball').textContent = '✓'; }
     else if (i === step) { s.classList.add('active'); s.querySelector('.sp-ball').textContent = i; }
     else                 { s.querySelector('.sp-ball').textContent = i; }
   }
@@ -1138,19 +1139,19 @@ function buildResult() {
   state.problems.slice(0,3).forEach(p => { if (probLabel[p]) tags.push({ l: probLabel[p] }); });
   document.getElementById('resultTags').innerHTML = tags.map(t => `<div class="rtag">${t.l}</div>`).join('');
 
-   const meals = getMealPlan(state.age, state.pref, state.problems);
-    document.getElementById('mealGrid').innerHTML = meals.map(m => `
-      <div class="meal-card">
-        <div class="meal-time">
-          <div class="meal-dot" style="background:${m.color}"></div>
-          <div class="meal-label" style="color:${m.color}">${m.time}</div>
-        </div>
-        <span class="meal-icon">${m.icon}</span>
-        <div class="meal-name">${m.name}</div>
-        <div class="meal-items">${m.items}</div>
-        <div class="meal-tag"> ${m.benefit}</div>
+  const meals = getMealPlan(state.age, state.pref, state.problems);
+  document.getElementById('mealGrid').innerHTML = meals.map(m => `
+    <div class="meal-card">
+      <div class="meal-time">
+        <div class="meal-dot" style="background:${m.color}"></div>
+        <div class="meal-label" style="color:${m.color}">${m.time}</div>
       </div>
-    `).join('');
+      <span class="meal-icon">${m.icon}</span>
+      <div class="meal-name">${m.name}</div>
+      <div class="meal-items">${m.items}</div>
+      <div class="meal-tag">${m.benefit}</div>
+    </div>
+  `).join('');
 
   const nutrients = getNutrients(state.age);
   document.getElementById('nutrientBars').innerHTML = nutrients.map(n => `
@@ -1189,56 +1190,55 @@ function getMealPlan(age, pref, problems) {
   const isSleep  = problems.includes('sleep');
   const isVeg    = ['vegetarian','vegan'].includes(pref);
   const isNonVeg = pref === 'non-veg';
-   return [
-      {
-        time: 'Wake-Up', icon: '🌅', color: '#FF9900',
-        name: 'Morning Boost',
-        items: 'Warm water with lemon + 1 tsp Amla powder\n+ 5 soaked almonds',
-        benefit: 'Immunity + Digestion'
-      },
-      {
-        time: 'Breakfast', icon: '🍳', color: '#FF4D8F',
-        name: isBrain ? 'Brain Power Breakfast' : 'Power Breakfast',
-        items: isBrain
-          ? (isVeg ? 'Moong dal chilla + Walnut chutney + Fresh fruit smoothie' : 'Scrambled eggs + Multigrain toast + Walnut smoothie')
-          : (isVeg ? 'Oats upma with veggies + Banana + Milk/Soy milk' : 'Egg paratha + Banana + Milk'),
-        benefit: isBrain ? 'Omega-3 + Focus' : 'Iron + Protein'
-      },
-      {
-        time: 'Mid-Morning', icon: '🍎', color: '#00BF FF',
-        name: 'Smart Snack',
-        items: isVeg
-          ? 'Seasonal fruit + Roasted chana or Makhana\n+ Coconut water'
-          : 'Seasonal fruit + Boiled egg or Roasted chana\n+ Coconut water',
-        benefit: 'Vitamins + Hydration'
-      },
-      {
-        time: 'Lunch', icon: '🍱', color: '#7C3AED',
-        name: isGrowth ? 'Growth Power Lunch' : 'Nutrition Lunch',
-        items: isVeg
-          ? 'Brown rice + Dal + Paneer sabzi + Salad + Curd'
-          : 'Brown rice + Dal + Chicken curry or Fish + Salad + Curd',
-        benefit: isGrowth ? 'Calcium + Protein' : 'Balanced Macro'
-      },
-      {
-        time: 'Evening', icon: '🥤', color: '#00D68F',
-        name: 'After-School Refuel',
-        items: isBrain
-          ? 'Turmeric milk (Haldi doodh) + Dates + Dark chocolate square'
-          : 'Banana smoothie + Roasted seeds\n+ Whole wheat crackers',
-        benefit: isBrain ? 'Memory + Calm' : 'Energy Refuel'
-      },
-      {
-        time: 'Dinner', icon: '🌙', color: isSleep ? '#5B21B6' : '#FF6B35',
-        name: isSleep ? 'Sleep Calm Dinner' : 'Growth Dinner',
-        items: isSleep
-          ? 'Light khichdi + Ghee + Steamed veggies\n+ Warm chamomile milk at bedtime'
-          : (isNonVeg ? 'Roti + Sabzi + Dal + Grilled chicken or Fish' : 'Roti + Sabzi + Dal + Curd or Paneer'),
-        benefit: isSleep ? 'L-Theanine + Rest' : 'Protein + Iron'
-      }
-    ];
-  }
-
+  return [
+    {
+      time: 'Wake-Up', icon: '🌅', color: '#FF9900',
+      name: 'Morning Boost',
+      items: 'Warm water with lemon + 1 tsp Amla powder\n+ 5 soaked almonds',
+      benefit: 'Immunity + Digestion'
+    },
+    {
+      time: 'Breakfast', icon: '🍳', color: '#FF4D8F',
+      name: isBrain ? 'Brain Power Breakfast' : 'Power Breakfast',
+      items: isBrain
+        ? (isVeg ? 'Moong dal chilla + Walnut chutney + Fresh fruit smoothie' : 'Scrambled eggs + Multigrain toast + Walnut smoothie')
+        : (isVeg ? 'Oats upma with veggies + Banana + Milk/Soy milk' : 'Egg paratha + Banana + Milk'),
+      benefit: isBrain ? 'Omega-3 + Focus' : 'Iron + Protein'
+    },
+    {
+      time: 'Mid-Morning', icon: '🍎', color: '#00BFFF',
+      name: 'Smart Snack',
+      items: isVeg
+        ? 'Seasonal fruit + Roasted chana or Makhana\n+ Coconut water'
+        : 'Seasonal fruit + Boiled egg or Roasted chana\n+ Coconut water',
+      benefit: 'Vitamins + Hydration'
+    },
+    {
+      time: 'Lunch', icon: '🍱', color: '#7C3AED',
+      name: isGrowth ? 'Growth Power Lunch' : 'Nutrition Lunch',
+      items: isVeg
+        ? 'Brown rice + Dal + Paneer sabzi + Salad + Curd'
+        : 'Brown rice + Dal + Chicken curry or Fish + Salad + Curd',
+      benefit: isGrowth ? 'Calcium + Protein' : 'Balanced Macro'
+    },
+    {
+      time: 'Evening', icon: '🥤', color: '#00D68F',
+      name: 'After-School Refuel',
+      items: isBrain
+        ? 'Turmeric milk (Haldi doodh) + Dates + Dark chocolate square'
+        : 'Banana smoothie + Roasted seeds\n+ Whole wheat crackers',
+      benefit: isBrain ? 'Memory + Calm' : 'Energy Refuel'
+    },
+    {
+      time: 'Dinner', icon: '🌙', color: isSleep ? '#5B21B6' : '#FF6B35',
+      name: isSleep ? 'Sleep Calm Dinner' : 'Growth Dinner',
+      items: isSleep
+        ? 'Light khichdi + Ghee + Steamed veggies\n+ Warm chamomile milk at bedtime'
+        : (isNonVeg ? 'Roti + Sabzi + Dal + Grilled chicken or Fish' : 'Roti + Sabzi + Dal + Curd or Paneer'),
+      benefit: isSleep ? 'L-Theanine + Rest' : 'Protein + Iron'
+    }
+  ];
+}
 
 function getNutrients(age) {
   const base = {
@@ -1314,15 +1314,122 @@ function restart() {
 
 function printChart() { window.print(); }
 
-window.selectAge = selectAge;
-window.selectGender = selectGender;
-window.toggleProb = toggleProb;
-window.selectPref = selectPref;
-window.toggleAllergy = toggleAllergy;
-window.goStep = goStep;
-window.generateChart = generateChart;
-window.restart = restart;
-window.printChart = printChart;
+/* ══════════════════════════════════════════
+   PRODUCT PAGE — Variant / Pincode / Cart
+══════════════════════════════════════════ */
+function selectVariant(el, targetId, val) {
+  el.closest('.variant-row').querySelectorAll('.vopt').forEach(v => v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(targetId).textContent = val;
+}
+function selectFlavor(el, val) {
+  document.querySelectorAll('.flavor-opt').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('selectedFlavor').textContent = val;
+}
+function selectQtyOpt(el, targetId, val) {
+  el.closest('.variant-row').querySelectorAll('.qty-opt').forEach(q => q.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(targetId).textContent = val;
+}
+
+function checkPincode() {
+  const v   = document.getElementById('pincodeInput').value;
+  const res = document.getElementById('pincode-result');
+  if (v.length === 6 && /^\d+$/.test(v)) {
+    res.style.display = 'block';
+    res.textContent   = '✅ Delivery by Tomorrow — Free Shipping!';
+    res.style.color   = 'var(--mn)';
+  } else {
+    res.style.display = 'block';
+    res.textContent   = '⚠️ Please enter a valid 6-digit pincode.';
+    res.style.color   = 'var(--or)';
+  }
+}
+const pincodeInput = document.getElementById('pincodeInput');
+if (pincodeInput) pincodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPincode(); });
+
+async function addToCart(productId, quantity = 1, productVariantId = null, sourceEl = null) {
+  let requestSucceeded = false;
+  try {
+    const resolveMeta = typeof globalThis.resolveCartItemMeta === 'function'
+      ? globalThis.resolveCartItemMeta
+      : () => ({ product_name: 'Product', variant_name: '', image: '/img/product2.png', unit_price: 0, product_url: '/product' });
+
+    const itemMeta = resolveMeta(productId, productVariantId, sourceEl);
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    const res = await fetch('/user/cart', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
+      },
+      body: JSON.stringify({ product_id: productId, product_variant_id: productVariantId, quantity })
+    });
+
+    const responseUrl            = res.url || '';
+    const wasRedirectedToLogin   = res.redirected && /\/login(?:[/?#]|$)/i.test(responseUrl);
+    const isGuestFallback        = res.status === 401 || res.status === 403 || res.status === 419 || wasRedirectedToLogin;
+
+    if (isGuestFallback) {
+      addPendingCartItem(productId, quantity, productVariantId, itemMeta);
+      const pendingCount = getPendingCartCount();
+      if (cartCountEl) cartCountEl.textContent = String(pendingCount);
+      loadCartPopup();
+      _flashCartBtn(sourceEl);
+      return true;
+    }
+
+    if (!res.ok) {
+      const payload = await res.json().catch(() => ({}));
+      alert(payload.message || 'Unable to add item to cart.');
+      return false;
+    }
+    requestSucceeded = true;
+
+    const payload   = await res.json().catch(() => ({}));
+    const items     = payload.cart?.items || [];
+    const countNow  = Number(payload.cart_count || 0) || items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+    if (cartCountEl) cartCountEl.textContent = String(countNow);
+    _flashCartBtn(sourceEl);
+    return true;
+
+  } catch (_) {
+    if (!requestSucceeded) alert('Unable to add item to cart.');
+    return false;
+  }
+}
+
+function _flashCartBtn(sourceEl) {
+  const btn = sourceEl || document.querySelector('.btn-cart');
+  if (!btn) return;
+  const orig = btn.innerHTML;
+  btn.innerHTML         = 'Added to Cart!';
+  btn.style.background  = 'var(--mnl)';
+  btn.style.color       = 'var(--mn)';
+  setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
+}
+
+function buyNow(productId, quantity = 1, productVariantId = null, sourceEl = null) {
+  addToCart(productId, quantity, productVariantId, sourceEl).then(added => {
+    if (added) window.location.href = '/checkout';
+  });
+}
+
+/* ══════════════════════════════════════════
+   EXPOSE GLOBALS
+══════════════════════════════════════════ */
+window.selectAge       = selectAge;
+window.selectGender    = selectGender;
+window.toggleProb      = toggleProb;
+window.selectPref      = selectPref;
+window.toggleAllergy   = toggleAllergy;
+window.goStep          = goStep;
+window.generateChart   = generateChart;
+window.restart         = restart;
+window.printChart      = printChart;
 
 // dc-prefixed aliases used in HTML onclick attributes
 window.dcSelectAge     = selectAge;
@@ -1335,8 +1442,23 @@ window.dcGenerateChart = generateChart;
 window.dcRestart       = restart;
 window.dcPrintChart    = printChart;
 
-}
+window.selectVariant   = selectVariant;
+window.selectFlavor    = selectFlavor;
+window.selectQtyOpt    = selectQtyOpt;
+window.checkPincode    = checkPincode;
+window.addToCart       = addToCart;
+window.buyNow          = buyNow;
+window.syncCartCount   = syncCartCount;   // ✅ exposed so external calls work too
 
+/* ── Initial cart count sync (inside scope — fixes the ReferenceError) ── */
+syncCartCount();
+
+} // end initNutriBuddy
+
+
+/* ══════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════ */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initNutriBuddy);
 } else {
@@ -1344,153 +1466,20 @@ if (document.readyState === 'loading') {
 }
 
 
-// product 
-// Reveal
-    const ro = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
-    }, { threshold: .1 });
-    document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
-
-    // Variant selectors
-    function selectVariant(el, targetId, val) {
-      el.closest('.variant-row').querySelectorAll('.vopt').forEach(v => v.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById(targetId).textContent = val;
-    }
-    function selectFlavor(el, val) {
-      document.querySelectorAll('.flavor-opt').forEach(f => f.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById('selectedFlavor').textContent = val;
-    }
-    function selectQtyOpt(el, targetId, val) {
-      el.closest('.variant-row').querySelectorAll('.qty-opt').forEach(q => q.classList.remove('active'));
-      el.classList.add('active');
-      document.getElementById(targetId).textContent = val;
-    }
-
-    // Pincode
-    function checkPincode() {
-      const v = document.getElementById('pincodeInput').value;
-      const res = document.getElementById('pincode-result');
-      if (v.length === 6 && /^\d+$/.test(v)) {
-        res.style.display = 'block';
-        res.textContent = '✅ Delivery by Tomorrow — Free Shipping!';
-        res.style.color = 'var(--mn)';
-      } else {
-        res.style.display = 'block';
-        res.textContent = '⚠️ Please enter a valid 6-digit pincode.';
-        res.style.color = 'var(--or)';
-      }
-    }
-    const pincodeInput = document.getElementById('pincodeInput');
-    if (pincodeInput) pincodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPincode(); });
-
-    // Cart
-    // Cart
-    async function addToCart(productId, quantity = 1, productVariantId = null, sourceEl = null) {
-      let requestSucceeded = false;
-      try {
-        const resolveMeta = typeof globalThis.resolveCartItemMeta === 'function'
-          ? globalThis.resolveCartItemMeta
-          : () => ({
-              product_name: 'Product',
-              variant_name: '',
-              image: '/img/product2.png',
-              unit_price: 0,
-              product_url: '/product'
-            });
-        const itemMeta = resolveMeta(productId, productVariantId, sourceEl);
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        const res = await fetch('/user/cart', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
-          },
-          body: JSON.stringify({
-            product_id: productId,
-            product_variant_id: productVariantId,
-            quantity: quantity,
-          })
-        });
-
-        const responseUrl = res.url || '';
-        const wasRedirectedToLogin = res.redirected && /\/login(?:[/?#]|$)/i.test(responseUrl);
-        const isGuestFallbackResponse = res.status === 401 || res.status === 403 || res.status === 419 || wasRedirectedToLogin;
-
-        if (isGuestFallbackResponse) {
-          addPendingCartItem(productId, quantity, productVariantId, itemMeta);
-          const pendingCount = getPendingCartCount();
-          const cartCountEl = document.getElementById('cartCount');
-          if (cartCountEl) cartCountEl.textContent = String(pendingCount);
-          loadCartPopup();
-          const btn = sourceEl || document.querySelector('.btn-cart');
-          if (btn) {
-            const orig = btn.innerHTML;
-            btn.innerHTML = 'Added to Cart!';
-            btn.style.background = 'var(--mnl)';
-            btn.style.color = 'var(--mn)';
-            setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
-          }
-          return true;
-        }
-
-        if (!res.ok) {
-          const payload = await res.json().catch(() => ({}));
-          alert(payload.message || 'Unable to add item to cart.');
-          return false;
-        }
-        requestSucceeded = true;
-
-        const payload = await res.json().catch(() => ({}));
-        const items = payload.cart?.items || [];
-        const countNow = Number(payload.cart_count || 0) || items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
-        const cartCountEl = document.getElementById('cartCount');
-        if (cartCountEl) cartCountEl.textContent = String(countNow);
-
-        const btn = sourceEl || document.querySelector('.btn-cart');
-        if (btn) {
-          const orig = btn.innerHTML;
-          btn.innerHTML = 'Added to Cart!';
-          btn.style.background = 'var(--mnl)';
-          btn.style.color = 'var(--mn)';
-          setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
-        }
-        return true;
-      } catch (e) {
-        if (!requestSucceeded) {
-          alert('Unable to add item to cart.');
-        }
-        return false;
-      }
-    }
-    function buyNow(productId, quantity = 1, productVariantId = null, sourceEl = null) {
-      addToCart(productId, quantity, productVariantId, sourceEl).then((added) => {
-        if (added) {
-          window.location.href = '/checkout';
-        }
-      });
-    }
-// Expose product page functions to global scope for onclick handlers
-window.selectVariant = selectVariant;
-window.selectFlavor = selectFlavor;
-window.selectQtyOpt = selectQtyOpt;
-window.checkPincode = checkPincode;
-window.addToCart = addToCart;
-window.buyNow = buyNow;
-syncCartCount();
+/* ══════════════════════════════════════════
+   PRODUCT PAGE — SCROLL REVEAL (outside)
+══════════════════════════════════════════ */
+const ro = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
 
 
 /* ══════════════════════════════════════════
    PRODUCT PAGE — INGREDIENT SECTION
 ══════════════════════════════════════════ */
-
-
 (function () {
-  // ── Ingredient Data ──
   const fallbackIngredients = [
-    // Ayurvedic (ay)
     { id:'ashwagandha', name:'Ashwagandha (KSM-66®)', emoji:'', cat:'ay', catLabel:'Ayurvedic', latin:'Withania somnifera',
       desc:'The king of Ayurvedic adaptogens. KSM-66® is the most clinically studied Ashwagandha extract — proven to reduce cortisol, support growth, enhance immunity, and improve sleep quality in children.',
       benefits:['Reduces Stress','Supports Growth','Boosts Immunity','Improves Sleep'],
@@ -1503,8 +1492,6 @@ syncCartCount();
       desc:'A powerful rejuvenative herb that supports digestive health, strengthens immunity, and provides natural antioxidant protection for growing bodies.',
       benefits:['Digestive Health','Immunity','Antioxidant','Rejuvenative'],
       dosage:'75mg per gummy', badgeColor:'#00D68F', badgeBg:'rgba(0,214,143,.12)', emojiBg:'rgba(0,214,143,.1)' },
-
-    // Vitamins (vi)
     { id:'vitd3', name:'Vitamin D3', emoji:'☀️', cat:'vi', catLabel:'Vitamin', latin:'Cholecalciferol',
       desc:'The sunshine vitamin — essential for calcium absorption, bone mineralization, and immune function. Over 70% of Indian children are deficient.',
       benefits:['Bone Growth','Calcium Absorption','Immunity','Mood Support'],
@@ -1533,8 +1520,6 @@ syncCartCount();
       desc:'Essential for DNA synthesis, cell division, and rapid growth phases. Particularly important during childhood and adolescence when cells are dividing rapidly.',
       benefits:['DNA Synthesis','Cell Division','Growth','Blood Health'],
       dosage:'100mcg per gummy', badgeColor:'#00BFFF', badgeBg:'rgba(0,191,255,.12)', emojiBg:'rgba(0,191,255,.1)' },
-
-    // Minerals (mi)
     { id:'zinc', name:'Zinc Bisglycinate', emoji:'⚙️', cat:'mi', catLabel:'Mineral', latin:'Zinc Bisglycinate Chelate',
       desc:'The most bioavailable form of zinc — gentle on tiny tummies. Essential for immune function, wound healing, taste perception, and over 300 enzymatic reactions in the body.',
       benefits:['Immunity','Growth','Wound Healing','Taste & Appetite'],
@@ -1555,8 +1540,6 @@ syncCartCount();
       desc:'A trace mineral with powerful antioxidant properties. Works synergistically with Vitamin E to protect cells and support immune function.',
       benefits:['Antioxidant','Immune Support','Cell Protection','Thyroid'],
       dosage:'20mcg per gummy', badgeColor:'#FFD600', badgeBg:'rgba(255,214,0,.12)', emojiBg:'rgba(255,214,0,.1)' },
-
-    // Extracts (ex)
     { id:'amla', name:'Amla Extract', emoji:'🫐', cat:'ex', catLabel:'Extract', latin:'Emblica officinalis',
       desc:'Indian Gooseberry — one of the richest natural sources of Vitamin C. Provides 20x more Vitamin C than oranges, along with powerful polyphenol antioxidants.',
       benefits:['Vitamin C Rich','Antioxidant','Digestion','Hair & Skin'],
@@ -1577,8 +1560,6 @@ syncCartCount();
       desc:'Real fruit concentrates provide our gummies with authentic, delicious flavors — not synthetic chemicals. Each flavor comes from actual fruits, ensuring kids love taking their vitamins.',
       benefits:['Natural Flavor','Phytonutrients','No Artificial Flavors','Kid-Approved Taste'],
       dosage:'Natural flavoring', badgeColor:'#FF6B35', badgeBg:'rgba(255,107,53,.12)', emojiBg:'rgba(255,107,53,.1)' },
-
-    // Base (ba)
     { id:'pectin', name:'Pectin', emoji:'🍎', cat:'ba', catLabel:'Base', latin:'Plant-derived polysaccharide',
       desc:'Our plant-based geling agent — derived from citrus fruit peels. Unlike gelatin (made from animal bones/skin), pectin is 100% vegetarian, clean, and suitable for all Indian families.',
       benefits:['100% Vegetarian','Gelatin-Free','Clean Label','Prebiotic Fiber'],
@@ -1604,7 +1585,6 @@ syncCartCount();
   function readIngredientPayload() {
     const payloadEl = document.getElementById('nbIngredientsData');
     if (!payloadEl) return null;
-
     try {
       const parsed = JSON.parse(payloadEl.textContent || '[]');
       return Array.isArray(parsed) ? parsed : null;
@@ -1615,42 +1595,38 @@ syncCartCount();
   }
 
   function normalizeIngredient(item, index) {
-    const safeBenefits = Array.isArray(item && item.benefits)
-      ? item.benefits.filter(Boolean)
-      : [];
-
+    const safeBenefits = Array.isArray(item && item.benefits) ? item.benefits.filter(Boolean) : [];
     return {
-      id: item && item.id ? item.id : `ingredient-${index}`,
-      name: item && item.name ? item.name : (item && item.shortName ? item.shortName : 'Ingredient'),
-      shortName: item && item.shortName ? item.shortName : (item && item.name ? item.name : 'Ingredient'),
-      emoji: item && item.emoji ? item.emoji : '',
-      cat: item && item.cat ? item.cat : 'ot',
-      catLabel: item && item.catLabel ? item.catLabel : 'Other',
-      latin: item && item.latin ? item.latin : (item && item.shortName ? item.shortName : ''),
-      desc: item && item.desc ? item.desc : '',
-      benefits: safeBenefits,
-      dosage: item && item.dosage ? item.dosage : 'Details available in ingredient panel',
-      badgeColor: item && item.badgeColor ? item.badgeColor : '#7C3AED',
-      badgeBg: item && item.badgeBg ? item.badgeBg : 'rgba(124,58,237,.12)',
-      emojiBg: item && item.emojiBg ? item.emojiBg : 'rgba(124,58,237,.1)',
-      image: item && item.image ? item.image : ''
+      id:        item && item.id        ? item.id        : `ingredient-${index}`,
+      name:      item && item.name      ? item.name      : (item && item.shortName ? item.shortName : 'Ingredient'),
+      shortName: item && item.shortName ? item.shortName : (item && item.name      ? item.name      : 'Ingredient'),
+      emoji:     item && item.emoji     ? item.emoji     : '',
+      cat:       item && item.cat       ? item.cat       : 'ot',
+      catLabel:  item && item.catLabel  ? item.catLabel  : 'Other',
+      latin:     item && item.latin     ? item.latin     : (item && item.shortName ? item.shortName : ''),
+      desc:      item && item.desc      ? item.desc      : '',
+      benefits:  safeBenefits,
+      dosage:    item && item.dosage    ? item.dosage    : 'Details available in ingredient panel',
+      badgeColor:item && item.badgeColor? item.badgeColor: '#7C3AED',
+      badgeBg:   item && item.badgeBg   ? item.badgeBg   : 'rgba(124,58,237,.12)',
+      emojiBg:   item && item.emojiBg   ? item.emojiBg   : 'rgba(124,58,237,.1)',
+      image:     item && item.image     ? item.image     : ''
     };
   }
 
   const liveIngredients = readIngredientPayload();
   const ingredients = (liveIngredients && liveIngredients.length ? liveIngredients : fallbackIngredients).map(normalizeIngredient);
 
-  const listEl    = document.getElementById('nbList');
-  const detailEl  = document.getElementById('nbDetailCards');
-  const emptyEl   = document.getElementById('nbDetailEmpty');
+  const listEl     = document.getElementById('nbList');
+  const detailEl   = document.getElementById('nbDetailCards');
+  const emptyEl    = document.getElementById('nbDetailEmpty');
   const mobCardsEl = document.getElementById('nbMobCards');
 
   if (!listEl || !detailEl) return;
 
-  let activeId = null;
+  let activeId      = null;
   let currentFilter = 'all';
 
-  // ── Render desktop list ──
   function renderList(filter) {
     currentFilter = filter;
     const filtered = filter === 'all' ? ingredients : ingredients.filter(i => i.cat === filter);
@@ -1664,14 +1640,11 @@ syncCartCount();
         <div class="nb-ing-row-badge" style="background:${i.badgeBg};color:${i.badgeColor}">${i.catLabel}</div>
       </div>
     `).join('');
-
-    // Attach click handlers
     listEl.querySelectorAll('.nb-ing-row').forEach(row => {
       row.addEventListener('click', () => showDetail(row.dataset.id));
     });
   }
 
-  // ── Render detail cards (hidden until selected) ──
   function renderDetailCards() {
     detailEl.innerHTML = ingredients.map(i => `
       <div class="nb-detail-card" data-detail="${i.id}">
@@ -1705,18 +1678,13 @@ syncCartCount();
     `).join('');
   }
 
-  // ── Show detail for a specific ingredient ──
   function showDetail(id) {
     activeId = id;
-    // Update list active state
     listEl.querySelectorAll('.nb-ing-row').forEach(r => r.classList.toggle('nb-row-active', r.dataset.id === id));
-    // Hide empty state
     if (emptyEl) emptyEl.classList.add('nb-hidden');
-    // Show correct detail card
     detailEl.querySelectorAll('.nb-detail-card').forEach(c => c.classList.toggle('nb-card-active', c.dataset.detail === id));
   }
 
-  // ── Render mobile accordion cards ──
   function renderMobCards(filter) {
     if (!mobCardsEl) return;
     const filtered = filter === 'all' ? ingredients : ingredients.filter(i => i.cat === filter);
@@ -1735,85 +1703,72 @@ syncCartCount();
         </div>
       </div>
     `).join('');
-
-    // Accordion toggle
     mobCardsEl.querySelectorAll('.nb-mob-card-head').forEach(head => {
       head.addEventListener('click', () => {
-        const card = head.closest('.nb-mob-card');
+        const card    = head.closest('.nb-mob-card');
         const wasOpen = card.classList.contains('nb-mob-open');
-        // Close all
         mobCardsEl.querySelectorAll('.nb-mob-card').forEach(c => c.classList.remove('nb-mob-open'));
-        // Toggle
         if (!wasOpen) card.classList.add('nb-mob-open');
       });
     });
   }
 
-  // ── Desktop filter ──
   window.nbFilter = function (cat, btn) {
     document.querySelectorAll('.nb-cat-pill').forEach(p => p.classList.remove('nb-active'));
     btn.classList.add('nb-active');
     renderList(cat);
-    // Reset detail
     activeId = null;
     if (emptyEl) emptyEl.classList.remove('nb-hidden');
     detailEl.querySelectorAll('.nb-detail-card').forEach(c => c.classList.remove('nb-card-active'));
   };
 
-  // ── Mobile filter ──
   window.nbMobFilter = function (cat, btn) {
     document.querySelectorAll('.nb-mob-tab').forEach(t => t.classList.remove('nb-sel-mob'));
     btn.classList.add('nb-sel-mob');
     renderMobCards(cat);
   };
 
-  // ── Initialize ──
   renderList('all');
   renderDetailCards();
   renderMobCards('all');
 })();
 
-// p and s
-// About Us JS 
-  // ── Scroll Reveal ──
-        const nbAboutRevObs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('nb-about-visible');
-                    nbAboutRevObs.unobserve(e.target);
-                }
-            });
-        }, { threshold: 0.1 });
 
-        document.querySelectorAll('.nb-about-reveal').forEach(r => nbAboutRevObs.observe(r));
+/* ══════════════════════════════════════════
+   ABOUT US — SCROLL REVEAL + COUNTERS
+══════════════════════════════════════════ */
+const nbAboutRevObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('nb-about-visible');
+      nbAboutRevObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.nb-about-reveal').forEach(r => nbAboutRevObs.observe(r));
 
-        // ── Counter Animation ──
-        const nbAboutCountObs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (!e.isIntersecting) return;
-                const el = e.target;
-                const raw = el.textContent;
-                const hasK    = raw.includes('K');
-                const hasStar = raw.includes('★');
-                const hasPct  = raw.includes('%');
-                const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
-                let start = 0;
-                const dur = 1600, steps = 60, inc = num / steps;
-                const iv = setInterval(() => {
-                    start = Math.min(start + inc, num);
-                    let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
-                    if (hasK)         display += 'K+';
-                    else if (hasStar) display += '★';
-                    else if (hasPct)  display += '%';
-                    else              display += '+';
-                    el.textContent = display;
-                    if (start >= num) clearInterval(iv);
-                }, dur / steps);
-                nbAboutCountObs.unobserve(el);
-            });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.nb-about-hstat-num').forEach(el => nbAboutCountObs.observe(el));
-   
-
-
+const nbAboutCountObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el      = e.target;
+    const raw     = el.textContent;
+    const hasK    = raw.includes('K');
+    const hasStar = raw.includes('★');
+    const hasPct  = raw.includes('%');
+    const num     = parseFloat(raw.replace(/[^0-9.]/g, ''));
+    let start = 0;
+    const dur = 1600, steps = 60, inc = num / steps;
+    const iv = setInterval(() => {
+      start = Math.min(start + inc, num);
+      let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
+      if (hasK)         display += 'K+';
+      else if (hasStar) display += '★';
+      else if (hasPct)  display += '%';
+      else              display += '+';
+      el.textContent = display;
+      if (start >= num) clearInterval(iv);
+    }, dur / steps);
+    nbAboutCountObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.nb-about-hstat-num').forEach(el => nbAboutCountObs.observe(el));

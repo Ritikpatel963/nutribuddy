@@ -1,8 +1,8 @@
 ﻿@extends('layouts.main')
 @section('title', 'Terms & Conditions — NutriBuddy Kids')
+
 @push('styles')
     <style>
-        /* ── HERO BANNER ── */
         .page-hero {
             background: linear-gradient(135deg, var(--dk) 0%, #260050 50%, #0d0030 100%);
             padding: 130px 5% 56px;
@@ -20,7 +20,7 @@
             height: 360px;
             background: radial-gradient(circle, rgba(255, 77, 143, .12), transparent 65%);
             border-radius: 50%;
-            pointer-events: none
+            pointer-events: none;
         }
 
         .page-hero::after {
@@ -32,7 +32,7 @@
             height: 280px;
             background: radial-gradient(circle, rgba(124, 58, 237, .1), transparent 65%);
             border-radius: 50%;
-            pointer-events: none
+            pointer-events: none;
         }
 
         .hero-eyebrow {
@@ -45,7 +45,7 @@
             margin-bottom: 12px;
             display: block;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .hero-title {
@@ -55,21 +55,21 @@
             margin-bottom: 14px;
             position: relative;
             z-index: 2;
-            line-height: 1.1
+            line-height: 1.1;
         }
 
         .hero-title span {
-            color: var(--ye)
+            color: var(--ye);
         }
 
         .hero-subtitle {
             font-size: .95rem;
             color: rgba(255, 255, 255, .55);
-            max-width: 520px;
+            max-width: 720px;
             margin: 0 auto 24px;
             line-height: 1.7;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .hero-meta {
@@ -79,7 +79,7 @@
             gap: 20px;
             flex-wrap: wrap;
             position: relative;
-            z-index: 2
+            z-index: 2;
         }
 
         .meta-pill {
@@ -90,1242 +90,112 @@
             font-family: 'Nunito', sans-serif;
             font-weight: 800;
             font-size: .75rem;
-            color: rgba(255, 255, 255, .7);
-            display: flex;
-            align-items: center;
-            gap: 6px
+            color: rgba(255, 255, 255, .75);
         }
 
-
-
-        /* ── LAYOUT ── */
-        .page-wrap {
+        .terms-text-wrap {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 40px 5% 80px;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 36px;
-            align-items: start
+            padding: 48px 5% 80px;
         }
 
-        /* ── SIDEBAR TOC ── */
-        .toc-sidebar {
-            position: sticky;
-            top: 122px;
-            background: var(--white);
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, .05)
+        .terms-block {
+            background: linear-gradient(145deg, #fff, #fff7fc);
+            border: 2px solid var(--pkl);
+            border-radius: 24px;
+            box-shadow: 0 10px 28px rgba(26, 10, 62, .08);
+            padding: 42px 44px;
         }
 
-        .toc-hdr {
-            background: linear-gradient(135deg, var(--pk), var(--pkd));
-            padding: 14px 18px
-        }
-
-        .toc-hdr-title {
-            font-family: 'Fredoka One', cursive;
-            color: #fff;
-            font-size: .95rem
-        }
-
-        .toc-list {
-            list-style: none;
-            padding: 10px 0
-        }
-
-        .toc-list li a {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 9px 18px;
+        .terms-block h2 {
             font-family: 'Nunito', sans-serif;
+            font-size: clamp(2rem, 3.5vw, 2.9rem);
             font-weight: 700;
-            font-size: .78rem;
-            color: var(--text2);
-            text-decoration: none;
-            border-left: 3px solid transparent;
-            transition: all .2s
-        }
-
-        .toc-list li a:hover,
-        .toc-list li a.active {
-            color: var(--pk);
-            background: var(--pkl);
-            border-left-color: var(--pk)
-        }
-
-        .toc-list li a .tnum {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--pkl);
-            color: var(--pk);
-            font-size: .62rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0
-        }
-
-        .toc-list li a.active .tnum {
-            background: var(--pk);
-            color: #fff
-        }
-
-        .toc-divider {
-            height: 1px;
-            background: var(--border);
-            margin: 6px 0
-        }
-
-        .toc-last-updated {
-            padding: 12px 18px;
-            font-size: .7rem;
-            color: #bbb;
-            font-family: 'Nunito', sans-serif;
-            border-top: 1px solid var(--border)
-        }
-
-        /* ── CONTENT ── */
-        .content {}
-
-        .content-card {
-            background: var(--white);
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            padding: 36px 40px;
-            margin-bottom: 22px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, .04);
-            scroll-margin-top: 88px
-        }
-
-        .content-card:last-child {
-            margin-bottom: 0
-        }
-
-        /* Section headers */
-        .sec-num {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .68rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--pk);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px
-        }
-
-        .sec-num::before {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 2px;
-            background: var(--pk);
-            border-radius: 2px
-        }
-
-        .sec-h {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.45rem;
             color: var(--dk);
-            margin-bottom: 16px;
-            line-height: 1.2;
-            display: flex;
-            align-items: center;
-            gap: 10px
+            line-height: 1.15;
+            margin-bottom: 20px;
         }
 
-        .sec-h .sh-ico {
-            font-size: 1.3rem
+        .terms-block h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+            color: var(--pu);
+            font-weight: 400;
+            margin: 34px 0 14px;
         }
 
-        .sec-intro {
-            font-size: .9rem;
-            color: var(--text2);
-            line-height: 1.78;
+        .terms-block p {
+            font-family: 'DM Sans', sans-serif;
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.8;
             margin-bottom: 18px;
-            padding: 16px 18px;
-            background: linear-gradient(135deg, rgba(255, 77, 143, .04), rgba(124, 58, 237, .02));
-            border-radius: 10px;
-            border-left: 3px solid var(--pk)
         }
 
-        /* Body text */
-        .body-text {
-            font-size: .875rem;
-            color: #444;
-            line-height: 1.80;
-            margin-bottom: 14px
-        }
-
-        .body-text:last-child {
-            margin-bottom: 0
-        }
-
-        /* Lists */
-        .terms-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 16px
-        }
-
-        .terms-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: .875rem;
-            color: #444;
-            line-height: 1.72
-        }
-
-        .li-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--pk);
-            flex-shrink: 0;
-            margin-top: 6px
-        }
-
-        .li-dot.purple {
-            background: var(--pu)
-        }
-
-        .li-dot.green {
-            background: var(--mn)
-        }
-
-        .li-dot.orange {
-            background: var(--or)
-        }
-
-        .li-dot.blue {
-            background: var(--sk)
-        }
-
-        /* Highlight box */
-        .highlight-box {
-            border-radius: 12px;
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            display: flex;
-            gap: 12px;
-            align-items: flex-start
-        }
-
-        .hb-pink {
-            background: rgba(255, 77, 143, .06);
-            border: 1.5px solid rgba(255, 77, 143, .18)
-        }
-
-        .hb-purple {
-            background: rgba(124, 58, 237, .05);
-            border: 1.5px solid rgba(124, 58, 237, .15)
-        }
-
-        .hb-green {
-            background: var(--mnl);
-            border: 1.5px solid rgba(0, 214, 143, .3)
-        }
-
-        .hb-yellow {
-            background: var(--yel);
-            border: 1.5px solid rgba(255, 214, 0, .4)
-        }
-
-        .hb-blue {
-            background: var(--skl);
-            border: 1.5px solid rgba(0, 191, 255, .3)
-        }
-
-        .hb-orange {
-            background: var(--orl);
-            border: 1.5px solid rgba(255, 107, 53, .25)
-        }
-
-        .hb-ico {
-            font-size: 1.3rem;
-            flex-shrink: 0;
-            margin-top: 1px
-        }
-
-        .hb-body .hb-title {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .85rem;
-            color: var(--dk);
-            margin-bottom: 4px
-        }
-
-        .hb-body p {
-            font-size: .83rem;
-            color: #555;
-            line-height: 1.68
-        }
-
-        .hb-body strong {
-            color: var(--dk)
-        }
-
-        /* Table */
-        .terms-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1.5px solid var(--border)
-        }
-
-        .terms-table th {
-            background: linear-gradient(135deg, var(--dk), #260050);
-            color: #fff;
-            padding: 12px 16px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .78rem;
-            text-align: left;
-            letter-spacing: .3px
-        }
-
-        .terms-table td {
-            padding: 11px 16px;
-            font-size: .83rem;
-            color: #444;
-            border-bottom: 1px solid var(--border);
-            line-height: 1.5
-        }
-
-        .terms-table tr:last-child td {
-            border-bottom: none
-        }
-
-        .terms-table tr:nth-child(even) td {
-            background: #fafafa
-        }
-
-        .terms-table tr:hover td {
-            background: var(--pkl)
-        }
-
-        /* Sub-heading */
-        .sub-h {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .9rem;
-            color: var(--dk);
-            margin: 16px 0 8px;
-            display: flex;
-            align-items: center;
-            gap: 7px
-        }
-
-        .sub-h::before {
-            content: '';
-            display: inline-block;
-            width: 3px;
-            height: 14px;
-            background: var(--pu);
-            border-radius: 2px
-        }
-
-        /* Divider */
-        .sec-divider {
-            height: 1px;
-            background: linear-gradient(90deg, var(--pk), var(--pu), transparent);
-            opacity: .2;
-            margin: 20px 0
-        }
-
-        /* Contact card */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 16px
-        }
-
-        .contact-item {
-            background: linear-gradient(135deg, rgba(255, 77, 143, .05), rgba(124, 58, 237, .03));
-            border: 1.5px solid var(--pkl);
-            border-radius: 12px;
-            padding: 18px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all .25s
-        }
-
-        .contact-item:hover {
-            border-color: var(--pk);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(255, 77, 143, .1)
-        }
-
-        .ci-ico {
-            font-size: 1.5rem;
-            flex-shrink: 0
-        }
-
-        .ci-body .ci-label {
-            font-size: .68rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #aaa;
-            margin-bottom: 3px
-        }
-
-        .ci-body a,
-        .ci-body span {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 800;
-            font-size: .85rem;
+        .terms-block a {
             color: var(--pk);
-            text-decoration: none
-        }
-
-        .ci-body a:hover {
-            text-decoration: underline
-        }
-
-        /* Print / Download bar */
-        .action-bar {
-            background: linear-gradient(135deg, var(--dk), #260050);
-            border-radius: 14px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 22px
-        }
-
-        .ab-text .ab-title {
-            font-family: 'Fredoka One', cursive;
-            color: #fff;
-            font-size: 1rem;
-            margin-bottom: 2px
-        }
-
-        .ab-text .ab-sub {
-            font-size: .76rem;
-            color: rgba(255, 255, 255, .5)
-        }
-
-        .ab-btns {
-            display: flex;
-            gap: 9px
-        }
-
-        .ab-btn {
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 900;
-            font-size: .78rem;
-            cursor: pointer;
-            transition: all .2s;
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 5px
-        }
-
-        .ab-btn.print {
-            background: rgba(255, 255, 255, .1);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, .2)
-        }
-
-        .ab-btn.print:hover {
-            background: rgba(255, 255, 255, .2)
-        }
-
-        .ab-btn.download {
-            background: var(--pk);
-            color: #fff
-        }
-
-        .ab-btn.download:hover {
-            background: var(--pkd)
-        }
-
-        /* Back to top */
-        .back-top {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--pk), var(--pkd));
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 14px rgba(255, 77, 143, .4);
-            transition: all .3s;
-            z-index: 100;
-            opacity: 0;
-            transform: translateY(10px)
-        }
-
-        .back-top.show {
-            opacity: 1;
-            transform: translateY(0)
-        }
-
-        .back-top:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 22px rgba(255, 77, 143, .55)
-        }
-
-        /* ── FOOTER ── */
-        .mini-footer {
-            background: linear-gradient(135deg, var(--dk), #260050);
-            padding: 28px 5%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-top: 0
-        }
-
-        .mf-brand {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            color: var(--pk)
-        }
-
-        .mf-links {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-            flex-wrap: wrap
-        }
-
-        .mf-links a {
-            color: rgba(255, 255, 255, .5);
+            font-weight: 700;
             text-decoration: none;
-            font-size: .78rem;
-            transition: color .2s
         }
 
-        .mf-links a:hover {
-            color: #fff
+        .terms-block a:hover {
+            color: var(--pkd);
+            text-decoration: underline;
         }
 
-        .mf-copy {
-            color: rgba(255, 255, 255, .35);
-            font-size: .72rem
+        .terms-block p:last-child {
+            margin-bottom: 0;
         }
 
-        /* ── RESPONSIVE ── */
-        @media(max-width:860px) {
-            .page-wrap {
-                grid-template-columns: 1fr
+        @media (max-width: 640px) {
+            .terms-block {
+                padding: 28px 22px;
             }
 
-            .toc-sidebar {
-                position: static;
-                display: none
-            }
-
-            .nav-links,
-            .nav-cta {
-                display: none
-            }
-
-            .hamburger {
-                display: flex
-            }
-
-            .mob-menu {
-                display: block
-            }
-        }
-
-        @media(max-width:540px) {
-            .topnav {
-                padding: 0 4%;
-                height: 56px
-            }
-
-            .page-wrap {
-                padding: 24px 4% 60px
-            }
-
-            .content-card {
-                padding: 22px 18px
-            }
-
-            .action-bar {
-                flex-direction: column;
-                align-items: flex-start
-            }
-
-            .contact-grid {
-                grid-template-columns: 1fr
-            }
-
-            .hero-meta {
-                gap: 10px
-            }
-
-            .meta-pill {
-                font-size: .7rem;
-                padding: 6px 12px
-            }
-
-            .back-top {
-                bottom: 18px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-                font-size: .85rem
+            .terms-text-wrap {
+                padding: 34px 5% 56px;
             }
         }
     </style>
 @endpush
+
 @section('content')
-
-
-    <!-- HERO -->
     <div class="page-hero">
         <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
         <h1 class="hero-title">Terms &amp; <span>Conditions</span></h1>
         <p class="hero-subtitle">Please read these terms carefully before using our website or purchasing our products. They
             govern your relationship with NutriBuddy.</p>
         <div class="hero-meta">
-            <div class="meta-pill">📅 Last Updated: June 1, 2025</div>
-            <div class="meta-pill">🏢 NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">🇮🇳 Governed by Indian Law</div>
+            <div class="meta-pill">Last Updated: June 1, 2025</div>
+            <div class="meta-pill">NutriBuddy Kids Pvt. Ltd.</div>
+            <div class="meta-pill">Governed by Indian Law</div>
         </div>
     </div>
 
+    <section class="terms-text-wrap">
+        <div class="terms-block">
+            <h2>Terms &amp; Conditions</h2>
 
+            <p>By using NutriBuddy's website, products, or services, you agree to comply with and be bound by these
+                Terms &amp; Conditions. Please review them carefully before placing an order or using any of our
+                services.</p>
 
-    <!-- MAIN -->
-    <div class="page-wrap">
+            <p>These terms apply to all visitors, users, and customers. If you do not agree with any part of these
+                terms, please do not use our website or services.</p>
 
-        <!-- SIDEBAR TOC -->
-        <aside class="toc-sidebar">
-            <div class="toc-hdr">
-                <div class="toc-hdr-title">📋 Table of Contents</div>
-            </div>
-            <ul class="toc-list">
-                <li><a href="#s1" class="active"><span class="tnum">1</span>Acceptance of Terms</a></li>
-                <li><a href="#s2"><span class="tnum">2</span>Eligibility &amp; Use</a></li>
-                <li><a href="#s3"><span class="tnum">3</span>Products &amp; Descriptions</a></li>
-                <li><a href="#s4"><span class="tnum">4</span>Orders &amp; Payments</a></li>
-                <li><a href="#s5"><span class="tnum">5</span>Shipping &amp; Delivery</a></li>
-                <li><a href="#s6"><span class="tnum">6</span>Intellectual Property</a></li>
-                <li><a href="#s7"><span class="tnum">7</span>User Accounts</a></li>
-                <li><a href="#s8"><span class="tnum">8</span>Prohibited Activities</a></li>
-                <li><a href="#s9"><span class="tnum">9</span>Disclaimer &amp; Liability</a></li>
-                <li><a href="#s10"><span class="tnum">10</span>Privacy Policy</a></li>
-                <li><a href="#s11"><span class="tnum">11</span>Governing Law</a></li>
-                <li><a href="#s12"><span class="tnum">12</span>Contact Us</a></li>
-            </ul>
-            <div class="toc-divider"></div>
-            <div class="toc-last-updated">Last updated: 1 June 2025<br>Version 2.4</div>
-        </aside>
+            <h3>Use of Service</h3>
 
-        <!-- CONTENT -->
-        <main class="content">
+            <p>You agree to use NutriBuddy only for lawful purposes and in a way that does not infringe the rights of,
+                restrict, or inhibit anyone else's use of the service.</p>
 
-            <!-- Action bar -->
-            <div class="action-bar">
-                <div class="ab-text">
-                    <div class="ab-title">Terms &amp; Conditions — NutriBuddy Kids</div>
-                    <div class="ab-sub">Effective 1 June 2025 · Version 2.4 · Bengaluru, India</div>
-                </div>
-                <div class="ab-btns">
-                    <button class="ab-btn print" onclick="window.print()">🖨 Print</button>
-                    <button class="ab-btn download" onclick="window.print()">⬇ Save PDF</button>
-                </div>
-            </div>
+            <p>We reserve the right to update, modify, or discontinue any part of our services at any time without
+                prior notice. Continued use of the service after changes are posted means you accept the updated
+                terms.</p>
 
-            <!-- S1 -->
-            <div class="content-card" id="s1">
-                <div class="sec-num">Section 01</div>
-                <h2 class="sec-h"><span class="sh-ico">✅</span>Acceptance of Terms</h2>
-                <div class="sec-intro">By accessing or using the NutriBuddy website (www.nutribuddy.in), mobile application,
-                    or
-                    purchasing any of our products, you confirm that you have read, understood, and agree to be legally
-                    bound by
-                    these Terms &amp; Conditions.</div>
-                <p class="body-text">These Terms &amp; Conditions ("Terms") constitute a legally binding agreement between
-                    you
-                    ("User," "Customer," or "you") and NutriBuddy Kids Private Limited, a company incorporated under the
-                    Companies
-                    Act 2013 and registered in Bengaluru, Karnataka, India.</p>
-                <p class="body-text">If you do not agree with any part of these Terms, please do not use our website or
-                    purchase
-                    our products. Your continued use of our platform constitutes your full acceptance of these Terms.</p>
-                <div class="highlight-box hb-pink">
-                    <div class="hb-ico">⚠️</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Important Notice</div>
-                        <p>These Terms are subject to change. We will notify you of significant updates via email or a
-                            prominent
-                            notice on our website. Continued use after changes constitutes acceptance of the new Terms.</p>
-                    </div>
-                </div>
-            </div>
+            <h3>Orders and Payments</h3>
 
-            <!-- S2 -->
-            <div class="content-card" id="s2">
-                <div class="sec-num">Section 02</div>
-                <h2 class="sec-h"><span class="sh-ico">👤</span>Eligibility &amp; Use</h2>
-                <div class="sec-intro">Our platform is intended for parents, guardians, and adults purchasing on behalf of
-                    children. You must be at least 18 years of age to place an order or create an account on NutriBuddy.
-                </div>
-                <div class="sub-h">Eligibility Requirements</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot"></div><span>You must be at least <strong>18 years old</strong> to create an
-                            account or
-                            place an order.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>You must have the legal capacity to enter into a binding contract
-                            under Indian
-                            law.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>You must provide accurate, complete, and current information during
-                            registration and checkout.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>You must use our products only for children in the <strong>age range
-                                specified</strong> on each product label (2–14 years).</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>You must consult a pediatrician before using our products if your
-                            child has
-                            any known medical conditions or allergies.</span>
-                    </li>
-                </ul>
-                <div class="highlight-box hb-yellow">
-                    <div class="hb-ico">👶</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Products Intended for Children</div>
-                        <p>NutriBuddy products are formulated for children aged 2–14. Always follow the dosage instructions.
-                            If your
-                            child experiences any adverse reaction, discontinue use and consult a doctor immediately.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- S3 -->
-            <div class="content-card" id="s3">
-                <div class="sec-num">Section 03</div>
-                <h2 class="sec-h"><span class="sh-ico">🍬</span>Products &amp; Descriptions</h2>
-                <div class="sec-intro">We strive for complete transparency in all product descriptions, ingredient lists,
-                    and
-                    health claims. Our products are formulated in accordance with FSSAI regulations and tested by
-                    NABL-accredited
-                    third-party laboratories.</div>
-                <div class="sub-h">Product Information</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot green"></div><span>All ingredient information, allergen disclosures, and
-                            nutritional values
-                            are displayed on the product page and label.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>Product images are representative. Actual packaging may vary
-                            slightly
-                            due to batch updates or regulatory changes.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>We do not make any claims that our products diagnose, treat,
-                            cure, or
-                            prevent any disease. Our products are nutritional supplements.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>Prices are displayed in Indian Rupees (INR) and are inclusive
-                            of all
-                            applicable taxes unless stated otherwise.</span>
-                    </li>
-                </ul>
-                <div class="sub-h">Health Disclaimers</div>
-                <div class="highlight-box hb-orange">
-                    <div class="hb-ico">🩺</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Not a Substitute for Medical Advice</div>
-                        <p>NutriBuddy products are nutritional supplements and are <strong>not intended to replace a
-                                balanced diet or
-                                medical treatment</strong>. Always consult a qualified pediatrician or nutritionist before
-                            starting any
-                            supplement regimen for your child.</p>
-                    </div>
-                </div>
-                <table class="terms-table">
-                    <thead>
-                        <tr>
-                            <th>Certification</th>
-                            <th>Certifying Body</th>
-                            <th>Scope</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>FSSAI License</td>
-                            <td>Food Safety &amp; Standards Authority of India</td>
-                            <td>All Products</td>
-                        </tr>
-                        <tr>
-                            <td>Lab Testing</td>
-                            <td>NABL Accredited Third-Party Lab</td>
-                            <td>Per Batch</td>
-                        </tr>
-                        <tr>
-                            <td>Non-GMO</td>
-                            <td>Independent Verification</td>
-                            <td>All Ingredients</td>
-                        </tr>
-                        <tr>
-                            <td>Pediatrician Review</td>
-                            <td>Certified Pediatricians Network</td>
-                            <td>All Formulas</td>
-                        </tr>
-                        <tr>
-                            <td>Vegetarian Certified</td>
-                            <td>VegSociety India</td>
-                            <td>Applicable Products</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- S4 -->
-            <div class="content-card" id="s4">
-                <div class="sec-num">Section 04</div>
-                <h2 class="sec-h"><span class="sh-ico">💳</span>Orders &amp; Payments</h2>
-                <div class="sec-intro">All orders placed on NutriBuddy are subject to acceptance and availability. We
-                    reserve the
-                    right to refuse or cancel any order at our discretion.</div>
-                <div class="sub-h">Order Process</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot purple"></div><span>An order confirmation email/SMS constitutes acceptance of
-                            your order by
-                            NutriBuddy.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>We reserve the right to cancel orders in cases of pricing
-                            errors, stock
-                            unavailability, or suspected fraud.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>Cancelled orders will be fully refunded to the original
-                            payment method
-                            within 5–7 business days.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>Subscription orders will auto-renew unless cancelled at
-                            least 24 hours
-                            before the next billing date.</span>
-                    </li>
-                </ul>
-                <div class="sub-h">Payment Methods</div>
-                <div class="highlight-box hb-blue">
-                    <div class="hb-ico">🔒</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Secure Payment Processing</div>
-                        <p>All payments are processed through PCI-DSS compliant payment gateways. We accept UPI,
-                            Credit/Debit Cards
-                            (Visa, Mastercard, RuPay), Net Banking, Digital Wallets, and Cash on Delivery (select pincodes).
-                            Card
-                            details are never stored on our servers.</p>
-                    </div>
-                </div>
-                <div class="sub-h">Pricing &amp; Taxes</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot blue"></div><span>All prices are in Indian Rupees (₹) and include applicable
-                            GST.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot blue"></div><span>Shipping charges, if any, are disclosed before order
-                            confirmation.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot blue"></div><span>Coupon codes and promotional discounts are subject to
-                            individual terms
-                            and cannot be combined unless specified.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- S5 -->
-            <div class="content-card" id="s5">
-                <div class="sec-num">Section 05</div>
-                <h2 class="sec-h"><span class="sh-ico">🚚</span>Shipping &amp; Delivery</h2>
-                <div class="sec-intro">We deliver across India through our trusted logistics partners. Free shipping is
-                    applicable
-                    on orders above ₹200.</div>
-                <table class="terms-table">
-                    <thead>
-                        <tr>
-                            <th>Order Type</th>
-                            <th>Estimated Delivery</th>
-                            <th>Charges</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Standard (all metros)</td>
-                            <td>2–4 business days</td>
-                            <td>FREE above ₹200</td>
-                        </tr>
-                        <tr>
-                            <td>Standard (Tier 2/3 cities)</td>
-                            <td>4–7 business days</td>
-                            <td>FREE above ₹200</td>
-                        </tr>
-                        <tr>
-                            <td>Express Delivery</td>
-                            <td>1–2 business days</td>
-                            <td>₹99 flat</td>
-                        </tr>
-                        <tr>
-                            <td>Remote / Hill Areas</td>
-                            <td>7–12 business days</td>
-                            <td>₹79 flat</td>
-                        </tr>
-                        <tr>
-                            <td>Subscription Orders</td>
-                            <td>As scheduled</td>
-                            <td>Always FREE</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="highlight-box hb-green">
-                    <div class="hb-ico">📦</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Packaging Promise</div>
-                        <p>All NutriBuddy products are shipped in tamper-evident, food-safe packaging. Products damaged in
-                            transit
-                            will be replaced at no cost — please report within 48 hours of delivery with photos.</p>
-                    </div>
-                </div>
-                <p class="body-text">NutriBuddy is not responsible for delays caused by customs clearance, natural
-                    disasters,
-                    strikes, or other events beyond our control. We will keep you informed via SMS and email tracking
-                    updates.</p>
-            </div>
-
-            <!-- S6 -->
-            <div class="content-card" id="s6">
-                <div class="sec-num">Section 06</div>
-                <h2 class="sec-h"><span class="sh-ico">©</span>Intellectual Property</h2>
-                <div class="sec-intro">All content on the NutriBuddy website — including text, graphics, logos, icons,
-                    images,
-                    audio clips, and software — is the exclusive property of NutriBuddy Kids Pvt. Ltd. and is protected by
-                    Indian
-                    and international copyright laws.</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot"></div><span>You may not reproduce, distribute, or create derivative works from
-                            our content
-                            without prior written consent.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>The "NutriBuddy" name, logo, and taglines are registered
-                            trademarks.
-                            Unauthorized use is strictly prohibited.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>Product formulations, diet chart methodologies, and personalization
-                            algorithms
-                            are proprietary and confidential.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>User-generated reviews and content may be used by NutriBuddy for
-                            marketing
-                            purposes with your implied consent upon submission.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- S7 -->
-            <div class="content-card" id="s7">
-                <div class="sec-num">Section 07</div>
-                <h2 class="sec-h"><span class="sh-ico">👤</span>User Accounts</h2>
-                <div class="sec-intro">Creating an account allows you to track orders, manage subscriptions, and access
-                    your
-                    personalized diet charts. You are responsible for maintaining the confidentiality of your account
-                    credentials.
-                </div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot"></div><span>You are responsible for all activity under your account. Notify us
-                            immediately
-                            of unauthorized use.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>We may suspend or terminate accounts that violate these Terms or
-                            engage in
-                            fraudulent behavior.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>Account deletion requests will be processed within 30 days, subject
-                            to
-                            retention of data required by law.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot"></div><span>NutriBuddy Coins earned in your account expire 12 months from the
-                            date of
-                            earning if unused.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- S8 -->
-            <div class="content-card" id="s8">
-                <div class="sec-num">Section 08</div>
-                <h2 class="sec-h"><span class="sh-ico">🚫</span>Prohibited Activities</h2>
-                <div class="sec-intro">To maintain a safe and trustworthy platform, the following activities are strictly
-                    prohibited on the NutriBuddy website and app.</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot orange"></div><span>Placing fraudulent orders, using stolen payment methods, or
-                            creating
-                            fake accounts.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot orange"></div><span>Reverse engineering, scraping, or copying our website
-                            content, product
-                            formulations, or algorithms.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot orange"></div><span>Submitting false reviews, misleading feedback, or
-                            impersonating other
-                            users.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot orange"></div><span>Attempting to gain unauthorized access to our systems or
-                            other users'
-                            accounts.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot orange"></div><span>Using our platform for any unlawful, harmful, or abusive
-                            purpose.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot orange"></div><span>Reselling NutriBuddy products without written authorization
-                            as an
-                            official distributor.</span>
-                    </li>
-                </ul>
-                <div class="highlight-box hb-orange">
-                    <div class="hb-ico">⚖️</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Consequences of Violations</div>
-                        <p>Violation of these terms may result in immediate account suspension, order cancellation, and/or
-                            legal
-                            action under applicable Indian law including the Information Technology Act, 2000 and the
-                            Consumer
-                            Protection Act, 2019.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- S9 -->
-            <div class="content-card" id="s9">
-                <div class="sec-num">Section 09</div>
-                <h2 class="sec-h"><span class="sh-ico">⚖️</span>Disclaimer &amp; Limitation of Liability</h2>
-                <div class="sec-intro">NutriBuddy products and services are provided "as is." We make no warranties —
-                    express or
-                    implied — regarding the completeness, accuracy, or reliability of our products or website.</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot purple"></div><span>Individual results may vary. Health outcomes depend on
-                            factors
-                            including diet, lifestyle, and medical history.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>To the fullest extent permitted by law, NutriBuddy's
-                            liability is
-                            limited to the amount paid for the specific product or service giving rise to the claim.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>We are not liable for any indirect, incidental, or
-                            consequential
-                            damages arising from product use.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot purple"></div><span>We are not liable for website downtime, data loss, or
-                            technical errors
-                            beyond our reasonable control.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- S10 -->
-            <div class="content-card" id="s10">
-                <div class="sec-num">Section 10</div>
-                <h2 class="sec-h"><span class="sh-ico">🔒</span>Privacy Policy</h2>
-                <div class="sec-intro">Your privacy is paramount to us. We collect, process, and protect your personal data
-                    in
-                    accordance with the Information Technology (Amendment) Act, 2008 and applicable Indian data protection
-                    laws.
-                </div>
-                <div class="sub-h">Data We Collect</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot green"></div><span>Personal information (name, email, phone) provided during
-                            account
-                            creation or checkout.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>Children's health data (age, dietary preferences) collected
-                            via our diet
-                            chart quiz — used solely to generate personalized plans.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>Usage data and cookies to improve website performance and
-                            personalize
-                            your experience.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot green"></div><span>Payment data processed by PCI-DSS compliant gateways — we
-                            never store
-                            full card details.</span>
-                    </li>
-                </ul>
-                <div class="highlight-box hb-green">
-                    <div class="hb-ico">🛡️</div>
-                    <div class="hb-body">
-                        <div class="hb-title">Children's Data Protection</div>
-                        <p>We take extra care with data related to children. Health information submitted via our diet chart
-                            tool is
-                            used exclusively for generating personalized recommendations and is never shared with third
-                            parties for
-                            advertising purposes.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- S11 -->
-            <div class="content-card" id="s11">
-                <div class="sec-num">Section 11</div>
-                <h2 class="sec-h"><span class="sh-ico">🏛️</span>Governing Law &amp; Disputes</h2>
-                <div class="sec-intro">These Terms shall be governed by and construed in accordance with the laws of India.
-                    Any
-                    disputes shall be subject to the exclusive jurisdiction of courts in Bengaluru, Karnataka.</div>
-                <div class="sub-h">Dispute Resolution</div>
-                <ul class="terms-list">
-                    <li>
-                        <div class="li-dot blue"></div><span>We encourage resolution through direct communication first.
-                            Contact us at
-                            <strong>legal@nutribuddy.in</strong>.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot blue"></div><span>Unresolved disputes will be referred to arbitration under the
-                            Arbitration
-                            and Conciliation Act, 1996.</span>
-                    </li>
-                    <li>
-                        <div class="li-dot blue"></div><span>Consumer disputes may also be addressed through the National
-                            Consumer
-                            Disputes Redressal Commission (NCDRC).</span>
-                    </li>
-                    <li>
-                        <div class="li-dot blue"></div><span>Class action suits against NutriBuddy are expressly waived to
-                            the extent
-                            permitted by applicable law.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- S12 -->
-            <div class="content-card" id="s12">
-                <div class="sec-num">Section 12</div>
-                <h2 class="sec-h"><span class="sh-ico">📞</span>Contact Us</h2>
-                <div class="sec-intro">For any questions, concerns, or feedback regarding these Terms &amp; Conditions,
-                    please
-                    reach out to us through any of the following channels.</div>
-                <div class="contact-grid">
-                    <div class="contact-item">
-                        <div class="ci-ico">✉️</div>
-                        <div class="ci-body">
-                            <div class="ci-label">Email</div><a href="mailto:legal@nutribuddy.in">legal@nutribuddy.in</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="ci-ico">📞</div>
-                        <div class="ci-body">
-                            <div class="ci-label">Toll-Free</div><a href="tel:18001234567">1800-123-4567</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="ci-ico">📍</div>
-                        <div class="ci-body">
-                            <div class="ci-label">Registered Office</div><span>42, Wellness Tower, Bengaluru –
-                                560001</span>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="ci-ico">⏰</div>
-                        <div class="ci-body">
-                            <div class="ci-label">Support Hours</div><span>Mon–Sat, 9 AM – 7 PM IST</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-    @push('scripts')
-        <script>
-            // Hamburger
-            const hamBtn = document.getElementById('hamBtn'),
-                mobMenu = document.getElementById('mobMenu');
-            hamBtn.addEventListener('click', () => {
-                hamBtn.classList.toggle('open');
-                mobMenu.classList.toggle('open');
-            });
-
-            // Back to top
-            window.addEventListener('scroll', () => {
-                document.getElementById('backTop').classList.toggle('show', window.scrollY > 400);
-            });
-
-            // TOC active on scroll
-            const sections = document.querySelectorAll('.content-card[id]');
-            const tocLinks = document.querySelectorAll('.toc-list a');
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        tocLinks.forEach(l => l.classList.remove('active'));
-                        const active = document.querySelector('.toc-list a[href="#' + e.target.id + '"]');
-                        if (active) active.classList.add('active');
-                    }
-                });
-            }, {
-                threshold: .4,
-                rootMargin: '-80px 0px -60% 0px'
-            });
-            sections.forEach(s => observer.observe(s));
-        </script>
-    @endpush
+            <p>All orders are subject to availability and acceptance. Prices are shown in INR and may change without
+                prior notice. Payment must be completed through approved payment methods before order processing.</p>
+        </div>
+    </section>
 @endsection

@@ -1055,6 +1055,22 @@
         right: -100%;
     }
 
+    .ci-qty-row {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .ci-qty-row .qty-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .ci-qty-row .qty-val {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+    }
+
     .newsletter {
         padding: 44px 24px;
     }

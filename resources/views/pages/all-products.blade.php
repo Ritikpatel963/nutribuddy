@@ -47,25 +47,7 @@
                     <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}</div>
                     <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}" style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
                     <div class="pc-features">
-                        @php 
-                            $features = $product->short_description ? explode("\n", $product->short_description) : [];
-                            $features = array_filter(array_map('trim', $features));
-                        @endphp
                         
-                        @if(count($features) > 0)
-                            <div class="newcarda">
-                                @foreach(array_slice($features, 0, 2) as $feature)
-                                    <span><i>✔</i> {{ $feature }}</span>
-                                @endforeach
-                            </div>
-                            @if(count($features) > 2)
-                            <div class="newcarda">
-                                @foreach(array_slice($features, 2, 2) as $feature)
-                                    <span><i>✔</i> {{ $feature }}</span>
-                                @endforeach
-                            </div>
-                            @endif
-                        @else
                             <div class="newcarda">
                                 <span><i>🛡️</i> Boosts Immunity</span>
                                 <span><i>📈</i> Supports Growth</span>
@@ -74,7 +56,6 @@
                                 <span><i>⚡</i> Increases Energy</span>
                                 <span><i>😊</i> Improves Mood</span>
                             </div>
-                        @endif
                     </div>
                     <div class="pc-foot">
                         <div class="pc-price">

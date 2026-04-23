@@ -74,7 +74,8 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Logged in successfully.',
-                'redirect' => route('userdashboard')
+                'redirect' => route('userdashboard'),
+                'csrf_token' => csrf_token(),
             ]);
         }
 
