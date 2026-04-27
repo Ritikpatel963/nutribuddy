@@ -1,0 +1,138 @@
+@extends('layouts.main')
+@section('title', "All Products – NutriBuddy")
+
+@section('content')
+    <section class="products-section reveal" id="products" style="padding-top: 120px;">
+        <span class="sec-eye">Our Products</span>
+        <h2 class="sec-title">Nutrition Kids <span class="acc">Actually Love</span></h2>
+        <p class="sec-sub">Each product crafted with Ayurvedic wisdom + modern science. Balanced doses, kid-safe, genuinely
+            delicious flavors.</p>
+      <div class="products-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
+            @foreach($products as $product)
+            @php 
+                $catSlug = $product->category->slug ?? 'pk';
+                // Map database slugs to CSS classes if they don't match
+                if ($catSlug == 'multivitamins') $catSlug = 'pk';
+                elseif ($catSlug == 'whey-protein') $catSlug = 'sk';
+                elseif ($catSlug == 'pre-workout') $catSlug = 'pu';
+                else $catSlug = 'pk';
+            @endphp
+            <div class="pc pc-{{ $catSlug }}">
+                <div class="pc-head pc-head-{{ $catSlug }}">
+                    <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
+                        @if($product->primaryImage)
+                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" class="default-img">
+                            @php $secondImage = $product->images->where('is_primary', false)->first(); @endphp
+                            @if($secondImage)
+                                <img src="{{ asset('storage/' . $secondImage->image_path) }}" alt="{{ $product->name }}" class="hover-img">
+                            @else
+                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" class="hover-img">
+                            @endif
+                        @else
+                            <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="default-img">
+                        @endif
+                    </a>
+                    @if($product->is_featured)
+                        <div class="pc-badge">Best Seller</div>
+                    @endif
+                </div>
+                <div class="pc-body">
+                    <div class="pc-stars">
+                        @php $rating = $product->reviews->avg('rating') ?? 5; @endphp
+                        @for($i=0; $i<5; $i++){{ $i < $rating ? '★' : '☆' }}@endfor
+                        <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
+                            ({{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} reviews)
+                        </span>
+                    </div>
+                    <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}</div>
+                    <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}" style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
+                    <!-- <div class="pc-features">
+                        @php 
+                            $features = $product->short_description ? explode("\n", $product->short_description) : [];
+                            $features = array_filter(array_map('trim', $features));
+                        @endphp
+                        
+                        @if(count($features) > 0)
+                            <div class="newcarda">
+                                @foreach(array_slice($features, 0, 2) as $feature)
+                                    <span><i>✔</i> {{ $feature }}</span>
+                                @endforeach
+                            </div>
+                            @if(count($features) > 2)
+                            <div class="newcarda">
+                                @foreach(array_slice($features, 2, 2) as $feature)
+                                    <span><i>✔</i> {{ $feature }}</span>
+                                @endforeach
+                            </div>
+                            @endif
+                        @else
+                            <div class="newcarda">
+                                <span><i>🛡️</i> Boosts Immunity</span>
+                                <span><i>📈</i> Supports Growth</span>
+                            </div>
+                            <div class="newcarda">
+                                <span><i>⚡</i> Increases Energy</span>
+                                <span><i>😊</i> Improves Mood</span>
+                            </div>
+                        @endif
+                    </div> -->
+                    <div class="pc-features">
+                        @php
+                            $tags = $product->tags ?? [];
+                            // Backward compatibility for old string tags
+                            if (is_string($tags)) {
+                                $tags = array_map(function($t) {
+                                    preg_match('/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u', $t, $m);
+                                    return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
+                                }, array_filter(array_map('trim', explode(',', $tags))));
+                            }
+                        @endphp
+                        @if(count($tags) > 0)
+                            @foreach(array_chunk($tags, 2) as $chunk)
+                                <div class="newcarda">
+                                    @foreach($chunk as $tag)
+                                        <span>
+                                            @if(!empty($tag['icon']))
+                                                @php
+                                                    $isFilePath = str_contains($tag['icon'], 'tags/');
+                                                @endphp
+                                                <i>
+                                                    @if($isFilePath)
+                                                        <img src="{{ asset('storage/' . $tag['icon']) }}" style="width:16px; height:16px; object-fit:contain; vertical-align: middle;">
+                                                    @else
+                                                        {{ $tag['icon'] }}
+                                                    @endif
+                                                </i>
+                                            @endif
+                                            {{ $tag['text'] ?? '' }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="newcarda">
+                                <span><i>🛡️</i> Boosts Immunity</span>
+                                <span><i>📈</i> Supports Growth</span>
+                            </div>
+                            <div class="newcarda">
+                                <span><i>⚡</i> Increases Energy</span>
+                                <span><i>😊</i> Improves Mood</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="pc-foot">
+                        <div class="pc-price">
+                            ₹{{ number_format($product->base_price, 0) }} 
+                            @if($product->compare_at_price > $product->base_price)
+                                <s>₹{{ number_format($product->compare_at_price, 0) }}</s>
+                            @endif
+                        </div>
+                        <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart +</button>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+@endsection
