@@ -215,6 +215,8 @@ Route::middleware('auth')->group(function () {
     Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
     Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
     Route::get('/wallet', [\App\Http\Controllers\UserWalletController::class, 'index'])->name('wallet');
+    Route::get('/support-tickets', [\App\Http\Controllers\UserSupportTicketController::class, 'index'])->name('user.support-tickets');
+    Route::post('/support-tickets', [\App\Http\Controllers\UserSupportTicketController::class, 'store'])->name('user.support-tickets.store');
     Route::get('/user/reviews', [\App\Http\Controllers\ProductReviewController::class, 'userIndex'])->name('user.reviews.index');
     Route::post('/product/{product}/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
 });

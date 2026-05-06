@@ -35,11 +35,7 @@
                                 <input type="text" name="hsn_code" value="{{ old('hsn_code') }}" class="form-control"
                                     placeholder="e.g. 2106">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Brand Name</label>
-                                <input type="text" name="brand" value="{{ old('brand', 'NutriBuddy') }}"
-                                    class="form-control" placeholder="e.g. NutriBuddy">
-                            </div>
+
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
                                 <select name="category_id" class="form-select" required>
@@ -90,15 +86,7 @@
                                         placeholder="0.00">
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Cost Price (₹)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">₹</span>
-                                    <input type="number" step="0.01" min="0" name="cost_price"
-                                        value="{{ old('cost_price') }}" class="form-control border-start-0"
-                                        placeholder="0.00">
-                                </div>
-                            </div>
+
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">Shipping (₹)</label>
                                 <div class="input-group">
@@ -206,15 +194,14 @@
                         <h6 class="card-title mb-0 text-primary">Product Gallery</h6>
                     </div>
                     <div class="card-body">
-                        <div class="upload-area border-dashed radius-12 p-32 text-center cursor-pointer bg-light-soft transition-base"
-                            onclick="document.getElementById('images').click()">
+                        <div class="upload-area border-dashed radius-12 p-32 text-center cursor-pointer bg-white transition-base border-2"
+                            onclick="document.getElementById('images').click()" id="dropZone">
                             <input type="file" name="images[]" id="images" class="d-none" multiple accept="image/*">
                             <div class="mb-12">
-                                <iconify-icon icon="solar:upload-minimalistic-bold"
-                                    class="text-primary fs-1"></iconify-icon>
+                                <iconify-icon icon="solar:camera-add-bold" class="text-primary-600 display-4"></iconify-icon>
                             </div>
-                            <p class="mb-4 text-dark fw-bold">Drop files here or click to upload</p>
-                            <p class="text-secondary small mb-0">JPEG, PNG, WebP (Max 5MB per image)</p>
+                            <h6 class="mb-4 text-dark fw-bold">Click to upload or drag & drop</h6>
+                            <p class="text-secondary small mb-0">Up to 5MB each (JPG, PNG, WebP)</p>
                         </div>
                         <div id="imagePreview" class="row g-3 mt-16"></div>
                     </div>
@@ -356,21 +343,83 @@
 
         // Advanced variants JS removed
 
-        // GALLERY PREVIEW
-        document.getElementById('images').addEventListener('change', function () {
-            const preview = document.getElementById('imagePreview');
-            preview.innerHTML = '';
-            [...this.files].forEach(file => {
+        // GALLERY PREVIEW WITH REMOVE OPTION
+        const imageInput = document.getElementById('images');
+        const previewContainer = document.getElementById('imagePreview');
+        const dropZone = document.getElementById('dropZone');
+        let selectedFiles = [];
+
+        function renderPreviews() {
+            previewContainer.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = e => {
                     const col = document.createElement('div');
-                    col.className = 'col-3 col-md-2';
-                    col.innerHTML = `<div class="radius-12 overflow-hidden border bg-white shadow-sm"><img src="${e.target.result}" class="w-100 h-100 object-fit-cover" style="aspect-ratio:1/1;"></div>`;
-                    preview.appendChild(col);
+                    col.className = 'col-4 col-md-3 col-lg-2';
+                    col.innerHTML = `
+                        <div class="position-relative group radius-12 overflow-hidden border shadow-sm h-100 bg-white">
+                            <img src="${e.target.result}" class="w-100 h-100 object-fit-cover" style="aspect-ratio:1/1;">
+                            <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-2 p-0 radius-circle d-flex align-items-center justify-content-center shadow-sm remove-img" 
+                                style="width:24px;height:24px; z-index: 10;" data-index="${index}">
+                                <iconify-icon icon="lucide:x" class="text-xs"></iconify-icon>
+                            </button>
+                            <div class="position-absolute bottom-0 start-0 w-100 p-1 bg-dark bg-opacity-50 text-white text-xxs text-truncate">
+                                ${file.name}
+                            </div>
+                        </div>
+                    `;
+                    previewContainer.appendChild(col);
+
+                    col.querySelector('.remove-img').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        removeFile(index);
+                    });
                 };
                 reader.readAsDataURL(file);
             });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateInputFiles();
+            renderPreviews();
+        }
+
+        function updateInputFiles() {
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            imageInput.files = dataTransfer.files;
+        }
+
+        imageInput.addEventListener('change', function() {
+            const newFiles = Array.from(this.files);
+            selectedFiles = [...selectedFiles, ...newFiles];
+            updateInputFiles();
+            renderPreviews();
         });
+
+        // Drag and Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('border-primary'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-primary'), false);
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            selectedFiles = [...selectedFiles, ...droppedFiles];
+            updateInputFiles();
+            renderPreviews();
+        }, false);
     </script>
 
     <style>

@@ -28,10 +28,7 @@
                         <input type="text" name="slug" class="form-control" placeholder="category-slug">
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Sort Order</label>
-                    <input type="number" min="0" name="sort_order" class="form-control" value="0">
-                </div>
+
                 <div class="col-md-2 d-flex align-items-end">
                     <div class="form-check form-switch mb-8">
                         <input type="hidden" name="is_active" value="0">
@@ -126,10 +123,7 @@
                             <label class="form-label">Slug</label>
                             <input type="text" name="slug" id="edit_slug" class="form-control">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Sort Order</label>
-                            <input type="number" min="0" name="sort_order" id="edit_sort_order" class="form-control">
-                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Description</label>
                             <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
@@ -164,7 +158,7 @@
 
                     editModal.querySelector('#edit_name').value = button.getAttribute('data-name') || '';
                     editModal.querySelector('#edit_slug').value = button.getAttribute('data-slug') || '';
-                    editModal.querySelector('#edit_sort_order').value = button.getAttribute('data-sort_order') || 0;
+
                     editModal.querySelector('#edit_description').value = button.getAttribute('data-description') || '';
                     editModal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') === '1';
                 });

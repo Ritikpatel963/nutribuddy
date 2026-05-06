@@ -23,15 +23,7 @@
                         <input type="text" name="name" class="form-control" placeholder="Category Name" required>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label">Slug (optional)</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="lucide:link"></iconify-icon>
-                        </span>
-                        <input type="text" name="slug" class="form-control" placeholder="category-slug">
-                    </div>
-                </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Parent Category</label>
                     <div class="icon-field">
@@ -46,15 +38,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Sort Order</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="lucide:list-ordered"></iconify-icon>
-                        </span>
-                        <input type="number" min="0" name="sort_order" value="0" class="form-control">
-                    </div>
-                </div>
+
                 <div class="col-md-3 d-flex align-items-end">
                     <div class="form-check form-switch mb-8">
                         <input type="hidden" name="is_active" value="0">
@@ -62,10 +46,7 @@
                         <label class="form-check-label" for="create_is_active">Active</label>
                     </div>
                 </div>
-                <div class="col-12">
-                    <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="3" placeholder="Category Description"></textarea>
-                </div>
+
 
                 <div class="col-12 mt-24">
                     <h6 class="mb-0">SEO Settings</h6>
@@ -112,7 +93,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Slug</th>
+
                             <th>Parent</th>
                             <th>Products</th>
                             <th>Status/Sort</th>
@@ -124,7 +105,7 @@
                             <tr>
                                 <td><span class="text-sm text-secondary-light">{{ $category->id }}</span></td>
                                 <td><span class="text-md fw-semibold text-dark">{{ $category->name }}</span></td>
-                                <td><span class="text-sm text-secondary-light">{{ $category->slug }}</span></td>
+
                                 <td>
                                     @if($category->parent)
                                         <span class="badge bg-info-100 text-info-600 px-2">{{ $category->parent->name }}</span>
@@ -144,7 +125,7 @@
                                         @else
                                             <span class="badge bg-danger-100 text-danger-600 w-fit">Inactive</span>
                                         @endif
-                                        <small class="text-secondary-light fw-medium">Sort: {{ $category->sort_order }}</small>
+
                                     </div>
                                 </td>
                                 <td class="text-end">
@@ -204,15 +185,7 @@
                                     <input type="text" name="name" id="edit_name" class="form-control" placeholder="Category Name" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Slug</label>
-                                <div class="icon-field">
-                                    <span class="icon">
-                                        <iconify-icon icon="lucide:link"></iconify-icon>
-                                    </span>
-                                    <input type="text" name="slug" id="edit_slug" class="form-control" placeholder="category-slug">
-                                </div>
-                            </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Parent Category</label>
                                 <div class="icon-field">
@@ -227,15 +200,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Sort Order</label>
-                                <div class="icon-field">
-                                    <span class="icon">
-                                        <iconify-icon icon="lucide:list-ordered"></iconify-icon>
-                                    </span>
-                                    <input type="number" min="0" name="sort_order" id="edit_sort_order" class="form-control">
-                                </div>
-                            </div>
+
                             <div class="col-md-3 d-flex align-items-end">
                                 <div class="form-check form-switch mb-8">
                                     <input type="hidden" name="is_active" value="0">
@@ -243,10 +208,7 @@
                                     <label class="form-check-label" for="edit_is_active">Active</label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label">Description</label>
-                                <textarea name="description" id="edit_description" class="form-control" rows="3" placeholder="Category Description"></textarea>
-                            </div>
+
 
                             <div class="col-12 mt-24">
                                 <h6 class="mb-0">SEO Settings</h6>
@@ -315,10 +277,10 @@
                     form.setAttribute('action', action);
                     
                     editModal.querySelector('#edit_name').value = name;
-                    editModal.querySelector('#edit_slug').value = slug;
+
                     editModal.querySelector('#edit_parent_id').value = parentId || '';
-                    editModal.querySelector('#edit_sort_order').value = sortOrder;
-                    editModal.querySelector('#edit_description').value = description || '';
+
+
                     editModal.querySelector('#edit_meta_title').value = metaTitle || '';
                     editModal.querySelector('#edit_meta_description').value = metaDescription || '';
                     editModal.querySelector('#edit_meta_keywords').value = metaKeywords || '';

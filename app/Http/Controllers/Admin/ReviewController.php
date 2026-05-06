@@ -19,13 +19,16 @@ class ReviewController extends Controller
 
     public function update(Request $request, ProductReview $review)
     {
-        $request->validate([
-            'is_active' => 'boolean',
+        $review->update([
+            'is_active' => $request->boolean('is_active'),
         ]);
 
-        $review->update([
-            'is_active' => $request->has('is_active'),
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => $review->is_active,
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Review status updated successfully.');
     }

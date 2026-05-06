@@ -171,6 +171,39 @@
         }
         .footer strong { color: #555; }
 
+        /* ── TAX SUMMARY TABLE ── */
+        .tax-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            margin-top: 10px;
+        }
+        .tax-summary-table th {
+            background: #fdf2f8; /* Soft pink tint */
+            color: #be185d;
+            font-size: 10px;
+            padding: 8px 10px;
+            border: 1px solid #fbcfe8;
+            text-align: right;
+            text-transform: uppercase;
+        }
+        .tax-summary-table th:first-child { text-align: left; }
+        .tax-summary-table td {
+            padding: 8px 10px;
+            border: 1px solid #f3f4f6;
+            font-size: 11px;
+            color: #4b5563;
+            text-align: right;
+        }
+        .tax-summary-table td:first-child { text-align: left; font-weight: 600; color: #111; }
+        .tax-summary-table tr.total-row td {
+            background: #f9fafb;
+            font-weight: 700;
+            color: #111;
+            border-top: 2px solid #eee;
+        }
+
+
         @media print {
             body { padding: 0; }
             .no-print { display: none; }
@@ -298,6 +331,82 @@
                         <td class="text-right fw-bold">₹{{ number_format($finalTotal, 2) }}</td>
                     </tr>
                 @endforeach
+            </tbody>
+        </table>
+
+        @php
+            $sellerState = 'Karnataka';
+            $customerState = $order->shipping_state;
+            $isIntraState = strtolower(trim($sellerState)) === strtolower(trim($customerState));
+
+            $taxSummary = [];
+            foreach($order->items as $item) {
+                $rate = (float) $item->tax_percent;
+                $taxableValue = $item->unit_price * $item->quantity;
+                $taxAmount = $item->tax_amount;
+
+                if (!isset($taxSummary[$rate])) {
+                    $taxSummary[$rate] = [
+                        'rate' => $rate,
+                        'taxable_value' => 0,
+                        'tax_amount' => 0,
+                    ];
+                }
+                $taxSummary[$rate]['taxable_value'] += $taxableValue;
+                $taxSummary[$rate]['tax_amount'] += $taxAmount;
+            }
+            ksort($taxSummary);
+        @endphp
+
+        {{-- ── TAX SUMMARY ── --}}
+        <table class="tax-summary-table">
+            <thead>
+                <tr>
+                    <th>Tax Rate</th>
+                    <th>Taxable Value</th>
+                    @if($isIntraState)
+                        <th>CGST Rate</th>
+                        <th>CGST Amt</th>
+                        <th>SGST Rate</th>
+                        <th>SGST Amt</th>
+                    @else
+                        <th>IGST Rate</th>
+                        <th>IGST Amt</th>
+                    @endif
+                    <th>Total Tax</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($taxSummary as $summary)
+                    <tr>
+                        <td>GST {{ number_format($summary['rate'], 0) }}%</td>
+                        <td>₹{{ number_format($summary['taxable_value'], 2) }}</td>
+                        @if($isIntraState)
+                            <td>{{ number_format($summary['rate'] / 2, 2) }}%</td>
+                            <td>₹{{ number_format($summary['tax_amount'] / 2, 2) }}</td>
+                            <td>{{ number_format($summary['rate'] / 2, 2) }}%</td>
+                            <td>₹{{ number_format($summary['tax_amount'] / 2, 2) }}</td>
+                        @else
+                            <td>{{ number_format($summary['rate'], 2) }}%</td>
+                            <td>₹{{ number_format($summary['tax_amount'], 2) }}</td>
+                        @endif
+                        <td>₹{{ number_format($summary['tax_amount'], 2) }}</td>
+                    </tr>
+                @endforeach
+                <tr class="total-row">
+                    <td>Total</td>
+                    <td>₹{{ number_format(collect($taxSummary)->sum('taxable_value'), 2) }}</td>
+                    @if($isIntraState)
+                        <td></td>
+                        <td>₹{{ number_format(collect($taxSummary)->sum('tax_amount') / 2, 2) }}</td>
+                        <td></td>
+                        <td>₹{{ number_format(collect($taxSummary)->sum('tax_amount') / 2, 2) }}</td>
+                    @else
+                        <td></td>
+                        <td>₹{{ number_format(collect($taxSummary)->sum('tax_amount'), 2) }}</td>
+                    @endif
+                    <td>₹{{ number_format(collect($taxSummary)->sum('tax_amount'), 2) }}</td>
+                </tr>
             </tbody>
         </table>
 

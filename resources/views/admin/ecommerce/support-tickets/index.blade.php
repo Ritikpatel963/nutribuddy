@@ -7,51 +7,7 @@
 @section('content')
     @include('admin.ecommerce._messages')
 
-    <div class="card mb-24">
-        <div class="card-header"><h5 class="card-title mb-0">Create Support Ticket</h5></div>
-        <div class="card-body">
-            <form method="POST" action="{{ route('admin.ecommerce.support-tickets.store') }}" class="row g-3">
-                @csrf
-                <div class="col-md-3">
-                    <label class="form-label">Customer User</label>
-                    <select name="user_id" class="form-select">
-                        <option value="">Select User</option>
-                        @foreach ($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Subject</label>
-                    <input type="text" name="subject" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select" required>
-                        <option value="open">Open</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Priority</label>
-                    <select name="priority" class="form-select" required>
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Message</label>
-                    <textarea name="message" class="form-control" rows="3" required></textarea>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Create Ticket</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <div class="card basic-data-table">
         <div class="card-header"><h5 class="card-title mb-0">Ticket List</h5></div>
