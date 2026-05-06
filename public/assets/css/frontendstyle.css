@@ -93,7 +93,7 @@ body {
     pointer-events: all;
 }
 
-.slide.slide-1 {
+/* .slide.slide-1 {
     grid-template-columns: 1fr;
     padding: 0;
     background: #fdf1f3;
@@ -105,7 +105,7 @@ body {
     display: block;
     object-fit: contain;
     object-position: center;
-}
+} */
 
 /* end tghis  */
 
@@ -911,8 +911,8 @@ nav.scrolled {
 }
 
 .slide-1 {
-    background: #fdf1f3;
-    /* background: linear-gradient(145deg, #fff0f3 0%, #ffe5f8 50%, #ffdcee 100%) */
+    /* background: #fdf1f3; */
+    background: linear-gradient(145deg, #fff0f3 0%, #ffe5f8 50%, #ffdcee 100%)
 }
 
 .slide-2 {

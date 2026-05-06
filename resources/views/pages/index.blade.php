@@ -9,8 +9,8 @@
     <section class="hero">
         <!-- Slide 1 -->
         <div class="slide slide-1 active" data-slide="0">
-              <img src="img/img1.jpeg" alt="">
-            <!-- <div class="blob b1"></div>
+              <!-- <img src="img/img1.jpeg" alt=""> -->
+            <div class="blob b1"></div>
             <div class="blob b2"></div>
             <div class="slide-text">
                 <div class="slide-badge badge-pk">India's #1 Kids Wellness Gummy</div>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>  
-            </div> -->
+            </div>
         </div>
 
         <!-- Slide 2 -->
