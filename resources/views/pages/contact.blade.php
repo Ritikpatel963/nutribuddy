@@ -243,7 +243,7 @@
         .btn-submit:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(255, 107, 138, 0.4);
-            background: #ff4d64;
+            background: #ff4dbe;
             /* Slightly darker pink */
         }
     </style>
@@ -255,7 +255,7 @@
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="contact-content-wrapper">
-            <div class="slide-badge badge-pk" style="margin: 0 auto 20px; display: inline-block;">👋 Hello There</div>
+            <div class="slide-badge badge-pk" style="margin: 0 auto 20px; display: inline-block;">Hello There</div>
             <h1 class="contact-title">Let's Get In <span class="acc" style="color:var(--pk);">Touch</span></h1>
             <p class="contact-subtitle">Have a question about our gummies, need help with your child's personalized plan, or
                 just want to say hi? We'd love to hear from you!</p>
@@ -295,7 +295,7 @@
 
         <!-- Contact Form -->
         <div class="contact-form-col">
-            <h3>Send us a Message 🚀</h3>
+            <h3>Send us a Message </h3>
             <p>Fill out the form below and our wellness team will get back to you within 24 hours.</p>
 
             @if(session('contact_success'))
@@ -356,7 +356,7 @@
                     <textarea id="message" name="message" class="form-control" placeholder="How can we help you and your little one today?" required>{{ old('message') }}</textarea>
                 </div>
 
-                <button type="submit" class="btn-submit">Send Message ✨</button>
+                <button type="submit" class="btn-submit">Send Message </button>
             </form>
         </div>
 

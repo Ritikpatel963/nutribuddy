@@ -1,6 +1,27 @@
 @extends('layouts.main')
 @section('title', "All Products – NutriBuddy")
 
+@push('styles')
+    <style>
+        #productFilterGrid {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            #productFilterGrid {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            #productFilterGrid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
     @php
         $productFilters = [

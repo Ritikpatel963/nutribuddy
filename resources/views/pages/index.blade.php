@@ -63,9 +63,9 @@
                 </div>
                 <div class="hero-trust">
                     <div class="htrust"> Brahmi Extract</div>
-                    <div class="htrust">🐟 Omega-3 DHA</div>
-                    <div class="htrust">🎯 Improves Focus</div>
-                    <div class="htrust">📚 Exam Ready</div>
+                    <div class="htrust"> Omega-3 DHA</div>
+                    <div class="htrust"> Improves Focus</div>
+                    <div class="htrust"> Exam Ready</div>
                 </div>
             </div>
             <div class="slide-visual">

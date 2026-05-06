@@ -41,7 +41,7 @@
     <!-- WELCOME BANNER -->
     <!-- <div class="welcome-banner d1">
       <div class="welcome-text" style="position:relative;z-index:1">
-        <h2>Welcome back, <span>{{ explode(' ', $user->name)[0] ?? '' }}!</span> 👋</h2>
+        <h2>Welcome back, <span>{{ explode(' ', $user->name)[0] ?? '' }}!</span> </h2>
         <p>Here's a quick overview of your account and profile status.</p>
       </div>
       <div class="welcome-right">
