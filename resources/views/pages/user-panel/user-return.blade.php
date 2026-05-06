@@ -25,7 +25,7 @@
         <!-- WELCOME BANNER -->
         <div class="welcome-banner d1">
           <div class="welcome-text" style="position:relative;z-index:1">
-            <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
+            <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span></h2>
             <p>Check your return policy and recent support updates here.</p>
           </div>
           <div class="welcome-right">

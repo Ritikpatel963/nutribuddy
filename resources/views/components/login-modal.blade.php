@@ -4,7 +4,7 @@
         
         <div class="nb-modal-header">
             <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy" class="nb-modal-logo">
-            <h2 id="loginModalTitle">Welcome Back! 👋</h2>
+            <h2 id="loginModalTitle">Welcome Back! </h2>
             <p id="loginModalSub">Login or sign up to continue your healthy journey.</p>
         </div>
 

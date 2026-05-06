@@ -27,6 +27,68 @@
         .wrev-card { background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 30px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%; }
         .wrev-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); border-color: #eee; }
         .rbar-fill { height: 100%; border-radius: 50px; transition: width 1s ease-in-out; }
+        .pdp-description-section { padding: 34px 5% 22px; }
+        .pdp-description-wrap {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 38px 42px;
+            border-radius: 32px;
+            background: linear-gradient(180deg, #fffdf7 0%, #ffffff 100%);
+            border: 1px solid rgba(255, 196, 0, 0.18);
+            box-shadow: 0 16px 40px rgba(30, 24, 64, 0.06);
+        }
+        .pdp-description-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            background: rgba(255, 214, 0, 0.14);
+            color: #8f5b00;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.74rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .pdp-description-title {
+            margin: 0 0 14px;
+            color: var(--dk);
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.9rem, 3vw, 2.8rem);
+            line-height: 1.15;
+        }
+        .pdp-description-intro {
+            max-width: 780px;
+            margin: 0 0 24px;
+            color: #5f5877;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+        .pdp-description-copy {
+            column-count: 2;
+            column-gap: 30px;
+        }
+        .pdp-description-copy p {
+            break-inside: avoid;
+            margin: 0 0 18px;
+            color: #463f61;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            line-height: 1.92;
+        }
+        @media (max-width: 900px) {
+            .pdp-description-wrap { padding: 30px 24px; border-radius: 24px; }
+            .pdp-description-copy { column-count: 1; }
+        }
+        @media (max-width: 640px) {
+            .pdp-description-section { padding: 24px 4% 14px; }
+            .pdp-description-title { font-size: 1.7rem; }
+            .pdp-description-intro,
+            .pdp-description-copy p { font-size: 0.95rem; line-height: 1.8; }
+        }
     </style>
 
     <div class="pdp-hero">
@@ -262,6 +324,169 @@
             </div>
         </div>
     </div>
+
+
+
+     <!-- ════════════════════════════════════════════════
+             PRODUCT DESCRIPTION SECTION
+        ════════════════════════════════════════════════ -->
+    <!-- Product Description Section -->
+    @php
+        $productDescriptionParagraphs = preg_split('/\r\n\r\n|\n\n|\r\r|[\r\n]+/', strip_tags((string) ($product->description ?? '')));
+        $productDescriptionParagraphs = array_values(array_filter(array_map('trim', $productDescriptionParagraphs)));
+
+        $fallbackDescriptionParagraphs = [
+            "{$product->name} is created for parents who want dependable daily nutrition in a format children genuinely enjoy. It combines a kid-friendly taste with ingredients selected to support everyday wellness, making routine supplementation feel simple instead of stressful.",
+            "This product is designed to fit naturally into busy family life. From the first chew, the focus is on convenience, consistency, and age-appropriate nourishment so parents can feel more confident about what their child is taking each day.",
+            "Every serving is planned to bring together thoughtful formulation and practical use. Whether the goal is better daily balance, steady nutritional support, or an easier wellness routine, {$product->name} is built to work as part of a long-term family habit.",
+            "The texture, flavor, and overall experience are shaped around children while the ingredient story stays parent-focused. That means you get a product that feels enjoyable for kids but still reflects a careful standard for quality, safety, and everyday usability.",
+            "Parents often look for something that supports growth, energy, focus, or seasonal wellness without adding friction to the day. This product answers that need with a format that is approachable, easy to serve, and simple to keep consistent over time.",
+            "With its blend of nutrition, taste, and convenience, {$product->name} aims to make wellness feel more manageable for the whole household. It is a practical choice for families who want supportive daily care without compromising on comfort or experience.",
+        ];
+
+        if (count($productDescriptionParagraphs) < 5) {
+            foreach ($fallbackDescriptionParagraphs as $fallbackParagraph) {
+                if (count($productDescriptionParagraphs) >= 6) {
+                    break;
+                }
+
+                $productDescriptionParagraphs[] = $fallbackParagraph;
+            }
+        }
+
+        $productDescriptionParagraphs = array_slice($productDescriptionParagraphs, 0, 6);
+    @endphp
+
+    <section class="pdp-description-section">
+        <div class="pdp-description-wrap">
+            <div class="pdp-description-label">Product Details</div>
+            <h2 class="pdp-description-title">Product Description</h2>
+            <p class="pdp-description-intro">
+                Discover what makes {{ $product->name }} a thoughtful choice for modern families, from its daily-use comfort to the wellness support parents expect.
+            </p>
+            <div class="pdp-description-copy">
+                @foreach($productDescriptionParagraphs as $descriptionParagraph)
+                    <p>{{ $descriptionParagraph }}</p>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    <section id="nb-ingredients">
+
+        <!-- Mesh BG -->
+        <div class="nb-mesh">
+            <div class="nb-blob nb-blob-1"></div>
+            <div class="nb-blob nb-blob-2"></div>
+            <div class="nb-blob nb-blob-3"></div>
+            <div class="nb-blob nb-blob-4"></div>
+            <!-- Stars -->
+            <div class="nb-star" style="width:3px;height:3px;top:12%;left:8%;--dur:5s;--del:0s"></div>
+            <div class="nb-star" style="width:4px;height:4px;top:28%;left:22%;--dur:7s;--del:1s"></div>
+            <div class="nb-star" style="width:2px;height:2px;top:55%;left:75%;--dur:4s;--del:.5s"></div>
+            <div class="nb-star" style="width:5px;height:5px;top:78%;left:90%;--dur:8s;--del:2s"></div>
+            <div class="nb-star" style="width:3px;height:3px;top:40%;left:5%;--dur:6s;--del:1.5s"></div>
+            <div class="nb-star" style="width:4px;height:4px;top:90%;left:40%;--dur:5s;--del:3s"></div>
+            <div class="nb-star" style="width:2px;height:2px;top:18%;left:88%;--dur:9s;--del:.8s"></div>
+            <div class="nb-star" style="width:3px;height:3px;top:65%;left:52%;--dur:6s;--del:2.5s"></div>
+        </div>
+
+        <!-- ── Header ── -->
+        <div class="nb-ing-header">
+            <div class="nb-eyebrow">🔬 Ingredient Transparency</div>
+            <h2 class="nb-ing-title">
+                What Goes Into Every<br>
+                <span class="nb-acc-ye">GrowStrong</span> <span class="nb-acc-pk">Gummy?</span>
+            </h2>
+            <p class="nb-ing-sub">Every single ingredient explained — from ancient Ayurvedic herbs to essential vitamins
+                and
+                minerals. Click any ingredient to learn its full story.</p>
+        </div>
+
+        <!-- ── Category Filter (desktop) ── -->
+        @php
+            $categoryFilters = $ingredientCategoryFilters ?? collect();
+            $totalIngredientCount = $ingredientTotalCount ?? 0;
+            $ingredientItems = $ingredientItems ?? collect();
+            $ingredientSummaryStats = $ingredientSummaryStats ?? [];
+        @endphp
+        <div class="nb-cat-row">
+            <button class="nb-cat-pill nb-active" onclick="nbFilter('all',this)">
+                <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All ({{ $totalIngredientCount }})
+            </button>
+            @foreach ($categoryFilters as $filter)
+                <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
+                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }} ({{ $filter['count'] }})
+                </button>
+            @endforeach
+        </div>
+
+        <!-- ── Mobile Tabs ── -->
+        <div class="nb-mobile-tabs" id="nbMobTabs">
+            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All ({{ $totalIngredientCount }})</button>
+            @foreach ($categoryFilters as $filter)
+                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }} ({{ $filter['count'] }})</button>
+            @endforeach
+        </div>
+
+        <!-- ── Mobile Accordion Cards ── -->
+        <div class="nb-mob-cards" id="nbMobCards">
+            <!-- Generated by JS -->
+        </div>
+
+        <!-- ── Desktop: Two-column layout ── -->
+        <div class="nb-ing-body">
+
+            <!-- LEFT LIST -->
+            <div class="nb-list-panel">
+                <div class="nb-list-head">
+                    <div class="nb-list-head-icon">📋</div>
+                    <div>
+                        <h4>Full Ingredient List</h4>
+                        <p>{{ $totalIngredientCount }} ingredients · click to explore</p>
+                    </div>
+                </div>
+                <div class="nb-list-scroll" id="nbList">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- RIGHT DETAIL -->
+            <div class="nb-detail-wrap">
+                <div class="nb-detail-empty" id="nbDetailEmpty">
+                    <div class="nb-empty-ico">🔬</div>
+                    <h3>Select an Ingredient</h3>
+                    <p>Click any ingredient from the list on the left to discover its story, benefits, and why we chose it
+                        for
+                        your child.</p>
+                </div>
+                <div id="nbDetailCards">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </div><!-- /nb-ing-body -->
+
+        <!-- ── Summary Bar ── -->
+        <div class="nb-summary-bar">
+            <div class="nb-summary-inner">
+                @foreach ($ingredientSummaryStats as $stat)
+                    <div class="nb-stat">
+                        <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
+                        <div class="nb-stat-l">{{ $stat['label'] }}</div>
+                    </div>
+                    @if (! $loop->last)
+                        <div class="nb-sdiv"></div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+
+        <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
+
+    </section>
+
+
+    <!-- end ingredients -->
 
 
     <!-- ══ DESCRIPTION & DETAILS ══ -->
@@ -883,6 +1108,7 @@
 
     <!-- end ingredients -->
 
+   
    
     <!-- ══════════════════════════════════════════
                  PARENT REVIEWS

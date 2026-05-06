@@ -16,7 +16,7 @@
         <li><a href="{{ route('about') }}">About Us</a></li>
         <li><a href="{{ route('product') }}">Products</a></li>
         <li><a href="{{ route('diet_chart') }}">Personalized Diet Chart</a></li>
-        <li><a href="#">Testimonials</a></li>
+        <li><a href="{{ route('testimonials') }}">Testimonials</a></li>
     </ul>
 
     <div class="nav-actions">
@@ -244,7 +244,7 @@
         <li><a href="{{ route('about') }}"><span class="link-emoji"></span> About Us</a></li>
         <li><a href="{{ route('product') }}"><span class="link-emoji"></span> Products</a></li>
         <li><a href="{{ route('diet_chart') }}"><span class="link-emoji"></span> Personalized Diet Chart</a></li>
-        <li><a href="#"><span class="link-emoji"></span> Testimonials</a></li>
+        <li><a href="{{ route('testimonials') }}"><span class="link-emoji"></span> Testimonials</a></li>
     </ul>
     <div class="mobile-cta-wrap">
         <a href="{{ route('contact') }}">Contact Us</a>

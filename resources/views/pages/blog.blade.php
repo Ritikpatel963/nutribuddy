@@ -4,7 +4,7 @@
 @push('styles')
     <style>
         .blog-hero {
-            background: linear-gradient(145deg, #FFF0FA 0%, #F0E5FF 50%, #FFDCF0 100%);
+            background: #0d0028;
             padding: 130px 5% 80px;
             position: relative;
             overflow: hidden;
@@ -59,14 +59,14 @@
         .blog-hero-title {
             font-family: 'Fredoka One', cursive;
             font-size: clamp(2.2rem, 6vw, 3.6rem);
-            color: var(--dk);
+            color: var(--wh);
             line-height: 1.2;
             margin-bottom: 16px;
         }
 
         .blog-hero-sub {
             font-size: 1.05rem;
-            color: #666;
+            color: #ffffff;
             max-width: 600px;
             margin: 0 auto 40px;
             line-height: 1.6;
@@ -279,10 +279,10 @@
         <!-- Filters -->
         <div class="blog-filters">
             <button class="blog-filter-btn active" onclick="filterBlog('all')">All Posts</button>
-            <button class="blog-filter-btn" onclick="filterBlog('nutrition')">🍎 Nutrition</button>
-            <button class="blog-filter-btn" onclick="filterBlog('parenting')">👨‍👩‍👧‍👦 Parenting</button>
-            <button class="blog-filter-btn" onclick="filterBlog('wellness')">🧘 Wellness</button>
-            <button class="blog-filter-btn" onclick="filterBlog('recipes')">👨‍🍳 Recipes</button>
+            <button class="blog-filter-btn" onclick="filterBlog('nutrition')"> Nutrition</button>
+            <button class="blog-filter-btn" onclick="filterBlog('parenting')"> Parenting</button>
+            <button class="blog-filter-btn" onclick="filterBlog('wellness')"> Wellness</button>
+            <button class="blog-filter-btn" onclick="filterBlog('recipes')"> Recipes</button>
         </div>
 
         <!-- Blog Grid -->
