@@ -343,7 +343,7 @@ input,select{font-family:var(--fb);}
         <div class="ir"><span class="ik">Allergies</span><span class="iv" id="ptAllergies">None</span></div>
         <div class="ir"><span class="ik">Activity</span><span class="iv" id="ptActivity">Moderately active</span></div>
         <div class="ir"><span class="ik">Region</span><span class="iv" id="ptRegion">West India (Gujarat)</span></div>
-        <div class="ir"><span class="ik">Current season</span><span class="iv">🌞 Greeshma (May–June)</span></div>
+        <div class="ir"><span class="ik">Current season</span><span class="iv">Greeshma (May–June)</span></div>
         <div class="ir"><span class="ik">Plan</span><span class="iv gr" id="ptPlan">Champion ✓</span></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px;">

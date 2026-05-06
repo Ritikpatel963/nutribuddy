@@ -19,6 +19,7 @@ class GeneralSettingController extends Controller
             'contact_email' => Setting::get('contact_email', 'admin@nutribuddy.com'),
             'contact_phone' => Setting::get('contact_phone', '+91 9876543210'),
             'address' => Setting::get('address', '123 Health St, Wellness City'),
+            'gst_number' => Setting::get('gst_number', 'Not Specified'),
         ];
 
         return view('admin.settings.general', compact('settings'));
@@ -33,6 +34,7 @@ class GeneralSettingController extends Controller
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],
+            'gst_number' => ['nullable', 'string', 'max:100'],
         ]);
 
         foreach ($validated as $key => $value) {

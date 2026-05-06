@@ -36,7 +36,7 @@ class UserAddressController extends Controller
 
         $validated['user_id'] = $request->user()->id;
         $validated['country'] = $validated['country'] ?? 'India';
-        $validated['email'] = $validated['email'] ?: $request->user()->email;
+        $validated['email'] = ($validated['email'] ?? null) ?: $request->user()->email;
 
         $address = CustomerAddress::create($validated);
 

@@ -1029,6 +1029,40 @@
             gap: 4px
         }
 
+        /* Loyalty Coins */
+        .coin-redeem-box {
+            background: #fff9f0;
+            border: 1.5px solid #ffe8cc;
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 12px;
+            transition: all 0.3s;
+        }
+        .coin-redeem-box:hover {
+            border-color: #ffd8a8;
+            box-shadow: 0 4px 12px rgba(255, 145, 0, 0.08);
+        }
+        .coin-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #ffe8cc;
+            border-radius: 5px;
+            outline: none;
+            margin: 15px 0;
+        }
+        .coin-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--or);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
         /* Price Breakdown */
         .price-breakdown {
             display: flex;
@@ -1640,14 +1674,36 @@
             box-shadow: 0 6px 18px rgba(255, 77, 143, .35)
         }
 
+        .btn-details {
+            background: linear-gradient(135deg, var(--mn), #00a870);
+            color: white;
+            box-shadow: 0 6px 18px rgba(0, 214, 143, .35);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px
+        }
+
         .btn-home {
             background: var(--pkl);
             color: var(--pkd)
         }
 
         .btn-track:hover,
-        .btn-home:hover {
+        .btn-home:hover,
+        .btn-details:hover {
             transform: translateY(-2px)
+        }
+
+        .redirect-countdown {
+            margin-top: 16px;
+            font-size: .78rem;
+            color: var(--text-light);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+        }
+
+        .redirect-countdown strong {
+            color: var(--mn);
         }
 
         /* ── RESPONSIVE ── */
@@ -1852,25 +1908,6 @@
         <!-- ══ LEFT ══ -->
         <div class="left-panel">
 
-            <!-- STEP 1: LOGIN — DONE -->
-            <div class="co-card" id="loginCard">
-                <div class="card-head">
-                    <div class="card-head-left">
-                        <div class="step-badge done-badge">✓</div>
-                        <h3>Login / Account</h3>
-                    </div>
-                    <button class="edit-link" onclick="editSection('login')">Change</button>
-                </div>
-                <div class="login-done">
-                    <div class="user-ava"><img src="img/people.png" alt=""></div>
-                    <div>
-                        <div class="user-name">{{ auth()->user()->name ?? 'User' }}</div>
-                        <div class="user-phone">+91 {{ auth()->user()->phone ?? '—' }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- STEP 2: ADDRESS -->
             <div class="co-card active-card" id="addressCard">
                 <div class="card-head">
@@ -1878,77 +1915,117 @@
                         <div class="step-badge" id="addrBadge">2</div>
                         <h3>Delivery Address</h3>
                     </div>
-                    <div style="display:flex;align-items:center;gap:8px">
-                        <span style="font-size:.78rem;color:var(--text-light)">2 saved addresses</span>
-                    </div>
+                    @auth
+                    <span style="font-size:.78rem;color:var(--text-light)" id="savedAddrCount">
+                        {{ $savedAddresses->count() }} saved {{ \Illuminate\Support\Str::plural('address', $savedAddresses->count()) }}
+                    </span>
+                    @endauth
                 </div>
                 <div class="card-body">
-                    <div id="addressFormPanel">
-                        <div class="new-addr-form show">
-                            <div class="form-grid">
-                                <div class="form-group"><label>First Name *</label><input type="text" id="firstName"
-                                        placeholder="e.g. Priya"></div>
-                                <div class="form-group"><label>Last Name *</label><input type="text" id="lastName"
-                                        placeholder="e.g. Sharma"></div>
-                            </div>
-                            <div class="form-grid single" style="margin-top:14px">
-                                <div class="form-group"><label>Mobile Number *</label><input type="tel" id="addressPhone"
-                                        placeholder="+91 XXXXX XXXXX"></div>
-                            </div>
-                            <div class="form-grid single" style="margin-top:14px">
-                                <div class="form-group"><label>Flat / House / Apartment *</label><input type="text" id="addressLine1"
-                                        placeholder="e.g. 42, Sunshine Residency"></div>
-                            </div>
-                            <div class="form-grid single" style="margin-top:14px">
-                                <div class="form-group"><label>Street / Area / Colony *</label><input type="text" id="addressLine2"
-                                        placeholder="e.g. HSR Layout, Sector 3"></div>
-                            </div>
-                            <div class="form-grid" style="margin-top:14px">
-                                <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6"
-                                        placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
-                                <div class="form-group"><label>City *</label><input type="text" placeholder="City"
-                                        id="cityField"></div>
-                            </div>
-                            <div class="form-grid" style="margin-top:14px">
-                                <div class="form-group">
-                                    <label>State *</label>
-                                    <select id="stateField">
-                                        <option value="">Select State</option>
-                                        <option>Andhra Pradesh</option>
-                                        <option>Assam</option>
-                                        <option>Bihar</option>
-                                        <option>Delhi</option>
-                                        <option>Goa</option>
-                                        <option>Gujarat</option>
-                                        <option>Haryana</option>
-                                        <option>Himachal Pradesh</option>
-                                        <option>Jharkhand</option>
-                                        <option selected>Karnataka</option>
-                                        <option>Kerala</option>
-                                        <option>Madhya Pradesh</option>
-                                        <option>Maharashtra</option>
-                                        <option>Odisha</option>
-                                        <option>Punjab</option>
-                                        <option>Rajasthan</option>
-                                        <option>Tamil Nadu</option>
-                                        <option>Telangana</option>
-                                        <option>Uttar Pradesh</option>
-                                        <option>Uttarakhand</option>
-                                        <option>West Bengal</option>
-                                    </select>
+
+                    @auth
+                    @if($savedAddresses->count() > 0)
+                    {{-- ── TABS ── --}}
+                    <div class="addr-tabs">
+                        <button class="addr-tab active" id="tabSaved" onclick="switchAddrTab('saved')">📍 Saved Addresses</button>
+                        <button class="addr-tab" id="tabNew" onclick="switchAddrTab('new')">➕ Add New</button>
+                    </div>
+
+                    {{-- ── SAVED ADDRESS LIST ── --}}
+                    <div id="savedAddrPanel">
+                        <div class="saved-addresses" id="savedAddressList">
+                            @foreach($savedAddresses as $addr)
+                            <div class="addr-item {{ $loop->first ? 'selected' : '' }}"
+                                 data-address-id="{{ $addr->id }}"
+                                 onclick="selectSavedAddress(this, '{{ $addr->id }}')">
+                                <div class="addr-radio"></div>
+                                <div class="addr-info" style="flex:1">
+                                    <div class="addr-name">
+                                        {{ $addr->full_name }}
+                                        <span class="addr-type-tag">{{ $addr->label ?? 'Home' }}</span>
+                                    </div>
+                                    <div class="addr-line">
+                                        {{ $addr->address_line_1 }}{{ $addr->address_line_2 ? ', '.$addr->address_line_2 : '' }}{{ $addr->landmark ? ', Near '.$addr->landmark : '' }}
+                                    </div>
+                                    <div class="addr-line">
+                                        {{ $addr->city }}, {{ $addr->state }} — {{ $addr->postal_code }}
+                                    </div>
+                                    <div class="addr-phone">📱 {{ $addr->phone }}</div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Address Type</label>
-                                    <div class="addr-type-row">
-                                        <button class="addr-type-btn active" data-type="Home" onclick="toggleAddrType(this)">
-                                            Home</button>
-                                        <button class="addr-type-btn" data-type="Work" onclick="toggleAddrType(this)"> Work</button>
-                                        <button class="addr-type-btn" data-type="Other" onclick="toggleAddrType(this)"> Other</button>
+                                <button class="addr-del-btn" title="Delete"
+                                    onclick="deleteAddress(event, {{ $addr->id }}, this)">🗑</button>
+                            </div>
+                            @endforeach
+                        </div>
+                        <button class="add-addr-btn" onclick="switchAddrTab('new')" style="margin-top:8px">
+                            <span>➕</span> Add a New Address
+                        </button>
+                    </div>
+                    @endif
+                    @endauth
+
+                    {{-- ── NEW ADDRESS FORM ── --}}
+                    <div id="newAddrPanel" @auth @if($savedAddresses->count() > 0) style="display:none" @endif @endauth>
+                        <div id="addressFormPanel">
+                            <div class="new-addr-form show">
+                                <div class="form-grid">
+                                    <div class="form-group"><label>First Name *</label><input type="text" id="firstName" placeholder="e.g. Priya"></div>
+                                    <div class="form-group"><label>Last Name *</label><input type="text" id="lastName" placeholder="e.g. Sharma"></div>
+                                </div>
+                                <div class="form-grid single" style="margin-top:14px">
+                                    <div class="form-group"><label>Mobile Number *</label><input type="tel" id="addressPhone" placeholder="+91 XXXXX XXXXX"></div>
+                                </div>
+                                <div class="form-grid single" style="margin-top:14px">
+                                    <div class="form-group"><label>Flat / House / Apartment *</label><input type="text" id="addressLine1" placeholder="e.g. 42, Sunshine Residency"></div>
+                                </div>
+                                <div class="form-grid single" style="margin-top:14px">
+                                    <div class="form-group"><label>Street / Area / Colony *</label><input type="text" id="addressLine2" placeholder="e.g. HSR Layout, Sector 3"></div>
+                                </div>
+                                <div class="form-grid" style="margin-top:14px">
+                                    <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6" placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
+                                    <div class="form-group"><label>City *</label><input type="text" placeholder="City" id="cityField"></div>
+                                </div>
+                                <div class="form-grid" style="margin-top:14px">
+                                    <div class="form-group">
+                                        <label>State *</label>
+                                        <select id="stateField">
+                                            <option value="">Select State</option>
+                                            <option>Andhra Pradesh</option>
+                                            <option>Assam</option>
+                                            <option>Bihar</option>
+                                            <option>Delhi</option>
+                                            <option>Goa</option>
+                                            <option>Gujarat</option>
+                                            <option>Haryana</option>
+                                            <option>Himachal Pradesh</option>
+                                            <option>Jharkhand</option>
+                                            <option selected>Karnataka</option>
+                                            <option>Kerala</option>
+                                            <option>Madhya Pradesh</option>
+                                            <option>Maharashtra</option>
+                                            <option>Odisha</option>
+                                            <option>Punjab</option>
+                                            <option>Rajasthan</option>
+                                            <option>Tamil Nadu</option>
+                                            <option>Telangana</option>
+                                            <option>Uttar Pradesh</option>
+                                            <option>Uttarakhand</option>
+                                            <option>West Bengal</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Address Type</label>
+                                        <div class="addr-type-row">
+                                            <button class="addr-type-btn active" data-type="Home" onclick="toggleAddrType(this)">🏠 Home</button>
+                                            <button class="addr-type-btn" data-type="Work" onclick="toggleAddrType(this)">💼 Work</button>
+                                            <button class="addr-type-btn" data-type="Other" onclick="toggleAddrType(this)">📍 Other</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <button class="continue-btn" id="addressContinueBtn" onclick="saveAndGoToPayment()">
                         Continue to Payment
                     </button>
@@ -2006,6 +2083,27 @@
                     <div class="coupon-applied-msg" id="couponMsg"></div>
                 </div>
 
+                <!-- Loyalty Coins -->
+                @auth
+                <div class="loyalty-row" id="coinRedeemRow" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 20px;">
+                    <div class="d-flex justify-content-between align-items-center mb-10" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div class="coupon-label" style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--dk);">Redeem NB Coins 🪙</div>
+                        <div class="lb-pts" id="userCoinBalance" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.85rem;">{{ auth()->user()->coins_balance }} Available</div>
+                    </div>
+                    <div class="coin-redeem-box">
+                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ auth()->user()->coins_balance }}" value="0" step="1">
+                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                            <span style="font-size: 0.7rem; color: #aaa;">0</span>
+                            <span id="coinsToRedeemValue" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.95rem;">Redeeming: 0 Coins</span>
+                            <span style="font-size: 0.7rem; color: #aaa;">{{ auth()->user()->coins_balance }}</span>
+                        </div>
+                        <div id="coinDiscountText" style="font-size: 0.72rem; color: #777; text-align: center; margin-top: 8px; font-weight: 600;">
+                            Value: ₹0.00 off
+                        </div>
+                    </div>
+                </div>
+                @endauth
+
                 <!-- Price Breakdown -->
                 <div class="price-breakdown" id="priceBreakdown">
                     <div class="pb-row">
@@ -2026,7 +2124,11 @@
                     </div>
                     <div class="pb-row" id="couponRow2" style="display:none">
                         <span class="pb-label">Coupon</span>
-                        <span class="pb-val green" id="couponDiscount">− ₹180</span>
+                        <span class="pb-val green" id="couponDiscount">− ₹0</span>
+                    </div>
+                    <div class="pb-row" id="coinDiscountRow" style="display:none">
+                        <span class="pb-label">NB Coins Discount</span>
+                        <span class="pb-val green" id="coinDiscountVal">− ₹0</span>
                     </div>
                     <div class="pb-divider"></div>
                     <div class="pb-total-row">
@@ -2157,14 +2259,15 @@
         <div class="success-box">
             <span class="success-icon">🎉</span>
             <h2>Order Placed!</h2>
-            <p>Yay! Your NutriBuddy order has been placed successfully. Your little superheroes will receive their gummies
-                soon! </p>
-            <div class="order-id-box">Order ID: NB-2025-48291</div>
-            <p style="font-size:.82rem;color:var(--text-light);margin-bottom:20px">Estimated delivery: <strong>Tomorrow, by
-                    5 PM</strong><br>Confirmation SMS sent to +91 98765 43210</p>
+            <p>Yay! Your NutriBuddy order has been placed successfully. Your little superheroes will receive their gummies soon!</p>
+            <div class="order-id-box" id="successOrderNumber">Order ID: —</div>
+            <p style="font-size:.82rem;color:var(--text-light);margin-bottom:20px">Estimated delivery: <strong>2–5 business days</strong><br>You'll receive an SMS confirmation shortly.</p>
             <div class="success-btns">
-                <a class="btn-track" href="#">Track Order</a>
-                <a class="btn-home" href="{{ route('home') }}">Back to Home</a>
+                <a class="btn-details" id="orderDetailBtn" href="#">📋 View Order Details</a>
+                <a class="btn-home" href="{{ route('home') }}">🏠 Back to Home</a>
+            </div>
+            <div class="redirect-countdown" id="redirectCountdownWrap">
+                Auto-redirecting to your order in <strong id="redirectCountdown">5</strong>s…
             </div>
         </div>
     </div>
@@ -2252,24 +2355,221 @@
                 };
             }
 
+            /* ══ SAVED ADDRESS HELPERS ══ */
+            function switchAddrTab(tab) {
+                const savedPanel = document.getElementById('savedAddrPanel');
+                const newPanel   = document.getElementById('newAddrPanel');
+                const tabSaved   = document.getElementById('tabSaved');
+                const tabNew     = document.getElementById('tabNew');
+
+                if (tab === 'saved') {
+                    if (savedPanel) savedPanel.style.display = 'block';
+                    if (newPanel)   newPanel.style.display   = 'none';
+                    tabSaved?.classList.add('active');
+                    tabNew?.classList.remove('active');
+                    // Restore selected address id from the currently highlighted card
+                    const sel = document.querySelector('.addr-item.selected');
+                    if (sel) window.__selectedAddressId = sel.dataset.addressId || '';
+                } else {
+                    if (savedPanel) savedPanel.style.display = 'none';
+                    if (newPanel)   newPanel.style.display   = 'block';
+                    tabSaved?.classList.remove('active');
+                    tabNew?.classList.add('active');
+                    // Clear saved selection so new form is used
+                    window.__selectedAddressId = '';
+                }
+            }
+
+            function selectSavedAddress(el, addressId) {
+                document.querySelectorAll('#savedAddressList .addr-item')
+                    .forEach(a => a.classList.remove('selected'));
+                el.classList.add('selected');
+                window.__selectedAddressId = String(addressId);
+            }
+
+            async function deleteAddress(e, addressId, btn) {
+                e.stopPropagation();
+                nbConfirm('This address will be permanently removed.', async () => {
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                const res = await fetch('/user/addresses/' + addressId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+
+                if (!res.ok) {
+                    const errPayload = await res.json().catch(() => ({}));
+                    nbToast(errPayload.message || 'Could not delete address. Please try again.', 'error');
+                    return;
+                }
+
+                const item = btn.closest('.addr-item');
+                const wasSelected = item.classList.contains('selected');
+                item.remove();
+
+                const remaining = document.querySelectorAll('#savedAddressList .addr-item');
+
+                if (wasSelected && remaining.length) {
+                    remaining[0].classList.add('selected');
+                    window.__selectedAddressId = remaining[0].dataset.addressId || '';
+                }
+
+                // Update count badge
+                const countEl = document.getElementById('savedAddrCount');
+                if (countEl) {
+                    const n = remaining.length;
+                    countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
+                }
+
+                // No saved addresses left — hide tabs and show new form
+                if (!remaining.length) {
+                    const tabsEl = document.querySelector('.addr-tabs');
+                    if (tabsEl) tabsEl.style.display = 'none';
+                    const savedP = document.getElementById('savedAddrPanel');
+                    if (savedP) savedP.style.display = 'none';
+                    const newPanel = document.getElementById('newAddrPanel');
+                    if (newPanel) newPanel.style.display = 'block';
+                    window.__selectedAddressId = '';
+                    if (countEl) countEl.textContent = '0 saved addresses';
+                }
+
+                nbToast('Address deleted successfully.', 'success');
+            }, { title: 'Delete Address?', okText: 'Yes, Delete' });
+            }
+
+            function appendAddressToSavedList(address) {
+                let listEl = document.getElementById('savedAddressList');
+                const tabsEl = document.querySelector('.addr-tabs');
+                const savedPanel = document.getElementById('savedAddrPanel');
+                const newPanel = document.getElementById('newAddrPanel');
+
+                // If no saved list exists yet, create the tabs and panel structure
+                if (!listEl) {
+                    const cardBody = document.querySelector('#addressCard .card-body');
+                    if (!cardBody) return;
+
+                    // Create tabs
+                    let tabs = tabsEl;
+                    if (!tabs) {
+                        tabs = document.createElement('div');
+                        tabs.className = 'addr-tabs';
+                        tabs.innerHTML = `
+                            <button class="addr-tab active" id="tabSaved" onclick="switchAddrTab('saved')">📍 Saved Addresses</button>
+                            <button class="addr-tab" id="tabNew" onclick="switchAddrTab('new')">➕ Add New</button>
+                        `;
+                        cardBody.insertBefore(tabs, cardBody.firstChild);
+                    }
+
+                    // Create saved panel
+                    let sp = savedPanel;
+                    if (!sp) {
+                        sp = document.createElement('div');
+                        sp.id = 'savedAddrPanel';
+                        sp.innerHTML = `
+                            <div class="saved-addresses" id="savedAddressList"></div>
+                            <button class="add-addr-btn" onclick="switchAddrTab('new')" style="margin-top:8px">
+                                <span>➕</span> Add a New Address
+                            </button>
+                        `;
+                        tabs.insertAdjacentElement('afterend', sp);
+                    }
+
+                    listEl = document.getElementById('savedAddressList');
+                } else if (tabsEl) {
+                    tabsEl.style.display = 'flex';
+                }
+
+                // Deselect all existing
+                listEl.querySelectorAll('.addr-item').forEach(a => a.classList.remove('selected'));
+
+                // Build new card
+                const card = document.createElement('div');
+                card.className = 'addr-item selected';
+                card.dataset.addressId = address.id;
+                card.setAttribute('onclick', `selectSavedAddress(this, '${address.id}')`);
+                card.innerHTML = `
+                    <div class="addr-radio"></div>
+                    <div class="addr-info" style="flex:1">
+                        <div class="addr-name">
+                            ${address.full_name || ''}
+                            <span class="addr-type-tag">${address.label || 'Home'}</span>
+                        </div>
+                        <div class="addr-line">
+                            ${address.address_line_1 || ''}${address.address_line_2 ? ', ' + address.address_line_2 : ''}${address.landmark ? ', Near ' + address.landmark : ''}
+                        </div>
+                        <div class="addr-line">
+                            ${address.city || ''}, ${address.state || ''} — ${address.postal_code || ''}
+                        </div>
+                        <div class="addr-phone">📱 ${address.phone || ''}</div>
+                    </div>
+                    <button class="addr-del-btn" title="Delete" onclick="deleteAddress(event, ${address.id}, this)">🗑</button>
+                `;
+                listEl.prepend(card);
+
+                // Update count
+                const countEl = document.getElementById('savedAddrCount');
+                if (countEl) {
+                    const n = listEl.querySelectorAll('.addr-item').length;
+                    countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
+                }
+
+                // Switch to saved tab
+                window.__selectedAddressId = String(address.id);
+                switchAddrTab('saved');
+            }
+
+            function clearNewAddressForm() {
+                ['firstName','lastName','addressPhone','addressLine1','addressLine2','newPincode','cityField'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const stateEl = document.getElementById('stateField');
+                if (stateEl) stateEl.selectedIndex = 0;
+                const activeType = document.querySelector('.addr-type-btn.active');
+                if (activeType) activeType.classList.remove('active');
+                const homeBtn = document.querySelector('.addr-type-btn[data-type="Home"]');
+                if (homeBtn) homeBtn.classList.add('active');
+            }
+
             async function saveAndGoToPayment() {
+                // If user selected a saved address, go straight to payment
+                if (window.__selectedAddressId) {
+                    goToPayment();
+                    return;
+                }
+
+                // Otherwise validate + save the new address form
                 const payload = getNewAddressPayload();
                 if (!hasRequiredNewAddressFields(payload)) {
-                    alert('Please fill all required address fields.');
+                    nbToast('Please fill all required address fields.', 'warning');
                     return;
                 }
 
                 if (!isLoggedIn) {
-                    // Just save to session storage and continue as "pseudo-guest"
+                    // Guest — keep in sessionStorage
                     sessionStorage.setItem('nb_pending_address', JSON.stringify(payload));
                     goToPayment();
                     return;
                 }
 
+                const btn = document.getElementById('addressContinueBtn');
+                if (btn) { btn.disabled = true; btn.textContent = 'Saving address…'; }
+
                 const address = await persistNewAddress(payload);
+
+                if (btn) { btn.disabled = false; btn.textContent = 'Continue to Payment'; }
+
                 if (!address?.id) {
                     return;
                 }
+
+                // Add the new address to the saved list dynamically
+                appendAddressToSavedList(address);
+                clearNewAddressForm();
 
                 window.__selectedAddressId = String(address.id);
                 goToPayment();
@@ -2296,7 +2596,7 @@
                 const responsePayload = await res.json().catch(() => ({}));
                 if (!res.ok) {
                     if (!options.silent) {
-                        alert(responsePayload.message || 'Unable to save address.');
+                        nbToast(responsePayload.message || 'Unable to save address.', 'error');
                     }
                     return null;
                 }
@@ -2341,7 +2641,9 @@
                         '600001': 'Chennai',
                         '500001': 'Hyderabad'
                     };
-                    document.getElementById('cityField').value = cities[pin] || 'Auto-detected';
+                    if (cities[pin]) {
+                        document.getElementById('cityField').value = cities[pin];
+                    }
                 }
             }
 
@@ -2357,7 +2659,8 @@
                 csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
             };
 
-            window.__selectedAddressId = '';
+            // Pre-select first saved address if available
+            window.__selectedAddressId = @json((string)(auth()->check() && isset($savedAddresses) && $savedAddresses->first() ? $savedAddresses->first()->id : ''));
             window.__checkoutToken = '';
             window.__couponCode = '';
             let isLoggedIn = @json((bool) auth()->check());
@@ -2442,7 +2745,7 @@
                         await onChange(normalizedQty);
                     } catch (error) {
                         if (input) input.value = String(normalizeCheckoutQuantity(quantity));
-                        alert(error.message || 'Unable to update cart quantity.');
+                        nbToast(error.message || 'Unable to update cart quantity.', 'error');
                     } finally {
                         qtyRow.classList.remove('is-updating');
                         qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
@@ -2524,10 +2827,17 @@
             }
 
             function updatePriceUI(pricing, itemsCount) {
-                const mrp = Number(pricing.subtotal || 0);
-                const discount = Number(pricing.discount_total || 0);
+                const mrp = Number(pricing.display_subtotal !== undefined ? pricing.display_subtotal : (pricing.subtotal || 0));
+                const totalDiscount = Number(pricing.display_discount_total !== undefined ? pricing.display_discount_total : (pricing.discount_total || 0));
+                
+                const couponDiscount = Number(pricing.display_coupon_discount !== undefined ? pricing.display_coupon_discount : (pricing.discount_total || 0));
+                const coinDiscount = Number(pricing.display_coin_discount !== undefined ? pricing.display_coin_discount : (pricing.coin_discount || 0));
+                
+                // Generic discount is any savings NOT coming from coupon or coins (e.g. built-in item discounts)
+                const genericDiscount = Math.max(0, totalDiscount - couponDiscount - coinDiscount);
+
                 const shipping = Number(pricing.shipping_total || 0);
-                const gst = Number(pricing.tax_total || 0);
+                const gst = Number(pricing.display_tax_total !== undefined ? pricing.display_tax_total : (pricing.tax_total || 0));
                 const total = Number(pricing.grand_total || 0);
 
                 const mrpLabel = document.getElementById('pbMrpLabel');
@@ -2541,24 +2851,57 @@
 
                 if (mrpLabel) mrpLabel.textContent = `Price (${itemsCount} items)`;
                 if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                if (productDiscount) productDiscount.textContent =
-                    `− ₹${discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                if (productDiscount) {
+                    const pdRow = productDiscount.closest('.pb-row');
+                    if (pdRow) pdRow.style.display = genericDiscount > 0 ? 'flex' : 'none';
+                    productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                }
                 if (delivery) delivery.textContent = shipping > 0 ?
                     `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : 'FREE 🎉';
+                
+                // Coupon Discount Display
+                const cRow2 = document.getElementById('couponRow2');
+                if (cRow2) {
+                    cRow2.style.display = couponDiscount > 0 ? 'flex' : 'none';
+                    document.getElementById('couponDiscount').textContent = `− ₹${couponDiscount.toLocaleString('en-IN')}`;
+                }
+
+                // Coin Discount Display
+                const coinRow = document.getElementById('coinDiscountRow');
+                if (coinRow) {
+                    coinRow.style.display = coinDiscount > 0 ? 'flex' : 'none';
+                    document.getElementById('coinDiscountVal').textContent = `− ₹${coinDiscount.toLocaleString('en-IN')}`;
+                    const discountText = document.getElementById('coinDiscountText');
+                    if (discountText) discountText.textContent = `Value: ₹${coinDiscount.toLocaleString('en-IN')} off`;
+                }
+
                 if (gstEl) {
-                    gstEl.textContent = gst > 0 ?
-                        `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` :
-                        '₹0';
+                    const gstRow = gstEl.closest('.pb-row');
+                    if (gstRow) {
+                        if (gst > 0) {
+                            gstRow.style.display = 'flex';
+                            gstEl.textContent = `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                        } else {
+                            gstRow.style.display = 'none';
+                        }
+                    }
                 }
                 if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                if (savingsEl) savingsEl.textContent = `₹${discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                if (loyaltyEl) loyaltyEl.textContent = `${Math.round(total / 20)} NutriBuddy Coins`;
+                if (savingsEl) savingsEl.textContent = `₹${totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                
+                // Earned Coins Display
+                if (loyaltyEl) {
+                    const earned = pricing.total_coins_earned || Math.round(total / 20);
+                    loyaltyEl.textContent = `${earned} NutriBuddy Coins`;
+                }
             }
 
             async function renderPendingCheckoutCart() {
                 const pending = getPendingCartItems();
                 const totalQuantity = pending.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
                 
+                let lineItemsToRender = [];
+
                 try {
                     const res = await fetch('/guest/checkout/summary', {
                         method: 'POST',
@@ -2576,6 +2919,9 @@
                         currentTotal = Number(pricing.grand_total || 0);
                         updatePriceUI(pricing, totalQuantity);
                         
+                        // Use server-calculated line items
+                        lineItemsToRender = pricing.line_items || [];
+                        
                         const totalWithCod = currentTotal;
                         const payBtn = document.getElementById('paymentPlaceBtn');
                         if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
@@ -2591,12 +2937,25 @@
                     currentTotal = localGrandTotal;
 
                     updatePriceUI({
-                        subtotal: subtotal,
+                        display_subtotal: subtotal,
                         discount_total: 0,
                         shipping_total: 0,
-                        tax_total: localGst,
+                        display_tax_total: localGst,
                         grand_total: localGrandTotal
                     }, totalQuantity);
+                    
+                    // Fallback: use pending items and map to standard structure
+                    lineItemsToRender = pending.map(it => ({
+                        cart_item: {
+                            product: { name: it.product_name, primary_image: { image_path: it.image ? it.image.replace('/storage/', '') : '' } },
+                            product_variant: { name: it.variant_name },
+                            id: null,
+                            product_id: it.product_id,
+                            product_variant_id: it.product_variant_id
+                        },
+                        quantity: Number(it.quantity || 0),
+                        display_line_total: Number(it.unit_price || 0) * Number(it.quantity || 0)
+                    }));
                 }
 
                 const itemsCount = document.querySelector('.item-count');
@@ -2606,21 +2965,32 @@
                 if (!cartWrap) return;
 
                 cartWrap.innerHTML = '';
-                if (!pending.length) {
+                if (!lineItemsToRender.length) {
                     cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
                     return;
                 }
 
-                pending.forEach(it => {
-                    const qty = Number(it.quantity || 0);
-                    const linePrice = Number(it.unit_price || 0) * qty;
+                lineItemsToRender.forEach(li => {
+                    const it = li.cart_item;
+                    const name = it.product?.name || 'Product';
+                    const qty = li.quantity || 1;
+                    const linePrice = li.display_line_total || 0;
+                    
+                    // Guest fallback image or backend image
+                    let img = 'img/product2.png';
+                    if (it.product?.primary_image?.image_path) {
+                        img = '/storage/' + it.product.primary_image.image_path;
+                    } else if (it.fallback_image) {
+                        img = it.fallback_image;
+                    }
+
                     const row = document.createElement('div');
                     row.className = 'ci';
                     row.innerHTML = `
-                                      <div class="ci-img"><img src="${it.image || 'img/product2.png'}" alt=""></div>
+                                      <div class="ci-img"><img src="${img}" alt=""></div>
                                       <div class="ci-info">
-                                        <div class="ci-name">${it.product_name || 'Product'}</div>
-                                        <div class="ci-variant">${it.variant_name || ''}</div>
+                                        <div class="ci-name">${name}</div>
+                                        <div class="ci-variant">${it.product_variant?.name || ''}</div>
                                         <div class="ci-qty-row">
                                           ${createCheckoutQtyControls(qty)}
                                         </div>
@@ -2639,7 +3009,7 @@
 
             function selectPayMethod(el, type) {
                 if (type !== 'cod') {
-                    alert('Only Cash on Delivery is available right now.');
+                    nbToast('Only Cash on Delivery is available right now.', 'info', 'Payment');
                     const cod = document.getElementById('payMethodCod');
                     if (cod) {
                         document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
@@ -2710,16 +3080,22 @@
                         } : {})
                     },
                     body: JSON.stringify({
-                        coupon_code: normalizedCode || null
+                        coupon_code: normalizedCode || null,
+                        coins_to_redeem: document.getElementById('coinSlider')?.value || 0
                     })
                 });
 
-                if (res.status === 401 || res.status === 419) {
-                    return {
-                        success: false,
-                        requiresLogin: true,
-                        message: 'Login at checkout to continue.'
-                    };
+                const wasRedirectedToLogin = res.redirected && /\/login(?:[/?#]|$)/i.test(res.url || '');
+                if (res.status === 401 || wasRedirectedToLogin) {
+                    return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
+                }
+                if (res.status === 419) {
+                    // 419 = CSRF mismatch, NOT an auth failure.
+                    // If user is already logged in, don't open the OTP modal — ask them to refresh.
+                    if (isLoggedIn) {
+                        return { success: false, requiresLogin: false, message: 'Your session has expired. Please refresh the page and try again.' };
+                    }
+                    return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
                 }
 
                 const payload = await res.json().catch(() => ({}));
@@ -2740,60 +3116,75 @@
                 };
             }
 
-            /* ══ COUPON ══ */
-            async function applyCoupon() {
-                const code = document.getElementById('couponInput').value.trim().toUpperCase();
+            /* ══ REFRESH SUMMARY ══ */
+            async function refreshCheckoutSummary() {
+                const couponInput = document.getElementById('couponInput');
+                const code = couponInput ? couponInput.value.trim().toUpperCase() : (window.__couponCode || '');
                 const msg = document.getElementById('couponMsg');
-                const row2 = document.getElementById('couponRow2');
-                const totalEl = document.getElementById('totalDisplay');
-                const savingsEl = document.getElementById('savingsAmt');
-                const loyaltyEl = document.getElementById('loyaltyPoints');
-                const couponRowEl = document.getElementById('couponRow');
+                const coinSlider = document.getElementById('coinSlider');
+                const coins = coinSlider ? coinSlider.value : 0;
 
-                msg.classList.add('show');
-                msg.style.color = 'var(--text-light)';
-                msg.textContent = 'Applying coupon...';
+                if (msg) {
+                    msg.classList.add('show');
+                    msg.style.color = 'var(--text-light)';
+                    msg.textContent = 'Updating totals...';
+                }
 
                 const tokenState = await ensureCheckoutToken(code, {
                     forceRefresh: true
                 });
+
                 if (tokenState.requiresLogin) {
-                    msg.style.color = 'var(--or)';
-                    msg.textContent = 'Login at checkout to apply coupon.';
+                    if (msg) {
+                        msg.style.color = 'var(--or)';
+                        msg.textContent = 'Login at checkout to apply discounts.';
+                    }
                     openOtpModal();
                     return;
                 }
 
                 if (!tokenState.success) {
-                    msg.style.color = 'var(--or)';
-                    msg.textContent = tokenState.message || 'Invalid coupon.';
+                    if (msg) {
+                        msg.style.color = 'var(--or)';
+                        msg.textContent = tokenState.message || 'Error updating totals.';
+                    }
                     return;
                 }
 
                 const payload = tokenState.payload || {};
-                window.__couponCode = code;
-
                 const pricing = payload.pricing || {};
-                currentTotal = Number(pricing.grand_total || 0);
+                window.__couponCode = code;
+                window.__checkoutToken = payload.checkout_token;
+
+                // Update UI
                 const totalQuantity = (payload.cart?.items || []).reduce((sum, it) => sum + Number(it.quantity || 0), 0);
                 updatePriceUI(pricing, totalQuantity);
 
-                msg.style.color = '#00a870';
-                msg.textContent = code ? `✅ Coupon "${code}" applied!` : '✅ Totals updated.';
-                row2.style.display = code ? 'flex' : 'none';
-                document.getElementById('couponDiscount').textContent = code ?
-                    `− ₹${Number(pricing.discount_total || 0).toLocaleString('en-IN')}` : '− ₹0';
-                totalEl.textContent = `₹${Number(currentTotal).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                savingsEl.textContent =
-                    `₹${Number(pricing.discount_total || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                loyaltyEl.textContent = `${Math.round(currentTotal / 20)} NutriBuddy Coins`;
-                couponRowEl.classList.add('applied');
+                if (msg) {
+                    if (code && pricing.display_coupon_discount > 0) {
+                        msg.style.color = '#00a870';
+                        msg.textContent = `✅ Coupon "${code}" applied!`;
+                        document.getElementById('couponRow')?.classList.add('applied');
+                    } else if (code) {
+                        msg.style.color = 'var(--or)';
+                        msg.textContent = 'Coupon code not applicable.';
+                    } else {
+                        msg.textContent = '';
+                        msg.classList.remove('show');
+                    }
+                }
 
+                currentTotal = Number(pricing.grand_total || 0);
                 const totalWithCod = currentTotal;
                 const payBtn = document.getElementById('paymentPlaceBtn');
                 if (payBtn) payBtn.innerHTML = `🔒 Place Order — ₹${totalWithCod.toLocaleString('en-IN')}`;
                 const pob = document.querySelector('.place-order-btn');
                 if (pob) pob.innerHTML = `🔒 Place Order Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+            }
+
+            /* ══ COUPON ══ */
+            async function applyCoupon() {
+                await refreshCheckoutSummary();
             }
 
             /* ══ QTY ══ */
@@ -3012,7 +3403,7 @@
                 closeOtpModal();
 
                 if (!hasAddressReady) {
-                    alert('Login successful. Please add or select a delivery address to place the order.');
+                    nbToast('Login successful! Please add or select a delivery address to place your order.', 'warning', 'Address Required');
                     return;
                 }
 
@@ -3059,7 +3450,7 @@
                             if (hasAddressReady) {
                                 await placeOrder();
                             } else {
-                                alert('Please complete your delivery address.');
+                                nbToast('Please add or select a delivery address to continue.', 'warning', 'Address Required');
                             }
                         });
                     } else if (typeof openOtpModal === 'function') {
@@ -3070,7 +3461,7 @@
 
                 const addressId = window.__selectedAddressId;
                 if (!addressId) {
-                    alert('Please select a delivery address.');
+                    nbToast('Please select a delivery address to continue.', 'warning', 'Address Required');
                     return;
                 }
 
@@ -3100,6 +3491,7 @@
                     body: JSON.stringify({
                         address_id: Number(addressId),
                         coupon_code: window.__couponCode || null,
+                        coins_to_redeem: document.getElementById('coinSlider')?.value || 0,
                         payment_method: 'cod',
                         checkout_token: window.__checkoutToken || ''
                     })
@@ -3112,15 +3504,33 @@
 
                 const payload = await res.json().catch(() => ({}));
                 if (!res.ok) {
-                    alert(payload.message || 'Unable to place order.');
+                    if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to place order.', 'error');
                     return;
                 }
 
                 updateCsrfToken(payload.csrf_token || '');
 
                 const orderNumber = payload.order?.order_number || '';
-                const box = document.querySelector('#successOverlay .order-id-box');
-                if (box && orderNumber) box.textContent = `Order ID: ${orderNumber}`;
+                const orderId     = payload.order?.id || '';
+
+                const numEl = document.getElementById('successOrderNumber');
+                if (numEl && orderNumber) numEl.textContent = `Order ID: ${orderNumber}`;
+
+                // Wire the "View Order Details" link
+                const detailBtn = document.getElementById('orderDetailBtn');
+                if (detailBtn && orderId) detailBtn.href = `/user/orders/${orderId}/detail`;
+
+                // Start countdown then redirect
+                let countdown = 5;
+                const countEl = document.getElementById('redirectCountdown');
+                const countTimer = setInterval(() => {
+                    countdown--;
+                    if (countEl) countEl.textContent = countdown;
+                    if (countdown <= 0) {
+                        clearInterval(countTimer);
+                        if (orderId) window.location.href = `/user/orders/${orderId}/detail`;
+                    }
+                }, 1000);
 
                 document.getElementById('progressFill').style.width = '100%';
                 setTimeout(() => document.getElementById('successOverlay').classList.add('show'), 400);
@@ -3196,15 +3606,15 @@
                 const cartWrap = document.getElementById('checkoutCartItems');
                 if (cartWrap) {
                     cartWrap.innerHTML = '';
-                    if (!items.length) {
+                    const lineItems = pricing.line_items || [];
+                    if (!lineItems.length) {
                         cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
                     } else {
-                        items.forEach(it => {
+                        lineItems.forEach(li => {
+                            const it = li.cart_item;
                             const name = it.product?.name || 'Product';
-                            const qty = it.quantity || 1;
-                            const unitPrice = it.product_variant ? it.product_variant.price : it.product
-                                ?.base_price;
-                            const linePrice = Number(unitPrice || 0) * Number(qty || 0);
+                            const qty = li.quantity || 1;
+                            const linePrice = li.display_line_total || 0;
                             const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product
                                 .primary_image.image_path) : 'img/product2.png';
 
@@ -3250,7 +3660,11 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
-                loadAddresses();
+                // Only call loadAddresses() if no saved addresses were rendered server-side
+                const hasSavedCards = document.querySelectorAll('#savedAddressList .addr-item').length > 0;
+                if (!hasSavedCards) {
+                    loadAddresses();
+                }
                 loadCartSummary();
                 
                 // Restore pending address if user was logged in midway
@@ -3277,6 +3691,17 @@
 
                 const cod = document.getElementById('payMethodCod');
                 if (cod) selectPayMethod(cod, 'cod');
+
+                // Coin Slider Event
+                const slider = document.getElementById('coinSlider');
+                if (slider) {
+                    slider.addEventListener('input', function() {
+                        document.getElementById('coinsToRedeemValue').textContent = `Redeeming: ${this.value} Coins`;
+                    });
+                    slider.addEventListener('change', function() {
+                        refreshCheckoutSummary(); // Unified refresh
+                    });
+                }
             });
 
             /* Close modal on backdrop click */

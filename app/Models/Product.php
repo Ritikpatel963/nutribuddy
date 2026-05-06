@@ -13,6 +13,8 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $appends = ['display_price', 'display_compare_price'];
+
     protected $fillable = [
         'category_id',
         'tax_rate_id',
@@ -41,6 +43,7 @@ class Product extends Model
         'flavor',
         'pack_size',
         'age_group',
+        'coins_reward',
     ];
 
     protected function casts(): array
@@ -92,5 +95,41 @@ class Product extends Model
     public function primaryImage(): HasOne
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    /**
+     * Get the price to be displayed on storefront.
+     * Includes GST if 'show_in_checkout' is false.
+     */
+    public function getDisplayPriceAttribute(): float
+    {
+        $price = (float) $this->base_price;
+        $taxRate = $this->taxRate;
+        
+        if ($taxRate && ! (bool) $taxRate->show_in_checkout) {
+            $rate = (float) $taxRate->rate;
+            $price += ($price * $rate) / 100;
+        }
+        
+        return (float) round($price, 2);
+    }
+
+    /**
+     * Get the compare price to be displayed on storefront.
+     * Includes GST if 'show_in_checkout' is false.
+     */
+    public function getDisplayComparePriceAttribute(): float
+    {
+        $price = (float) ($this->compare_at_price ?? 0);
+        if ($price <= 0) return 0.0;
+
+        $taxRate = $this->taxRate;
+        
+        if ($taxRate && ! (bool) $taxRate->show_in_checkout) {
+            $rate = (float) $taxRate->rate;
+            $price += ($price * $rate) / 100;
+        }
+        
+        return (float) round($price, 2);
     }
 }

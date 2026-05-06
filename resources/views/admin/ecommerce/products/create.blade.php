@@ -55,7 +55,8 @@
                                     <option value="">No Tax / Exempt</option>
                                     @foreach ($taxRates as $tax)
                                         <option value="{{ $tax->id }}" {{ old('tax_rate_id') == $tax->id ? 'selected' : '' }}>
-                                            {{ $tax->name }} ({{ $tax->rate }}%)</option>
+                                            {{ $tax->name }} ({{ $tax->rate }}%)
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -118,6 +119,16 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-warning">NB Coins Reward 🪙</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">🪙</span>
+                                    <input type="number" name="coins_reward" value="{{ old('coins_reward', 0) }}"
+                                        class="form-control border-start-0" placeholder="e.g. 50">
+                                </div>
+                                <small class="text-muted">Coins awarded to customer after purchase</small>
+                            </div>
+
                             <div class="col-md-6 d-flex align-items-end gap-24">
                                 <div class="form-check form-switch mb-8">
                                     <input type="hidden" name="track_stock" value="0">
@@ -151,15 +162,18 @@
                         <div class="row g-4">
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Flavor (e.g. Mango, Berry)</label>
-                                <input type="text" name="flavor" value="{{ old('flavor') }}" class="form-control" placeholder="Product flavor">
+                                <input type="text" name="flavor" value="{{ old('flavor') }}" class="form-control"
+                                    placeholder="Product flavor">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Pack Size (e.g. 30 Gummies, 100ml)</label>
-                                <input type="text" name="pack_size" value="{{ old('pack_size') }}" class="form-control" placeholder="Quantity and unit">
+                                <input type="text" name="pack_size" value="{{ old('pack_size') }}" class="form-control"
+                                    placeholder="Quantity and unit">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold">Age Group (e.g. 2-7 Yrs, Adult)</label>
-                                <input type="text" name="age_group" value="{{ old('age_group') }}" class="form-control" placeholder="Target age range">
+                                <input type="text" name="age_group" value="{{ old('age_group') }}" class="form-control"
+                                    placeholder="Target age range">
                             </div>
                         </div>
                     </div>
@@ -206,26 +220,29 @@
                     </div>
                 </div>
 
-                <!-- 6. HIGHLIGHTS (TAGS) -->
-                <div class="card mb-4 shadow-sm border-0 overflow-hidden">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-16">
-                        <h6 class="card-title mb-0 text-primary">Key Highlights (Tags)</h6>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="addTagBtn">
-                            <iconify-icon icon="lucide:plus" class="me-1"></iconify-icon> Add Tag
+                <!-- 6. PRODUCT FEATURES -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary-emphasis p-2 rounded-2">
+                                <iconify-icon icon="lucide:sparkles" class="fs-5"></iconify-icon>
+                            </span>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Product Features</h6>
+                                <small class="text-muted">Key features shown on the product card and detail page</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm px-3" id="addTagBtn">
+                            <iconify-icon icon="lucide:plus" class="me-1"></iconify-icon> Add Feature
                         </button>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light small fw-bold">
-                                    <tr>
-                                        <th class="ps-24" style="width: 180px;">Icon / Image</th>
-                                        <th>Label</th>
-                                        <th class="text-center" style="width: 80px;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tagsTableBody"></tbody>
-                            </table>
+                        <div id="tagsWrapper">
+                            <!-- Feature rows injected here -->
+                        </div>
+                        <div id="noTagsMessage" class="text-center py-5 text-muted">
+                            <iconify-icon icon="lucide:list-checks" class="fs-1 opacity-25"></iconify-icon>
+                            <p class="mt-2 mb-0 small">No features yet &mdash; click <strong>Add Feature</strong> to get started.</p>
                         </div>
                     </div>
                 </div>
@@ -261,8 +278,9 @@
                     <div class="d-flex justify-content-end gap-16">
                         <a href="{{ route('admin.ecommerce.products.index') }}"
                             class="btn btn-light px-32 fw-bold">Cancel</a>
-                        <button type="submit" class="btn btn-primary-600 px-40 fw-bold">
-                            <iconify-icon icon="lucide:check-circle" class="me-8"></iconify-icon> CREATE PRODUCT
+                        <button type="submit" class="btn btn-primary-600 px-40 fw-bold d-flex align-items-center gap-2">
+                            <iconify-icon icon="lucide:check-circle" style="font-size:18px; line-height:1;"></iconify-icon>
+                            <span>CREATE PRODUCT</span>
                         </button>
                     </div>
                 </div>
@@ -279,53 +297,59 @@
         // TAGS MANAGEMENT
         // ============================================================
         let tagCount = 0;
-        const tagsTableBody = document.getElementById('tagsTableBody');
-        const addTagBtn = document.getElementById('addTagBtn');
+        const tagsWrapper  = document.getElementById('tagsWrapper');
+        const noTagsMessage = document.getElementById('noTagsMessage');
+        const addTagBtn    = document.getElementById('addTagBtn');
 
-        function addTagRow(iconPath = '', text = '', isEmoji = true) {
+        function syncNoTagsMessage() {
+            noTagsMessage.style.display = tagsWrapper.children.length > 0 ? 'none' : 'block';
+        }
+
+        function addTagRow(iconPath = '', text = '') {
             const index = tagCount++;
-            const tr = document.createElement('tr');
-            tr.className = 'tag-row animate__animated animate__fadeIn';
-            tr.innerHTML = `
-                    <td class="ps-24 py-12">
-                        <div class="d-flex align-items-center gap-12">
-                            <div class="tag-icon-preview border radius-circle d-flex align-items-center justify-content-center bg-white shadow-sm" style="width:40px;height:40px; min-width:40px; overflow:hidden">
-                                ${iconPath ? `<img src="${isEmoji ? '' : '/storage/' + iconPath}" class="w-100 h-100 object-fit-cover" style="display: ${isEmoji ? 'none' : 'block'};">` : '<iconify-icon icon="lucide:image" class="text-secondary-light"></iconify-icon>'}
-                                <span class="emoji-display fs-5" style="display: ${isEmoji ? 'block' : 'none'}">${isEmoji ? iconPath : ''}</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <input type="file" name="tag_images[${index}]" class="form-control form-control-xs tag-image-input" accept="image/*" style="font-size: 10px;">
-                                <input type="hidden" name="tags[${index}][icon]" value="${iconPath}" class="tag-icon-hidden">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="text" name="tags[${index}][text]" value="${text}" class="form-control" placeholder="e.g. Boosts Immunity" required>
-                    </td>
-                    <td class="text-center pe-24">
-                        <button type="button" class="btn btn-sm btn-icon btn-soft-danger remove-tag-row border-0 radius-circle">
-                            <iconify-icon icon="lucide:trash-2"></iconify-icon>
-                        </button>
-                    </td>
-                `;
-            tagsTableBody.appendChild(tr);
+            const row = document.createElement('div');
+            row.className = 'tag-row d-flex align-items-center gap-3 px-3 py-2 border-bottom';
+            row.innerHTML = `
+                <div class="position-relative flex-shrink-0">
+                    <div class="tag-icon-preview rounded-2 border bg-light d-flex align-items-center justify-content-center overflow-hidden" style="width:48px;height:48px;">
+                        ${iconPath
+                            ? `<img src="/storage/${iconPath}" class="w-100 h-100 object-fit-contain">`
+                            : `<iconify-icon icon="lucide:image" class="fs-4 text-muted"></iconify-icon>`}
+                    </div>
+                    <label class="position-absolute bottom-0 end-0 mb-n1 me-n1 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center cursor-pointer" style="width:18px;height:18px;" title="Upload icon">
+                        <iconify-icon icon="lucide:pencil" style="font-size:9px;"></iconify-icon>
+                        <input type="file" name="tag_images[${index}]" class="d-none tag-image-input" accept="image/*">
+                    </label>
+                    <input type="hidden" name="tags[${index}][icon]" value="${iconPath}" class="tag-icon-hidden">
+                </div>
+                <div class="flex-grow-1">
+                    <input type="text" name="tags[${index}][text]" value="${text}"
+                        class="form-control form-control-sm"
+                        placeholder="e.g. No Added Sugar" required>
+                </div>
+                <button type="button" class="btn btn-sm btn-ghost-danger remove-tag-row flex-shrink-0 px-2">
+                    <iconify-icon icon="lucide:trash-2" class="fs-5"></iconify-icon>
+                </button>
+            `;
+            tagsWrapper.appendChild(row);
+            syncNoTagsMessage();
 
-            const fileInput = tr.querySelector('.tag-image-input');
-            const hiddenInput = tr.querySelector('.tag-icon-hidden');
-            const previewDiv = tr.querySelector('.tag-icon-preview');
-
-            fileInput.addEventListener('change', function () {
+            row.querySelector('.tag-image-input').addEventListener('change', function () {
                 if (this.files && this.files[0]) {
                     const reader = new FileReader();
                     reader.onload = e => {
-                        previewDiv.innerHTML = `<img src="${e.target.result}" class="w-100 h-100 object-fit-cover">`;
-                        hiddenInput.value = '';
+                        row.querySelector('.tag-icon-preview').innerHTML =
+                            `<img src="${e.target.result}" class="w-100 h-100 object-fit-contain">`;
+                        row.querySelector('.tag-icon-hidden').value = '';
                     };
                     reader.readAsDataURL(this.files[0]);
                 }
             });
 
-            tr.querySelector('.remove-tag-row').addEventListener('click', () => tr.remove());
+            row.querySelector('.remove-tag-row').addEventListener('click', () => {
+                row.remove();
+                syncNoTagsMessage();
+            });
         }
 
         addTagBtn.addEventListener('click', () => addTagRow());

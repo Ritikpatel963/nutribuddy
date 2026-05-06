@@ -65,16 +65,32 @@
     </div>
 
     <div class="card basic-data-table">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Customer List</h5>
         </div>
         <div class="card-body">
+            <!-- Filter Form -->
+            <form method="GET" action="{{ route('admin.ecommerce.customers.index') }}" class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <input type="text" name="city" class="form-control" placeholder="Filter by City" value="{{ request('city') }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="state" class="form-control" placeholder="Filter by State" value="{{ request('state') }}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary-600">Filter</button>
+                    <a href="{{ route('admin.ecommerce.customers.index') }}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+            
             <div class="table-responsive">
                 <table class="table bordered-table mb-0" id="dataTable" data-page-length='10'>
                     <thead>
                         <tr>
                             <th>Customer Details</th>
                             <th>Contact Info</th>
+                            <th>Location</th>
+                            <th>NB Coins</th>
                             <th>Status</th>
                             <th>Joined At</th>
                             <th class="text-end">Actions</th>
@@ -93,6 +109,23 @@
                                     <div class="d-flex flex-column">
                                         <span class="text-sm text-dark fw-medium">{{ $customer->email }}</span>
                                         <small class="text-secondary-light">{{ $customer->phone ?? 'No Phone' }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        @if($customer->customerAddresses->isNotEmpty())
+                                            @php $address = $customer->customerAddresses->first(); @endphp
+                                            <span class="text-sm text-dark fw-medium">{{ $address->city ?? 'N/A' }}</span>
+                                            <small class="text-secondary-light">{{ $address->state ?? 'N/A' }}</small>
+                                        @else
+                                            <span class="text-sm text-secondary-light">No Address</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1 fw-bold text-warning-main">
+                                        <iconify-icon icon="solar:medal-ribbon-star-bold" class="text-xl"></iconify-icon>
+                                        {{ number_format($customer->coins_balance ?? 0) }}
                                     </div>
                                 </td>
                                 <td>

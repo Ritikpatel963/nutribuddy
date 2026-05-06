@@ -365,7 +365,24 @@
 /* ══════════════════════════════════════════
    08. PRODUCTS
 ══════════════════════════════════════════ */
-/* 📱 Mobile (small devices) */
+@media (max-width: 992px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .products-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+        padding: 0 10px;
+    }
+
+    .pc-head {
+        height: 280px !important;
+    }
+}
 
 @media (max-width: 576px) {
     .pc-features {

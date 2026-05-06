@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,13 +16,15 @@ class CouponController extends Controller
     public function index(): View
     {
         return view('admin.ecommerce.coupons.index', [
-            'coupons' => Coupon::latest()->get(),
+            'coupons' => Coupon::with('user')->latest()->get(),
+            'users' => User::select('id', 'name', 'email')->where('role', 'customer')->get(),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
+            'user_id' => ['nullable', 'exists:users,id'],
             'code' => ['required', 'string', 'max:255', 'unique:coupons,code'],
             'name' => ['nullable', 'string', 'max:255'],
             'discount_type' => ['required', Rule::in(['percentage', 'flat'])],
@@ -48,6 +51,7 @@ class CouponController extends Controller
     public function update(Request $request, Coupon $coupon): RedirectResponse
     {
         $validated = $request->validate([
+            'user_id' => ['nullable', 'exists:users,id'],
             'code' => ['required', 'string', 'max:255', 'unique:coupons,code,' . $coupon->id],
             'name' => ['nullable', 'string', 'max:255'],
             'discount_type' => ['required', Rule::in(['percentage', 'flat'])],

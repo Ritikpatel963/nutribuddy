@@ -1,195 +1,244 @@
 @extends('layout.layout')
 @php
-    $title = 'Nutribuddy Admin';
-    $subTitle = 'Admin Panel';
+    $title = 'Nutribuddy Admin Analytics';
+    $subTitle = 'Performance Dashboard';
 
     $chartPayload = [
         'labels' => $revenueChart['labels'] ?? [],
         'revenue' => $revenueChart['revenue'] ?? [],
         'expense' => $revenueChart['expense'] ?? [],
+        'orders' => $revenueChart['orders'] ?? [],
     ];
 
-    $script = '<script>window.dashboardRevenueChartData = ' . json_encode($chartPayload) . ';</script>';
-    $script .= '<script>\n'
-        . 'document.addEventListener("DOMContentLoaded", function () {\n'
-        . '  var el = document.querySelector("#paymentStatusChart");\n'
-        . '  if (!el || typeof ApexCharts === "undefined") return;\n'
-        . '  var data = window.dashboardRevenueChartData || {labels: [], revenue: [], expense: []};\n'
-        . '  var options = {\n'
-        . '    series: [\n'
-        . '      { name: "Revenue", data: data.revenue },\n'
-        . '      { name: "Expense", data: data.expense }\n'
-        . '    ],\n'
-        . '    colors: ["#487FFF", "#FF9F29"],\n'
-        . '    chart: { type: "bar", height: 250, toolbar: { show: false } },\n'
-        . '    grid: { show: true, borderColor: "#D1D5DB", strokeDashArray: 4, position: "back" },\n'
-        . '    plotOptions: { bar: { borderRadius: 4, columnWidth: 10 } },\n'
-        . '    dataLabels: { enabled: false },\n'
-        . '    stroke: { show: true, width: 2, colors: ["transparent"] },\n'
-        . '    xaxis: { categories: data.labels },\n'
-        . '    yaxis: { labels: { formatter: function (value) { return "INR " + Number(value).toLocaleString(); } } },\n'
-        . '    tooltip: { y: { formatter: function (value) { return "INR " + Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); } } }\n'
-        . '  };\n'
-        . '  new ApexCharts(el, options).render();\n'
-        . '});\n'
-        . '</script>';
+    $script = '<script>window.dashboardAnalyticsData = ' . json_encode($chartPayload) . ';</script>';
+    $script .= '<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var data = window.dashboardAnalyticsData || {labels: [], revenue: [], expense: [], orders: []};
+  
+  // Revenue & Expense Chart
+  var revEl = document.querySelector("#revenueStatusChart");
+  if (revEl && typeof ApexCharts !== "undefined") {
+    var options = {
+        series: [
+            { name: "Revenue", data: data.revenue },
+            { name: "Expense", data: data.expense }
+        ],
+        colors: ["#487FFF", "#FF4D8F"],
+        chart: { type: "area", height: 500, toolbar: { show: false }, zoom: { enabled: false } },
+        dataLabels: { enabled: false },
+        stroke: { curve: "smooth", width: 3 },
+        fill: { type: "gradient", gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100] } },
+        grid: { borderColor: "#f1f1f1", strokeDashArray: 3 },
+        xaxis: { categories: data.labels },
+        yaxis: { labels: { formatter: function (v) { return "₹" + Number(v).toLocaleString(); } } },
+        tooltip: { y: { formatter: function (v) { return "₹" + Number(v).toLocaleString(); } } }
+    };
+    new ApexCharts(revEl, options).render();
+  }
+
+  // Order Volume Chart
+  var orderEl = document.querySelector("#orderVolumeChart");
+  if (orderEl && typeof ApexCharts !== "undefined") {
+    var orderOptions = {
+        series: [{ name: "Orders", data: data.orders }],
+        colors: ["#00BF8F"],
+        chart: { type: "bar", height: 200, toolbar: { show: false } },
+        plotOptions: { bar: { borderRadius: 6, columnWidth: "40%" } },
+        dataLabels: { enabled: false },
+        xaxis: { categories: data.labels },
+        grid: { borderColor: "#f1f1f1", strokeDashArray: 3 }
+    };
+    new ApexCharts(orderEl, orderOptions).render();
+  }
+});
+</script>';
 @endphp
 
 @section('content')
+    <style>
+        .stats-card { transition: all 0.3s ease; border: 1px solid #f0f0f0 !important; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; border-color: var(--primary-600) !important; }
+        .filter-form { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #eee; display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+    </style>
+
+    <!-- Filters Section -->
+    <form action="" method="GET" class="filter-form">
+        <div class="form-group mb-0">
+            <label class="form-label fw-bold text-secondary-light text-sm">Start Date</label>
+            <input type="date" name="start_date" class="form-control" value="{{ $filters['start_date'] }}">
+        </div>
+        <div class="form-group mb-0">
+            <label class="form-label fw-bold text-secondary-light text-sm">End Date</label>
+            <input type="date" name="end_date" class="form-control" value="{{ $filters['end_date'] }}">
+        </div>
+        <button type="submit" class="btn btn-primary-600 px-30 radius-8">Apply Filter</button>
+        <a href="{{ request()->url() }}" class="btn btn-outline-secondary px-20 radius-8">Reset</a>
+    </form>
+
     <div class="row gy-4">
-        <div class="col-xxl-12">
-            <div class="card radius-8 border-0">
-                <div class="row">
-                    <div class="col-xxl-6 pe-xxl-0">
-                        <div class="card-body p-24">
-                            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                                <h6 class="mb-2 fw-bold text-lg">Revenue Report</h6>
+        <!-- Main Chart Section -->
+        <div class="col-xxl-8 col-lg-7">
+            <div class="card radius-8 border-0 shadow-sm">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center justify-content-between mb-24">
+                        <h6 class="mb-0 fw-bold">Financial Performance (Monthly)</h6>
+                        <div class="d-flex gap-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="w-12-px h-12-px radius-2 bg-primary-600"></span>
+                                <span class="text-xs fw-bold">Revenue</span>
                             </div>
-                            <ul class="d-flex flex-wrap align-items-center mt-3 gap-3">
-                                <li class="d-flex align-items-center gap-2">
-                                    <span class="w-12-px h-12-px radius-2 bg-primary-600"></span>
-                                    <span class="text-secondary-light text-sm fw-semibold">Earning:
-                                        <span class="text-primary-light fw-bold">INR {{ number_format((float) ($stats['total_sales'] ?? 0), 2) }}</span>
-                                    </span>
-                                </li>
-                                <li class="d-flex align-items-center gap-2">
-                                    <span class="w-12-px h-12-px radius-2 bg-yellow"></span>
-                                    <span class="text-secondary-light text-sm fw-semibold">Expense:
-                                        <span class="text-primary-light fw-bold">INR {{ number_format((float) ($stats['total_expense'] ?? 0), 2) }}</span>
-                                    </span>
-                                </li>
-                            </ul>
-                            <div class="mt-40">
-                                <div id="paymentStatusChart" class="margin-16-minus"></div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="w-12-px h-12-px radius-2 bg-pink"></span>
+                                <span class="text-xs fw-bold">Refunds</span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xxl-6">
-                        <div class="row h-100 g-0">
-                            <div class="col-6 p-0 m-0">
-                                <div class="card-body p-24 h-100 d-flex flex-column justify-content-center border border-top-0">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
-                                        <div>
-                                            <span class="mb-12 w-44-px h-44-px text-primary-600 bg-primary-light border border-primary-light-white flex-shrink-0 d-flex justify-content-center align-items-center radius-8 h6 mb-12">
-                                                <iconify-icon icon="fa-solid:box-open" class="icon"></iconify-icon>
-                                            </span>
-                                            <span class="mb-1 fw-medium text-secondary-light text-md">Total Products</span>
-                                            <h6 class="fw-semibold text-primary-light mb-1">{{ number_format($stats['total_products'] ?? 0) }}</h6>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm mb-0">Added this week: <span class="bg-success-focus px-1 rounded-2 fw-medium text-success-main text-sm">+{{ number_format($stats['products_this_week'] ?? 0) }}</span></p>
-                                </div>
+                    <div id="revenueStatusChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Section -->
+        <div class="col-xxl-4 col-lg-5">
+            <div class="row gy-4 h-100">
+                <div class="col-6">
+                    <div class="card h-100 stats-card radius-8">
+                        <div class="card-body p-20">
+                            <div class="d-flex align-items-center justify-content-between mb-12">
+                                <span class="w-40-px h-40-px bg-primary-light text-primary-600 radius-8 d-flex align-items-center justify-content-center">
+                                    <iconify-icon icon="solar:cart-large-bold" class="h5 mb-0"></iconify-icon>
+                                </span>
                             </div>
-                            <div class="col-6 p-0 m-0">
-                                <div class="card-body p-24 h-100 d-flex flex-column justify-content-center border border-top-0 border-start-0 border-end-0">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
-                                        <div>
-                                            <span class="mb-12 w-44-px h-44-px text-yellow bg-yellow-light border border-yellow-light-white flex-shrink-0 d-flex justify-content-center align-items-center radius-8 h6 mb-12">
-                                                <iconify-icon icon="flowbite:users-group-solid" class="icon"></iconify-icon>
-                                            </span>
-                                            <span class="mb-1 fw-medium text-secondary-light text-md">Total Customer</span>
-                                            <h6 class="fw-semibold text-primary-light mb-1">{{ number_format($stats['total_customers'] ?? 0) }}</h6>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm mb-0">Added this week: <span class="bg-success-focus px-1 rounded-2 fw-medium text-success-main text-sm">+{{ number_format($stats['customers_this_week'] ?? 0) }}</span></p>
-                                </div>
+                            <h6 class="mb-4 fw-bold">{{ number_format($stats['orders_in_period']) }}</h6>
+                            <p class="text-xs text-secondary-light fw-bold mb-0">Orders in Period</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card h-100 stats-card radius-8">
+                        <div class="card-body p-20">
+                            <div class="d-flex align-items-center justify-content-between mb-12">
+                                <span class="w-40-px h-40-px bg-success-light text-success-600 radius-8 d-flex align-items-center justify-content-center">
+                                    <iconify-icon icon="solar:wad-of-money-bold" class="h5 mb-0"></iconify-icon>
+                                </span>
                             </div>
-                            <div class="col-6 p-0 m-0">
-                                <div class="card-body p-24 h-100 d-flex flex-column justify-content-center border border-top-0 border-bottom-0">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
-                                        <div>
-                                            <span class="mb-12 w-44-px h-44-px text-lilac bg-lilac-light border border-lilac-light-white flex-shrink-0 d-flex justify-content-center align-items-center radius-8 h6 mb-12">
-                                                <iconify-icon icon="majesticons:shopping-cart" class="icon"></iconify-icon>
-                                            </span>
-                                            <span class="mb-1 fw-medium text-secondary-light text-md">Total Orders</span>
-                                            <h6 class="fw-semibold text-primary-light mb-1">{{ number_format($stats['total_orders'] ?? 0) }}</h6>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm mb-0">Added this week: <span class="bg-success-focus px-1 rounded-2 fw-medium text-success-main text-sm">+{{ number_format($stats['orders_this_week'] ?? 0) }}</span></p>
-                                </div>
+                            <h6 class="mb-4 fw-bold">₹{{ number_format($stats['sales_in_period'], 2) }}</h6>
+                            <p class="text-xs text-secondary-light fw-bold mb-0">Revenue in Period</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card h-100 stats-card radius-8">
+                        <div class="card-body p-20">
+                            <div class="d-flex align-items-center justify-content-between mb-12">
+                                <span class="w-40-px h-40-px bg-danger-light text-danger-600 radius-8 d-flex align-items-center justify-content-center">
+                                    <iconify-icon icon="solar:undo-left-bold" class="h5 mb-0"></iconify-icon>
+                                </span>
                             </div>
-                            <div class="col-6 p-0 m-0">
-                                <div class="card-body p-24 h-100 d-flex flex-column justify-content-center border border-top-0 border-start-0 border-end-0 border-bottom-0">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mb-8">
-                                        <div>
-                                            <span class="mb-12 w-44-px h-44-px text-pink bg-pink-light border border-pink-light-white flex-shrink-0 d-flex justify-content-center align-items-center radius-8 h6 mb-12">
-                                                <iconify-icon icon="ri:discount-percent-fill" class="icon"></iconify-icon>
-                                            </span>
-                                            <span class="mb-1 fw-medium text-secondary-light text-md">Total Sales</span>
-                                            <h6 class="fw-semibold text-primary-light mb-1">INR {{ number_format((float) ($stats['total_sales'] ?? 0), 2) }}</h6>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm mb-0">This week sales: <span class="bg-success-focus px-1 rounded-2 fw-medium text-success-main text-sm">INR {{ number_format((float) ($stats['sales_this_week'] ?? 0), 2) }}</span></p>
-                                </div>
+                            <h6 class="mb-4 fw-bold">{{ number_format($stats['return_count']) }}</h6>
+                            <p class="text-xs text-secondary-light fw-bold mb-0">Returns ({{ number_format($stats['return_rate'], 1) }}%)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card h-100 stats-card radius-8">
+                        <div class="card-body p-20">
+                            <div class="d-flex align-items-center justify-content-between mb-12">
+                                <span class="w-40-px h-40-px bg-warning-light text-warning-600 radius-8 d-flex align-items-center justify-content-center">
+                                    <iconify-icon icon="solar:users-group-rounded-bold" class="h5 mb-0"></iconify-icon>
+                                </span>
                             </div>
+                            <h6 class="mb-4 fw-bold">{{ number_format($stats['total_customers']) }}</h6>
+                            <p class="text-xs text-secondary-light fw-bold mb-0">Total Customers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card stats-card radius-8">
+                        <div class="card-body p-20">
+                            <h6 class="text-sm fw-bold mb-12">Order Volume (Monthly)</h6>
+                            <div id="orderVolumeChart"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xxl-12 col-lg-12">
-            <div class="card h-100">
+        <!-- Top Selling Products Section -->
+        <div class="col-xxl-6 col-lg-12">
+            <div class="card h-100 radius-8 border-0 shadow-sm">
                 <div class="card-body p-24">
-                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
-                        <h6 class="mb-2 fw-bold text-lg mb-0">Recent Orders</h6>
-                        <a href="{{ route('admin.ecommerce.orders.index') }}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                            View All
-                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                        </a>
+                    <div class="d-flex align-items-center justify-content-between mb-20">
+                        <h6 class="mb-0 fw-bold">Top Selling Products</h6>
+                        <span class="text-xs text-secondary-light fw-semibold">Last 30 Days</span>
                     </div>
-                    <div class="table-responsive scroll-sm">
+                    <div class="table-responsive">
                         <table class="table bordered-table mb-0">
                             <thead>
                                 <tr>
-                                    <th scope="col">Users</th>
-                                    <th scope="col">Invoice</th>
-                                    <th scope="col">Items</th>
-                                    <th scope="col">Qty</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col" class="text-center">Status</th>
+                                    <th>Product</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue Generated</th>
+                                    <th>Trend</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($recentOrders as $order)
+                                @foreach($topSellingProducts as $product)
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="text-md fw-bold text-secondary-light">{{ $product->product_name }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="fw-bold">{{ $product->total_qty }}</span> units</td>
+                                    <td><span class="text-success-600 fw-bold">₹{{ number_format($product->total_revenue, 2) }}</span></td>
+                                    <td><span class="bg-success-focus text-success-main px-2 py-1 rounded text-xs fw-bold">Hot 🔥</span></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div class="col-xxl-6 col-lg-12">
+            <div class="card h-100 radius-8 border-0 shadow-sm">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center justify-content-between mb-20">
+                        <h6 class="mb-0 fw-bold">Recent Orders</h6>
+                        <a href="{{ route('admin.ecommerce.orders.index') }}" class="btn btn-sm btn-primary-light radius-8 px-12">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($recentOrders as $order)
                                     @php
-                                        $firstItem = $order->items->first();
-                                        $itemCount = $order->items->count();
-                                        $itemLabel = $firstItem?->product_name ?? 'N/A';
-                                        if ($itemCount > 1) {
-                                            $itemLabel .= ' +' . ($itemCount - 1) . ' more';
-                                        }
-                                        $totalQty = $order->items->sum('quantity');
                                         $status = strtolower((string) $order->status);
                                         $statusClass = match($status) {
                                             'delivered', 'completed' => 'bg-success-focus text-success-main',
                                             'processing', 'shipped' => 'bg-info-focus text-info-main',
                                             'pending' => 'bg-warning-focus text-warning-main',
-                                            'cancelled', 'canceled', 'failed' => 'bg-danger-focus text-danger-main',
+                                            'cancelled', 'failed' => 'bg-danger-focus text-danger-main',
                                             default => 'bg-secondary-100 text-secondary-600',
                                         };
                                     @endphp
                                     <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <img src="{{ asset('assets/images/users/user1.png') }}" alt=""
-                                                    class="flex-shrink-0 me-12 radius-8">
-                                                <span class="text-lg text-secondary-light fw-semibold flex-grow-1">{{ $order->customer_name ?: ($order->user?->name ?? 'Guest') }}</span>
-                                            </div>
-                                        </td>
-                                        <td>{{ $order->order_number }}</td>
-                                        <td>{{ $itemLabel }}</td>
-                                        <td>{{ $totalQty }}</td>
-                                        <td>INR {{ number_format((float) $order->grand_total, 2) }}</td>
-                                        <td class="text-center">
-                                            <span class="{{ $statusClass }} px-24 py-4 rounded-pill fw-medium text-sm">{{ ucfirst($status) }}</span>
-                                        </td>
+                                        <td><span class="fw-bold text-primary-600">{{ $order->order_number }}</span></td>
+                                        <td>{{ $order->customer_name ?: ($order->user?->name ?? 'Guest') }}</td>
+                                        <td>₹{{ number_format((float) $order->grand_total, 2) }}</td>
+                                        <td><span class="{{ $statusClass }} px-12 py-2 rounded-pill fw-bold text-xs">{{ ucfirst($status) }}</span></td>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-secondary-light py-4">No orders found.</td>
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

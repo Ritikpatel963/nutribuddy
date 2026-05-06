@@ -16,6 +16,7 @@ class TaxRate extends Model
         'rate',
         'description',
         'is_active',
+        'show_in_checkout',
         'sort_order',
     ];
 
@@ -24,6 +25,7 @@ class TaxRate extends Model
         return [
             'rate' => 'decimal:2',
             'is_active' => 'boolean',
+            'show_in_checkout' => 'boolean',
             'sort_order' => 'integer',
         ];
     }

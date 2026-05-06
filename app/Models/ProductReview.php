@@ -15,6 +15,7 @@ class ProductReview extends Model
         'user_id',
         'rating',
         'comment',
+        'image_path',
         'is_active',
     ];
 

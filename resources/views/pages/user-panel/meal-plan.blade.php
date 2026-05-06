@@ -158,13 +158,13 @@ const days = {
 };
 
 const focusColors = {
-  'IMMUNITY BOOST':  'var(--mn)',
-  'IMMUNITY':        'var(--mn)',
-  'GROWTH & BONES':  'var(--pu)',
+  'IMMUNITY BOOST':  'var(--pu)',
+  'IMMUNITY':        'var(--pu)',
+  'GROWTH & BONES':  'var(--pk)',
   'BRAIN POWER':     'var(--pk)',
-  'ENERGY DAY':      'var(--ye)',
+  'ENERGY DAY':      'var(--pk)',
   'BONE STRENGTH':   'var(--pu)',
-  'REST & RESTORE':  'var(--mn)',
+  'REST & RESTORE':  'var(--pk)',
 };
 
 const focusBg = {

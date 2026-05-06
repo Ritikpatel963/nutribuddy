@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return route('frontend.login');
         });
+        
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckUserIsActive::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

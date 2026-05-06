@@ -26,11 +26,13 @@ class TaxRateController extends Controller
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'show_in_checkout' => ['nullable', 'boolean'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['show_in_checkout'] = (bool) ($validated['show_in_checkout'] ?? false);
 
         TaxRate::create($validated);
 
@@ -46,11 +48,13 @@ class TaxRateController extends Controller
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'show_in_checkout' => ['nullable', 'boolean'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['show_in_checkout'] = (bool) ($validated['show_in_checkout'] ?? false);
 
         $taxRate->update($validated);
 

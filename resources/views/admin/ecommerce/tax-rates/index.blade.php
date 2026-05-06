@@ -50,11 +50,16 @@
                         <input type="number" min="0" name="sort_order" value="0" class="form-control">
                     </div>
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
+                <div class="col-md-3 d-flex flex-column justify-content-end gap-2 pb-2">
+                    <div class="form-check form-switch">
                         <input type="hidden" name="is_active" value="0">
                         <input class="form-check-input" type="checkbox" value="1" name="is_active" checked>
                         <label class="form-check-label">Active</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input type="hidden" name="show_in_checkout" value="0">
+                        <input class="form-check-input" type="checkbox" value="1" name="show_in_checkout" checked>
+                        <label class="form-check-label">Show GST in Checkout Summary</label>
                     </div>
                 </div>
                 <div class="col-12">
@@ -113,6 +118,7 @@
                                             data-rate="{{ $taxRate->rate }}"
                                             data-sort_order="{{ $taxRate->sort_order }}"
                                             data-is_active="{{ $taxRate->is_active }}"
+                                            data-show_in_checkout="{{ $taxRate->show_in_checkout }}"
                                             data-description="{{ $taxRate->description }}"
                                             data-action="{{ route('admin.ecommerce.tax-rates.update', $taxRate) }}">
                                             <iconify-icon icon="lucide:edit"></iconify-icon> Edit
@@ -183,11 +189,16 @@
                                     <input type="number" min="0" name="sort_order" id="edit_tax_sort_order" class="form-control">
                                 </div>
                             </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <div class="form-check form-switch mb-8">
+                            <div class="col-md-4 d-flex flex-column justify-content-end gap-2 pb-2">
+                                <div class="form-check form-switch">
                                     <input type="hidden" name="is_active" value="0">
                                     <input class="form-check-input" type="checkbox" name="is_active" value="1" id="edit_tax_is_active">
                                     <label class="form-check-label" for="edit_tax_is_active">Active</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input type="hidden" name="show_in_checkout" value="0">
+                                    <input class="form-check-input" type="checkbox" name="show_in_checkout" value="1" id="edit_tax_show_in_checkout">
+                                    <label class="form-check-label" for="edit_tax_show_in_checkout">Show GST in Checkout</label>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -224,6 +235,7 @@
                     const rate = button.getAttribute('data-rate');
                     const sortOrder = button.getAttribute('data-sort_order');
                     const isActive = button.getAttribute('data-is_active');
+                    const showInCheckout = button.getAttribute('data-show_in_checkout');
                     const description = button.getAttribute('data-description');
 
                     // Update the modal's content.
@@ -236,6 +248,7 @@
                     editModal.querySelector('#edit_tax_sort_order').value = sortOrder;
                     editModal.querySelector('#edit_tax_description').value = description;
                     editModal.querySelector('#edit_tax_is_active').checked = isActive === '1';
+                    editModal.querySelector('#edit_tax_show_in_checkout').checked = showInCheckout === '1';
                 });
             }
         });

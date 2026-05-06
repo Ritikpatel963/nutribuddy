@@ -9,6 +9,7 @@ use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\UserAddressController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\Frontend\UserReturnController;
+use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
@@ -30,7 +31,7 @@ Route::prefix('authentication')->group(function () {
         Route::get('/forgotpassword', 'forgotPassword')->name('forgotPassword');
         Route::get('/signin', 'signin')->name('signin');
         Route::post('/login', 'login')->name('admin.login.post');
-        Route::post('/logout', 'logout')->name('admin.logout');
+        Route::post('/logout', 'logout')->name('admin.logout')->middleware('auth:admin');
         Route::get('/signup', 'signup')->name('signup');
     });
 });
@@ -43,6 +44,9 @@ Route::name('frontend.')->group(function () {
         Route::post('/logout', 'logout')->name('logout');
     });
 });
+
+Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
+Route::post('/contact', [FrontendContactController::class, 'store'])->name('contact.store');
 
 Route::middleware('auth:admin')->controller(DashboardController::class)->group(function () {
     Route::get('/admin', 'index')->name('admin.index');
@@ -88,6 +92,12 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
 
     Route::get('side-section', [\App\Http\Controllers\Admin\SideSectionController::class, 'index'])->name('side-section.index');
     Route::post('side-section', [\App\Http\Controllers\Admin\SideSectionController::class, 'update'])->name('side-section.update');
+
+    Route::prefix('loyalty')->name('loyalty.')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\Admin\LoyaltyController::class, 'settings'])->name('settings');
+        Route::post('/settings', [\App\Http\Controllers\Admin\LoyaltyController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/transactions', [\App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions');
+    });
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -96,7 +106,9 @@ Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
 Route::view('/contact', 'pages.contact')->name('contact');
-Route::view('/checkout', 'pages.checkout')->name('checkout');
+Route::view('/blog', 'pages.blog')->name('blog');
+Route::view('/blog/{id}', 'pages.blog-show')->name('blog.show');
+Route::get('/checkout', [FrontendCheckoutController::class, 'page'])->name('checkout');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/return-policy', 'pages.return-policy')->name('return-policy');
 Route::view('/terms', 'pages.terms')->name('terms');
@@ -141,9 +153,57 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [UserOrderController::class, 'invoicesIndex'])->name('index');
     });
 
+    Route::get('/my-coupons', function () {
+        $coupons = \App\Models\Coupon::where('is_active', true)
+            ->where(function($query) {
+                $query->whereNull('user_id')
+                      ->orWhere('user_id', auth()->id());
+            })
+            ->latest()
+            ->get();
+        return view('pages.user-panel.my-coupons', compact('coupons'));
+    })->name('my-coupons');
+
     Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
     Route::view('/order', 'pages.user-panel.order')->name('order');
-    Route::view('/personal-info', 'pages.user-panel.personal-info')->name('personal-info');
+    Route::get('/personal-info', function () {
+        $addresses = \App\Models\CustomerAddress::where('user_id', auth()->id())->latest()->get();
+        return view('pages.user-panel.personal-info', ['savedAddresses' => $addresses]);
+    })->name('personal-info');
+
+    Route::post('/personal-info', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'dob' => 'nullable|date',
+            'gender' => 'nullable|string',
+            'bio' => 'nullable|string|max:1000',
+            'avatar' => 'nullable|image|max:5120'
+        ]);
+
+        $user = auth()->user();
+        $user->name = trim($request->first_name . ' ' . $request->last_name);
+        $user->phone = $request->phone;
+        $user->dob = $request->dob;
+        $user->gender = $request->gender;
+        $user->bio = $request->bio;
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            }
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Profile updated successfully!',
+            'avatar_url' => $user->avatar ? asset('storage/'.$user->avatar) : null
+        ]);
+    })->name('personal-info.update');
     Route::view('/subscription', 'pages.user-panel.subscription')->name('subscription');
     Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
     Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
@@ -153,5 +213,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-profile');
     Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
     Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
+    Route::get('/wallet', [\App\Http\Controllers\UserWalletController::class, 'index'])->name('wallet');
+    Route::get('/user/reviews', [\App\Http\Controllers\ProductReviewController::class, 'userIndex'])->name('user.reviews.index');
     Route::post('/product/{product}/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
 });

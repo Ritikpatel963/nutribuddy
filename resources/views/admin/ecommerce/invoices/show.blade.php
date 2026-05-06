@@ -1,180 +1,788 @@
 @extends('layout.layout')
 @php
-    $title = 'Official Invoice';
-    $subTitle = 'Ecommerce / Invoices / INV-'.$order->order_number;
-    $script = '<script>
-                    function printInvoice() {
-                        var printUrl = "'.route('user.orders.invoice-download', ['order' => $order->id]).'?print=1";
-                        window.open(printUrl, "_blank");
-                    }
-                </script>';
+    $title = 'Invoice #INV-' . $order->order_number;
+    $subTitle = 'Ecommerce / Invoices / INV-' . $order->order_number;
 @endphp
 
-@push('styles')
-    <style>
-        .admin-invoice-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            padding: 40px;
-            border: 1px solid #eee;
-            position: relative;
-        }
-        .admin-invoice-card::after {
-            content: "ADMIN COPY";
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.6rem;
-            color: #ddd;
-            letter-spacing: 2px;
-            font-weight: 800;
-        }
-        .invoice-head-flex {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            border-bottom: 1px solid #f5f5f5;
-            padding-bottom: 25px;
-        }
-        .invoice-branding img { max-height: 45px; margin-bottom: 10px; }
-        .invoice-meta-top h1 { font-family: "Fredoka One", cursive; font-size: 1.8rem; color: var(--dk); margin: 0; }
-        
-        .details-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        .detail-group h6 { font-size: 0.75rem; color: var(--pk); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 800; }
-        .detail-group p { font-size: 0.9rem; color: #333; margin: 0 0 5px; line-height: 1.4; }
-        
-        .items-list { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .items-list th { text-align: left; padding: 12px; border-bottom: 2px solid #f0f0f0; font-size: 0.75rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
-        .items-list td { padding: 15px 12px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
-        
-        .item-title { font-weight: 700; color: #111; }
-        .item-specs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
-        .spec-pill { background: #f0f4ff; color: #5a67d8; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
-        
-        .totals-flex { display: flex; justify-content: flex-end; }
-        .totals-table { width: 300px; }
-        .total-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; color: #555; }
-        .total-row.grand { border-top: 2px solid #eee; margin-top: 10px; padding-top: 15px; font-weight: 800; font-size: 1.3rem; color: var(--pu); }
-    </style>
-@endpush
 
+<style>
+    /* ═══════════════════════════════════════════════════════
+           ALL SELECTORS SCOPED UNDER .inv-wrap TO BEAT BOOTSTRAP
+           ═══════════════════════════════════════════════════════ */
+
+    .inv-wrap * {
+        box-sizing: border-box !important;
+    }
+
+    .inv-wrap {
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        max-width: 980px !important;
+        margin: 0 auto !important;
+        padding: 0 16px 40px !important;
+    }
+
+    /* ── Action bar ── */
+    .inv-wrap .inv-actions {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        margin-bottom: 20px !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+
+    /* ── Card ── */
+    .inv-wrap .inv-card {
+        background: #fff !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 16px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+        position: relative !important;
+    }
+
+    .inv-wrap .inv-card-topbar {
+        height: 6px !important;
+        background: linear-gradient(90deg, #ec4899, #8b5cf6) !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    .inv-wrap .inv-body {
+        padding: 36px 40px !important;
+    }
+
+    /* ══════════════════
+           HEADER
+        ══════════════════ */
+    .inv-wrap .inv-header {
+        width: 100% !important;
+        margin-bottom: 28px !important;
+        padding-bottom: 24px !important;
+        border-bottom: 2px solid #f3f4f6 !important;
+        display: table !important;
+        table-layout: fixed !important;
+    }
+
+    .inv-wrap .inv-company-left {
+        display: table-cell !important;
+        vertical-align: top !important;
+        width: 58% !important;
+    }
+
+    .inv-wrap .inv-title-block {
+        display: table-cell !important;
+        vertical-align: top !important;
+        text-align: right !important;
+        width: 42% !important;
+        padding-left: 24px !important;
+    }
+
+    .inv-wrap .inv-company-logo img {
+        height: 46px !important;
+        width: auto !important;
+        object-fit: contain !important;
+        display: block !important;
+        margin-bottom: 12px !important;
+        max-width: 180px !important;
+    }
+
+    .inv-wrap .inv-company-name {
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        color: #111827 !important;
+        margin: 0 0 6px 0 !important;
+        line-height: 1.4 !important;
+    }
+
+    .inv-wrap .inv-company-meta {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        line-height: 1.8 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-company-meta span {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-legal-tags {
+        margin-top: 12px !important;
+        line-height: 1 !important;
+    }
+
+    .inv-wrap .inv-legal-tag {
+        display: inline-block !important;
+        background: #ede9fe !important;
+        color: #5b21b6 !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        padding: 3px 9px !important;
+        border-radius: 4px !important;
+        letter-spacing: 0.3px !important;
+        margin-right: 5px !important;
+        margin-bottom: 5px !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Right: Invoice title */
+    .inv-wrap .inv-word {
+        font-size: 40px !important;
+        font-weight: 900 !important;
+        color: #111827 !important;
+        letter-spacing: -1.5px !important;
+        line-height: 1 !important;
+        margin: 0 0 8px 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-num {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin: 0 0 4px 0 !important;
+        padding: 0 !important;
+        font-weight: 500 !important;
+    }
+
+    .inv-wrap .inv-date {
+        font-size: 12px !important;
+        color: #9ca3af !important;
+        margin: 0 0 14px 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-status-pill {
+        display: inline-block !important;
+        padding: 5px 16px !important;
+        border-radius: 20px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px !important;
+        line-height: 1.4 !important;
+    }
+
+    .inv-wrap .inv-status-paid {
+        background: #d1fae5 !important;
+        color: #065f46 !important;
+    }
+
+    .inv-wrap .inv-status-unpaid {
+        background: #fef3c7 !important;
+        color: #92400e !important;
+    }
+
+    .inv-wrap .inv-status-cod {
+        background: #e0e7ff !important;
+        color: #3730a3 !important;
+    }
+
+    /* ══════════════════
+           INFO GRID
+        ══════════════════ */
+    .inv-wrap .inv-info-grid {
+        width: 100% !important;
+        background: #f9fafb !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        margin-bottom: 28px !important;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        overflow: hidden !important;
+        /* Override Bootstrap table styles */
+        display: table !important;
+    }
+
+    .inv-wrap .inv-info-grid tr {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .inv-wrap .inv-info-grid td {
+        width: 33.33% !important;
+        vertical-align: top !important;
+        padding: 20px 22px !important;
+        border-right: 1px solid #e5e7eb !important;
+        border-bottom: none !important;
+        border-top: none !important;
+        background: transparent !important;
+    }
+
+    .inv-wrap .inv-info-grid td:last-child {
+        border-right: none !important;
+    }
+
+    .inv-wrap .col-label {
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1.5px !important;
+        font-weight: 800 !important;
+        color: #ec4899 !important;
+        margin-bottom: 10px !important;
+        display: block !important;
+        line-height: 1.4 !important;
+        padding: 0 !important;
+    }
+
+    /* CRITICAL: Override Bootstrap p margins inside info grid */
+    .inv-wrap .inv-info-grid td p,
+    .inv-wrap .inv-info-grid td p.text-muted-sm {
+        font-size: 13px !important;
+        color: #374151 !important;
+        margin: 0 0 4px 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+        border: none !important;
+        background: none !important;
+    }
+
+    .inv-wrap .inv-info-grid td p.text-muted-sm {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+    }
+
+    /* ══════════════════
+           ITEMS TABLE
+        ══════════════════ */
+    .inv-wrap .inv-table-wrap {
+        overflow-x: auto !important;
+        margin-bottom: 28px !important;
+        border-radius: 8px !important;
+        border: 1px solid #e5e7eb !important;
+    }
+
+    .inv-wrap .inv-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        margin: 0 !important;
+        font-size: 13px !important;
+        min-width: 600px !important;
+    }
+
+    /* Override Bootstrap thead styles */
+    .inv-wrap .inv-table thead,
+    .inv-wrap .inv-table thead tr {
+        background: #f9fafb !important;
+        border-bottom: 2px solid #e5e7eb !important;
+    }
+
+    .inv-wrap .inv-table th {
+        padding: 13px 14px !important;
+        text-align: left !important;
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        font-weight: 700 !important;
+        color: #6b7280 !important;
+        white-space: nowrap !important;
+        border: none !important;
+        border-bottom: 2px solid #e5e7eb !important;
+        background: #f9fafb !important;
+        vertical-align: middle !important;
+    }
+
+    .inv-wrap .inv-table th.r {
+        text-align: right !important;
+    }
+
+    .inv-wrap .inv-table th.c {
+        text-align: center !important;
+    }
+
+    /* Override Bootstrap tbody tr styles */
+    .inv-wrap .inv-table tbody tr {
+        border-bottom: 1px solid #f3f4f6 !important;
+        background: #fff !important;
+        transition: background 0.15s !important;
+    }
+
+    .inv-wrap .inv-table tbody tr:last-child {
+        border-bottom: none !important;
+    }
+
+    .inv-wrap .inv-table tbody tr:hover {
+        background: #fafafa !important;
+    }
+
+    /* Override Bootstrap td styles */
+    .inv-wrap .inv-table td {
+        padding: 14px !important;
+        vertical-align: top !important;
+        color: #1f2937 !important;
+        border: none !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        background: transparent !important;
+    }
+
+    .inv-wrap .inv-table td.r {
+        text-align: right !important;
+    }
+
+    .inv-wrap .inv-table td.c {
+        text-align: center !important;
+    }
+
+    .inv-wrap .inv-prod-name {
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        color: #111827 !important;
+        margin: 0 0 3px 0 !important;
+        padding: 0 !important;
+        line-height: 1.4 !important;
+    }
+
+    .inv-wrap .inv-prod-var {
+        font-size: 11px !important;
+        color: #9ca3af !important;
+        margin: 0 0 5px 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-prod-specs {
+        margin-top: 6px !important;
+    }
+
+    .inv-wrap .inv-spec-pill {
+        display: inline-block !important;
+        background: #ede9fe !important;
+        color: #5b21b6 !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+        padding: 2px 7px !important;
+        border-radius: 4px !important;
+        margin-right: 4px !important;
+        margin-bottom: 3px !important;
+        line-height: 1.6 !important;
+    }
+
+    .inv-wrap .inv-qty {
+        font-weight: 700 !important;
+        color: #374151 !important;
+    }
+
+    .inv-wrap .inv-disc {
+        color: #ef4444 !important;
+        font-weight: 600 !important;
+    }
+
+    .inv-wrap .inv-gst-rate {
+        display: block !important;
+        color: #374151 !important;
+        font-weight: 600 !important;
+        margin: 0 !important;
+    }
+
+    .inv-wrap .inv-gst-amt {
+        display: block !important;
+        font-size: 11px !important;
+        color: #9ca3af !important;
+        margin: 2px 0 0 0 !important;
+    }
+
+    .inv-wrap .inv-amount {
+        font-weight: 800 !important;
+        color: #111827 !important;
+    }
+
+    /* ══════════════════
+           TOTALS
+        ══════════════════ */
+    .inv-wrap .inv-totals-row {
+        margin-bottom: 32px !important;
+        text-align: right !important;
+    }
+
+    .inv-wrap .inv-totals-box {
+        display: inline-block !important;
+        width: 320px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        text-align: left !important;
+    }
+
+    .inv-wrap .inv-total-line {
+        display: table !important;
+        width: 100% !important;
+        padding: 11px 18px !important;
+        font-size: 13px !important;
+        color: #374151 !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+        box-sizing: border-box !important;
+        background: #fff !important;
+        margin: 0 !important;
+    }
+
+    .inv-wrap .inv-total-line:last-child {
+        border-bottom: none !important;
+    }
+
+    .inv-wrap .inv-total-line .tl-label,
+    .inv-wrap .inv-total-line .tl-value {
+        display: table-cell !important;
+        vertical-align: middle !important;
+        padding: 0 !important;
+        border: none !important;
+        background: none !important;
+        color: inherit !important;
+        font-size: inherit !important;
+    }
+
+    .inv-wrap .inv-total-line .tl-value {
+        text-align: right !important;
+        font-weight: 700 !important;
+    }
+
+    .inv-wrap .inv-total-line.discount {
+        color: #ef4444 !important;
+        background: #fff5f5 !important;
+    }
+
+    .inv-wrap .inv-total-line.grand-tot {
+        background: linear-gradient(135deg, #fdf2f8, #f5f3ff) !important;
+        padding: 16px 18px !important;
+        border-bottom: none !important;
+    }
+
+    .inv-wrap .inv-total-line.grand-tot .tl-label,
+    .inv-wrap .inv-total-line.grand-tot .tl-value {
+        color: #7c3aed !important;
+        font-weight: 800 !important;
+        font-size: 16px !important;
+    }
+
+    /* ══════════════════
+           FOOTER
+        ══════════════════ */
+    .inv-wrap .inv-footer {
+        text-align: center !important;
+        padding-top: 22px !important;
+        border-top: 1px solid #f3f4f6 !important;
+        font-size: 11px !important;
+        color: #9ca3af !important;
+        line-height: 2 !important;
+        margin: 0 !important;
+    }
+
+    .inv-wrap .inv-footer div {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .inv-wrap .inv-footer strong {
+        color: #6b7280 !important;
+    }
+
+    /* ── Watermark ── */
+    .inv-wrap .inv-watermark {
+        position: absolute !important;
+        top: 18px !important;
+        right: 22px !important;
+        font-size: 9px !important;
+        font-weight: 800 !important;
+        letter-spacing: 2px !important;
+        color: #e5e7eb !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+    }
+
+    /* ══════════════════
+           RESPONSIVE
+        ══════════════════ */
+    @media (max-width: 768px) {
+        .inv-wrap .inv-body {
+            padding: 20px !important;
+        }
+
+        .inv-wrap .inv-header {
+            display: block !important;
+        }
+
+        .inv-wrap .inv-company-left {
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
+
+        .inv-wrap .inv-title-block {
+            display: block !important;
+            width: 100% !important;
+            text-align: left !important;
+            padding-left: 0 !important;
+        }
+
+        .inv-wrap .inv-info-grid {
+            display: block !important;
+        }
+
+        .inv-wrap .inv-info-grid td {
+            display: block !important;
+            width: 100% !important;
+            border-right: none !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+        }
+
+        .inv-wrap .inv-totals-box {
+            width: 100% !important;
+        }
+    }
+</style>
 @section('content')
-    <div class="d-flex align-items-center justify-content-between mb-24 no-print">
-        <a href="{{ route('admin.ecommerce.orders.index') }}" class="btn btn-sm btn-secondary-light radius-8 d-inline-flex align-items-center gap-1">
-            <iconify-icon icon="lucide:arrow-left"></iconify-icon>
-            Back to Orders
-        </a>
-        <div class="d-flex gap-2">
-            <button onclick="printInvoice()" class="btn btn-sm btn-primary radius-8 d-inline-flex align-items-center gap-1">
-                <iconify-icon icon="lucide:printer"></iconify-icon>
-                Print / Download
+    <div class="inv-wrap">
+
+        {{-- ── Action bar ── --}}
+        <div class="inv-actions">
+            <a href="{{ route('admin.ecommerce.orders.index') }}"
+                class="btn btn-sm btn-secondary-light radius-8 d-inline-flex align-items-center gap-1">
+                <iconify-icon icon="lucide:arrow-left"></iconify-icon> Back to Orders
+            </a>
+            <button onclick="openPrintable()"
+                class="btn btn-sm btn-primary radius-8 d-inline-flex align-items-center gap-1">
+                <iconify-icon icon="lucide:printer"></iconify-icon> Print / Download PDF
             </button>
         </div>
-    </div>
 
-    <div class="admin-invoice-card" id="invoiceArea">
-        <div class="invoice-head-flex">
-            <div class="invoice-branding">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy">
-                <p class="text-xs text-secondary-light mb-0">Official E-commerce Billing</p>
-            </div>
-            <div class="invoice-meta-top text-end">
-                <h1>INVOICE</h1>
-                <p class="text-sm text-secondary-light mb-0">#INV-{{ $order->order_number }}</p>
-                <p class="text-xs text-secondary-light">Date: {{ optional($order->placed_at)->format('d M Y') }}</p>
-            </div>
-        </div>
+        {{-- ── Invoice card ── --}}
+        <div class="inv-card">
+            <div class="inv-card-topbar"></div>
+            <span class="inv-watermark">ADMIN COPY</span>
 
-        <div class="details-row">
-            <div class="detail-group">
-                <h6>Billed To:</h6>
-                <p><strong>{{ $order->customer_name }}</strong></p>
-                <p>{{ $order->customer_email }}</p>
-                <p>{{ $order->customer_phone }}</p>
-            </div>
-            <div class="detail-group">
-                <h6>Shipping To:</h6>
-                <p><strong>{{ $order->shipping_name }}</strong></p>
-                <p>{{ $order->shipping_address_line_1 }}</p>
-                @if($order->shipping_address_line_2)<p>{{ $order->shipping_address_line_2 }}</p>@endif
-                <p>{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}</p>
-            </div>
-            <div class="detail-group">
-                <h6>Payment Info:</h6>
-                <p>Method: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
-                <p>Status: <span class="badge {{ $order->payment_status === 'paid' ? 'bg-success-100 text-success-600' : 'bg-warning-100 text-warning-600' }}">{{ strtoupper($order->payment_status) }}</span></p>
-                <p>Order Reference: #{{ $order->order_number }}</p>
-            </div>
-        </div>
+            <div class="inv-body">
 
-        <table class="items-list">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th class="text-center">Qty</th>
-                    <th class="text-end">Unit Price</th>
-                    <th class="text-end">Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($order->items as $item)
-                    @php
-                        $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
-                        $variant = $item->productVariant;
-                        $product = $item->product;
-                        $specs = [];
-                        if ($variant && $variant->attributes) {
-                            foreach($variant->attributes as $k => $v) $specs[] = "$k: $v";
-                        }
-                        if ($product) {
-                            if ($product->flavor || $product->flavour) $specs[] = "Flavour: " . ($product->flavor ?? $product->flavour);
-                            if ($product->pack_size) $specs[] = "Pack: " . $product->pack_size;
-                            if ($product->age_group) $specs[] = "Age: " . $product->age_group;
-                        }
-                    @endphp
+                {{-- ══ HEADER ══ --}}
+                <div class="inv-header">
+
+                    <div class="inv-company-left">
+                        <div class="inv-company-logo">
+                            <img src="{{ asset('assets/images/logo.png') }}" alt="{{ config('company.name') }}">
+                        </div>
+                        <div class="inv-company-name">{{ config('company.name') }}</div>
+                        <div class="inv-company-meta">
+                            <span>{{ config('company.address') }}, {{ config('company.city') }}</span>
+                            <span>📞 {{ config('company.phone') }} &nbsp; ✉️ {{ config('company.email') }}</span>
+                            <span>🌐 {{ config('company.website') }}</span>
+                        </div>
+                        <div class="inv-legal-tags">
+                            <span class="inv-legal-tag">GSTIN: {{ config('company.gst') }}</span>
+                            <span class="inv-legal-tag">PAN: {{ config('company.pan') }}</span>
+                            <span class="inv-legal-tag">CIN: {{ config('company.cin') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="inv-title-block">
+                        <div class="inv-word">INVOICE</div>
+                        <div class="inv-num">#INV-{{ $order->order_number }}</div>
+                        <div class="inv-date">
+                            Issued:
+                            {{ optional($order->placed_at)->format('d M Y') ?? $order->created_at->format('d M Y') }}
+                        </div>
+                        @php
+                            $stClass = $order->payment_status === 'paid' ? 'inv-status-paid'
+                                : ($order->payment_status === 'cod' ? 'inv-status-cod' : 'inv-status-unpaid');
+                        @endphp
+                        <span class="inv-status-pill {{ $stClass }}">
+                            {{ strtoupper($order->payment_status) }}
+                        </span>
+                    </div>
+
+                </div>{{-- /header --}}
+
+                {{-- ══ INFO GRID ══ --}}
+                <table class="inv-info-grid">
                     <tr>
                         <td>
-                            <div class="item-title">{{ $item->product_name }}</div>
-                            @if($vName)<div class="text-xs text-secondary-light mt-1">{{ $vName }}</div>@endif
-                            <div class="item-specs">
-                                @foreach($specs as $spec)
-                                    <span class="spec-pill">{{ $spec }}</span>
-                                @endforeach
-                            </div>
+                            <span class="col-label">Billed To</span>
+                            <p><strong>{{ $order->customer_name }}</strong></p>
+                            <p class="text-muted-sm">{{ $order->customer_email }}</p>
+                            <p class="text-muted-sm">{{ $order->customer_phone }}</p>
                         </td>
-                        <td class="text-center fw-bold">{{ $item->quantity }}</td>
-                        <td class="text-end">₹{{ number_format($item->unit_price, 2) }}</td>
-                        <td class="text-end fw-bold">₹{{ number_format($item->line_total, 2) }}</td>
+                        <td>
+                            <span class="col-label">Shipped To</span>
+                            <p><strong>{{ $order->shipping_name }}</strong></p>
+                            <p class="text-muted-sm">{{ $order->shipping_address_line_1 }}</p>
+                            @if($order->shipping_address_line_2)
+                                <p class="text-muted-sm">{{ $order->shipping_address_line_2 }}</p>
+                            @endif
+                            <p class="text-muted-sm">
+                                {{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}
+                            </p>
+                        </td>
+                        <td>
+                            <span class="col-label">Payment</span>
+                            <p>Method: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
+                            <p>Status:
+                                <span class="inv-status-pill {{ $stClass }}"
+                                    style="font-size:10px !important; padding:2px 10px !important;">
+                                    {{ strtoupper($order->payment_status) }}
+                                </span>
+                            </p>
+                            <p class="text-muted-sm">Order #: {{ $order->order_number }}</p>
+                        </td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </table>
 
-        <div class="totals-flex">
-            <div class="totals-table">
-                <div class="total-row"><span>Subtotal</span><strong>₹{{ number_format($order->subtotal, 2) }}</strong></div>
-                @if($order->discount_total > 0)
-                    <div class="total-row text-danger"><span>Discount</span><strong>- ₹{{ number_format($order->discount_total, 2) }}</strong></div>
-                @endif
-                @if($order->tax_total > 0)
-                    <div class="total-row"><span>Tax Total</span><strong>₹{{ number_format($order->tax_total, 2) }}</strong></div>
-                @endif
-                <div class="total-row"><span>Shipping</span><strong>₹{{ number_format($order->shipping_total, 2) }}</strong></div>
-                <div class="total-row grand">
-                    <span>Total</span>
-                    <span>₹{{ number_format($order->grand_total, 2) }}</span>
+                {{-- ══ ITEMS TABLE ══ --}}
+                <div class="inv-table-wrap">
+                    <table class="inv-table">
+                        <thead>
+                            <tr>
+                                <th style="width:45%">Product Description</th>
+                                <th class="c" style="width:10%">Qty</th>
+                                <th class="r" style="width:15%">Unit Price</th>
+                                <th class="r" style="width:15%">GST</th>
+                                <th class="r" style="width:15%">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($order->items as $item)
+                                @php
+                                    $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
+                                    $variant = $item->productVariant;
+                                    $product = $item->product;
+                                    $taxRate = $item->tax_percent;
+                                    $gstAmt = $item->tax_amount;
+                                    $lineTotal = $item->line_total;
+                                    $specs = [];
+                                    if ($product) {
+                                        if ($product->flavor || $product->flavour)
+                                            $specs[] = 'Flavor: ' . ($product->flavor ?? $product->flavour);
+                                        if ($product->pack_size)
+                                            $specs[] = 'Pack Size: ' . $product->pack_size;
+                                        if ($product->age_group)
+                                            $specs[] = 'Age Group: ' . $product->age_group;
+                                    }
+                                    if ($variant && $variant->attributes) {
+                                        foreach ($variant->attributes as $k => $v) {
+                                            $key = strtolower(str_replace(['_', '-'], ' ', $k));
+                                            if (str_contains($key, 'flav') || str_contains($key, 'pack') || str_contains($key, 'age'))
+                                                continue;
+                                            $specs[] = ucfirst($k) . ': ' . $v;
+                                        }
+                                    }
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <div class="inv-prod-name">{{ $item->product_name }}</div>
+                                        @if($vName)
+                                            <div class="inv-prod-var">Variant: {{ $vName }}</div>
+                                        @endif
+                                        @if($specs)
+                                            <div class="inv-prod-specs">
+                                                @foreach($specs as $spec)
+                                                    <span class="inv-spec-pill">{{ $spec }}</span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="c inv-qty">{{ $item->quantity }}</td>
+                                    <td class="r">₹{{ number_format($item->unit_price, 2) }}</td>
+                                    <td class="r">
+                                        <span class="inv-gst-rate">{{ number_format($taxRate, 2) }}%</span>
+                                        <span class="inv-gst-amt">₹{{ number_format($gstAmt, 2) }}</span>
+                                    </td>
+                                    <td class="r inv-amount">₹{{ number_format($item->line_total, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </div>
 
-        <div class="mt-40 text-center border-top pt-20">
-            <p class="text-xs text-secondary-light">This invoice is a legal record of purchase from NutriBuddy Kids. For any issues, contact support@nutribuddy.com</p>
-        </div>
-    </div>
+                {{-- ══ TOTALS ══ --}}
+                <div class="inv-totals-row">
+                    <div class="inv-totals-box">
+                        @php
+                            // 1. Calculate the REAL original GST for the whole order
+                            $totalOriginalGst = $order->items->sum(function($i) {
+                                $rate = $i->tax_percent ?? 0;
+                                return ($i->unit_price * $i->quantity * $rate) / 100;
+                            });
+
+                            // 2. The MRP Subtotal is the Base Subtotal + Original GST
+                            $displaySubtotal = $order->subtotal + $totalOriginalGst;
+
+                            // 3. To maintain Grand Total consistency, the discount shown must be the difference
+                            $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
+
+                            // 4. Distribute savings
+                            $dbCoupon = $order->discount_total;
+                            $dbCoins = $order->coin_discount;
+                            $totalDbDiscount = $dbCoupon + $dbCoins;
+
+                            if ($totalDbDiscount > 0) {
+                                $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
+                                $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
+                            } else {
+                                $displayCouponDiscount = 0;
+                                $displayCoinDiscount = 0;
+                            }
+                        @endphp
+                        
+                        <div class="inv-total-line">
+                            <span class="tl-label">Subtotal (MRP)</span>
+                            <span class="tl-value">₹{{ number_format($displaySubtotal, 2) }}</span>
+                        </div>
+
+                        @if($displayCouponDiscount > 0.01)
+                            <div class="inv-total-line discount">
+                                <span class="tl-label">Coupon Discount</span>
+                                <span class="tl-value">− ₹{{ number_format($displayCouponDiscount, 2) }}</span>
+                            </div>
+                        @endif
+
+                        @if($displayCoinDiscount > 0.01)
+                            <div class="inv-total-line" style="color: #f97316; background: #fffaf0;">
+                                <span class="tl-label">NB Coins Discount</span>
+                                <span class="tl-value">− ₹{{ number_format($displayCoinDiscount, 2) }}</span>
+                            </div>
+                        @endif
+
+                        <div class="inv-total-line">
+                            <span class="tl-label">GST / Tax</span>
+                            <span class="tl-value">₹{{ number_format($totalOriginalGst, 2) }}</span>
+                        </div>
+
+                        <div class="inv-total-line">
+                            <span class="tl-label">Shipping</span>
+                            <span class="tl-value">₹{{ number_format($order->shipping_total, 2) }}</span>
+                        </div>
+
+                        <div class="inv-total-line grand-tot">
+                            <span class="tl-label">Grand Total</span>
+                            <span class="tl-value">₹{{ number_format($order->grand_total, 2) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ══ FOOTER ══ --}}
+                <div class="inv-footer">
+                    <div><strong>{{ config('company.name') }}</strong></div>
+                    <div>
+                        GSTIN: {{ config('company.gst') }} &nbsp;·&nbsp;
+                        PAN: {{ config('company.pan') }} &nbsp;·&nbsp;
+                        CIN: {{ config('company.cin') }}
+                    </div>
+                    <div>
+                        {{ config('company.email') }} &nbsp;·&nbsp;
+                        {{ config('company.phone') }} &nbsp;·&nbsp;
+                        {{ config('company.website') }}
+                    </div>
+                    <div style="margin-top:8px !important; font-size:10px !important;">
+                        This is a computer-generated invoice and does not require a physical signature.
+                    </div>
+                </div>
+
+            </div>{{-- /inv-body --}}
+        </div>{{-- /inv-card --}}
+    </div>{{-- /inv-wrap --}}
 @endsection
+
+
+<script>
+    function openPrintable() {
+        var url = '{{ route('user.orders.invoice-download', ['order' => $order->id]) }}?print=1';
+        window.open(url, '_blank');
+    }
+</script>

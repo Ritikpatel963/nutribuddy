@@ -48,6 +48,8 @@ class Order extends Model
         'customer_note',
         'admin_note',
         'placed_at',
+        'coins_redeemed',
+        'coin_discount',
     ];
 
     protected function casts(): array
@@ -64,6 +66,8 @@ class Order extends Model
             'grand_total' => 'decimal:2',
             'pricing_snapshot' => 'array',
             'placed_at' => 'datetime',
+            'coins_redeemed' => 'integer',
+            'coin_discount' => 'decimal:2',
         ];
     }
 

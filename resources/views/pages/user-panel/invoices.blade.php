@@ -76,11 +76,91 @@
             </div>
 
             @if($orders->hasPages())
-                <div class="pagination" style="margin-top: 24px;">
-                    {{ $orders->links() }}
+                <div class="pagination">
+                    <span class="pag-info">
+                        Showing {{ $orders->firstItem() }} to {{ $orders->lastItem() }} of {{ $orders->total() }} invoices
+                    </span>
+                    <div class="pag-btns">
+                        {{-- Previous Page Link --}}
+                        @if ($orders->onFirstPage())
+                            <span class="pag-btn" style="opacity: 0.5; cursor: not-allowed;">‹</span>
+                        @else
+                            <a href="{{ $orders->previousPageUrl() }}" class="pag-btn">‹</a>
+                        @endif
+
+                        {{-- Page Links --}}
+                        @php
+                            $start = max($orders->currentPage() - 2, 1);
+                            $end = min($start + 4, $orders->lastPage());
+                            if ($end - $start < 4) {
+                                $start = max($end - 4, 1);
+                            }
+                        @endphp
+
+                        @for ($i = $start; $i <= $end; $i++)
+                            @if ($i == $orders->currentPage())
+                                <span class="pag-btn active">{{ $i }}</span>
+                            @else
+                                <a href="{{ $orders->url($i) }}" class="pag-btn">{{ $i }}</a>
+                            @endif
+                        @endfor
+
+                        {{-- Next Page Link --}}
+                        @if ($orders->hasMorePages())
+                            <a href="{{ $orders->nextPageUrl() }}" class="pag-btn">›</a>
+                        @else
+                            <span class="pag-btn" style="opacity: 0.5; cursor: not-allowed;">›</span>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>
+
+        <style>
+            .panel-order .pagination {
+                margin-top: 14px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                padding: 14px 20px;
+                border-top: 1.5px solid var(--border);
+            }
+            .panel-order .pag-info {
+                color: var(--muted);
+                font-size: .78rem;
+            }
+            .panel-order .pag-btns {
+                display: inline-flex;
+                gap: 8px;
+            }
+            .panel-order .pag-btn {
+                border: 1.5px solid var(--border);
+                background: #fff;
+                width: 34px;
+                height: 34px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                font-weight: 800;
+                color: var(--muted);
+                text-decoration: none;
+                font-size: 0.85rem;
+                transition: 0.2s;
+            }
+            .panel-order .pag-btn.active {
+                background: var(--pkl);
+                border-color: var(--pk);
+                color: var(--pkd);
+            }
+            .panel-order .pag-btn:not(.active):hover {
+                border-color: var(--pk);
+                color: var(--pk);
+                background: var(--cr);
+            }
+        </style>
     </div>
 
     @push('scripts')

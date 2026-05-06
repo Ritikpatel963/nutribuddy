@@ -9,9 +9,9 @@
     <section class="hero">
         <!-- Slide 1 -->
         <div class="slide slide-1 active" data-slide="0">
-            <div class="blob b1"></div>
+              <img src="img/img1.jpeg" alt="">
+            <!-- <div class="blob b1"></div>
             <div class="blob b2"></div>
-            <!-- <div class="blob b3"></div> -->
             <div class="slide-text">
                 <div class="slide-badge badge-pk">India's #1 Kids Wellness Gummy</div>
                 <h1 class="htitle">Gummies That Turn<br>Kids Into <span class="pop">Superheroes!</span></h1>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>  
-            </div>
+            </div> -->
         </div>
 
         <!-- Slide 2 -->
@@ -263,7 +263,7 @@
         <h2 class="sec-title">Nutrition Kids <span class="acc">Actually Love</span></h2>
         <p class="sec-sub">Each product crafted with Ayurvedic wisdom + modern science. Balanced doses, kid-safe, genuinely
             delicious flavors.</p>
-        <div class="products-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
+        <div class="products-grid">
             @foreach($featuredProducts as $product)
             @php 
                 $catSlug = $product->category->slug ?? 'pk';
@@ -312,6 +312,7 @@
                                     return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
                                 }, array_filter(array_map('trim', explode(',', $tags))));
                             }
+                            $tags = array_slice($tags, 0, 4);
                         @endphp
                         @if(count($tags) > 0)
                             @foreach(array_chunk($tags, 2) as $chunk)
@@ -346,13 +347,13 @@
                             </div>
                         @endif
                     </div>
-                    <div class="pc-foot">
-                        <div class="pc-price">
-                            ₹{{ number_format($product->base_price, 0) }} 
-                            @if($product->compare_at_price > $product->base_price)
-                                <s>₹{{ number_format($product->compare_at_price, 0) }}</s>
-                            @endif
-                        </div>
+                        <div class="pc-foot">
+                            <div class="pc-price">
+                                ₹{{ number_format($product->display_price, 0) }} 
+                                @if($product->display_compare_price > $product->display_price)
+                                    <s>₹{{ number_format($product->display_compare_price, 0) }}</s>
+                                @endif
+                            </div>
                         <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart +</button>
                     </div>
                 </div>
@@ -363,8 +364,294 @@
 
 
 
+        <!-- ══════════════════════════════════════════
+                   QUIZ CTA
+              ══════════════════════════════════════════ -->
+    <div class="quiz-cta reveal" id="quiz">
+        <div>
+            <span class="quiz-label"> Personalized Nutrition</span>
+            <h2 class="quiz-h">Not Sure Which Gummy<br>Is Right for Your Child?</h2>
+            <p class="quiz-p">Take our 2-minute wellness quiz and get a FREE personalized diet chart crafted by certified
+                Ayurvedic nutritionists. No signup needed.</p>
+        </div>
+        <button class="quiz-btn">Start Free Quiz →</button>
+    </div>
+
+
+
+   
 
     <!-- ══════════════════════════════════════════
+                   INGREDIENTS HIGHLIGHT
+              ══════════════════════════════════════════ -->
+    <section class="ing-section" id="ingredients">
+        <div class="stars-bg" id="starsBg"></div>
+
+        <div class="ing-header reveal">
+            <span class="sec-eye">Ingredient Transparency</span>
+            <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
+            <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's gummy
+                —
+                an honest, magical story of every ingredient we use.</p>
+        </div>
+
+        <div class="ing-tabs reveal">
+            <button class="itab active" data-ing="0">
+                Ashwagandha</button>
+            <button class="itab" data-ing="1"> Brahmi</button>
+            <button class="itab" data-ing="2"> Turmeric</button>
+            <button class="itab" data-ing="3">  Amla</button>
+            <button class="itab" data-ing="4">  Algal Dha</button>
+            <button class="itab" data-ing="5">  Vitamins</button>
+            <button class="itab" data-ing="6"> Minerals</button>
+        </div>
+
+        <div class="ing-panels">
+
+            <!-- Ashwagandha -->
+            <div class="ing-panel active" id="ing-panel-0">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">01</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Ayurvedic
+                        Powerhouse</div>
+                    <h3 class="ing-name">Ashwagandha</h3>
+                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
+                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
+                        3,000+
+                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
+                        child's
+                        secret superpower for resilience, calm, and growth.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Builds Immunity</div>
+                        <div class="ptag">Reduces Stress</div>
+                        <div class="ptag">Muscle Growth</div>
+                        <div class="ptag">Better Sleep</div>
+                        <div class="ptag">More Energy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-1">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">02</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
+                        Tonic</div>
+                    <h3 class="ing-name">Brahmi</h3>
+                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
+                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
+                        before
+                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
+                        brain
+                        sharper with every single chew.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Laser Focus</div>
+                        <div class="ptag">Memory Boost</div>
+                        <div class="ptag">Problem Solving</div>
+                        <div class="ptag">Calm Alertness</div>
+                        <div class="ptag">Better Grades</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turmeric -->
+            <div class="ing-panel" id="ing-panel-2">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
+                        <img class="image-big" src="img/haldi.webp" alt="Turmeric">
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:9s">⭐</div>
+                        <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">03</div>
+                    <div class="ing-pill"
+                        style="background:rgba(255,214,0,.1);color:var(--ye);border:1px solid rgba(255,214,0,.2)">Golden
+                        Healer
+                    </div>
+                    <h3 class="ing-name">Turmeric Curcumin</h3>
+                    <p class="ing-sci">Curcuma longa · 95% Curcuminoids</p>
+                    <p class="ing-story">India's golden spice — used in every kitchen and every healing ritual for 5,000
+                        years.
+                        Curcumin's anti-inflammatory magic protects your child's developing cells, soothes tummies, and
+                        builds a
+                        fortress of immunity around them.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Anti-Inflammatory</div>
+                        <div class="ptag">Antioxidant Shield</div>
+                        <div class="ptag">Gut Health</div>
+                        <div class="ptag">Joint Support</div>
+                        <div class="ptag">Cell Protection</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amla -->
+            <div class="ing-panel" id="ing-panel-3">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
+                        <img class="image-big" src="img/amla.webp" alt="Amla">
+                        <div class="orbit-i" style="--orr:8.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">04</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Superfruit</div>
+                    <h3 class="ing-name">Amla</h3>
+                    <p class="ing-sci">Phyllanthus emblica · Indian Gooseberry</p>
+                    <p class="ing-story">The holy fruit of Ayurveda — revered as the "mother" of all medicines. One tiny
+                        Amla
+                        holds 20× the Vitamin C of an orange. Our grandmothers were right all along, and now science has
+                        proven it
+                        beyond any doubt.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">20× Vitamin C</div>
+                        <div class="ptag">Iron Absorption</div>
+                        <div class="ptag">Gut Healing</div>
+                        <div class="ptag">Skin Health</div>
+                        <div class="ptag">Super Immunity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- algal dha -->
+            <div class="ing-panel" id="ing-panel-4">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
+                        <img class="image-big" src="img/vitamins.webp" alt="Omega-3 DHA">
+                        <div class="orbit-i" style="--orr:7.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">05</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.1);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Modern
+                        Science
+                    </div>
+                    <h3 class="ing-name">Omega-3 DHA</h3>
+                    <p class="ing-sci">Docosahexaenoic Acid · Marine-sourced, Triple-Purified</p>
+                    <p class="ing-story">60% of your child's brain is made of fat — and DHA is the most critical building
+                        block.
+                        From deep, pristine ocean sources, our Omega-3 is triple-purified, certified for kids, and tastes
+                        absolutely
+                        nothing like fish. Promise!</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Brain Building</div>
+                        <div class="ptag">Vision Development</div>
+                        <div class="ptag">Heart Health</div>
+                        <div class="ptag">Focus & Attention</div>
+                        <div class="ptag">Reading Skills</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- vitamins -->
+            <div class="ing-panel " id="ing-panel-5">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">06</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Ayurvedic
+                        Powerhouse</div>
+                    <h3 class="ing-name">Ashwagandha</h3>
+                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
+                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
+                        3,000+
+                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
+                        child's
+                        secret superpower for resilience, calm, and growth.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Builds Immunity</div>
+                        <div class="ptag">Reduces Stress</div>
+                        <div class="ptag">Muscle Growth</div>
+                        <div class="ptag">Better Sleep</div>
+                        <div class="ptag">More Energy</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-6">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">07</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
+                        Tonic</div>
+                    <h3 class="ing-name">Minerals</h3>
+                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
+                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
+                        before
+                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
+                        brain
+                        sharper with every single chew.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Laser Focus</div>
+                        <div class="ptag">Memory Boost</div>
+                        <div class="ptag">Problem Solving</div>
+                        <div class="ptag">Calm Alertness</div>
+                        <div class="ptag">Better Grades</div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /ing-panels -->
+    </section>
+
+
+
+        <!-- ══════════════════════════════════════════
                  DIET CHART SECTION
             ══════════════════════════════════════════ -->
     <section class="diet-section" id="diet-chart">
@@ -704,8 +991,6 @@
             </div><!-- /diet-card -->
         </div><!-- /stepper-wrap -->
     </section>
-
-
     <!-- ══════════════════════════════════════════
                  SUBSCRIPTION MODAL
             ══════════════════════════════════════════ -->
@@ -753,274 +1038,6 @@
 
 
     <!-- ══════════════════════════════════════════
-                   INGREDIENTS HIGHLIGHT
-              ══════════════════════════════════════════ -->
-    <section class="ing-section" id="ingredients">
-        <div class="stars-bg" id="starsBg"></div>
-
-        <div class="ing-header reveal">
-            <span class="sec-eye">Ingredient Transparency</span>
-            <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
-            <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's gummy
-                —
-                an honest, magical story of every ingredient we use.</p>
-        </div>
-
-        <div class="ing-tabs reveal">
-            <button class="itab active" data-ing="0"><img src="img/gradient1.webp" alt="">
-                Ashwagandha</button>
-            <button class="itab" data-ing="1"> <img src="img/bb.png" alt="">Brahmi</button>
-            <button class="itab" data-ing="2"> <img src="img/haldi.webp" alt=""> Turmeric</button>
-            <button class="itab" data-ing="3"> <img src="img/amla.webp" alt=""> Amla</button>
-            <button class="itab" data-ing="4"> <img src="img/vitamins.webp" alt=""> Algal Dha</button>
-            <button class="itab" data-ing="5"> <img src="img/vitamins.webp" alt=""> Vitamins</button>
-            <button class="itab" data-ing="6"> <img src="img/vitamins.webp" alt=""> Minerals</button>
-        </div>
-
-        <div class="ing-panels">
-
-            <!-- Ashwagandha -->
-            <div class="ing-panel active" id="ing-panel-0">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">01</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Ayurvedic
-                        Powerhouse</div>
-                    <h3 class="ing-name">Ashwagandha</h3>
-                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
-                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
-                        3,000+
-                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
-                        child's
-                        secret superpower for resilience, calm, and growth.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Builds Immunity</div>
-                        <div class="ptag">Reduces Stress</div>
-                        <div class="ptag">Muscle Growth</div>
-                        <div class="ptag">Better Sleep</div>
-                        <div class="ptag">More Energy</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Brahmi -->
-            <div class="ing-panel" id="ing-panel-1">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="img/bb.png" alt="Brahmi">
-                        <div class="orbit-i" style="--orr:6s">⭐</div>
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">02</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
-                        Tonic</div>
-                    <h3 class="ing-name">Brahmi</h3>
-                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
-                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
-                        before
-                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
-                        brain
-                        sharper with every single chew.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Laser Focus</div>
-                        <div class="ptag">Memory Boost</div>
-                        <div class="ptag">Problem Solving</div>
-                        <div class="ptag">Calm Alertness</div>
-                        <div class="ptag">Better Grades</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Turmeric -->
-            <div class="ing-panel" id="ing-panel-2">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
-                        <img class="image-big" src="img/haldi.webp" alt="Turmeric">
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:9s">⭐</div>
-                        <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">03</div>
-                    <div class="ing-pill"
-                        style="background:rgba(255,214,0,.1);color:var(--ye);border:1px solid rgba(255,214,0,.2)">Golden
-                        Healer
-                    </div>
-                    <h3 class="ing-name">Turmeric Curcumin</h3>
-                    <p class="ing-sci">Curcuma longa · 95% Curcuminoids</p>
-                    <p class="ing-story">India's golden spice — used in every kitchen and every healing ritual for 5,000
-                        years.
-                        Curcumin's anti-inflammatory magic protects your child's developing cells, soothes tummies, and
-                        builds a
-                        fortress of immunity around them.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Anti-Inflammatory</div>
-                        <div class="ptag">Antioxidant Shield</div>
-                        <div class="ptag">Gut Health</div>
-                        <div class="ptag">Joint Support</div>
-                        <div class="ptag">Cell Protection</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Amla -->
-            <div class="ing-panel" id="ing-panel-3">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
-                        <img class="image-big" src="img/amla.webp" alt="Amla">
-                        <div class="orbit-i" style="--orr:8.5s">⭐</div>
-                        <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">04</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Superfruit</div>
-                    <h3 class="ing-name">Amla</h3>
-                    <p class="ing-sci">Phyllanthus emblica · Indian Gooseberry</p>
-                    <p class="ing-story">The holy fruit of Ayurveda — revered as the "mother" of all medicines. One tiny
-                        Amla
-                        holds 20× the Vitamin C of an orange. Our grandmothers were right all along, and now science has
-                        proven it
-                        beyond any doubt.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">20× Vitamin C</div>
-                        <div class="ptag">Iron Absorption</div>
-                        <div class="ptag">Gut Healing</div>
-                        <div class="ptag">Skin Health</div>
-                        <div class="ptag">Super Immunity</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- algal dha -->
-            <div class="ing-panel" id="ing-panel-4">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
-                        <img class="image-big" src="img/vitamins.webp" alt="Omega-3 DHA">
-                        <div class="orbit-i" style="--orr:7.5s">⭐</div>
-                        <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">05</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.1);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Modern
-                        Science
-                    </div>
-                    <h3 class="ing-name">Omega-3 DHA</h3>
-                    <p class="ing-sci">Docosahexaenoic Acid · Marine-sourced, Triple-Purified</p>
-                    <p class="ing-story">60% of your child's brain is made of fat — and DHA is the most critical building
-                        block.
-                        From deep, pristine ocean sources, our Omega-3 is triple-purified, certified for kids, and tastes
-                        absolutely
-                        nothing like fish. Promise!</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Brain Building</div>
-                        <div class="ptag">Vision Development</div>
-                        <div class="ptag">Heart Health</div>
-                        <div class="ptag">Focus & Attention</div>
-                        <div class="ptag">Reading Skills</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- vitamins -->
-            <div class="ing-panel " id="ing-panel-5">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">06</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Ayurvedic
-                        Powerhouse</div>
-                    <h3 class="ing-name">Ashwagandha</h3>
-                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
-                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
-                        3,000+
-                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
-                        child's
-                        secret superpower for resilience, calm, and growth.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Builds Immunity</div>
-                        <div class="ptag">Reduces Stress</div>
-                        <div class="ptag">Muscle Growth</div>
-                        <div class="ptag">Better Sleep</div>
-                        <div class="ptag">More Energy</div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Brahmi -->
-            <div class="ing-panel" id="ing-panel-6">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="img/bb.png" alt="Brahmi">
-                        <div class="orbit-i" style="--orr:6s">⭐</div>
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">07</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
-                        Tonic</div>
-                    <h3 class="ing-name">Minerals</h3>
-                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
-                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
-                        before
-                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
-                        brain
-                        sharper with every single chew.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Laser Focus</div>
-                        <div class="ptag">Memory Boost</div>
-                        <div class="ptag">Problem Solving</div>
-                        <div class="ptag">Calm Alertness</div>
-                        <div class="ptag">Better Grades</div>
-                    </div>
-                </div>
-            </div>
-
-        </div><!-- /ing-panels -->
-    </section>
-
-    <!-- ══════════════════════════════════════════
                    HOW IT WORKS
               ══════════════════════════════════════════ -->
     <section class="how-section reveal">
@@ -1055,18 +1072,7 @@
     </section>
 
 
-    <!-- ══════════════════════════════════════════
-                   QUIZ CTA
-              ══════════════════════════════════════════ -->
-    <div class="quiz-cta reveal" id="quiz">
-        <div>
-            <span class="quiz-label"> Personalized Nutrition</span>
-            <h2 class="quiz-h">Not Sure Which Gummy<br>Is Right for Your Child?</h2>
-            <p class="quiz-p">Take our 2-minute wellness quiz and get a FREE personalized diet chart crafted by certified
-                Ayurvedic nutritionists. No signup needed.</p>
-        </div>
-        <button class="quiz-btn">Start Free Quiz →</button>
-    </div>
+
 
     <!-- ══════════════════════════════════════════
                    CERTIFICATIONS CAROUSEL
@@ -1107,324 +1113,12 @@
     <!-- ══════════════════════════════════════════
                    TESTIMONIALS
               ══════════════════════════════════════════ -->
-    <section class="testi-section reveal" id="reviews">
-        <span class="sec-eye">Parent Reviews</span>
-        <h2 class="sec-title" style="text-align:center">10,000+ Happy Families </h2>
-
-        <div class="rev-summary reveal">
-            <div class="rev-big">
-                <div class="rev-big-n">4.9</div>
-                <div class="rev-big-stars">★★★★★</div>
-                <div class="rev-big-l">Based on 6,031 reviews</div>
-            </div>
-            <div class="rev-bars">
-                <div class="rbar-row">5 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:88%"></div>
-                    </div> 88%</div>
-                <div class="rbar-row">4 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:8%"></div>
-                    </div> 8%</div>
-                <div class="rbar-row">3 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:2.5%"></div>
-                    </div> 2.5%</div>
-                <div class="rbar-row">2 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:1%"></div>
-                    </div> 1%</div>
-                <div class="rbar-row">1 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:.5%"></div>
-                    </div> 0.5%</div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:10px;min-width:180px">
-                <div
-                    style="text-align:center;font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dk);margin-bottom:4px">
-                    Top Tags</div>
-                <div style="display:flex;flex-wrap:wrap;gap:8px">
-                    <span
-                        style="background:var(--pkl);color:var(--pk);border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Tastes
-                        Great</span>
-                    <span
-                        style="background:var(--skl);color:#0088bb;border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Really
-                        Works</span>
-                    <span
-                        style="background:var(--mnl);color:var(--mn);border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Fast
-                        Results</span>
-                    <span
-                        style="background:var(--yel);color:#907000;border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Great
-                        Value</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="reels-section-wrap">
-
-            <!-- Header row with title + nav buttons -->
-            <div class="reels-header">
-                <p class="reels-title">Parent Video Reviews</p>
-                <div class="reels-nav">
-                    <button class="reels-btn" id="reelPrev" aria-label="Previous">‹</button>
-                    <button class="reels-btn reels-btn-next" id="reelNext" aria-label="Next">›</button>
-                </div>
-            </div>
-
-            <!-- Viewport clips the track -->
-            <div class="reels-viewport" id="reelsViewport">
-                <div class="reels-row" id="reelsRow">
-
-                    <div class="reel" data-reel="0" style="background:linear-gradient(160deg,#FF8FAB,#FF4D8F)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb0"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp0">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Priya Sharma</div>
-                            <div class="reel-txt">"My daughter hasn't missed school since starting GrowStrong!"</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="1" style="background:linear-gradient(160deg,#7BC8FF,#0099DD)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb1"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp1">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Rahul Mehta</div>
-                            <div class="reel-txt">"BrainBoost changed exam season for us. His focus is insane."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="2" style="background:linear-gradient(160deg,#B79FFF,#7C3AED)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb2"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp2">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Dr. Anita Nair</div>
-                            <div class="reel-txt">"As a pediatrician, I recommend NutriBuddy with full confidence."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="3" style="background:linear-gradient(160deg,#FFD97D,#FF9900)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb3"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp3">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Fatima Khan</div>
-                            <div class="reel-txt">"DreamCalm turned bedtime from nightmare into our fav time."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="4" style="background:linear-gradient(160deg,#6EF0C0,#00A87A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb4"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp4">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Vikram Patel</div>
-                            <div class="reel-txt">"Both kids on different NutriBuddy plans. Life-changing."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="5" style="background:linear-gradient(160deg,#FFB3C6,#FF6B8A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb5"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Sneha Joshi</div>
-                            <div class="reel-txt">"My toddler asks for his gummy before breakfast. That's a win."</div>
-                        </div>
-                    </div>
-                    <div class="reel" data-reel="6" style="background:linear-gradient(160deg,#FFB3C6,#FF6B8A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb6"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Sneha Joshi</div>
-                            <div class="reel-txt">"My toddler asks for his gummy before breakfast. That's a win."</div>
-                        </div>
-                    </div>
-                    <div class="reel" data-reel="7" style="background:linear-gradient(160deg,#FFB3C6,#FF6B8A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb7"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-stars">★★★★★</div>
-                            <div class="reel-ava">👱‍♀️</div>
-                            <div class="reel-name">Sneha Joshi</div>
-                            <div class="reel-txt">"My toddler asks for his gummy before breakfast. That's a win."</div>
-                        </div>
-                    </div>
-
-                </div><!-- /reels-row -->
-            </div><!-- /reels-viewport -->
-
-            <!-- Dot indicators -->
-            <div class="reels-dots" id="reelsDots">
-                <button class="reels-dot active" data-index="0"></button>
-                <button class="reels-dot" data-index="1"></button>
-                <button class="reels-dot" data-index="2"></button>
-                <button class="reels-dot" data-index="3"></button>
-                <button class="reels-dot" data-index="4"></button>
-                <button class="reels-dot" data-index="5"></button>
-            </div>
-
-        </div><!-- /reels-section-wrap -->
-
-        <div class="wreviews">
-            <div class="wrev">
-                <div class="wrev-stars">★★★★★</div>
-                <p class="wrev-txt">My 7-year-old was constantly falling sick. After 2 months of GrowStrong, she hasn't
-                    missed a
-                    single day of school — and she asks for it every morning!</p>
-                <div class="wrev-author">
-                    <div class="wrev-ava" style="background:#FFE8F5"></div>
-                    <div>
-                        <div class="wrev-name">Priya Sharma</div>
-                        <div class="wrev-meta">Mum of 2 · Delhi</div>
-                        <div class="wrev-badge">✓ Verified Purchase</div>
-                    </div>
-                </div>
-            </div>
-            <div class="wrev">
-                <div class="wrev-stars">★★★★★</div>
-                <p class="wrev-txt">BrainBoost Chews have been a game-changer for exam prep. My son's class teacher
-                    actually
-                    called to ask what changed — his focus is incredible!</p>
-                <div class="wrev-author">
-                    <div class="wrev-ava" style="background:#E8F5FF"></div>
-                    <div>
-                        <div class="wrev-name">Rahul Mehta</div>
-                        <div class="wrev-meta">Dad of 1 · Mumbai</div>
-                        <div class="wrev-badge">✓ Verified Purchase</div>
-                    </div>
-                </div>
-            </div>
-            <div class="wrev">
-                <div class="wrev-stars">★★★★★</div>
-                <p class="wrev-txt">As a pediatrician, I'm very selective about what I recommend. NutriBuddy's completely
-                    transparent formulas and third-party testing give me total confidence.</p>
-                <div class="wrev-author">
-                    <div class="wrev-ava" style="background:#EDE9FE"></div>
-                    <div>
-                        <div class="wrev-name">Dr. Anita Nair</div>
-                        <div class="wrev-meta">Pediatrician · Bangalore</div>
-                        <div class="wrev-badge">✓ Medical Expert</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
                    FAQ
               ══════════════════════════════════════════ -->
-    <section class="faq-section reveal">
-        <span class="sec-eye">Got Questions?</span>
-        <h2 class="sec-title">Parents <span class="acc">Ask</span> Us 🙋</h2>
-        <div class="faq-list">
-            <div class="faq-item open">
-                <button class="faq-q">Are NutriBuddy products safe for young children?<span
-                        class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Absolutely. All products are formulated for children aged 2–14 with age-appropriate dosages,
-                        third-party
-                        lab tested every batch, and reviewed by certified pediatricians. Zero artificial colors, flavors, or
-                        harmful
-                        preservatives — ever.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">How long before I see results?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Most parents notice improvements in energy and mood within 2–3 weeks. For immunity and growth
-                        benefits,
-                        60–90 days of consistent use shows the best results. We recommend tracking milestones on your parent
-                        dashboard.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Are these vegetarian or vegan?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>All our gummies and chews are 100% vegetarian. Select vegan options are clearly labeled on each
-                        product
-                        page. Zero gelatin or animal-derived ingredients — ever.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Can my child take multiple products together?<span
-                        class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Yes! Our products are designed to complement each other beautifully. Take our personalized quiz to
-                        build
-                        the right supplement stack for your child's specific age, goals, and health needs.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">What if my child doesn't like the taste?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>We offer a 30-day taste guarantee. If your child genuinely doesn't enjoy the flavor, we'll refund you
-                        completely — no questions asked. We're that confident. (But honestly, 98% of kids love it!)</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Is there a subscription option?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Yes! Subscribe & Save gives you 20% off every order, free delivery, priority restocking during
-                        shortages,
-                        and exclusive member discounts. Cancel or pause anytime — no penalties whatsoever.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    @include('partials.faq-section')
     <!-- ══════════════════════════════════════════
                    NEWSLETTER
               ══════════════════════════════════════════ -->

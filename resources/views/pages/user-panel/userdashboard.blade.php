@@ -5,18 +5,6 @@
 @section('panel-content')
   <div class="ud-main">
 
-    <!-- mobile topbar with sidebar toggle -->
-    <div class="inner-topbar">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
-      <span class="it-title">Overview </span>
-      <div style="width:36px"></div><!-- spacer -->
-    </div>
 
     <div class="page">
 
@@ -92,7 +80,7 @@
             <div class="lbl">Cancelled</div>
           </div>
         </div>
-        <div class="stat-card d3">
+        <div class="stat-card d3" style="display:none;">
           <div class="sc-icon" style="background:var(--pkl)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pk)" stroke-width="2.2">
               <path
@@ -112,7 +100,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">0</div>
+            <div class="num">{{ \App\Models\ProductReview::where('user_id', auth()->id())->count() }}</div>
             <div class="lbl">Reviews</div>
           </div>
         </div>
@@ -120,15 +108,15 @@
 
       <!-- QUICK ACTIONS -->
       <div class="qa-grid">
-        <a href="#" class="qa-btn d3">
+        <a href="{{ route('product') }}" class="qa-btn d3">
           <div class="qi" style="background:var(--pkl)">🛒</div>
           <span>Shop Now</span>
         </a>
-        <a href="#" class="qa-btn d4">
+        <a href="{{ route('order') }}" class="qa-btn d4">
           <div class="qi" style="background:var(--mnl)">📦</div>
           <span>Track Order</span>
         </a>
-        <a href="#" class="qa-btn d5">
+        <a href="{{ route('my-coupons') }}" class="qa-btn d5">
           <div class="qi" style="background:var(--pul)">🎟️</div>
           <span>My Coupons</span>
         </a>
@@ -165,13 +153,16 @@
         <!-- RIGHT COLUMN -->
         <div style="display:flex;flex-direction:column;gap:16px">
           <!-- Loyalty -->
-          <div class="progress-card">
-            <h4>NutriBuddy Loyalty</h4>
-            <p>You're 1 order away from Gold status!</p>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width:75%"></div>
+          <div class="progress-card" onclick="window.location.href='{{ route('wallet') }}'" style="cursor: pointer;">
+            <h4>NB Coins Wallet 🪙</h4>
+            <div style="font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--or); margin: 8px 0;">
+                {{ auth()->user()->coins_balance }}
             </div>
-            <div class="progress-labels"><span>Silver</span><span>75% to Gold</span></div>
+            <p style="font-size: 0.8rem; color: var(--text-light);">Available for your next discount!</p>
+            <div class="progress-bar" style="height: 6px; margin-top: 10px;">
+              <div class="progress-fill" style="width:{{ min(100, (auth()->user()->coins_balance / 1000) * 100) }}%; background: var(--or);"></div>
+            </div>
+            <div class="progress-labels"><span>0</span><span>Next goal: 1000</span></div>
           </div>
           <!-- Reviews -->
           <div class="box" style="flex:1">

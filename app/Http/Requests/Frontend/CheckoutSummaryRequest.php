@@ -15,6 +15,7 @@ class CheckoutSummaryRequest extends FormRequest
     {
         return [
             'coupon_code' => ['nullable', 'string', 'max:100'],
+            'coins_to_redeem' => ['nullable', 'integer', 'min:0'],
         ];
     }
 }

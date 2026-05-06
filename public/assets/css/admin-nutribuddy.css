@@ -152,10 +152,7 @@ body.admin-nb-theme {
 
 .sidebar {
     background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.24), transparent 26%),
-        linear-gradient(180deg, #ff6f98 0%, #ff8f72 55%, #ffbf69 100%);
-    box-shadow: 24px 0 40px rgba(145, 87, 87, 0.16);
-    border-right: 1px solid rgba(255, 255, 255, 0.18);
+       linear-gradient(135deg, #ec1238, #1c199a);
 }
 
 .sidebar::before {
@@ -240,7 +237,7 @@ body.admin-nb-theme {
 }
 
 .sidebar-menu-area {
-    padding: 0 14px 22px;
+    padding: 22 14px 22px;
 }
 
 .sidebar-menu > li > a,
@@ -297,6 +294,7 @@ body.admin-nb-theme {
     border-radius: 28px !important;
     box-shadow: var(--nb-shadow) !important;
     overflow: hidden;
+    height: 100%;
 }
 
 .card .card {

@@ -1,3 +1,11 @@
+@php
+    $sideSectionLogo = \App\Models\Setting::get('side_section_logo');
+    $sideSectionLogoExists = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
+    $sideSectionLogoUrl = $sideSectionLogoExists
+        ? asset('storage/' . $sideSectionLogo) . '?v=' . \Illuminate\Support\Facades\Storage::disk('public')->lastModified($sideSectionLogo)
+        : asset('img/logo.png');
+@endphp
+
 <footer class="kiddex-footer">
     <div class="footer-anim">
         <div class="fa-dot"
@@ -11,7 +19,7 @@
     <div class="footer-widget-area">
         <div class="fw-brand">
             <a href="{{ route('home') }}" class="footer-logo-text">
-                <img src="{{ \App\Models\Setting::get('side_section_logo') ? asset('storage/' . \App\Models\Setting::get('side_section_logo')) : asset('img/logo.png') }}"
+                <img src="{{ $sideSectionLogoUrl }}"
                     alt="NutriBuddy" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
                 <span
                     style="display:none;font-family:'Fredoka One',cursive;font-size:1.6rem;color:var(--pk)">NutriBuddy</span>
@@ -76,7 +84,7 @@
             <ul>
                 <li><a href="{{ route('about') }}">About Us</a></li>
                 <li><a href="#">Our Ingredients</a></li>
-                <li><a href="#">Blog & Tips</a></li>
+                <li><a href="{{ route('blog') }}">Blog & Tips</a></li>
                 <li><a href="#">Pediatrician Network</a></li>
                 <li><a href="{{ route('contact') }}">Contact Us</a></li>
             </ul>

@@ -487,7 +487,7 @@ async function loadCartPopup() {
     /* ── Authenticated cart ── */
     const payload  = await res.json().catch(() => ({}));
     const items    = payload.cart?.items || [];
-    const subtotal = payload.pricing?.subtotal || 0;
+    const subtotal = payload.pricing?.display_subtotal || 0;
     const count    = getCartCount(items);
 
     if (cartCountEl) cartCountEl.textContent = String(count);
@@ -503,7 +503,7 @@ async function loadCartPopup() {
     items.forEach(it => {
       const name  = it.product?.name || 'Product';
       const qty   = Number(it.quantity || 1);
-      const price = it.product_variant ? it.product_variant.price : it.product?.base_price;
+      const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
       const img   = it.product?.primary_image?.image_path
         ? '/storage/' + it.product.primary_image.image_path
         : '/img/product2.png';
@@ -655,15 +655,18 @@ document.querySelectorAll('.itab').forEach(tab => {
 document.querySelectorAll('.btn-add').forEach(btn => {
   btn.addEventListener('click', async () => {
     const productId = btn.getAttribute('data-id');
-    if (!productId) return;
+    if (!productId || btn.disabled) return;
 
-    const prevHtml = btn.innerHTML;
+    // Store the true original label once — prevents "Adding..." snapshot bug
+    if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
+    const origHtml = btn.dataset.origHtml;
+
     btn.disabled = true;
     btn.innerHTML = 'Adding...';
 
     const added = await addToCart(productId, 1, null, btn);
     if (!added) {
-      btn.innerHTML = prevHtml;
+      btn.innerHTML = origHtml;
       btn.disabled = false;
       return;
     }
@@ -672,7 +675,7 @@ document.querySelectorAll('.btn-add').forEach(btn => {
     btn.innerHTML = 'Added ✓';
     setTimeout(() => {
       btn.classList.remove('added');
-      btn.innerHTML = prevHtml;
+      btn.innerHTML = origHtml;
       btn.disabled = false;
     }, 1200);
   });
@@ -1383,7 +1386,7 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
 
     if (!res.ok) {
       const payload = await res.json().catch(() => ({}));
-      alert(payload.message || 'Unable to add item to cart.');
+      if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to add item to cart.', 'error');
       return false;
     }
     requestSucceeded = true;
@@ -1396,7 +1399,7 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
     return true;
 
   } catch (_) {
-    if (!requestSucceeded) alert('Unable to add item to cart.');
+    if (!requestSucceeded && typeof nbToast === 'function') nbToast('Unable to add item to cart.', 'error');
     return false;
   }
 }
@@ -1404,8 +1407,10 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
 function _flashCartBtn(sourceEl) {
   const btn = sourceEl || document.querySelector('.btn-cart');
   if (!btn) return;
-  const orig = btn.innerHTML;
-  btn.innerHTML         = 'Added to Cart!';
+  // .btn-add buttons are managed by the click listener — skip to avoid conflicting restores
+  if (btn.classList.contains('btn-add')) return;
+  const orig = btn.dataset.origHtml || btn.innerHTML;
+  btn.innerHTML         = 'Added to Cart! ✓';
   btn.style.background  = 'var(--mnl)';
   btn.style.color       = 'var(--mn)';
   setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);

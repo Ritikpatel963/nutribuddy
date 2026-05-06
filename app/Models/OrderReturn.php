@@ -14,6 +14,7 @@ class OrderReturn extends Model
         'order_id',
         'return_number',
         'reason',
+        'media_paths',
         'status',
         'refund_amount',
         'admin_note',
@@ -23,6 +24,7 @@ class OrderReturn extends Model
     {
         return [
             'refund_amount' => 'decimal:2',
+            'media_paths' => 'array',
         ];
     }
 

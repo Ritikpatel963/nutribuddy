@@ -14,6 +14,20 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.ecommerce.coupons.store') }}" class="row g-3">
                 @csrf
+                <div class="col-md-3">
+                    <label class="form-label">Assign to User (Optional)</label>
+                    <div class="icon-field">
+                        <span class="icon">
+                            <iconify-icon icon="solar:user-linear"></iconify-icon>
+                        </span>
+                        <select name="user_id" class="form-select" style="padding-left: 40px;">
+                            <option value="">Any User</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="col-md-2">
                     <label class="form-label">Code</label>
                     <div class="icon-field">
@@ -126,6 +140,7 @@
                     <thead>
                         <tr>
                             <th>Coupon Details</th>
+                            <th>Assigned To</th>
                             <th>Discount</th>
                             <th>Usage</th>
                             <th>Validity</th>
@@ -141,6 +156,13 @@
                                         <span class="text-md fw-bold text-primary-600">{{ $coupon->code }}</span>
                                         <small class="text-secondary-light">{{ $coupon->name ?? 'No Name' }}</small>
                                     </div>
+                                </td>
+                                <td>
+                                    @if($coupon->user)
+                                        <span class="badge bg-warning-100 text-warning-600 px-2 fw-medium">{{ $coupon->user->name }}</span>
+                                    @else
+                                        <span class="text-secondary-light">Anyone</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
@@ -175,6 +197,7 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#editCouponModal"
                                             data-id="{{ $coupon->id }}"
+                                            data-user_id="{{ $coupon->user_id }}"
                                             data-code="{{ $coupon->code }}"
                                             data-name="{{ $coupon->name }}"
                                             data-discount_type="{{ $coupon->discount_type }}"
@@ -219,6 +242,20 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="row g-3">
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label">Assign to User (Optional)</label>
+                                <div class="icon-field">
+                                    <span class="icon">
+                                        <iconify-icon icon="solar:user-linear"></iconify-icon>
+                                    </span>
+                                    <select name="user_id" id="edit_coupon_user_id" class="form-select" style="padding-left: 40px;">
+                                        <option value="">Any User</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <label class="form-label">Code</label>
                                 <div class="icon-field">
@@ -338,6 +375,7 @@
                     const button = event.relatedTarget;
                     
                     const action = button.getAttribute('data-action');
+                    const userId = button.getAttribute('data-user_id');
                     const code = button.getAttribute('data-code');
                     const name = button.getAttribute('data-name');
                     const discountType = button.getAttribute('data-discount_type');
@@ -353,6 +391,7 @@
                     const form = editModal.querySelector('#editCouponForm');
                     form.setAttribute('action', action);
                     
+                    editModal.querySelector('#edit_coupon_user_id').value = userId || '';
                     editModal.querySelector('#edit_coupon_code').value = code || '';
                     editModal.querySelector('#edit_coupon_name').value = name || '';
                     editModal.querySelector('#edit_coupon_discount_type').value = discountType;

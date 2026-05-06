@@ -34,6 +34,30 @@
                                 {{ $orderReturn->reason }}
                             </div>
                         </div>
+                        @if(!empty($orderReturn->media_paths) && count($orderReturn->media_paths) > 0)
+                        <div class="col-12">
+                            <h6 class="text-secondary-light fw-medium mb-8">Uploaded Media (Evidence):</h6>
+                            <div class="d-flex flex-wrap gap-16 p-16 radius-8 bg-light border">
+                                @foreach($orderReturn->media_paths as $media)
+                                    @php
+                                        $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
+                                    @endphp
+                                    <div class="position-relative">
+                                        @if(in_array($ext, ['mp4', 'mov', 'avi']))
+                                            <video width="200" height="150" controls class="radius-8 border" style="object-fit: cover;">
+                                                <source src="{{ asset('storage/' . $media) }}" type="video/{{ $ext == 'mov' ? 'quicktime' : $ext }}">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        @else
+                                            <a href="{{ asset('storage/' . $media) }}" target="_blank">
+                                                <img src="{{ asset('storage/' . $media) }}" alt="Return Media" class="radius-8 border" style="width: 200px; height: 150px; object-fit: cover;">
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                         @if ($orderReturn->admin_note)
                             <div class="col-12">
                                 <h6 class="text-secondary-light fw-medium mb-8">Admin Note:</h6>

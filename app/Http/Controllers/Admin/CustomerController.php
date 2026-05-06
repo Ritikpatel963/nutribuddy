@@ -10,11 +10,23 @@ use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = User::where('role', 'customer')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = User::where('role', 'customer')->with('customerAddresses');
+
+        if ($request->filled('city')) {
+            $query->whereHas('customerAddresses', function ($q) use ($request) {
+                $q->where('city', 'like', '%' . $request->city . '%');
+            });
+        }
+
+        if ($request->filled('state')) {
+            $query->whereHas('customerAddresses', function ($q) use ($request) {
+                $q->where('state', 'like', '%' . $request->state . '%');
+            });
+        }
+
+        $customers = $query->orderBy('created_at', 'desc')->get();
             
         return view('admin.ecommerce.customers.index', compact('customers'));
     }
@@ -35,7 +47,7 @@ class CustomerController extends Controller
             'phone' => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
             'role' => 'customer',
-            'is_active' => $request->has('is_active'),
+            'is_active' => $request->boolean('is_active'),
         ]);
 
         return redirect()->back()->with('success', 'Customer created successfully.');
@@ -59,7 +71,7 @@ class CustomerController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'is_active' => $request->has('is_active'),
+            'is_active' => $request->boolean('is_active'),
         ];
 
         if ($request->filled('password')) {

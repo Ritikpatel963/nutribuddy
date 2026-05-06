@@ -65,6 +65,7 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
             // Inventory fields
@@ -184,6 +185,7 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
             // Inventory fields

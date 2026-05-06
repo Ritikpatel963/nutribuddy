@@ -12,6 +12,7 @@ class Coupon extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'code',
         'name',
         'discount_type',
@@ -41,6 +42,11 @@ class Coupon extends Model
         ];
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -51,9 +57,13 @@ class Coupon extends Model
         return $this->hasMany(CouponUsage::class);
     }
 
-    public function isCurrentlyValid(): bool
+    public function isCurrentlyValid(?int $userId = null): bool
     {
         if (! $this->is_active) {
+            return false;
+        }
+
+        if ($this->user_id !== null && $this->user_id !== $userId) {
             return false;
         }
 

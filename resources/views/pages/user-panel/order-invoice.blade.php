@@ -4,158 +4,253 @@
 
 @push('styles')
     <style>
-        .invoice-container {
-            background: #fff;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
-            padding: 40px;
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .invoice-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 8px;
-            background: linear-gradient(90deg, var(--pk), var(--pu));
-        }
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 50px;
-        }
-        .invoice-logo img {
-            max-height: 50px;
-        }
-        .invoice-title {
-            text-align: right;
-        }
-        .invoice-title h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 2.2rem;
-            color: var(--dk);
-            margin: 0;
-            line-height: 1;
-        }
-        .invoice-title p {
-            color: var(--muted);
-            font-size: 0.9rem;
-            margin: 5px 0 0;
-        }
-        .invoice-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 50px;
-            padding: 30px;
-            background: var(--cr);
-            border-radius: 20px;
-        }
-        .grid-col h4 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 0.85rem;
-            color: var(--pk);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 15px;
-        }
-        .grid-col p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: var(--dk);
-            margin: 0;
-        }
-        .grid-col .muted {
-            color: var(--muted);
-            font-size: 0.85rem;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-            margin-bottom: 40px;
-        }
-        .items-table th {
-            padding: 15px 20px;
-            text-align: left;
-            font-family: 'Fredoka One', cursive;
-            font-size: 0.8rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid var(--border);
-        }
-        .items-table td {
-            padding: 20px;
-            background: #fff;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-        .items-table td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
-        .items-table td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
-        
-        .item-name { font-weight: 800; color: var(--dk); font-size: 1.05rem; }
-        .item-meta { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-        .item-spec { display: inline-block; background: var(--pul); color: var(--pud); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; margin-top: 6px; font-weight: 700; margin-right: 5px;}
+        /* ═══════════════════════════════════════════════════════
+           ADMIN-STYLE INVOICE FOR USER PANEL
+           ═══════════════════════════════════════════════════════ */
 
-        .summary-box {
-            display: flex;
-            justify-content: flex-end;
+        .inv-wrap * {
+            box-sizing: border-box !important;
         }
-        .summary-table {
-            width: 320px;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            font-size: 0.95rem;
-        }
-        .summary-row.grand-total {
-            margin-top: 15px;
-            padding: 20px 0;
-            border-top: 2px dashed var(--border);
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.5rem;
-            color: var(--pu);
-        }
-        .invoice-footer {
-            margin-top: 60px;
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid var(--border);
-            color: var(--muted);
-            font-size: 0.85rem;
-        }
-        .btn-download-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(135deg, var(--pk), var(--pu));
-            color: #fff;
-            padding: 16px 32px;
-            border-radius: 50px;
-            font-family: 'Fredoka One', cursive;
-            text-decoration: none;
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .btn-download-float:hover { transform: translateY(-5px); color: #fff; }
 
-        @media (max-width: 900px) {
-            .invoice-grid { grid-template-columns: 1fr; gap: 30px; }
-            .invoice-header { flex-direction: column; gap: 20px; text-align: center; }
-            .invoice-title { text-align: center; width: 100%; }
-            .invoice-container { padding: 25px; }
+        .inv-wrap {
+            font-family: 'Inter', 'Segoe UI', sans-serif !important;
+            max-width: 100% !important;
+            margin: 0 auto !important;
+            padding: 0 0 40px !important;
+        }
+
+        /* ── Card ── */
+        .inv-wrap .inv-card {
+            background: #fff !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 24px !important;
+            overflow: hidden !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04) !important;
+            position: relative !important;
+        }
+
+        .inv-wrap .inv-card-topbar {
+            height: 8px !important;
+            background: linear-gradient(90deg, var(--pk), var(--pu)) !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+
+        .inv-wrap .inv-body {
+            padding: 40px !important;
+        }
+
+        /* ── Header ── */
+        .inv-wrap .inv-header {
+            width: 100% !important;
+            margin-bottom: 30px !important;
+            padding-bottom: 24px !important;
+            border-bottom: 2px solid #f3f4f6 !important;
+            display: table !important;
+            table-layout: fixed !important;
+        }
+
+        .inv-wrap .inv-company-left {
+            display: table-cell !important;
+            vertical-align: top !important;
+            width: 60% !important;
+        }
+
+        .inv-wrap .inv-title-block {
+            display: table-cell !important;
+            vertical-align: top !important;
+            text-align: right !important;
+            width: 40% !important;
+        }
+
+        .inv-wrap .inv-company-logo img {
+            height: 50px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .inv-wrap .inv-company-name {
+            font-family: 'Fredoka One', cursive !important;
+            font-size: 1.2rem !important;
+            color: var(--dk) !important;
+            margin-bottom: 6px !important;
+        }
+
+        .inv-wrap .inv-company-meta {
+            font-size: 0.85rem !important;
+            color: var(--muted) !important;
+            line-height: 1.6 !important;
+        }
+
+        .inv-wrap .inv-legal-tag {
+            display: inline-block !important;
+            background: var(--pul) !important;
+            color: var(--pud) !important;
+            padding: 3px 10px !important;
+            border-radius: 6px !important;
+            font-size: 0.72rem !important;
+            font-weight: 700 !important;
+            margin-right: 6px !important;
+            margin-top: 10px !important;
+        }
+
+        .inv-wrap .inv-word {
+            font-family: 'Fredoka One', cursive !important;
+            font-size: 2.2rem !important;
+            color: var(--dk) !important;
+            line-height: 1 !important;
+            margin-bottom: 8px !important;
+        }
+
+        .inv-wrap .inv-num {
+            font-size: 0.95rem !important;
+            color: var(--muted) !important;
+            margin-bottom: 12px !important;
+        }
+
+        .inv-wrap .inv-status-pill {
+            display: inline-block !important;
+            padding: 5px 14px !important;
+            border-radius: 8px !important;
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+        }
+
+        /* ── Info Grid ── */
+        .inv-wrap .inv-info-grid {
+            width: 100% !important;
+            background: #f9f5ff !important;
+            border-radius: 20px !important;
+            margin-bottom: 30px !important;
+            display: table !important;
+        }
+
+        .inv-wrap .inv-info-grid td {
+            width: 33.33% !important;
+            padding: 24px !important;
+            vertical-align: top !important;
+            border-right: 1px solid rgba(0,0,0,0.05) !important;
+        }
+
+        .inv-wrap .inv-info-grid td:last-child {
+            border-right: none !important;
+        }
+
+        .inv-wrap .col-label {
+            font-family: 'Fredoka One', cursive !important;
+            font-size: 0.8rem !important;
+            color: var(--pk) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            display: block !important;
+            margin-bottom: 12px !important;
+        }
+
+        .inv-wrap .inv-info-grid p {
+            font-size: 0.95rem !important;
+            line-height: 1.6 !important;
+            color: var(--dk) !important;
+            margin-bottom: 4px !important;
+        }
+
+        /* ── Table ── */
+        .inv-wrap .inv-table-wrap {
+            border: 1px solid #e5e7eb !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+            margin-bottom: 30px !important;
+        }
+
+        .inv-wrap .inv-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+
+        .inv-wrap .inv-table th {
+            background: #f9fafb !important;
+            padding: 14px !important;
+            text-align: left !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            color: var(--muted) !important;
+            text-transform: uppercase !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+
+        .inv-wrap .inv-table td {
+            padding: 16px 14px !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+            vertical-align: top !important;
+        }
+
+        .inv-wrap .inv-prod-name {
+            font-weight: 800 !important;
+            font-size: 1.05rem !important;
+            color: var(--dk) !important;
+            margin-bottom: 4px !important;
+        }
+
+        .inv-wrap .inv-spec-pill {
+            display: inline-block !important;
+            background: var(--pul) !important;
+            color: var(--pud) !important;
+            padding: 2px 8px !important;
+            border-radius: 6px !important;
+            font-size: 0.7rem !important;
+            font-weight: 700 !important;
+            margin-right: 5px !important;
+            margin-top: 5px !important;
+        }
+
+        .inv-wrap .inv-amount {
+            font-weight: 800 !important;
+        }
+
+        /* ── Totals ── */
+        .inv-wrap .inv-totals-box {
+            display: inline-block !important;
+            width: 320px !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+        }
+
+        .inv-wrap .inv-total-line {
+            display: flex !important;
+            justify-content: space-between !important;
+            padding: 12px 20px !important;
+            font-size: 0.95rem !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+        }
+
+        .inv-wrap .inv-total-line:last-child {
+            border-bottom: none !important;
+        }
+
+        .inv-wrap .inv-total-line.grand-tot {
+            background: linear-gradient(135deg, #fdf2f8, #f5f3ff) !important;
+            padding: 18px 20px !important;
+            font-family: 'Fredoka One', cursive !important;
+            font-size: 1.4rem !important;
+            color: var(--pu) !important;
+        }
+
+        @media (max-width: 768px) {
+            .inv-wrap .inv-header, .inv-wrap .inv-info-grid {
+                display: block !important;
+            }
+            .inv-wrap .inv-company-left, .inv-wrap .inv-title-block, .inv-wrap .inv-info-grid td {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
+                padding: 20px !important;
+            }
+            .inv-wrap .inv-info-grid td {
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+            }
+            .inv-wrap .inv-totals-box {
+                width: 100% !important;
+            }
         }
     </style>
 @endpush
@@ -174,116 +269,205 @@
     </div>
 
     <div class="page">
-        <div class="invoice-container fade-in">
-            <div class="invoice-header">
-                <div class="invoice-logo">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy">
-                </div>
-                <div class="invoice-title">
-                    <h1>INVOICE</h1>
-                    <p>#INV-{{ $order->order_number }}</p>
-                </div>
-            </div>
+        <div class="inv-wrap fade-in">
+            <div class="inv-card">
+                <div class="inv-card-topbar"></div>
 
-            <div class="invoice-grid">
-                <div class="grid-col">
-                    <h4>Billed To</h4>
-                    <p><strong>{{ $order->customer_name }}</strong></p>
-                    <p class="muted">{{ $order->customer_email }}</p>
-                    <p class="muted">{{ $order->customer_phone }}</p>
-                </div>
-                <div class="grid-col">
-                    <h4>Shipped To</h4>
-                    <p><strong>{{ $order->shipping_name }}</strong></p>
-                    <p class="muted">{{ $order->shipping_address_line_1 }}</p>
-                    @if($order->shipping_address_line_2)<p class="muted">{{ $order->shipping_address_line_2 }}</p>@endif
-                    <p class="muted">{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}</p>
-                </div>
-                <div class="grid-col">
-                    <h4>Summary</h4>
-                    <p class="muted">Date: <strong>{{ optional($order->placed_at)->format('d M Y') ?? $order->created_at->format('d M Y') }}</strong></p>
-                    <p class="muted">Method: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
-                    <p class="muted">Status: <span style="color: {{ $order->payment_status === 'paid' ? '#10b981' : '#f59e0b' }}; font-weight: 800;">{{ strtoupper($order->payment_status) }}</span></p>
-                </div>
-            </div>
+                <div class="inv-body">
+                    {{-- HEADER --}}
+                    <div class="inv-header">
+                        <div class="inv-company-left">
+                            <div class="inv-company-logo">
+                                <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy">
+                            </div>
+                            <div class="inv-company-name">{{ config('company.name') }}</div>
+                            <div class="inv-company-meta">
+                                <span>{{ config('company.address') }}, {{ config('company.city') }}</span><br>
+                                <span>📞 {{ config('company.phone') }} &nbsp;·&nbsp; ✉️ {{ config('company.email') }}</span>
+                            </div>
+                            <div class="inv-legal-tags">
+                                <span class="inv-legal-tag">GSTIN: {{ config('company.gst') }}</span>
+                                <span class="inv-legal-tag">PAN: {{ config('company.pan') }}</span>
+                                <span class="inv-legal-tag">CIN: {{ config('company.cin') }}</span>
+                            </div>
+                        </div>
 
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th>Product Description</th>
-                        <th style="text-align: center;">Qty</th>
-                        <th style="text-align: right;">Unit Price</th>
-                        <th style="text-align: right;">Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($order->items as $item)
-                        @php
-                            $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
-                            $variant = $item->productVariant;
-                            $product = $item->product;
-                            $specs = collect();
-                            
-                            if ($product) {
-                                if ($product->flavor || $product->flavour) $specs->put('flavor', "Flavor: " . ($product->flavor ?? $product->flavour));
-                                if ($product->pack_size) $specs->put('pack', "Pack Size: " . $product->pack_size);
-                                if ($product->age_group) $specs->put('age', "Age Group: " . $product->age_group);
-                            }
+                        <div class="inv-title-block">
+                            <div class="inv-word">INVOICE</div>
+                            <div class="inv-num">#INV-{{ $order->order_number }}</div>
+                            <div class="inv-date">
+                                Issued: {{ optional($order->placed_at)->format('d M Y') ?? $order->created_at->format('d M Y') }}
+                            </div>
+                            <span class="inv-status-pill" style="background: {{ $order->payment_status === 'paid' ? '#d1fae5' : '#fef3c7' }}; color: {{ $order->payment_status === 'paid' ? '#065f46' : '#92400e' }}">
+                                {{ strtoupper($order->payment_status) }}
+                            </span>
+                        </div>
+                    </div>
 
-                            if ($variant && $variant->attributes) {
-                                foreach($variant->attributes as $k => $v) {
-                                    $key = strtolower(str_replace(['_', '-'], ' ', $k));
-                                    if (str_contains($key, 'flav') || str_contains($key, 'pack') || str_contains($key, 'age')) {
-                                        continue;
-                                    }
-                                    $specs->put($key, ucfirst($k) . ": " . $v);
-                                }
-                            }
-                            $specs = $specs->values();
-                        @endphp
+                    {{-- INFO GRID --}}
+                    <table class="inv-info-grid">
                         <tr>
                             <td>
-                                <div class="item-name">{{ $item->product_name }}</div>
-                                @if($vName)
-                                    <div class="item-meta">{{ $vName }}</div>
-                                @endif
-                                @foreach($specs as $spec)
-                                    <span class="item-spec">{{ $spec }}</span>
-                                @endforeach
+                                <span class="col-label">Billed To</span>
+                                <p><strong>{{ $order->customer_name }}</strong></p>
+                                <p style="color: var(--muted); font-size: 0.85rem;">{{ $order->customer_email }}</p>
+                                <p style="color: var(--muted); font-size: 0.85rem;">{{ $order->customer_phone }}</p>
                             </td>
-                            <td style="text-align: center; font-weight: 700;">{{ $item->quantity }}</td>
-                            <td style="text-align: right;">₹{{ number_format($item->unit_price, 2) }}</td>
-                            <td style="text-align: right; font-weight: 800;">₹{{ number_format($item->line_total, 2) }}</td>
+                            <td>
+                                <span class="col-label">Shipped To</span>
+                                <p><strong>{{ $order->shipping_name }}</strong></p>
+                                <p style="color: var(--muted); font-size: 0.85rem;">{{ $order->shipping_address_line_1 }}</p>
+                                @if($order->shipping_address_line_2)
+                                    <p style="color: var(--muted); font-size: 0.85rem;">{{ $order->shipping_address_line_2 }}</p>
+                                @endif
+                                <p style="color: var(--muted); font-size: 0.85rem;">{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}</p>
+                            </td>
+                            <td>
+                                <span class="col-label">Payment</span>
+                                <p>Method: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
+                                <p>Order ID: <strong>#{{ $order->order_number }}</strong></p>
+                                <p>Status: <strong style="color: {{ $order->payment_status === 'paid' ? '#10b981' : '#f59e0b' }}">{{ strtoupper($order->payment_status) }}</strong></p>
+                            </td>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </table>
 
-            <div class="summary-box">
-                <div class="summary-table">
-                    <div class="summary-row"><span>Subtotal</span><strong>₹{{ number_format($order->subtotal, 2) }}</strong></div>
-                    @if($order->discount_total > 0)
-                        <div class="summary-row" style="color: #ef4444;"><span>Discount</span><strong>- ₹{{ number_format($order->discount_total, 2) }}</strong></div>
-                    @endif
-                    @if($order->tax_total > 0)
-                        <div class="summary-row"><span>Tax (GST)</span><strong>₹{{ number_format($order->tax_total, 2) }}</strong></div>
-                    @endif
-                    <div class="summary-row"><span>Shipping</span><strong>₹{{ number_format($order->shipping_total, 2) }}</strong></div>
-                    <div class="summary-row grand-total">
-                        <span>Total Amount</span>
-                        <strong>₹{{ number_format($order->grand_total, 2) }}</strong>
+                    {{-- ITEMS TABLE --}}
+                    <div class="inv-table-wrap">
+                        <table class="inv-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%;">Product Description</th>
+                                    <th style="text-align: center; width: 10%;">Qty</th>
+                                    <th style="text-align: right; width: 15%;">Price</th>
+                                    <th style="text-align: right; width: 15%;">GST</th>
+                                    <th style="text-align: right; width: 15%;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($order->items as $item)
+                                @php
+                                    $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
+                                    $product = $item->product;
+                                    
+                                    // Rule: Always show GST on the original unit price
+                                    $taxRate = $item->tax_percent ?? ($product?->taxRate?->rate ?? 0);
+                                    $gstAmt = ($item->unit_price * $item->quantity * $taxRate) / 100;
+                                    
+                                    // Total for this line including full GST
+                                    $lineTotalWithFullTax = ($item->unit_price * $item->quantity) + $gstAmt;
+
+                                    $specs = [];
+                                    if ($product) {
+                                        if ($product->flavor || $product->flavour) $specs[] = 'Flavor: ' . ($product->flavor ?? $product->flavour);
+                                        if ($product->pack_size) $specs[] = 'Pack: ' . $product->pack_size;
+                                        if ($product->age_group) $specs[] = 'Age: ' . $product->age_group;
+                                    }
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <div class="inv-prod-name">{{ $item->product_name }}</div>
+                                        @if($vName) <div style="font-size: 0.8rem; color: var(--muted);">{{ $vName }}</div> @endif
+                                        @foreach($specs as $spec)
+                                            <span class="inv-spec-pill">{{ $spec }}</span>
+                                        @endforeach
+                                    </td>
+                                    <td style="text-align: center; font-weight: 700;">{{ $item->quantity }}</td>
+                                    <td style="text-align: right;">₹{{ number_format($item->unit_price, 2) }}</td>
+                                    <td style="text-align: right;">
+                                        <div style="font-weight: 600;">{{ number_format($taxRate, 2) }}%</div>
+                                        <div style="font-size: 0.75rem; color: var(--muted);">₹{{ number_format($gstAmt, 2) }}</div>
+                                    </td>
+                                    <td style="text-align: right;" class="inv-amount">₹{{ number_format($lineTotalWithFullTax, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- TOTALS --}}
+                <div style="text-align: right;">
+                    <div class="inv-totals-box">
+                        @php
+                            // 1. Calculate the REAL original GST for the whole order
+                            $totalOriginalGst = $order->items->sum(function($i) {
+                                $rate = $i->tax_percent ?? 0;
+                                return ($i->unit_price * $i->quantity * $rate) / 100;
+                            });
+
+                            // 2. The MRP Subtotal is the Base Subtotal + Original GST
+                            $displaySubtotal = $order->subtotal + $totalOriginalGst;
+
+                            // 3. To maintain Grand Total consistency, the discount shown must be the difference
+                            // Grand Total = (Subtotal + GST + Shipping) - Total Discount
+                            // So Total Discount = (Subtotal + GST + Shipping) - Grand Total
+                            $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
+
+                            // 4. Distribute savings between Coupon and Coins based on their relative weight in the DB
+                            $dbCoupon = $order->discount_total;
+                            $dbCoins = $order->coin_discount;
+                            $totalDbDiscount = $dbCoupon + $dbCoins;
+
+                            if ($totalDbDiscount > 0) {
+                                $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
+                                $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
+                            } else {
+                                $displayCouponDiscount = 0;
+                                $displayCoinDiscount = 0;
+                            }
+                        @endphp
+                        
+                        <div class="inv-total-line">
+                            <span>Subtotal (MRP)</span>
+                            <strong>₹{{ number_format($displaySubtotal, 2) }}</strong>
+                        </div>
+
+                        @if($displayCouponDiscount > 0.01)
+                            <div class="inv-total-line" style="color: #ef4444; background: #fff5f5;">
+                                <span>Coupon Discount</span>
+                                <strong>- ₹{{ number_format($displayCouponDiscount, 2) }}</strong>
+                            </div>
+                        @endif
+
+                        @if($displayCoinDiscount > 0.01)
+                            <div class="inv-total-line" style="color: #f97316; background: #fffaf0;">
+                                <span>NB Coins Discount</span>
+                                <strong>- ₹{{ number_format($displayCoinDiscount, 2) }}</strong>
+                            </div>
+                        @endif
+
+                        <div class="inv-total-line">
+                            <span>GST / Tax</span>
+                            <strong>₹{{ number_format($totalOriginalGst, 2) }}</strong>
+                        </div>
+
+                        <div class="inv-total-line">
+                            <span>Shipping</span>
+                            <strong>₹{{ number_format($order->shipping_total, 2) }}</strong>
+                        </div>
+
+                        <div class="inv-total-line grand-tot">
+                            <span>Grand Total</span>
+                            <strong>₹{{ number_format(round($order->grand_total)) }}</strong>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="invoice-footer">
-                <p>Thank you for shopping with <strong>NutriBuddy Kids</strong>! 🌈</p>
-                <p>For any billing inquiries, please contact support@nutribuddy.com</p>
+                    {{-- FOOTER --}}
+                    <div style="text-align: center; margin-top: 40px; padding-top: 30px; border-top: 1px solid #eee; font-size: 0.8rem; color: var(--muted); line-height: 1.8;">
+                        <div style="font-weight: 800; color: var(--dk); font-size: 0.9rem; margin-bottom: 5px;">{{ config('company.name') }}</div>
+                        <div>{{ config('company.email') }} &nbsp;·&nbsp; {{ config('company.phone') }} &nbsp;·&nbsp; {{ config('company.website') }}</div>
+                        <div style="margin-top: 10px;">
+                            GSTIN: {{ config('company.gst') }} &nbsp;·&nbsp; PAN: {{ config('company.pan') }} &nbsp;·&nbsp; CIN: {{ config('company.cin') }}
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.7rem;">This is a computer-generated invoice and does not require a physical signature.</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <a href="{{ route('user.orders.invoice-download', $order) }}" class="btn-download-float">
+    <a href="{{ route('user.orders.invoice-download', $order) }}" 
+       style="position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--pk), var(--pu)); color: #fff; padding: 16px 32px; border-radius: 50px; font-family: 'Fredoka One', cursive; text-decoration: none; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3); display: flex; align-items: center; gap: 10px; z-index: 100;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -297,10 +481,6 @@
             function toggleSidebar() {
                 document.getElementById('sidebar').classList.toggle('open');
                 document.getElementById('overlay').classList.toggle('show');
-            }
-            function closeSidebar() {
-                document.getElementById('sidebar').classList.remove('open');
-                document.getElementById('overlay').classList.remove('show');
             }
         </script>
     @endpush

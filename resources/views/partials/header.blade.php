@@ -1,11 +1,14 @@
+@php
+    $sideSectionLogo = \App\Models\Setting::get('side_section_logo');
+    $sideSectionLogoExists = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
+    $sideSectionLogoUrl = $sideSectionLogoExists
+        ? asset('storage/' . $sideSectionLogo) . '?v=' . \Illuminate\Support\Facades\Storage::disk('public')->lastModified($sideSectionLogo)
+        : asset('img/logo.png');
+@endphp
+
 <nav id="mainNav">
     <a href="{{ route('home') }}" class="logo-new">
-        <img src="{{ \App\Models\Setting::get('side_section_logo') ? asset('storage/' . \App\Models\Setting::get('side_section_logo')) : asset('img/logo.png') }}" alt="NutriBuddy"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
-        <span style="display:none;font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--pk)">
-            NutriBuddy<sup
-                style="font-size:.55rem;background:var(--ye);color:var(--dk);padding:2px 7px;border-radius:20px;margin-left:4px;font-family:'Nunito',sans-serif;font-weight:900">KIDS</sup>
-        </span>
+        <img src="{{ $sideSectionLogoUrl }}" alt="NutriBuddy">
     </a>
 
     <ul class="nav-links">
@@ -24,7 +27,7 @@
         </button>
 
         <div class="profile-dropdown">
-            <button class="nav-icon-link profile-btn" title="Account">
+            <button id="cartIconBtn" class="nav-icon-link profile-btn" title="Account">
                 <img src="{{ asset('assets/images/avatar/avatar-1.png') }}" alt="Profile" style="width:24px;height:24px;border-radius:50%;"
                     onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>👤</span>')">
             </button>
@@ -268,4 +271,3 @@
         </div>
     </div>
 </div>
-

@@ -25,14 +25,25 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    public function page(): \Illuminate\View\View
+    {
+        $savedAddresses = collect();
+        if (auth()->check()) {
+            $savedAddresses = CustomerAddress::where('user_id', auth()->id())
+                ->latest()
+                ->get();
+        }
+        return view('pages.checkout', compact('savedAddresses'));
+    }
+
     public function summary(CheckoutSummaryRequest $request, PricingService $pricingService): JsonResponse
     {
         $validated = $request->validated();
 
         $coupon = null;
-        if (! empty($validated['coupon_code'])) {
+        if (!empty($validated['coupon_code'])) {
             $coupon = Coupon::whereRaw('UPPER(code) = ?', [strtoupper(trim($validated['coupon_code']))])->first();
-            if (! $coupon || ! $coupon->isCurrentlyValid()) {
+            if (!$coupon || !$coupon->isCurrentlyValid(auth()->id())) {
                 return response()->json(['message' => 'Invalid or expired coupon code.'], 422);
             }
         }
@@ -42,7 +53,13 @@ class CheckoutController extends Controller
             return response()->json(['message' => 'Cart is empty.'], 422);
         }
 
-        $pricing = $pricingService->calculate($cart->items, $coupon);
+        $coinsToRedeem = (int) ($validated['coins_to_redeem'] ?? 0);
+        $userCoins = auth()->check() ? auth()->user()->coins_balance : 0;
+        if ($coinsToRedeem > $userCoins) {
+            return response()->json(['message' => 'Insufficient coin balance.'], 422);
+        }
+
+        $pricing = $pricingService->calculate($cart->items, $coupon, $coinsToRedeem);
 
         if ($coupon && $coupon->min_order_amount !== null && $pricing['subtotal'] < (float) $coupon->min_order_amount) {
             return response()->json(['message' => 'Coupon minimum order amount not met.'], 422);
@@ -52,6 +69,7 @@ class CheckoutController extends Controller
             'cart' => $cart,
             'coupon' => $coupon,
             'pricing' => $pricing,
+            'user_coins' => $userCoins,
             'checkout_token' => (string) Str::uuid(),
         ]);
     }
@@ -59,37 +77,39 @@ class CheckoutController extends Controller
     public function guestSummary(Request $request, PricingService $pricingService): JsonResponse
     {
         $items = $request->input('items', []);
-        
+
         $couponCode = $request->input('coupon_code');
         $coupon = null;
-        if (! empty($couponCode)) {
+        if (!empty($couponCode)) {
             $coupon = Coupon::whereRaw('UPPER(code) = ?', [strtoupper(trim($couponCode))])->first();
-            if (! $coupon || ! $coupon->isCurrentlyValid()) {
+            if (!$coupon || !$coupon->isCurrentlyValid(auth()->id())) {
                 return response()->json(['message' => 'Invalid or expired coupon code.'], 422);
             }
         }
 
         $cartItems = collect();
         foreach ($items as $item) {
-            if (empty($item['product_id']) || empty($item['quantity'])) continue;
-            
+            if (empty($item['product_id']) || empty($item['quantity']))
+                continue;
+
             $product = \App\Models\Product::with('taxRate')->find($item['product_id']);
-            if (!$product) continue;
-            
+            if (!$product)
+                continue;
+
             $variant = null;
             if (!empty($item['product_variant_id'])) {
                 $variant = \App\Models\ProductVariant::find($item['product_variant_id']);
             }
-            
+
             $cartItem = new \App\Models\CartItem([
                 'product_id' => $product->id,
                 'product_variant_id' => $variant ? $variant->id : null,
                 'quantity' => $item['quantity'],
             ]);
-            
+
             $cartItem->setRelation('product', $product);
             $cartItem->setRelation('productVariant', $variant);
-            
+
             $cartItems->push($cartItem);
         }
 
@@ -139,7 +159,12 @@ class CheckoutController extends Controller
                 abort(422, 'Cart is empty.');
             }
 
-            $pricing = $pricingService->calculate($cart->items, $coupon);
+            $coinsToRedeem = (int) ($validated['coins_to_redeem'] ?? 0);
+            if ($coinsToRedeem > $user->coins_balance) {
+                abort(422, 'Insufficient coin balance.');
+            }
+
+            $pricing = $pricingService->calculate($cart->items, $coupon, $coinsToRedeem);
             $this->validateCouponRules($coupon, $pricing['subtotal'], $user->id);
             $this->validateInventory($cart);
 
@@ -173,6 +198,8 @@ class CheckoutController extends Controller
                 'sgst_total' => $pricing['sgst_total'],
                 'igst_total' => $pricing['igst_total'],
                 'discount_total' => $pricing['discount_total'],
+                'coins_redeemed' => $pricing['coins_redeemed'],
+                'coin_discount' => $pricing['coin_discount'],
                 'shipping_total' => $pricing['shipping_total'],
                 'grand_total' => $pricing['grand_total'],
                 'customer_note' => $validated['customer_note'] ?? null,
@@ -180,8 +207,35 @@ class CheckoutController extends Controller
                 'pricing_snapshot' => [
                     'line_items' => $pricing['line_items'],
                     'coupon' => $coupon?->only(['id', 'code', 'discount_type', 'discount_value']),
+                    'coins_earned' => $pricing['total_coins_earned'],
                 ],
             ]);
+
+            // Deduct coins if redeemed
+            if ($order->coins_redeemed > 0) {
+                $user->decrement('coins_balance', $order->coins_redeemed);
+                \App\Models\CoinTransaction::create([
+                    'user_id' => $user->id,
+                    'order_id' => $order->id,
+                    'type' => 'spent',
+                    'amount' => $order->coins_redeemed,
+                    'description' => "Coins redeemed for discount on order #{$order->order_number}",
+                ]);
+            }
+
+            // Earn coins (We award them now, but you might want to wait for completion in a real app)
+            // The prompt said: "After order, coins are deducted and new earned coins are added"
+            $coinsToEarn = $pricing['total_coins_earned'];
+            if ($coinsToEarn > 0) {
+                $user->increment('coins_balance', $coinsToEarn);
+                \App\Models\CoinTransaction::create([
+                    'user_id' => $user->id,
+                    'order_id' => $order->id,
+                    'type' => 'earned',
+                    'amount' => $coinsToEarn,
+                    'description' => "Coins earned from purchase on order #{$order->order_number}",
+                ]);
+            }
 
             foreach ($pricing['line_items'] as $lineItem) {
                 $cartItem = $lineItem['cart_item'];
@@ -252,12 +306,12 @@ class CheckoutController extends Controller
 
     private function resolveCoupon(?string $couponCode, int $userId): ?Coupon
     {
-        if (! $couponCode) {
+        if (!$couponCode) {
             return null;
         }
 
         $coupon = Coupon::whereRaw('UPPER(code) = ?', [strtoupper(trim($couponCode))])->first();
-        if (! $coupon || ! $coupon->isCurrentlyValid()) {
+        if (!$coupon || !$coupon->isCurrentlyValid($userId)) {
             abort(422, 'Invalid or expired coupon code.');
         }
 
@@ -271,7 +325,7 @@ class CheckoutController extends Controller
 
     private function validateCouponRules(?Coupon $coupon, float $subtotal, int $userId): void
     {
-        if (! $coupon) {
+        if (!$coupon) {
             return;
         }
 
@@ -304,7 +358,7 @@ class CheckoutController extends Controller
 
             $inventory = $inventoryQuery->first();
 
-            if (! $inventory || ! $inventory->track_stock) {
+            if (!$inventory || !$inventory->track_stock) {
                 continue;
             }
 

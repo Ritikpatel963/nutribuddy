@@ -78,11 +78,18 @@ class AuthController extends Controller
                 ], 403);
             }
 
+            if (!$user->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Your account has been deactivated. Please contact support.'
+                ], 403);
+            }
+
             $user->otp = null;
             $user->otp_expires_at = null;
             $user->save();
 
-            Auth::login($user, true);
+            Auth::guard('web')->login($user, true);
             $request->session()->regenerate();
 
             $redirect = $request->redirect_to ?: route('userdashboard');
@@ -103,9 +110,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Only log out the frontend 'web' guard.
+        // Do NOT call $request->session()->invalidate() here because that
+        // destroys the ENTIRE session (including the admin guard session),
+        // which would log the admin out of the backend panel too.
+        Auth::guard('web')->logout();
 
         return redirect()->route('home')->with('success', 'Logged out successfully.');
     }

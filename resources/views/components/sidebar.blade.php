@@ -1,11 +1,19 @@
+@php
+    $sideSectionLogo = \App\Models\Setting::get('side_section_logo');
+    $sideSectionLogoExists = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
+    $sideSectionLogoUrl = $sideSectionLogoExists
+        ? asset('storage/' . $sideSectionLogo) . '?v=' . \Illuminate\Support\Facades\Storage::disk('public')->lastModified($sideSectionLogo)
+        : asset('img/logo.png');
+@endphp
+
 <aside class="sidebar">
     <button type="button" class="sidebar-close-btn">
         <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
     </button>
     <div>
         <a href="{{ route('admin.index') }}" class="sidebar-logo">
-            <img src="{{ \App\Models\Setting::get('side_section_logo') ? asset('storage/' . \App\Models\Setting::get('side_section_logo')) : asset('img/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ \App\Models\Setting::get('side_section_logo') ? asset('storage/' . \App\Models\Setting::get('side_section_logo')) : asset('img/logo.png') }}" alt="site logo" class="dark-logo">
+            <img src="{{ $sideSectionLogoUrl }}" alt="site logo" class="light-logo">
+            <img src="{{ $sideSectionLogoUrl }}" alt="site logo" class="dark-logo">
             <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
             <span class="nb-sidebar-brand-text">
                 <strong>NutriBuddy</strong>
@@ -158,6 +166,23 @@
                     <li>
                         <a href="{{ route('admin.ecommerce.newsletter.index') }}"><i
                                 class="ri-circle-fill circle-icon text-cyan w-auto"></i> Newsletter</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:medal-ribbon-star-outline" class="menu-icon"></iconify-icon>
+                    <span>Loyalty & Coins</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="{{ route('admin.ecommerce.loyalty.settings') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Coin Settings</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.loyalty.transactions') }}"><i
+                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Transactions</a>
                     </li>
                 </ul>
             </li>

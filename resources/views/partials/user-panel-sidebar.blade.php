@@ -19,6 +19,14 @@
             </svg>
             Overview
         </a>
+        <a href="{{ route('wallet') }}" class="nav-item {{ request()->routeIs('wallet') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="8" />
+                <path d="M12 8v8M8 12h8" />
+            </svg>
+            NB Coins Wallet
+            <span class="nbadge" style="background: var(--or); margin-left: auto;">{{ Auth::user()->coins_balance }}</span>
+        </a>
 
           <a href="{{ route('meal-plan') }}" class="nav-item {{ request()->routeIs('meal-plan') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -95,6 +103,12 @@
             </svg>
             Invoices
         </a>
+        <a href="{{ route('user.reviews.index') }}" class="nav-item {{ request()->routeIs('user.reviews.index') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            My Reviews
+        </a>
     </div>
     <div class="nav-section">
         <span class="nav-label">Account</span>
@@ -105,20 +119,20 @@
             </svg>
             Personal Info
         </a>
-        <a href="#" class="nav-item" onclick="setActive(this)">
+        <a href="#" class="nav-item" onclick="setActive(this)" style="display:none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
             </svg>
             Address
         </a>
-        <a href="#" class="nav-item" onclick="setActive(this)">
+        <a href="#" class="nav-item" onclick="setActive(this)" style="display:none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
             Wishlist
         </a>
-        <a href="{{ route('change-password') }}" class="nav-item {{ request()->routeIs('change-password') ? 'active' : '' }}" onclick="setActive(this)">
+        <a href="{{ route('change-password') }}" class="nav-item {{ request()->routeIs('change-password') ? 'active' : '' }}" onclick="setActive(this)" style="display:none;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -131,12 +145,22 @@
             </svg>
             Subscription
         </a>
-        <a href="#" class="nav-item" onclick="setActive(this)">
+        <a href="{{ route('my-coupons') }}" class="nav-item {{ request()->routeIs('my-coupons') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
                 <line x1="1" y1="10" x2="23" y2="10" />
             </svg>
             My Coupons
+            @php
+                $couponCount = \App\Models\Coupon::where('is_active', true)
+                    ->where(function($query) {
+                        $query->whereNull('user_id')
+                              ->orWhere('user_id', auth()->id());
+                    })->count();
+            @endphp
+            @if($couponCount > 0)
+                <span class="nbadge">{{ $couponCount }}</span>
+            @endif
         </a>
     </div>
 </div>

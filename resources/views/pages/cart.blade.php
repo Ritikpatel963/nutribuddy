@@ -495,7 +495,7 @@
 
                 const payload  = await res.json().catch(() => ({}));
                 const items    = payload.cart?.items || [];
-                const total = payload.pricing?.grand_total ?? payload.pricing?.subtotal ?? 0;
+                const total = payload.pricing?.display_subtotal || 0;
                 const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
 
                 setCartSummary(totalQty, total);
@@ -509,7 +509,7 @@
 
                 items.forEach(it => {
                     const qty   = Number(it.quantity || 1);
-                    const price = it.product_variant ? it.product_variant.price : it.product?.base_price;
+                    const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
                     const image = it.product?.primary_image?.image_path
                         ? '/storage/' + it.product.primary_image.image_path
                         : '/img/product2.png';

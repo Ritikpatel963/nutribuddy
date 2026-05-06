@@ -2,123 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ $order->order_number }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: 'Inter', sans-serif;
             color: #1a1a1a;
-            margin: 0;
+            background: #fff;
             padding: 40px;
             line-height: 1.5;
+            font-size: 14px;
         }
+
         .invoice-box {
-            max-width: 800px;
+            max-width: 820px;
             margin: auto;
         }
+
+        /* ── HEADER ── */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 30px;
-            margin-bottom: 40px;
+            border-bottom: 3px solid #FF4D8F;
+            padding-bottom: 28px;
+            margin-bottom: 36px;
         }
-        .logo img {
-            max-height: 60px;
+
+        .company-block { max-width: 340px; }
+        .company-block img { max-height: 55px; margin-bottom: 10px; display: block; }
+        .company-block .company-name { font-size: 15px; font-weight: 800; color: #111; margin-bottom: 4px; }
+        .company-block p { font-size: 12px; color: #555; margin: 2px 0; line-height: 1.5; }
+
+        .company-legal { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .legal-tag {
+            background: #f3e8ff;
+            color: #6d28d9;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 5px;
+            letter-spacing: 0.4px;
         }
-        .invoice-info {
-            text-align: right;
-        }
+
+        .invoice-info { text-align: right; }
         .invoice-info h1 {
-            margin: 0;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
             color: #FF4D8F;
+            letter-spacing: -1px;
+            line-height: 1;
         }
-        .invoice-info p {
-            margin: 5px 0 0;
-            color: #666;
-            font-size: 14px;
+        .invoice-info .inv-num { font-size: 14px; color: #555; margin: 6px 0; }
+        .invoice-info .inv-date { font-size: 12px; color: #888; }
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
         }
+        .status-paid   { background: #d1fae5; color: #065f46; }
+        .status-unpaid { background: #fef3c7; color: #92400e; }
+
+        /* ── DETAILS GRID ── */
         .details-grid {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 40px;
-            gap: 40px;
+            gap: 30px;
+            margin-bottom: 36px;
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
         }
-        .details-col {
-            flex: 1;
-        }
+        .details-col { flex: 1; }
         .details-col h4 {
-            margin: 0 0 12px;
-            font-size: 12px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #FF4D8F;
+            font-weight: 800;
+            margin-bottom: 12px;
         }
-        .details-col p {
-            margin: 0;
-            font-size: 14px;
-            color: #333;
-        }
-        .details-col .muted {
-            color: #666;
-        }
+        .details-col p { font-size: 13px; color: #333; margin: 3px 0; }
+        .details-col .muted { color: #666; font-size: 12px; }
+
+        /* ── ITEMS TABLE ── */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
         th {
-            background: #f9f9f9;
-            text-align: left;
-            padding: 12px 15px;
-            font-size: 12px;
+            background: #fafafa;
+            padding: 12px 14px;
+            font-size: 11px;
             text-transform: uppercase;
-            color: #666;
+            letter-spacing: 1px;
+            color: #888;
             border-bottom: 2px solid #eee;
+            font-weight: 700;
         }
         td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
+            padding: 16px 14px;
+            border-bottom: 1px solid #f5f5f5;
+            font-size: 13px;
             vertical-align: top;
         }
-        .item-name { font-weight: 700; color: #000; }
-        .item-meta { font-size: 12px; color: #666; margin-top: 3px; }
-        .item-spec { font-size: 11px; color: #7C3AED; font-weight: 700; margin-top: 4px; display: block; }
-        
-        .summary {
+        tr:last-child td { border-bottom: none; }
+
+        .item-name { font-weight: 700; color: #111; font-size: 14px; }
+        .item-meta { font-size: 11px; color: #888; margin-top: 3px; }
+        .item-specs { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 5px; }
+        .item-spec {
+            background: #ede9fe;
+            color: #5b21b6;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .text-center { text-align: center; }
+        .text-right  { text-align: right; }
+        .fw-bold { font-weight: 700; }
+
+        /* ── SUMMARY ── */
+        .summary-wrap {
             display: flex;
             justify-content: flex-end;
+            margin-bottom: 50px;
         }
-        .summary-table {
-            width: 250px;
-        }
-        .summary-row {
+        .summary-table { width: 280px; }
+        .s-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px 0;
-            font-size: 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
         }
-        .summary-row.total {
-            border-top: 2px solid #000;
-            margin-top: 10px;
-            padding-top: 15px;
+        .s-row:last-child { border-bottom: none; }
+        .s-row.discount { color: #ef4444; }
+        .s-row.grand {
+            margin-top: 8px;
+            padding: 14px 0;
+            border-top: 2px solid #111;
             font-size: 18px;
             font-weight: 800;
             color: #7C3AED;
         }
+
+        /* ── FOOTER ── */
         .footer {
-            margin-top: 80px;
+            margin-top: 40px;
             text-align: center;
-            font-size: 12px;
-            color: #999;
             border-top: 1px solid #eee;
             padding-top: 20px;
+            font-size: 11px;
+            color: #aaa;
+            line-height: 1.8;
         }
+        .footer strong { color: #555; }
+
         @media print {
             body { padding: 0; }
             .no-print { display: none; }
@@ -127,17 +179,35 @@
 </head>
 <body>
     <div class="invoice-box" id="printableInvoice">
+
+        {{-- ── HEADER ── --}}
         <div class="header">
-            <div class="logo">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy">
+            <div class="company-block">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="{{ config('company.name') }}">
+                <div class="company-name">{{ config('company.name') }}</div>
+                <p>{{ config('company.address') }}</p>
+                <p>{{ config('company.city') }}</p>
+                <p>📞 {{ config('company.phone') }}</p>
+                <p>✉️ {{ config('company.email') }}</p>
+                <p>🌐 {{ config('company.website') }}</p>
+                <div class="company-legal">
+                    <span class="legal-tag">GSTIN: {{ config('company.gst') }}</span>
+                    <span class="legal-tag">PAN: {{ config('company.pan') }}</span>
+                    <span class="legal-tag">CIN: {{ config('company.cin') }}</span>
+                </div>
             </div>
+
             <div class="invoice-info">
                 <h1>INVOICE</h1>
-                <p>#INV-{{ $order->order_number }}</p>
-                <p>Issued: {{ optional($order->placed_at)->format('d/m/Y') ?? $order->created_at->format('d/m/Y') }}</p>
+                <p class="inv-num">#INV-{{ $order->order_number }}</p>
+                <p class="inv-date">Issued: {{ optional($order->placed_at)->format('d M Y') ?? $order->created_at->format('d M Y') }}</p>
+                <span class="status-badge {{ $order->payment_status === 'paid' ? 'status-paid' : 'status-unpaid' }}">
+                    {{ strtoupper($order->payment_status) }}
+                </span>
             </div>
         </div>
 
+        {{-- ── BILLING / SHIPPING / PAYMENT DETAILS ── --}}
         <div class="details-grid">
             <div class="details-col">
                 <h4>Bill To</h4>
@@ -149,7 +219,9 @@
                 <h4>Ship To</h4>
                 <p><strong>{{ $order->shipping_name }}</strong></p>
                 <p class="muted">{{ $order->shipping_address_line_1 }}</p>
-                @if($order->shipping_address_line_2)<p class="muted">{{ $order->shipping_address_line_2 }}</p>@endif
+                @if($order->shipping_address_line_2)
+                    <p class="muted">{{ $order->shipping_address_line_2 }}</p>
+                @endif
                 <p class="muted">{{ $order->shipping_city }}, {{ $order->shipping_state }} {{ $order->shipping_postal_code }}</p>
             </div>
             <div class="details-col">
@@ -157,39 +229,48 @@
                 <p>Method: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
                 <p>Status: <strong>{{ strtoupper($order->payment_status) }}</strong></p>
                 <p>Currency: <strong>{{ $order->currency ?? 'INR' }}</strong></p>
+                <p>Order #: <strong>{{ $order->order_number }}</strong></p>
             </div>
         </div>
 
+        {{-- ── ITEMS TABLE ── --}}
         <table>
             <thead>
                 <tr>
-                    <th>Description</th>
-                    <th style="text-align: center;">Qty</th>
-                    <th style="text-align: right;">Price</th>
-                    <th style="text-align: right;">Amount</th>
+                    <th>Product Description</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-right">Unit Price</th>
+                    <th class="text-right">GST</th>
+                    <th class="text-right">Amount</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($order->items as $item)
                     @php
-                        $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
+                        $vName   = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
                         $variant = $item->productVariant;
                         $product = $item->product;
-                        $specs = collect();
-                        
-                        if ($product) {
-                            if ($product->flavor || $product->flavour) $specs->put('flavor', "Flavor: " . ($product->flavor ?? $product->flavour));
-                            if ($product->pack_size) $specs->put('pack', "Pack Size: " . $product->pack_size);
-                            if ($product->age_group) $specs->put('age', "Age Group: " . $product->age_group);
-                        }
 
+                        // Use stored tax values
+                        $taxRate = $item->tax_percent;
+                        $gstAmount = $item->tax_amount;
+                        $finalTotal = $item->line_total;
+
+                        // Specs
+                        $specs = collect();
+                        if ($product) {
+                            if ($product->flavor || $product->flavour)
+                                $specs->put('flavor', 'Flavor: ' . ($product->flavor ?? $product->flavour));
+                            if ($product->pack_size)
+                                $specs->put('pack', 'Pack Size: ' . $product->pack_size);
+                            if ($product->age_group)
+                                $specs->put('age', 'Age Group: ' . $product->age_group);
+                        }
                         if ($variant && $variant->attributes) {
-                            foreach($variant->attributes as $k => $v) {
+                            foreach ($variant->attributes as $k => $v) {
                                 $key = strtolower(str_replace(['_', '-'], ' ', $k));
-                                if (str_contains($key, 'flav') || str_contains($key, 'pack') || str_contains($key, 'age')) {
-                                    continue;
-                                }
-                                $specs->put($key, ucfirst($k) . ": " . $v);
+                                if (str_contains($key, 'flav') || str_contains($key, 'pack') || str_contains($key, 'age')) continue;
+                                $specs->put($key, ucfirst($k) . ': ' . $v);
                             }
                         }
                         $specs = $specs->values();
@@ -198,45 +279,98 @@
                         <td>
                             <div class="item-name">{{ $item->product_name }}</div>
                             @if($vName)
-                                <div class="item-meta">{{ $vName }}</div>
+                                <div class="item-meta">Variant: {{ $vName }}</div>
                             @endif
-                            @foreach($specs as $spec)
-                                <span class="item-spec">{{ $spec }}</span>
-                            @endforeach
+                            @if($specs->isNotEmpty())
+                                <div class="item-specs">
+                                    @foreach($specs as $spec)
+                                        <span class="item-spec">{{ $spec }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </td>
-                        <td style="text-align: center;">{{ $item->quantity }}</td>
-                        <td style="text-align: right;">₹{{ number_format($item->unit_price, 2) }}</td>
-                        <td style="text-align: right;">₹{{ number_format($item->line_total, 2) }}</td>
+                        <td class="text-center fw-bold">{{ $item->quantity }}</td>
+                        <td class="text-right">₹{{ number_format($item->unit_price, 2) }}</td>
+                        <td class="text-right">
+                            {{ number_format($taxRate, 2) }}%<br>
+                            <small>₹{{ number_format($gstAmount, 2) }}</small>
+                        </td>
+                        <td class="text-right fw-bold">₹{{ number_format($finalTotal, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <div class="summary">
+        {{-- ── SUMMARY ── --}}
+        <div class="summary-wrap">
             <div class="summary-table">
-                <div class="summary-row"><span>Subtotal</span><span>₹{{ number_format($order->subtotal, 2) }}</span></div>
-                @if($order->discount_total > 0)
-                    <div class="summary-row"><span>Discount</span><span>- ₹{{ number_format($order->discount_total, 2) }}</span></div>
+                @php
+                    // 1. Calculate the REAL original GST for the whole order
+                    $totalOriginalGst = $order->items->sum(function($i) {
+                        $rate = $i->tax_percent ?? 0;
+                        return ($i->unit_price * $i->quantity * $rate) / 100;
+                    });
+
+                    // 2. The MRP Subtotal is the Base Subtotal + Original GST
+                    $displaySubtotal = $order->subtotal + $totalOriginalGst;
+
+                    // 3. To maintain Grand Total consistency, the discount shown must be the difference
+                    $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
+
+                    // 4. Distribute savings
+                    $dbCoupon = $order->discount_total;
+                    $dbCoins = $order->coin_discount;
+                    $totalDbDiscount = $dbCoupon + $dbCoins;
+
+                    if ($totalDbDiscount > 0) {
+                        $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
+                        $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
+                    } else {
+                        $displayCouponDiscount = 0;
+                        $displayCoinDiscount = 0;
+                    }
+                @endphp
+                <div class="s-row">
+                    <span>Subtotal (MRP)</span>
+                    <strong>₹{{ number_format($displaySubtotal, 2) }}</strong>
+                </div>
+                @if($displayCouponDiscount > 0.01)
+                    <div class="s-row discount">
+                        <span>Coupon Discount</span>
+                        <strong>- ₹{{ number_format($displayCouponDiscount, 2) }}</strong>
+                    </div>
                 @endif
-                @if($order->tax_total > 0)
-                    <div class="summary-row"><span>Tax</span><span>₹{{ number_format($order->tax_total, 2) }}</span></div>
+                @if($displayCoinDiscount > 0.01)
+                    <div class="s-row discount" style="color: #f97316;">
+                        <span>NB Coins Discount</span>
+                        <strong>- ₹{{ number_format($displayCoinDiscount, 2) }}</strong>
+                    </div>
                 @endif
-                <div class="summary-row"><span>Shipping</span><span>₹{{ number_format($order->shipping_total, 2) }}</span></div>
-                <div class="summary-row total">
+                <div class="s-row">
+                    <span>GST / Tax</span>
+                    <strong>₹{{ number_format($totalOriginalGst, 2) }}</strong>
+                </div>
+                <div class="s-row">
+                    <span>Shipping</span>
+                    <strong>₹{{ number_format($order->shipping_total, 2) }}</strong>
+                </div>
+                <div class="s-row grand">
                     <span>Total</span>
                     <span>₹{{ number_format($order->grand_total, 2) }}</span>
                 </div>
             </div>
         </div>
 
+        {{-- ── FOOTER ── --}}
         <div class="footer">
-            <p>NutriBuddy E-commerce Solutions · support@nutribuddy.com</p>
-            <p>This is a computer-generated document and does not require a signature.</p>
+            <p><strong>{{ config('company.name') }}</strong></p>
+            <p>GSTIN: {{ config('company.gst') }} &nbsp;|&nbsp; PAN: {{ config('company.pan') }} &nbsp;|&nbsp; CIN: {{ config('company.cin') }}</p>
+            <p>{{ config('company.email') }} &nbsp;|&nbsp; {{ config('company.phone') }} &nbsp;|&nbsp; {{ config('company.website') }}</p>
+            <p style="margin-top:10px;">This is a computer-generated invoice and does not require a physical signature.</p>
         </div>
     </div>
 
     <script>
-        // Auto-print if the URL has ?print=1
         if (window.location.search.indexOf('print=1') > -1) {
             window.print();
         }

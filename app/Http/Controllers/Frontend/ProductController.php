@@ -27,8 +27,20 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->limit(4)
+            ->with(['primaryImage', 'category', 'images', 'reviews'])
+            ->limit(8)
             ->get();
+
+        if ($relatedProducts->count() < 8) {
+            $fallbackProducts = Product::where('id', '!=', $product->id)
+                ->where('is_active', true)
+                ->whereNotIn('id', $relatedProducts->pluck('id'))
+                ->with(['primaryImage', 'category', 'images', 'reviews'])
+                ->limit(8 - $relatedProducts->count())
+                ->get();
+
+            $relatedProducts = $relatedProducts->concat($fallbackProducts);
+        }
 
         return view('pages.product', compact('product', 'relatedProducts'));
     }

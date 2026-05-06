@@ -2,6 +2,8 @@
 @php
 	$title = 'Side Section Settings';
 	$subTitle = 'Settings / Side Section';
+	$sideSectionLogo = $settings['side_section_logo'] ?? null;
+	$hasSideSectionLogo = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
 @endphp
 
 @section('content')
@@ -42,8 +44,8 @@
 									<div class="avatar-preview"
 										style="width: 120px; height: 120px; border: 2px dashed #e5e7eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; overflow: hidden;"
 										id="imagePreviewContainer">
-										@if(isset($settings['side_section_logo']) && $settings['side_section_logo'])
-											<img id="logoPreviewImg" src="{{ asset('storage/' . $settings['side_section_logo']) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+										@if($hasSideSectionLogo)
+											<img id="logoPreviewImg" src="{{ asset('storage/' . $sideSectionLogo) . '?v=' . \Illuminate\Support\Facades\Storage::disk('public')->lastModified($sideSectionLogo) }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
 											<div id="imagePlaceholder" class="text-center d-flex flex-column align-items-center text-secondary-light" style="display: none;">
 												<iconify-icon icon="lucide:image" width="32" height="32" class="mb-1"></iconify-icon>
 												<span style="font-size: 12px;">No Logo</span>

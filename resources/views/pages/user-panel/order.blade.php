@@ -29,7 +29,45 @@
     <!-- ════════════ MAIN ════════════ -->
     <div class="page">
         <!-- SUMMARY STRIP -->
-        <div class="summary-strip fade-in d1">
+        <!-- WELCOME BANNER -->
+        <div class="welcome-banner d1">
+            <div class="welcome-text" style="position:relative;z-index:1">
+                <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> </h2>
+                <p>Review your recent orders and track packages in one place.</p>
+            </div>
+            <div class="welcome-right">
+              
+                <div class="banner-emoji">📦</div>
+            </div>
+        </div>
+
+        <!-- PAGE HEADER -->
+        <div class="page-header fade-in d2">
+            <div class="page-header-left">
+                <h1>My Orders 📋</h1>
+                <p>Track and manage all your NutriBuddy purchases</p>
+            </div>
+            <div class="page-header-right">
+                <div class="search-bar">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5" color="var(--muted)">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" placeholder="Search by order ID..." id="searchInput" oninput="filterOrders()">
+                </div>
+                <div class="filter-tabs">
+                    <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
+                    <button class="ftab" id="tab-pending" onclick="filterTab(this,'pending')">Pending (0)</button>
+                    <button class="ftab" id="tab-delivered" onclick="filterTab(this,'delivered')">Delivered (0)</button>
+                    <button class="ftab" id="tab-cancelled" onclick="filterTab(this,'cancelled')">Cancelled (0)</button>
+                </div>
+            </div>
+        </div>
+
+      
+
+         <div class="summary-strip fade-in d1">
             <div class="sum-card">
                 <div class="sum-icon" style="background:var(--mnl)">📦</div>
                 <div>
@@ -60,48 +98,6 @@
             </div>
         </div>
 
-        <!-- PAGE HEADER -->
-        <div class="page-header fade-in d2">
-            <div class="page-header-left">
-                <h1>My Orders 📋</h1>
-                <p>Track and manage all your NutriBuddy purchases</p>
-            </div>
-            <div class="page-header-right">
-                <div class="search-bar">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5" color="var(--muted)">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input type="text" placeholder="Search by order ID..." id="searchInput" oninput="filterOrders()">
-                </div>
-                <div class="filter-tabs">
-                    <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
-                    <button class="ftab" id="tab-pending" onclick="filterTab(this,'pending')">Pending (0)</button>
-                    <button class="ftab" id="tab-delivered" onclick="filterTab(this,'delivered')">Delivered (0)</button>
-                    <button class="ftab" id="tab-cancelled" onclick="filterTab(this,'cancelled')">Cancelled (0)</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- WELCOME BANNER -->
-        <div class="welcome-banner d1">
-            <div class="welcome-text" style="position:relative;z-index:1">
-                <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> 👋</h2>
-                <p>Review your recent orders and track packages in one place.</p>
-            </div>
-            <div class="welcome-right">
-                <div class="banner-stat">
-                    <div class="bs-num" id="bannerOrdersCount">0</div>
-                    <div class="bs-lbl">Orders</div>
-                </div>
-                <div class="banner-stat">
-                    <div class="bs-num" id="bannerPendingCount">0</div>
-                    <div class="bs-lbl">Pending</div>
-                </div>
-                <div class="banner-emoji">📦</div>
-            </div>
-        </div>
 
         <!-- ORDERS TABLE (desktop) -->
         <div class="orders-card fade-in d3">

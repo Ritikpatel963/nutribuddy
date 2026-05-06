@@ -25,12 +25,15 @@ class User extends Authenticatable
         'is_active',
         'otp',
         'otp_expires_at',
+        'coins_balance',
+        'dob',
+        'gender',
+        'bio',
+        'avatar',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -49,6 +52,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'otp_expires_at' => 'datetime',
+            'coins_balance' => 'integer',
         ];
     }
 
@@ -60,6 +64,11 @@ class User extends Authenticatable
     public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function coinTransactions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CoinTransaction::class);
     }
 
     public function cart(): \Illuminate\Database\Eloquent\Relations\HasOne

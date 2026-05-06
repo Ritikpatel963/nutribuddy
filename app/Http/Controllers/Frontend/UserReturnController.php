@@ -41,18 +41,28 @@ class UserReturnController extends Controller
         $validated = $request->validate([
             'reason' => ['required', 'string', 'in:' . implode(',', \App\Support\OrderFlow::RETURN_REASONS)],
             'comments' => ['nullable', 'string', 'max:1000'],
+            'attachments.*' => ['nullable', 'file', 'mimes:jpeg,png,jpg,mp4,mov', 'max:10240'],
         ]);
 
         if ($order->returns()->whereIn('status', ['pending', 'approved', 'completed'])->exists()) {
             return back()->with('error', 'Return request is already raised for this order.');
         }
 
+        $mediaPaths = [];
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('returns', 'public');
+                $mediaPaths[] = $path;
+            }
+        }
+
         $orderReturn = OrderReturn::create([
             'order_id' => $order->id,
             'return_number' => 'RET-' . now()->format('Ymd') . strtoupper(Str::random(5)),
-            'reason' => $validated['reason'] . ($validated['comments'] ? ': ' . $validated['comments'] : ''),
+            'reason' => $validated['reason'] . (!empty($validated['comments']) ? ': ' . $validated['comments'] : ''),
             'status' => 'pending',
             'refund_amount' => 0,
+            'media_paths' => count($mediaPaths) > 0 ? $mediaPaths : null,
         ]);
 
         // Email to customer

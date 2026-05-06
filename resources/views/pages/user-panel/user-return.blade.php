@@ -271,12 +271,22 @@
                 <h3>Raise Return Request</h3>
               </div>
               <div class="sc-body">
-                <form id="returnRequestForm">
+                <form id="returnRequestForm" enctype="multipart/form-data">
                   <select id="returnOrderSelect" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;" required>
                     <option value="">Select Delivered Order</option>
                   </select>
-                  <textarea id="returnReasonInput" class="contact-btn" style="width:100%;min-height:90px;border:none;text-align:left;"
-                    placeholder="Write your return reason..." required></textarea>
+                  <select id="returnReasonSelect" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;" required>
+                    <option value="">Select Return Reason</option>
+                    @foreach(\App\Support\OrderFlow::RETURN_REASONS as $reason)
+                        <option value="{{ $reason }}">{{ $reason }}</option>
+                    @endforeach
+                  </select>
+                  <textarea id="returnCommentsInput" class="contact-btn" style="width:100%;min-height:90px;border:none;text-align:left;margin-bottom:10px;"
+                    placeholder="Additional comments (optional)"></textarea>
+                  
+                  <label for="returnAttachmentsInput" style="display:block;margin-bottom:5px;font-size:0.85rem;font-weight:700;color:var(--dk);">Upload Images/Videos (Optional, Max 10MB)</label>
+                  <input type="file" id="returnAttachmentsInput" name="attachments[]" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;padding-top:10px;padding-bottom:10px;" accept="image/*,video/*" multiple>
+
                   <button type="submit" class="contact-btn" style="margin-top:10px;border:none;cursor:pointer;">Submit Return Request</button>
                 </form>
                 <p id="returnFormMessage" style="margin-top:10px;font-size:.85rem;"></p>
@@ -360,22 +370,33 @@
     async function submitReturnRequest(event) {
       event.preventDefault();
       const orderId = document.getElementById('returnOrderSelect').value;
-      const reason = document.getElementById('returnReasonInput').value.trim();
+      const reason = document.getElementById('returnReasonSelect').value;
+      const comments = document.getElementById('returnCommentsInput').value.trim();
+      const attachments = document.getElementById('returnAttachmentsInput').files;
       const message = document.getElementById('returnFormMessage');
 
-      if (!orderId || reason.length < 10) {
-        message.textContent = 'Select an order and enter at least 10 characters reason.';
+      if (!orderId || !reason) {
+        message.textContent = 'Please select an order and a return reason.';
         return;
       }
+
+      const formData = new FormData();
+      formData.append('reason', reason);
+      if (comments) formData.append('comments', comments);
+      
+      for (let i = 0; i < attachments.length; i++) {
+        formData.append('attachments[]', attachments[i]);
+      }
+
+      message.textContent = 'Submitting...';
 
       const response = await fetch(returnApiConfig.createReturnUrlTemplate.replace('__ORDER_ID__', orderId), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
           'X-CSRF-TOKEN': returnApiConfig.csrfToken
         },
-        body: JSON.stringify({ reason: reason })
+        body: formData
       });
 
       if (!response.ok) {
@@ -385,7 +406,9 @@
       }
 
       message.textContent = 'Return request submitted successfully.';
-      document.getElementById('returnReasonInput').value = '';
+      document.getElementById('returnReasonSelect').value = '';
+      document.getElementById('returnCommentsInput').value = '';
+      document.getElementById('returnAttachmentsInput').value = '';
       await loadReturnData();
     }
 

@@ -1,4 +1,4 @@
-﻿@extends('layouts.main')
+@extends('layouts.main')
 @section('title', 'Contact Us – NutriBuddy')
 
 @push('styles')
@@ -298,46 +298,62 @@
             <h3>Send us a Message 🚀</h3>
             <p>Fill out the form below and our wellness team will get back to you within 24 hours.</p>
 
-            <form action="#" method="POST"
-                onsubmit="event.preventDefault(); alert('Thank you for contacting us! We will get back to you soon.');">
+            @if(session('contact_success'))
+                <div style="background: #e6f9f0; border: 2px solid #2ecc71; border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; color: #1a7a4a; font-weight: 600;">
+                    ✅ {{ session('contact_success') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div style="background: #fff0f3; border: 2px solid var(--pk); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; color: #c0392b;">
+                    <ul style="margin:0; padding-left: 18px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('contact.store') }}" method="POST">
+                @csrf
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="firstName">First Name</label>
-                        <input type="text" id="firstName" class="form-control" placeholder="e.g. Priya" required>
+                        <label class="form-label" for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="first_name" class="form-control" placeholder="e.g. Priya" value="{{ old('first_name') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="lastName">Last Name</label>
-                        <input type="text" id="lastName" class="form-control" placeholder="e.g. Sharma">
+                        <input type="text" id="lastName" name="last_name" class="form-control" placeholder="e.g. Sharma" value="{{ old('last_name') }}">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+                        <label class="form-label" for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" value="{{ old('email') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="phone">Phone Number</label>
-                        <input type="tel" id="phone" class="form-control" placeholder="+91 98765 43210">
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 98765 43210" value="{{ old('phone') }}">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="subject">Subject</label>
-                    <select id="subject" class="form-control" required>
-                        <option value="" disabled selected>Select a topic...</option>
-                        <option value="order">Where is my order?</option>
-                        <option value="product">Question about a product</option>
-                        <option value="diet">Help with Diet Chart</option>
-                        <option value="wholesale">Wholesale / Partnership</option>
-                        <option value="other">Other</option>
+                    <label class="form-label" for="subject">Subject *</label>
+                    <select id="subject" name="subject" class="form-control" required>
+                        <option value="" disabled {{ old('subject') ? '' : 'selected' }}>Select a topic...</option>
+                        <option value="Where is my order?" {{ old('subject') == 'Where is my order?' ? 'selected' : '' }}>Where is my order?</option>
+                        <option value="Question about a product" {{ old('subject') == 'Question about a product' ? 'selected' : '' }}>Question about a product</option>
+                        <option value="Help with Diet Chart" {{ old('subject') == 'Help with Diet Chart' ? 'selected' : '' }}>Help with Diet Chart</option>
+                        <option value="Wholesale / Partnership" {{ old('subject') == 'Wholesale / Partnership' ? 'selected' : '' }}>Wholesale / Partnership</option>
+                        <option value="Other" {{ old('subject') == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="message">Your Message</label>
-                    <textarea id="message" class="form-control" placeholder="How can we help you and your little one today?" required></textarea>
+                    <label class="form-label" for="message">Your Message *</label>
+                    <textarea id="message" name="message" class="form-control" placeholder="How can we help you and your little one today?" required>{{ old('message') }}</textarea>
                 </div>
 
                 <button type="submit" class="btn-submit">Send Message ✨</button>
@@ -346,5 +362,14 @@
 
     </div> <!-- /contact-grid -->
 
+    <!-- ══════════════════════════════════════════
+                 PARENT REVIEWS
+            ══════════════════════════════════════════ -->
+    @include('partials.parent-reviews')
+
+    <!-- ══════════════════════════════════════════
+                 FAQ
+            ══════════════════════════════════════════ -->
+    @include('partials.faq-section')
 
 @endsection

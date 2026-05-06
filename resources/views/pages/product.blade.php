@@ -5,8 +5,8 @@
     @php
         $defVariant = $product->variants->first();
         
-        $initialPrice = $defVariant ? $defVariant->price : $product->base_price;
-        $initialComparePrice = $defVariant ? ($defVariant->compare_at_price ?? 0) : ($product->compare_at_price ?? 0);
+        $initialPrice = $defVariant ? $defVariant->display_price : $product->display_price;
+        $initialComparePrice = $defVariant ? ($defVariant->display_compare_price ?? 0) : ($product->display_compare_price ?? 0);
 
         $defAge = $product->age_group ?: ($defVariant->attributes['Age Group'] ?? '2–17 Yrs');
         $defPack = $product->pack_size ?: ($defVariant->attributes['Pack Size'] ?? '30 Gummies');
@@ -18,6 +18,15 @@
         .variant-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 25px; }
         .variant-block { flex: 0 0 auto; width: fit-content; }
         .variant-label { margin-bottom: 8px; font-weight: 700; color: #444; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .review-img-thumb { width: 100%; height: 200px; object-fit: cover; border-radius: 18px; border: 1px solid #f0f0f0; margin-top: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .review-img-thumb:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .star-opt { transition: all 0.2s ease; display: inline-block; }
+        .star-opt:hover { transform: scale(1.3) rotate(8deg); color: #FFD700 !important; }
+        .review-verified-badge { background: #E8F9F1; color: #00A87A; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; letter-spacing: 0.3px; }
+        .review-verified-badge i { font-size: 0.8rem; }
+        .wrev-card { background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 30px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%; }
+        .wrev-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); border-color: #eee; }
+        .rbar-fill { height: 100%; border-radius: 50px; transition: width 1s ease-in-out; }
     </style>
 
     <div class="pdp-hero">
@@ -92,7 +101,7 @@
                 <div class="price-note">Inclusive of all taxes · Free shipping on this order</div>
                 <div class="cashback-row">
                     <span>🪙</span>
-                    <span id="pdpCashback">Get {{ round($initialPrice * 0.05) }} NB Coins on this purchase!</span>
+                    <span id="pdpCashback">Get {{ !empty($product->coins_reward) ? $product->coins_reward : round($initialPrice * 0.05) }} NB Coins on this purchase!</span>
                 </div>
             </div>
 
@@ -123,26 +132,60 @@
             <div class="variant-block">
                 <div class="variant-label">{{ $product->name }} Features </div>
                 <div class="variant-row" id="flavorRow">
-                    <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="{{ asset('img/sugar.png') }}" alt=""></div>
-                        <div class="flavor-name">No Added Sugar</div>
-                    </div>
-                    <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt=""></div>
-                        <div class="flavor-name">No Preservatives</div>
-                    </div>
-                    <div class="flavor-opt active">
-                        <div class="flavor-emoji"> <img src="{{ asset('img/no-artificial-colours.png') }}" alt=""> </div>
-                        <div class="flavor-name">No Colours<br>Added</div>
-                    </div>
-                    <div class="flavor-opt active">
-                        <div class="flavor-emoji"><img src="{{ asset('img/natural.png') }}" alt=""></div>
-                        <div class="flavor-name">Rooted in <br> Ayurveda</div>
-                    </div>
-                    <div class="flavor-opt active">
-                        <div class="flavor-emoji"><img src="{{ asset('img/tag.png') }}" alt=""></div>
-                        <div class="flavor-name">No Gelatin <br> Plant Based Pectin</div>
-                    </div>
+                    @php
+                        $tags = $product->tags ?? [];
+                        // Backward compatibility for old string tags
+                        if (is_string($tags)) {
+                            $tags = array_map(function($t) {
+                                preg_match('/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u', $t, $m);
+                                return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
+                            }, array_filter(array_map('trim', explode(',', $tags))));
+                        }
+                    @endphp
+
+                    @if(is_array($tags) && count($tags) > 0)
+                        @foreach($tags as $tag)
+                            <div class="flavor-opt active">
+                                <div class="flavor-emoji">
+                                    @if(!empty($tag['icon']))
+                                        @php
+                                            $isFilePath = str_contains($tag['icon'], 'tags/');
+                                        @endphp
+                                        @if($isFilePath)
+                                            <img src="{{ asset('storage/' . $tag['icon']) }}" alt="" style="width: 28px; height: 28px; object-fit: contain;">
+                                        @else
+                                            <span style="font-size: 28px; display: inline-block;">{{ $tag['icon'] }}</span>
+                                        @endif
+                                    @else
+                                        <span style="font-size: 28px; display: inline-block;">✨</span>
+                                    @endif
+                                </div>
+                                <div class="flavor-name">{!! nl2br(e($tag['text'] ?? '')) !!}</div>
+                            </div>
+                        @endforeach
+                    @else
+                        <!-- Fallback static features if no tags -->
+                        <div class="flavor-opt active">
+                            <div class="flavor-emoji"> <img src="{{ asset('img/sugar.png') }}" alt=""></div>
+                            <div class="flavor-name">No Added Sugar</div>
+                        </div>
+                        <div class="flavor-opt active">
+                            <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt=""></div>
+                            <div class="flavor-name">No Preservatives</div>
+                        </div>
+                        <div class="flavor-opt active">
+                            <div class="flavor-emoji"> <img src="{{ asset('img/no-artificial-colours.png') }}" alt=""> </div>
+                            <div class="flavor-name">No Colours<br>Added</div>
+                        </div>
+                        <div class="flavor-opt active">
+                            <div class="flavor-emoji"><img src="{{ asset('img/natural.png') }}" alt=""></div>
+                            <div class="flavor-name">Rooted in <br> Ayurveda</div>
+                        </div>
+                        <div class="flavor-opt active">
+                            <div class="flavor-emoji"><img src="{{ asset('img/tag.png') }}" alt=""></div>
+                            <div class="flavor-name">No Gelatin <br> Plant Based Pectin</div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -222,14 +265,6 @@
 
 
     <!-- ══ DESCRIPTION & DETAILS ══ -->
-    <section class="section-wrap reveal">
-        <div style="max-width:1200px;margin:0 auto;">
-            <h2 class="sec-title">Product <span class="acc">Details</span></h2>
-            <div class="pdp-description" style="line-height: 1.8; color: var(--dk); font-size: 1.1rem;">
-                {!! $product->description !!}
-            </div>
-        </div>
-    </section>
 
     <!-- ══ HOW IT TRANSFORMS ══ -->
     <section class="section-wrap transform-section reveal">
@@ -237,11 +272,12 @@
             <span class="sec-eye">Real Results</span>
             <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
             <p class="sec-sub">90 days of {{ $product->name }} — visible, measurable, life-changing results reported by thousands of
-                parents.</p>�� visible, measurable, life-changing results reported by thousands of
+                parents.</p> visible, measurable, life-changing results reported by thousands of
                 parents.</p>
-            <div class="transform-grid">
+             <div class="transform-grid">
                 <div class="transform-visual">
-                    <div
+                    <img src="/img/child-iamges.png" alt="">
+                    <!-- <div
                         style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
                         </div>
                     <div class="before-after">
@@ -254,11 +290,11 @@
                             <div class="ba-label">After 90 Days</div>
                             <div class="ba-val">🦸 Superhero!</div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="transform-list">
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,77,143,.12)">🛡️</div>
+                        <div class="tr-icon" style="background:rgba(255,77,143,.12)"><img src="/img/immune.png" alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Stronger Immunity</div>
                             <div class="tr-desc">Kids fall sick less often. Parents report 60% fewer sick days in the first
@@ -268,7 +304,7 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,191,255,.12)">📏</div>
+                        <div class="tr-icon" style="background:rgba(0,191,255,.12)"><img src="/img/check-height.png" alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Height & Growth Spurt</div>
                             <div class="tr-desc">Ashwagandha + Zinc work synergistically to support natural growth hormone
@@ -278,7 +314,7 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,214,143,.12)">⚡</div>
+                        <div class="tr-icon" style="background:rgba(0,214,143,.12)"><img src="/img/energy-drink.png" alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">All-Day Energy</div>
                             <div class="tr-desc">No more afternoon crashes. Kids stay energetic and active through school,
@@ -288,7 +324,7 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,214,0,.15)">😊</div>
+                        <div class="tr-icon" style="background:rgba(255,214,0,.15)"><img src="/img/mental-health.png" alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Better Mood & Calm</div>
                             <div class="tr-desc">Adaptogenic Ashwagandha reduces cortisol — kids feel less stressed, sleep
@@ -372,7 +408,7 @@
     <!-- ══════════════════════════════
              FEATURES — NO GELATIN etc.
         ══════════════════════════════ -->
-    <section class="features-section reveal" id="features">
+     <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
                 <div>
@@ -383,7 +419,7 @@
                         Because your child's body deserves only the best.</p>
                     <div class="feat-list">
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--mnl)">🚫</div>
+                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png" alt=""></div>
                             <div>
                                 <div class="feat-item-title">Zero Gelatin — 100% Vegetarian</div>
                                 <div class="feat-item-desc">Most international gummies use animal gelatin (pig or bovine).
@@ -394,7 +430,7 @@
                             </div>
                         </div>
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--pkl)">🍭</div>
+                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png" alt=""></div>
                             <div>
                                 <div class="feat-item-title">No Refined Sugar</div>
                                 <div class="feat-item-desc">We sweeten with Stevia + monk fruit extract — giving a
@@ -405,7 +441,7 @@
                         </div>
 
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--yel)">🎨</div>
+                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png" alt=""></div>
                             <div>
                                 <div class="feat-item-title">No Artificial Colors or Flavors</div>
                                 <div class="feat-item-desc">Our vibrant colors come from beetroot, turmeric, and spirulina.
@@ -421,14 +457,14 @@
 
                 <!-- Comparison Table -->
                 <div class="comparison-box">
-                    <div class="comp-title">🏆 NutriBuddy vs. Other Brands</div>
+                    <div class="comp-title">NutriBuddy vs. Other Brands</div>
                     <table class="comp-table">
                         <thead>
                             <tr>
                                 <th></th>
                                 <th class="comp-us-head">NutriBuddy</th>
-                                <th style="color:#aaa">Little Joys</th>
-                                <th style="color:#aaa">Gritzo</th>
+                                <th style="color:#aaa">Brand 1</th>
+                                <th style="color:#aaa">Brand 2</th>
                                 <th style="color:#aaa">Others</th>
                             </tr>
                         </thead>
@@ -496,6 +532,7 @@
         </div>
     </section>
 
+
     <!-- ══════════════════════════════════════════
                HOW IT WORKS
           ══════════════════════════════════════════ -->
@@ -535,7 +572,7 @@
 
     <!-- SECTION problem and solution -->
 
-    <!-- SECTION -->
+   <!-- SECTION -->
     <section class="ps-section">
         <div class="ps-inner">
 
@@ -551,47 +588,47 @@
             </div>
 
             <!-- PROBLEMS -->
-            <div class="block-label reveal">
+            <!-- <div class="block-label reveal">
                 <div class="blabel bl-prob">😟 Today's Challenges</div>
                 <div class="bline"></div>
-            </div>
+            </div> -->
 
             <div class="problem-grid">
                 <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi1"><img src="img/weak-boy.JPG" alt=""></div>
+                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt=""></div>
                     <div class="prob-name">Vitamin & Mineral Deficiency</div>
                     <p class="prob-text">Processed food strips away nutrients. 80% of Indian kids are Vitamin D deficient —
                         affecting bones, immunity & mood.</p>
                 </div>
                 <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi2"><img src="img/BUSY-P.jpg" alt=""></div>
+                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt=""></div>
                     <div class="prob-name">Busy Parent, Skipped Nutrition</div>
                     <p class="prob-text">Between work and school runs, balanced meals slip through the cracks. Convenience
                         wins
                         over nutrition — every single day.</p>
                 </div>
                 <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi3"><img src="img/hungry-boy.jpg" alt=""></div>
+                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt=""></div>
                     <div class="prob-name">Junk Food Addiction</div>
                     <p class="prob-text">Pizza, chips, sugary drinks — kids crave them and get them. High calories, zero
                         nutrition, and taste buds that reject healthy food.</p>
                 </div>
                 <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi4"><img src="img/indoor.jpg" alt=""></div>
+                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt=""></div>
                     <div class="prob-name">Less Outdoor Play, More Screens</div>
                     <p class="prob-text">No sunlight means no Vitamin D. No movement means weak bones and low immunity —
                         visible
                         on the outside, starting from within.</p>
                 </div>
                 <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi5"><img src="img/test-product.jpg" alt=""></div>
+                    <div class="prob-icon pi5"><img src="/img/test-product.jpg" alt=""></div>
                     <div class="prob-name">Adulterated Food</div>
                     <p class="prob-text">Preservatives, artificial colors, hidden additives — what's really in your child's
                         food?
                         Nobody gives you a guarantee.</p>
                 </div>
                 <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi6"><img src="img/illness.jpg" alt=""></div>
+                    <div class="prob-icon pi6"><img src="/img/illness.jpg" alt=""></div>
                     <div class="prob-name">Weak Immunity — Frequent Illness</div>
                     <p class="prob-text">The end result: kids fall sick repeatedly. School missed, exams affected, parents
                         stressed. A cycle that's hard to break.</p>
@@ -606,15 +643,18 @@
             </div>
 
             <!-- SOLUTION -->
-            <div class="block-label reveal">
+            <!-- <div class="block-label reveal">
                 <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
                 <div class="bline g"></div>
-            </div>
+            </div> -->
 
-            <!-- HERO -->
+            
+    </section>
+    <section>
+        <!-- HERO -->
             <div class="sol-hero reveal">
                 <div class="sol-hero-text">
-                    <img src="img/posr.jpeg" alt="">
+                    <img src="/img/posr.png" alt="">
 
                     <!-- <div class="sol-badge">🏆 India's #1 Kids Wellness Gummy</div>
                   <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
@@ -631,44 +671,15 @@
 
                 </div>
 
-                <!-- EQUATION -->
-                <div class="eq-card reveal">
-                    <div class="eq-lbl">✨ The NutriBuddy Formula</div>
-                    <div class="eq-wrap">
-                        <div class="eq-item">
-                            <div class="eq-icon ei1">🏺</div>
-                            <div class="eq-nm">Ayurvedic Wisdom</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei2">🔬</div>
-                            <div class="eq-nm">Modern Science</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei3">👅</div>
-                            <div class="eq-nm">Kid-Approved Taste</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei4">🩺</div>
-                            <div class="eq-nm">Pediatrician Verified</div>
-                        </div>
-                        <div class="eq-eq">=</div>
-                        <div class="eq-result">
-                            <div class="eq-res-icon"></div>
-                            <div class="eq-res-nm">NutriBuddy</div>
-                        </div>
-                    </div>
-                </div>
+                
 
 
 
 
                 <!-- CTA -->
-                <div class="ps-cta reveal">
+                <!-- <div class="ps-cta reveal">
                     <div class="cta-inner">
-                        <span class="cta-emoji"><img src="img/nutrigummi.png" alt=""></span>
+                        <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
                         <h3 class="cta-title">Give Your Child the Best Start</h3>
                         <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
                             certified
@@ -678,11 +689,43 @@
                             <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
             </div>
     </section>
+    <section class="ps-section">
+        <!-- EQUATION -->
+                <div class="eq-card reveal">
+                    <div class="eq-lbl">✨ The NutriBuddy Formula</div>
+                    <div class="eq-wrap">
+                        <div class="eq-item">
+                            <div class="eq-icon ei1"><img src="/img/natural-organic.png" alt=""></div>
+                            <div class="eq-nm">Ayurvedic Wisdom</div>
+                        </div>
+                        <div class="eq-op">+</div>
+                        <div class="eq-item">
+                            <div class="eq-icon ei2"><img src="/img/observation.png" alt=""></div>
+                            <div class="eq-nm">Modern Science</div>
+                        </div>
+                        <div class="eq-op">+</div>
+                        <div class="eq-item">
+                            <div class="eq-icon ei3"><img src="/img/tongue.png" alt=""></div>
+                            <div class="eq-nm">Kid-Approved Taste</div>
+                        </div>
+                        <div class="eq-op">+</div>
+                        <div class="eq-item">
+                            <div class="eq-icon ei4"><img src="/img/pediatrician.png" alt=""></div>
+                            <div class="eq-nm">Pediatrician Verified</div>
+                        </div>
+                        <div class="eq-eq">=</div>
+                        <div class="eq-result">
+                            <div class="eq-res-icon"><img src="/img/product2.png" alt=""></div>
+                            <div class="eq-res-nm">NutriBuddy</div>
+                        </div>
+                    </div>
+                </div>
 
+    </section>
 
     <!-- ════════════════════════════════════════════════
              NUTRIBUDDY INGREDIENT SECTION
@@ -803,303 +846,17 @@
 
     <!-- end ingredients -->
 
+   
     <!-- ══════════════════════════════════════════
-               TESTIMONIALS
-          ══════════════════════════════════════════ -->
-    <section class="testi-section reveal" id="reviews">
-        <span class="sec-eye">Parent Reviews</span>
-        <h2 class="sec-title" style="text-align:center">10,000+ Happy Families</h2>
-
-        <div class="rev-summary reveal">
-            <div class="rev-big">
-                <div class="rev-big-n">4.9</div>
-                <div class="rev-big-stars">★★★★★</div>
-                <div class="rev-big-l">Based on 6,031 reviews</div>
-            </div>
-            <div class="rev-bars">
-                <div class="rbar-row">5 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:88%"></div>
-                    </div> 88%</div>
-                <div class="rbar-row">4 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:8%"></div>
-                    </div> 8%</div>
-                <div class="rbar-row">3 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:2.5%"></div>
-                    </div> 2.5%</div>
-                <div class="rbar-row">2 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:1%"></div>
-                    </div> 1%</div>
-                <div class="rbar-row">1 ★ <div class="rbar-track">
-                        <div class="rbar-fill" style="width:.5%"></div>
-                    </div> 0.5%</div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:10px;min-width:180px">
-                <div
-                    style="text-align:center;font-family:'Fredoka One',cursive;font-size:1rem;color:var(--dk);margin-bottom:4px">
-                    Top Tags</div>
-                <div style="display:flex;flex-wrap:wrap;gap:8px">
-                    <span
-                        style="background:var(--pkl);color:var(--pk);border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Tastes
-                        Great</span>
-                    <span
-                        style="background:var(--skl);color:#0088bb;border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Really
-                        Works</span>
-                    <span
-                        style="background:var(--mnl);color:var(--mn);border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Fast
-                        Results</span>
-                    <span
-                        style="background:var(--yel);color:#907000;border-radius:50px;padding:5px 12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem">Great
-                        Value</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="reels-section-wrap">
-
-            <!-- Header row with title + nav buttons -->
-            <div class="reels-header">
-                <p class="reels-title">Parent Video Reviews</p>
-                <div class="reels-nav">
-                    <button class="reels-btn" id="reelPrev" aria-label="Previous">‹</button>
-                    <button class="reels-btn reels-btn-next" id="reelNext" aria-label="Next">›</button>
-                </div>
-            </div>
-
-            <!-- Viewport clips the track -->
-            <div class="reels-viewport" id="reelsViewport">
-                <div class="reels-row" id="reelsRow">
-
-                    <div class="reel" data-reel="0" style="background:linear-gradient(160deg,#FF8FAB,#FF4D8F)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb0"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp0">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Priya Sharma</div>
-                            <div class="reel-txt">"My daughter hasn't missed school since starting GrowStrong!"</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="1" style="background:linear-gradient(160deg,#7BC8FF,#0099DD)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb1"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp1">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Rahul Mehta</div>
-                            <div class="reel-txt">"BrainBoost changed exam season for us. His focus is insane."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="2" style="background:linear-gradient(160deg,#B79FFF,#7C3AED)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb2"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp2">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Dr. Anita Nair</div>
-                            <div class="reel-txt">"As a pediatrician, I recommend NutriBuddy with full confidence."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="3" style="background:linear-gradient(160deg,#FFD97D,#FF9900)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb3"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp3">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Fatima Khan</div>
-                            <div class="reel-txt">"DreamCalm turned bedtime from nightmare into our fav time."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="4" style="background:linear-gradient(160deg,#6EF0C0,#00A87A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb4"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp4">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Vikram Patel</div>
-                            <div class="reel-txt">"Both kids on different NutriBuddy plans. Life-changing."</div>
-                        </div>
-                    </div>
-
-                    <div class="reel" data-reel="5" style="background:linear-gradient(160deg,#FFB3C6,#FF6B8A)">
-                        <div class="reel-prog">
-                            <div class="reel-bar" id="rb5"></div>
-                        </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
-                            </video></div>
-                        <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
-                        <div class="reel-info">
-                            <div class="reel-name">Sneha Joshi</div>
-                            <div class="reel-txt">"My toddler asks for his gummy before breakfast. That's a win."</div>
-                        </div>
-                    </div>
-
-                </div><!-- /reels-row -->
-            </div><!-- /reels-viewport -->
-
-            <!-- Dot indicators -->
-            <div class="reels-dots" id="reelsDots">
-                <button class="reels-dot active" data-index="0"></button>
-                <button class="reels-dot" data-index="1"></button>
-                <button class="reels-dot" data-index="2"></button>
-                <button class="reels-dot" data-index="3"></button>
-                <button class="reels-dot" data-index="4"></button>
-                <button class="reels-dot" data-index="5"></button>
-            </div>
-
-        </div><!-- /reels-section-wrap -->
-
-        <div class="wreviews">
-            @php $activeReviews = $product->reviews->where('is_active', true); @endphp
-            @forelse($activeReviews as $review)
-                <div class="wrev">
-                    <div class="wrev-stars">
-                        @for($i=0; $i<5; $i++)
-                            {{ $i < $review->rating ? '★' : '☆' }}
-                        @endfor
-                    </div>
-                    <p class="wrev-txt">{{ $review->comment }}</p>
-                    <div class="wrev-author">
-                        <div class="wrev-ava" style="background:{{ ['#FFE8F5','#E8F5FF','#EDE9FE','#F5F5F5'][rand(0,3)] }}">
-                            {{ substr($review->user->name ?? 'U', 0, 1) }}
-                        </div>
-                        <div>
-                            <div class="wrev-name">{{ $review->user->name ?? 'Anonymous' }}</div>
-                            <div class="wrev-meta">{{ $review->created_at->diffForHumans() }}</div>
-                            <div class="wrev-badge">✓ Verified Purchase</div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div style="text-align:center; padding: 40px; color: #888; width: 100%;">
-                    <p>No reviews yet. Be the first to review this product!</p>
-                </div>
-            @endforelse
-        </div>
-
-        <div class="write-review-section" style="max-width: 800px; margin: 40px auto; padding: 30px; background: #f9f9f9; border-radius: 16px; border: 1px solid #eee;">
-            <h3 style="font-family:'Fredoka One',cursive; color: var(--dk); margin-bottom: 20px;">Write a Review</h3>
-            
-            @auth
-                <form action="{{ route('reviews.store', $product->id) }}" method="POST">
-                    @csrf
-                    <div style="margin-bottom: 20px;">
-                        <label style="display:block; font-weight:800; margin-bottom:8px; font-size:0.9rem; color:#666;">RATING</label>
-                        <div class="rating-input" style="display:flex; gap:10px; font-size:1.5rem; color:#ddd; cursor:pointer;">
-                            <span data-val="1" class="star-opt">★</span>
-                            <span data-val="2" class="star-opt">★</span>
-                            <span data-val="3" class="star-opt">★</span>
-                            <span data-val="4" class="star-opt">★</span>
-                            <span data-val="5" class="star-opt">★</span>
-                        </div>
-                        <input type="hidden" name="rating" id="ratingValue" value="5">
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <label style="display:block; font-weight:800; margin-bottom:8px; font-size:0.9rem; color:#666;">YOUR COMMENT</label>
-                        <textarea name="comment" rows="4" style="width:100%; padding:12px; border-radius:10px; border:1px solid #ddd; font-family:inherit;" placeholder="Share your experience with this product..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn-buy" style="width:auto; padding:12px 30px;">Submit Review</button>
-                </form>
-            @else
-                <div style="text-align:center; padding: 20px;">
-                    <p style="color:#666; margin-bottom:15px;">You must be logged in to write a review.</p>
-                    <button class="btn-cart" onclick="openLoginModal()" style="width:auto; padding:10px 25px;">Login to Review</button>
-                </div>
-            @endauth
-        </div>
-    </section>
-
+                 PARENT REVIEWS
+            ══════════════════════════════════════════ -->
+    @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-               FAQ
-          ══════════════════════════════════════════ -->
-    <section class="faq-section reveal">
-        <span class="sec-eye">Got Questions?</span>
-        <h2 class="sec-title">Parents <span class="acc">Ask</span> Us</h2>
-        <div class="faq-list">
-            <div class="faq-item open">
-                <button class="faq-q">Are NutriBuddy products safe for young children?<span
-                        class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Absolutely. All products are formulated for children aged 2–14 with age-appropriate dosages,
-                        third-party
-                        lab tested every batch, and reviewed by certified pediatricians. Zero artificial colors, flavors, or
-                        harmful
-                        preservatives — ever.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">How long before I see results?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Most parents notice improvements in energy and mood within 2–3 weeks. For immunity and growth
-                        benefits,
-                        60–90 days of consistent use shows the best results. We recommend tracking milestones on your parent
-                        dashboard.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Are these vegetarian or vegan?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>All our gummies and chews are 100% vegetarian. Select vegan options are clearly labeled on each
-                        product
-                        page. Zero gelatin or animal-derived ingredients — ever.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Can my child take multiple products together?<span
-                        class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Yes! Our products are designed to complement each other beautifully. Take our personalized quiz to
-                        build
-                        the right supplement stack for your child's specific age, goals, and health needs.</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">What if my child doesn't like the taste?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>We offer a 30-day taste guarantee. If your child genuinely doesn't enjoy the flavor, we'll refund you
-                        completely — no questions asked. We're that confident. (But honestly, 98% of kids love it!)</p>
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-q">Is there a subscription option?<span class="faq-tog">+</span></button>
-                <div class="faq-ans">
-                    <p>Yes! Subscribe & Save gives you 20% off every order, free delivery, priority restocking during
-                        shortages,
-                        and exclusive member discounts. Cancel or pause anytime — no penalties whatsoever.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+                 FAQ
+            ══════════════════════════════════════════ -->
+    @include('partials.faq-section')
 
-    <!-- ══════════════════════════════════════════
-               NEWSLETTER
-          ══════════════════════════════════════════ -->
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
@@ -1111,98 +868,7 @@
         </div>
     </div>
 
-    <!-- ══ RELATED PRODUCTS ══ -->
-    @if($relatedProducts->count() > 0)
-    <section class="section-wrap reveal" id="related-products" style="padding: 80px 0; background: #fff;">
-        <div style="max-width:1200px;margin:0 auto; padding: 0 20px;">
-            <h2 class="sec-title" style="margin-bottom: 40px;">You May Also <span class="acc">Like</span></h2>
-            <div class="products-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;">
-                @foreach($relatedProducts as $rel)
-                @php 
-                    $relCatSlug = $rel->category->slug ?? 'pk';
-                    if ($relCatSlug == 'multivitamins') $relCatSlug = 'pk';
-                    elseif ($relCatSlug == 'whey-protein') $relCatSlug = 'sk';
-                    elseif ($relCatSlug == 'pre-workout') $relCatSlug = 'pu';
-                    else $relCatSlug = 'pk';
-                @endphp
-                <div class="pc pc-{{ $relCatSlug }}">
-                    <div class="pc-head pc-head-{{ $relCatSlug }}">
-                        <a href="{{ route('product.show', $rel->slug) }}" class="pc-emoji p-image">
-                            @if($rel->primaryImage)
-                                <img src="{{ asset('storage/' . $rel->primaryImage->image_path) }}" alt="{{ $rel->name }}" class="default-img">
-                            @else
-                                <img src="{{ asset('img/product2.png') }}" alt="{{ $rel->name }}" class="default-img">
-                            @endif
-                        </a>
-                    </div>
-                    <div class="pc-body">
-                        <div class="pc-stars">
-                            @php $relRating = $rel->reviews->avg('rating') ?? 5; @endphp
-                            @for($i=0; $i<5; $i++){{ $i < $relRating ? '★' : '☆' }}@endfor
-                            <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
-                                ({{ $rel->reviews->count() > 0 ? $rel->reviews->count() : '2,841' }} reviews)
-                            </span>
-                        </div>
-                        <div class="pc-cat cat-{{ $relCatSlug }}">{{ $rel->category->name ?? 'Uncategorized' }}</div>
-                        <div class="pc-name"><a href="{{ route('product.show', $rel->slug) }}" style="color: inherit; text-decoration: none;">{{ $rel->name }}</a></div>
-                        <div class="pc-features">
-                            @php
-                                $tags = $rel->tags ?? [];
-                                if (is_string($tags)) {
-                                    $tags = array_map(function($t) {
-                                        preg_match('/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u', $t, $m);
-                                        return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
-                                    }, array_filter(array_map('trim', explode(',', $tags))));
-                                }
-                            @endphp
-                            @if(count($tags) > 0)
-                                @foreach(array_chunk($tags, 2) as $chunk)
-                                    <div class="newcarda">
-                                        @foreach($chunk as $tag)
-                                            <span>
-                                                @if(!empty($tag['icon']))
-                                                    @php $isFilePath = str_contains($tag['icon'], 'tags/'); @endphp
-                                                    <i>
-                                                        @if($isFilePath)
-                                                            <img src="{{ asset('storage/' . $tag['icon']) }}" style="width:16px; height:16px; object-fit:contain; vertical-align: middle;">
-                                                        @else
-                                                            {{ $tag['icon'] }}
-                                                        @endif
-                                                    </i>
-                                                @endif
-                                                {{ $tag['text'] ?? '' }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="newcarda">
-                                    <span><i>🛡️</i> Boosts Immunity</span>
-                                    <span><i>📈</i> Supports Growth</span>
-                                </div>
-                                <div class="newcarda">
-                                    <span><i>⚡</i> Increases Energy</span>
-                                    <span><i>😊</i> Improves Mood</span>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="pc-foot">
-                            <div class="pc-price">
-                                ₹{{ number_format($rel->base_price, 0) }} 
-                                @if($rel->compare_at_price > $rel->base_price)
-                                    <s>₹{{ number_format($rel->compare_at_price, 0) }}</s>
-                                @endif
-                            </div>
-                            <button class="btn-add badd-{{ $relCatSlug }}" onclick="window.location.href='{{ route('product.show', $rel->slug) }}'">View +</button>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    @endif
-
+  
 @endsection
 
 @push('scripts')
@@ -1281,6 +947,7 @@
                 s.style.color = '#FFD700';
             }
         });
+
     });
 </script>
 @endpush
