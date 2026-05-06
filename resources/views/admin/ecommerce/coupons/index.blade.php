@@ -117,10 +117,10 @@
                     </div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" value="1" name="is_active" checked>
-                        <label class="form-check-label">Active</label>
+                    <input type="hidden" name="is_active" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none" type="checkbox" value="1" name="is_active" id="createCouponActive" checked>
+                        <label class="form-check-label m-0" for="createCouponActive">Active</label>
                     </div>
                 </div>
                 <div class="col-12">
@@ -345,10 +345,10 @@
                                 </div>
                             </div>
                             <div class="col-12 d-flex justify-content-end mt-4">
-                                <div class="form-check form-switch mb-0">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input class="form-check-input" type="checkbox" name="is_active" value="1" id="edit_coupon_is_active">
-                                    <label class="form-check-label" for="edit_coupon_is_active">Active</label>
+                                <input type="hidden" name="is_active" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="is_active" value="1" id="edit_coupon_is_active">
+                                    <label class="form-check-label m-0" for="edit_coupon_is_active">Active</label>
                                 </div>
                             </div>
                         </div>

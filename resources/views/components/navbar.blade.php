@@ -17,6 +17,49 @@
         <div class="col-auto">
             <div class="d-flex flex-wrap align-items-center gap-3 nb-admin-actions">
                 <div class="dropdown">
+                    <button class="d-flex justify-content-center align-items-center rounded-circle nb-admin-notification" type="button" data-bs-toggle="dropdown">
+                        <iconify-icon icon="lucide:bell" class="text-2xl"></iconify-icon>
+                        @if($unreadNotificationsCount > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 10px; padding: 4px 6px;">
+                                {{ $unreadNotificationsCount }}
+                            </span>
+                        @endif
+                    </button>
+                    <div class="dropdown-menu to-top dropdown-menu-lg nb-admin-dropdown p-0" style="width: 320px;">
+                        <div class="p-16 border-bottom d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0">Notifications</h6>
+                            @if($unreadNotificationsCount > 0)
+                                <button type="button" id="navbar-mark-all-read" class="text-primary-600 text-sm fw-medium bg-transparent border-0" data-url="{{ route('admin.ecommerce.notifications.read-all') }}">Mark all as read</button>
+                            @endif
+                        </div>
+                        <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
+                            @forelse($navbarNotifications as $notification)
+                                @php
+                                    $data = $notification->data;
+                                    $isUnread = is_null($notification->read_at);
+                                @endphp
+                                <a href="{{ $data['action_url'] ?? 'javascript:void(0)' }}" class="dropdown-item p-16 border-bottom d-flex align-items-start gap-3 {{ $isUnread ? 'bg-primary-50' : '' }}">
+                                    <div class="flex-shrink-0 w-40-px h-40-px radius-circle bg-primary-100 text-primary-600 d-flex align-items-center justify-content-center text-xl">
+                                        <iconify-icon icon="lucide:bell"></iconify-icon>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="text-sm mb-1 fw-bold {{ $isUnread ? 'text-primary-600' : 'text-secondary-light' }}">{{ $data['title'] ?? 'System Notification' }}</h6>
+                                        <p class="text-xs mb-1 text-secondary-light">{{ Str::limit($data['message'] ?? '', 50) }}</p>
+                                        <span class="text-xs text-secondary-light">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-24 text-center">
+                                    <p class="text-sm text-secondary-light mb-0">No new notifications</p>
+                                </div>
+                            @endforelse
+                        </div>
+                        <div class="p-12 text-center">
+                            <a href="{{ route('admin.ecommerce.notifications.index') }}" class="text-primary-600 text-sm fw-semibold">View All Notifications</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle nb-admin-profile" type="button" data-bs-toggle="dropdown">
                         <img src="{{ asset('assets/images/user.png') }}" alt="image" class="w-40-px h-40-px object-fit-cover rounded-circle">
                     </button>
@@ -46,3 +89,45 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const markAllBtn = document.getElementById('navbar-mark-all-read');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Keep dropdown open
+                
+                const url = this.getAttribute('data-url');
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update UI
+                        document.querySelectorAll('.notification-list .dropdown-item').forEach(item => {
+                            item.classList.remove('bg-primary-50');
+                            const title = item.querySelector('h6');
+                            if (title) {
+                                title.classList.remove('text-primary-600');
+                                title.classList.add('text-secondary-light');
+                            }
+                        });
+                        const badge = document.querySelector('.nb-admin-notification .badge');
+                        if (badge) badge.remove();
+                        markAllBtn.remove();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        }
+    });
+</script>

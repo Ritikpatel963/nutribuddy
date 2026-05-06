@@ -14,7 +14,7 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.ecommerce.blog-categories.store') }}" class="row g-3">
                 @csrf
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label">Name</label>
                     <div class="icon-field">
                         <span class="icon">
@@ -23,25 +23,12 @@
                         <input type="text" name="name" class="form-control" placeholder="Category Name" required>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Slug (optional)</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="lucide:link"></iconify-icon>
-                        </span>
-                        <input type="text" name="slug" class="form-control" placeholder="category-slug">
-                    </div>
-                </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 mb-8">
                         <input type="hidden" name="is_active" value="0">
                         <input class="form-check-input" type="checkbox" value="1" name="is_active" checked>
-                        <label class="form-check-label">Active</label>
+                        <label class="form-check-label mb-0">Active</label>
                     </div>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="2"></textarea>
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary-600">Create Category</button>
@@ -60,7 +47,6 @@
                     <thead>
                         <tr>
                             <th>Category Name</th>
-                            <th>Slug</th>
                             <th>Post Count</th>
                             <th>Status</th>
                             <th class="text-end">Actions</th>
@@ -72,10 +58,9 @@
                                 <td>
                                     <div class="d-flex flex-column">
                                         <span class="text-md fw-bold text-dark">{{ $category->name }}</span>
-                                        <small class="text-secondary-light">ID: #{{ $category->id }}</small>
                                     </div>
                                 </td>
-                                <td><span class="text-sm text-secondary-light fw-medium">{{ $category->slug }}</span></td>
+
                                 <td><span class="badge bg-info-100 text-info-600 px-2 fw-medium">{{ $category->posts_count }} Posts</span></td>
                                 <td>
                                     @if($category->is_active)
@@ -90,8 +75,6 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#editBlogCategoryModal"
                                             data-name="{{ $category->name }}"
-                                            data-slug="{{ $category->slug }}"
-                                            data-description="{{ $category->description ?? '' }}"
                                             data-is_active="{{ $category->is_active }}"
                                             data-action="{{ route('admin.ecommerce.blog-categories.update', $category) }}">
                                             <iconify-icon icon="lucide:edit"></iconify-icon> Edit
@@ -134,26 +117,15 @@
                                 <input type="text" name="name" id="edit_name" class="form-control" placeholder="Category Name" required>
                             </div>
                         </div>
+
                         <div class="mb-3">
-                            <label class="form-label">Slug</label>
-                            <div class="icon-field">
-                                <span class="icon">
-                                    <iconify-icon icon="lucide:link"></iconify-icon>
-                                </span>
-                                <input type="text" name="slug" id="edit_slug" class="form-control" placeholder="category-slug">
-                            </div>
-                        </div>
-                        <div class="mb-3 d-flex align-items-end">
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch d-flex align-items-center gap-2">
                                 <input type="hidden" name="is_active" value="0">
                                 <input class="form-check-input" type="checkbox" value="1" name="is_active" id="edit_is_active">
-                                <label class="form-check-label" for="edit_is_active">Active</label>
+                                <label class="form-check-label mb-0" for="edit_is_active">Active</label>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -178,16 +150,12 @@
                     
                     const action = button.getAttribute('data-action');
                     const name = button.getAttribute('data-name');
-                    const slug = button.getAttribute('data-slug');
-                    const description = button.getAttribute('data-description');
                     const isActive = button.getAttribute('data-is_active');
 
                     const form = editModal.querySelector('#editBlogCategoryForm');
                     form.setAttribute('action', action);
                     
                     editModal.querySelector('#edit_name').value = name || '';
-                    editModal.querySelector('#edit_slug').value = slug || '';
-                    editModal.querySelector('#edit_description').value = description || '';
                     editModal.querySelector('#edit_is_active').checked = isActive == '1';
                 });
             }

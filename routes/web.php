@@ -135,7 +135,11 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/user/addresses')->name('user.addresses.')->group(function () {
         Route::get('/', [UserAddressController::class, 'index'])->name('index');
+        Route::get('/create', [UserAddressController::class, 'create'])->name('create');
         Route::post('/', [UserAddressController::class, 'store'])->name('store');
+        Route::get('/{address}/edit', [UserAddressController::class, 'edit'])->name('edit');
+        Route::patch('/{address}', [UserAddressController::class, 'update'])->name('update');
+        Route::patch('/{address}/default', [UserAddressController::class, 'setDefault'])->name('set-default');
         Route::delete('/{address}', [UserAddressController::class, 'destroy'])->name('destroy');
     });
 
@@ -168,10 +172,7 @@ Route::middleware('auth')->group(function () {
 
     Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
     Route::view('/order', 'pages.user-panel.order')->name('order');
-    Route::get('/personal-info', function () {
-        $addresses = \App\Models\CustomerAddress::where('user_id', auth()->id())->latest()->get();
-        return view('pages.user-panel.personal-info', ['savedAddresses' => $addresses]);
-    })->name('personal-info');
+    Route::get('/personal-info', [UserAddressController::class, 'index'])->name('personal-info');
 
     Route::post('/personal-info', function (\Illuminate\Http\Request $request) {
         $request->validate([

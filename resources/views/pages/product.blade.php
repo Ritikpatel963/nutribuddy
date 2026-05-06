@@ -127,6 +127,13 @@
                         <div class="variant-row"><div class="vopt active">{{ $defAge }}</div></div>
                     </div>
                 @endif
+
+                @if($product->dosage)
+                    <div class="variant-block">
+                        <div class="variant-label">Dosage:</div>
+                        <div class="variant-row"><div class="vopt active">{{ $product->dosage }}</div></div>
+                    </div>
+                @endif
             </div>
 
             <div class="variant-block">
