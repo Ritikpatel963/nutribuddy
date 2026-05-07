@@ -4,30 +4,116 @@
 @section('content')
     @php
         $defVariant = $product->variants->first();
-        
-        $initialPrice = $defVariant ? $defVariant->display_price : $product->display_price;
-        $initialComparePrice = $defVariant ? ($defVariant->display_compare_price ?? 0) : ($product->display_compare_price ?? 0);
 
-        $defAge = $product->age_group ?: ($defVariant->attributes['Age Group'] ?? '2–17 Yrs');
-        $defPack = $product->pack_size ?: ($defVariant->attributes['Pack Size'] ?? '30 Gummies');
-        $defFlavour = $product->flavor ?: ($defVariant->attributes['Flavour'] ?? '');
+        $initialPrice = $defVariant ? $defVariant->display_price : $product->display_price;
+        $initialComparePrice = $defVariant
+            ? $defVariant->display_compare_price ?? 0
+            : $product->display_compare_price ?? 0;
+
+        $defAge = $product->age_group ?: $defVariant->attributes['Age Group'] ?? '2–17 Yrs';
+        $defPack = $product->pack_size ?: $defVariant->attributes['Pack Size'] ?? '30 Gummies';
+        $defFlavour = $product->flavor ?: $defVariant->attributes['Flavour'] ?? '';
     @endphp
 
     <style>
-        .variant-group-row.d-none { display: none !important; }
-        .variant-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 25px; }
-        .variant-block { flex: 0 0 auto; width: fit-content; }
-        .variant-label { margin-bottom: 8px; font-weight: 700; color: #444; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .review-img-thumb { width: 100%; height: 200px; object-fit: cover; border-radius: 18px; border: 1px solid #f0f0f0; margin-top: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .review-img-thumb:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .star-opt { transition: all 0.2s ease; display: inline-block; }
-        .star-opt:hover { transform: scale(1.3) rotate(8deg); color: #FFD700 !important; }
-        .review-verified-badge { background: #E8F9F1; color: #00A87A; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; letter-spacing: 0.3px; }
-        .review-verified-badge i { font-size: 0.8rem; }
-        .wrev-card { background: #fff; border: 1px solid #f2f2f2; border-radius: 24px; padding: 30px; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; height: 100%; }
-        .wrev-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); border-color: #eee; }
-        .rbar-fill { height: 100%; border-radius: 50px; transition: width 1s ease-in-out; }
-        .pdp-description-section { padding: 34px 5% 22px; }
+        .variant-group-row.d-none {
+            display: none !important;
+        }
+
+        .variant-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .variant-block {
+            flex: 0 0 auto;
+            width: fit-content;
+        }
+
+        .variant-label {
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #444;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .review-img-thumb {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 18px;
+            border: 1px solid #f0f0f0;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .review-img-thumb:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .star-opt {
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .star-opt:hover {
+            transform: scale(1.3) rotate(8deg);
+            color: #FFD700 !important;
+        }
+
+        .review-verified-badge {
+            background: #E8F9F1;
+            color: #00A87A;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .review-verified-badge i {
+            font-size: 0.8rem;
+        }
+
+        .wrev-card {
+            background: #fff;
+            border: 1px solid #f2f2f2;
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .wrev-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            border-color: #eee;
+        }
+
+        .rbar-fill {
+            height: 100%;
+            border-radius: 50px;
+            transition: width 1s ease-in-out;
+        }
+
+        .pdp-description-section {
+            padding: 34px 5% 22px;
+        }
+
         .pdp-description-wrap {
             max-width: 1240px;
             margin: 0 auto;
@@ -37,6 +123,7 @@
             border: 1px solid rgba(255, 196, 0, 0.18);
             box-shadow: 0 16px 40px rgba(30, 24, 64, 0.06);
         }
+
         .pdp-description-label {
             display: inline-flex;
             align-items: center;
@@ -52,6 +139,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
+
         .pdp-description-title {
             margin: 0 0 14px;
             color: var(--dk);
@@ -59,6 +147,7 @@
             font-size: clamp(1.9rem, 3vw, 2.8rem);
             line-height: 1.15;
         }
+
         .pdp-description-intro {
             max-width: 780px;
             margin: 0 0 24px;
@@ -67,10 +156,12 @@
             font-size: 1rem;
             line-height: 1.8;
         }
+
         .pdp-description-copy {
             column-count: 2;
             column-gap: 30px;
         }
+
         .pdp-description-copy p {
             break-inside: avoid;
             margin: 0 0 18px;
@@ -79,15 +170,32 @@
             font-size: 1rem;
             line-height: 1.92;
         }
+
         @media (max-width: 900px) {
-            .pdp-description-wrap { padding: 30px 24px; border-radius: 24px; }
-            .pdp-description-copy { column-count: 1; }
+            .pdp-description-wrap {
+                padding: 30px 24px;
+                border-radius: 24px;
+            }
+
+            .pdp-description-copy {
+                column-count: 1;
+            }
         }
+
         @media (max-width: 640px) {
-            .pdp-description-section { padding: 24px 4% 14px; }
-            .pdp-description-title { font-size: 1.7rem; }
+            .pdp-description-section {
+                padding: 24px 4% 14px;
+            }
+
+            .pdp-description-title {
+                font-size: 1.7rem;
+            }
+
             .pdp-description-intro,
-            .pdp-description-copy p { font-size: 0.95rem; line-height: 1.8; }
+            .pdp-description-copy p {
+                font-size: 0.95rem;
+                line-height: 1.8;
+            }
         }
     </style>
 
@@ -95,33 +203,37 @@
         <!-- LEFT: Gallery -->
         <div class="pdp-gallery">
             <div class="main-img-wrap">
-                @if($product->is_featured)
+                @if ($product->is_featured)
                     <div class="badge-bestseller">Best Seller</div>
                 @endif
-                @if($product->compare_at_price > $product->base_price)
-                    @php 
-                        $discount = round((($product->compare_at_price - $product->base_price) / $product->compare_at_price) * 100);
+                @if ($product->compare_at_price > $product->base_price)
+                    @php
+                        $discount = round(
+                            (($product->compare_at_price - $product->base_price) / $product->compare_at_price) * 100,
+                        );
                     @endphp
                     <div class="badge-discount" id="pdpDiscountBadge">{{ $discount }}% OFF</div>
                 @else
                     <div class="badge-discount d-none" id="pdpDiscountBadge"></div>
                 @endif
-                
+
                 <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
-                    @if($product->primaryImage)
-                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" id="mainPdpImage">
+                    @if ($product->primaryImage)
+                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}"
+                            id="mainPdpImage">
                     @else
                         <img src="{{ asset('img/product2.png') }}" alt="{{ $product->name }}" id="mainPdpImage">
                     @endif
                 </div>
             </div>
             <div class="thumb-row">
-                @foreach($product->images as $image)
-                    <div class="thumb {{ $image->is_primary ? 'active' : '' }}" onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
+                @foreach ($product->images as $image)
+                    <div class="thumb {{ $image->is_primary ? 'active' : '' }}"
+                        onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
                         <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}">
                     </div>
                 @endforeach
-                @if($product->images->count() == 0)
+                @if ($product->images->count() == 0)
                     <div class="thumb active"> <img src="{{ asset('img/product2.png') }}" alt=""></div>
                     <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
                 @endif
@@ -130,31 +242,36 @@
 
         <!-- RIGHT: Info -->
         <div class="pdp-info">
-            <div class="pdp-cat">{{ $product->category->name ?? 'Immunity & Growth' }} · <span id="pdpTopAge">Kids {{ $defAge }}</span></div>
+            <div class="pdp-cat">{{ $product->category->name ?? 'Immunity & Growth' }} · <span id="pdpTopAge">Kids
+                    {{ $defAge }}</span></div>
             <h1 class="pdp-name">{{ $product->name }}</h1>
             <div class="pdp-rating">
                 <div class="stars">
-                    @php 
+                    @php
                         $activeReviewsCount = $product->reviews->where('is_active', true)->count();
-                        $rating = $activeReviewsCount > 0 ? $product->reviews->where('is_active', true)->avg('rating') : 4.9; 
+                        $rating =
+                            $activeReviewsCount > 0 ? $product->reviews->where('is_active', true)->avg('rating') : 4.9;
                     @endphp
-                    @for($i=0; $i<5; $i++)
+                    @for ($i = 0; $i < 5; $i++)
                         {{ $i < $rating ? '★' : '☆' }}
                     @endfor
                 </div>
                 <div class="rating-val">{{ number_format($rating, 1) }}</div>
                 <div class="rating-divider"></div>
-                <div class="rating-count">{{ $activeReviewsCount > 0 ? number_format($activeReviewsCount) : '2,841' }} Verified Reviews</div>
+                <div class="rating-count">{{ $activeReviewsCount > 0 ? number_format($activeReviewsCount) : '2,841' }}
+                    Verified Reviews</div>
             </div>
 
             <!-- Price -->
             <div class="price-box">
                 <div class="price-row">
                     <div class="price-now" id="pdpPriceNow">₹{{ number_format($initialPrice, 0) }}</div>
-                    @if($initialComparePrice > $initialPrice)
+                    @if ($initialComparePrice > $initialPrice)
                         <div class="price-old" id="pdpPriceOld">₹{{ number_format($initialComparePrice, 0) }}</div>
                         @php $initialDiscount = round((($initialComparePrice - $initialPrice) / $initialComparePrice) * 100); @endphp
-                        <div class="price-save" id="pdpPriceSave">Save ₹{{ number_format($initialComparePrice - $initialPrice, 0) }} ({{ $initialDiscount }}% Off)</div>
+                        <div class="price-save" id="pdpPriceSave">Save
+                            ₹{{ number_format($initialComparePrice - $initialPrice, 0) }} ({{ $initialDiscount }}% Off)
+                        </div>
                     @else
                         <div class="price-old d-none" id="pdpPriceOld"></div>
                         <div class="price-save d-none" id="pdpPriceSave"></div>
@@ -163,30 +280,38 @@
                 <div class="price-note">Inclusive of all taxes · Free shipping on this order</div>
                 <div class="cashback-row">
                     <span>🪙</span>
-                    <span id="pdpCashback">Get {{ !empty($product->coins_reward) ? $product->coins_reward : round($initialPrice * 0.05) }} NB Coins on this purchase!</span>
+                    <span id="pdpCashback">Get
+                        {{ !empty($product->coins_reward) ? $product->coins_reward : round($initialPrice * 0.05) }} NB
+                        Coins on this purchase!</span>
                 </div>
             </div>
 
 
             <div class="variant-container">
-                @if($defFlavour)
+                @if ($defFlavour)
                     <div class="variant-block">
                         <div class="variant-label">Flavour:</div>
-                        <div class="variant-row"><div class="vopt active">{{ $defFlavour }}</div></div>
+                        <div class="variant-row">
+                            <div class="vopt active">{{ $defFlavour }}</div>
+                        </div>
                     </div>
                 @endif
 
-                @if($defPack)
+                @if ($defPack)
                     <div class="variant-block">
                         <div class="variant-label">Pack Size:</div>
-                        <div class="variant-row"><div class="vopt active">{{ $defPack }}</div></div>
+                        <div class="variant-row">
+                            <div class="vopt active">{{ $defPack }}</div>
+                        </div>
                     </div>
                 @endif
 
-                @if($defAge)
+                @if ($defAge)
                     <div class="variant-block">
                         <div class="variant-label">Age Group:</div>
-                        <div class="variant-row"><div class="vopt active">{{ $defAge }}</div></div>
+                        <div class="variant-row">
+                            <div class="vopt active">{{ $defAge }}</div>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -198,25 +323,31 @@
                         $tags = $product->tags ?? [];
                         // Backward compatibility for old string tags
                         if (is_string($tags)) {
-                            $tags = array_map(function($t) {
-                                preg_match('/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u', $t, $m);
+                            $tags = array_map(function ($t) {
+                                preg_match(
+                                    '/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u',
+                                    $t,
+                                    $m,
+                                );
                                 return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
                             }, array_filter(array_map('trim', explode(',', $tags))));
                         }
                     @endphp
 
-                    @if(is_array($tags) && count($tags) > 0)
-                        @foreach($tags as $tag)
+                    @if (is_array($tags) && count($tags) > 0)
+                        @foreach ($tags as $tag)
                             <div class="flavor-opt active">
                                 <div class="flavor-emoji">
-                                    @if(!empty($tag['icon']))
+                                    @if (!empty($tag['icon']))
                                         @php
                                             $isFilePath = str_contains($tag['icon'], 'tags/');
                                         @endphp
-                                        @if($isFilePath)
-                                            <img src="{{ asset('storage/' . $tag['icon']) }}" alt="" style="width: 28px; height: 28px; object-fit: contain;">
+                                        @if ($isFilePath)
+                                            <img src="{{ asset('storage/' . $tag['icon']) }}" alt=""
+                                                style="width: 28px; height: 28px; object-fit: contain;">
                                         @else
-                                            <span style="font-size: 28px; display: inline-block;">{{ $tag['icon'] }}</span>
+                                            <span
+                                                style="font-size: 28px; display: inline-block;">{{ $tag['icon'] }}</span>
                                         @endif
                                     @else
                                         <span style="font-size: 28px; display: inline-block;">✨</span>
@@ -232,11 +363,13 @@
                             <div class="flavor-name">No Added Sugar</div>
                         </div>
                         <div class="flavor-opt active">
-                            <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt=""></div>
+                            <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt="">
+                            </div>
                             <div class="flavor-name">No Preservatives</div>
                         </div>
                         <div class="flavor-opt active">
-                            <div class="flavor-emoji"> <img src="{{ asset('img/no-artificial-colours.png') }}" alt=""> </div>
+                            <div class="flavor-emoji"> <img src="{{ asset('img/no-artificial-colours.png') }}"
+                                    alt=""> </div>
                             <div class="flavor-name">No Colours<br>Added</div>
                         </div>
                         <div class="flavor-opt active">
@@ -253,16 +386,16 @@
 
             <!-- Quick Specs: Pack Size & Age -->
             <!-- <div class="pdp-specs-row" style="display:flex;gap:20px;margin: 20px 0;padding:15px;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
-                <div class="spec-item">
-                    <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
-                    <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
-                </div>
-                <div style="width:1px;background:#ddd"></div>
-                <div class="spec-item">
-                    <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
-                    <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
-                </div>
-            </div> -->
+                    <div class="spec-item">
+                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
+                        <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
+                    </div>
+                    <div style="width:1px;background:#ddd"></div>
+                    <div class="spec-item">
+                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
+                        <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
+                    </div>
+                </div> -->
 
 
             <!-- Pincode Check -->
@@ -305,20 +438,30 @@
             <div class="highlights">
                 <h4>Why Parents Love {{ $product->name }}</h4>
                 <ul class="highlight-list">
-                    @php 
+                    @php
                         $features = $product->short_description ? explode("\n", $product->short_description) : [];
                         $features = array_filter(array_map('trim', $features));
                     @endphp
-                    @if(count($features) > 0)
-                        @foreach(array_slice($features, 0, 6) as $feature)
-                            <li><div class="hl-dot"></div>{{ preg_replace('/^[•\-\*]\s*/', '', $feature) }}</li>
+                    @if (count($features) > 0)
+                        @foreach (array_slice($features, 0, 6) as $feature)
+                            <li>
+                                <div class="hl-dot"></div>{{ preg_replace('/^[•\-\*]\s*/', '', $feature) }}
+                            </li>
                         @endforeach
                     @else
                         {{-- Fallback --}}
-                        <li><div class="hl-dot"></div>Ashwagandha (KSM-66®) + Vitamin D3 + Zinc — clinically proven formula</li>
-                        <li><div class="hl-dot"></div>Supports immunity, height, bone density & overall energy in one gummy</li>
-                        <li><div class="hl-dot"></div>Zero gelatin · 100% Vegetarian · No artificial colours or flavours</li>
-                        <li><div class="hl-dot"></div>Tastes so good kids ask for it every morning — guaranteed!</li>
+                        <li>
+                            <div class="hl-dot"></div>Ashwagandha (KSM-66®) + Vitamin D3 + Zinc — clinically proven formula
+                        </li>
+                        <li>
+                            <div class="hl-dot"></div>Supports immunity, height, bone density & overall energy in one gummy
+                        </li>
+                        <li>
+                            <div class="hl-dot"></div>Zero gelatin · 100% Vegetarian · No artificial colours or flavours
+                        </li>
+                        <li>
+                            <div class="hl-dot"></div>Tastes so good kids ask for it every morning — guaranteed!
+                        </li>
                     @endif
                 </ul>
             </div>
@@ -327,20 +470,23 @@
 
 
 
-     <!-- ════════════════════════════════════════════════
-             PRODUCT DESCRIPTION SECTION
-        ════════════════════════════════════════════════ -->
+    <!-- ════════════════════════════════════════════════
+                 PRODUCT DESCRIPTION SECTION
+            ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @php
-        $productDescriptionParagraphs = preg_split('/\r\n\r\n|\n\n|\r\r|[\r\n]+/', strip_tags((string) ($product->description ?? '')));
+        $productDescriptionParagraphs = preg_split(
+            '/\r\n\r\n|\n\n|\r\r|[\r\n]+/',
+            strip_tags((string) ($product->description ?? '')),
+        );
         $productDescriptionParagraphs = array_values(array_filter(array_map('trim', $productDescriptionParagraphs)));
 
         $fallbackDescriptionParagraphs = [
             "{$product->name} is created for parents who want dependable daily nutrition in a format children genuinely enjoy. It combines a kid-friendly taste with ingredients selected to support everyday wellness, making routine supplementation feel simple instead of stressful.",
-            "This product is designed to fit naturally into busy family life. From the first chew, the focus is on convenience, consistency, and age-appropriate nourishment so parents can feel more confident about what their child is taking each day.",
+            'This product is designed to fit naturally into busy family life. From the first chew, the focus is on convenience, consistency, and age-appropriate nourishment so parents can feel more confident about what their child is taking each day.',
             "Every serving is planned to bring together thoughtful formulation and practical use. Whether the goal is better daily balance, steady nutritional support, or an easier wellness routine, {$product->name} is built to work as part of a long-term family habit.",
-            "The texture, flavor, and overall experience are shaped around children while the ingredient story stays parent-focused. That means you get a product that feels enjoyable for kids but still reflects a careful standard for quality, safety, and everyday usability.",
-            "Parents often look for something that supports growth, energy, focus, or seasonal wellness without adding friction to the day. This product answers that need with a format that is approachable, easy to serve, and simple to keep consistent over time.",
+            'The texture, flavor, and overall experience are shaped around children while the ingredient story stays parent-focused. That means you get a product that feels enjoyable for kids but still reflects a careful standard for quality, safety, and everyday usability.',
+            'Parents often look for something that supports growth, energy, focus, or seasonal wellness without adding friction to the day. This product answers that need with a format that is approachable, easy to serve, and simple to keep consistent over time.',
             "With its blend of nutrition, taste, and convenience, {$product->name} aims to make wellness feel more manageable for the whole household. It is a practical choice for families who want supportive daily care without compromising on comfort or experience.",
         ];
 
@@ -362,10 +508,11 @@
             <div class="pdp-description-label">Product Details</div>
             <h2 class="pdp-description-title">Product Description</h2>
             <p class="pdp-description-intro">
-                Discover what makes {{ $product->name }} a thoughtful choice for modern families, from its daily-use comfort to the wellness support parents expect.
+                Discover what makes {{ $product->name }} a thoughtful choice for modern families, from its daily-use
+                comfort to the wellness support parents expect.
             </p>
             <div class="pdp-description-copy">
-                @foreach($productDescriptionParagraphs as $descriptionParagraph)
+                @foreach ($productDescriptionParagraphs as $descriptionParagraph)
                     <p>{{ $descriptionParagraph }}</p>
                 @endforeach
             </div>
@@ -416,16 +563,19 @@
             </button>
             @foreach ($categoryFilters as $filter)
                 <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
-                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }} ({{ $filter['count'] }})
+                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }}
+                    ({{ $filter['count'] }})
                 </button>
             @endforeach
         </div>
 
         <!-- ── Mobile Tabs ── -->
         <div class="nb-mobile-tabs" id="nbMobTabs">
-            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All ({{ $totalIngredientCount }})</button>
+            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All
+                ({{ $totalIngredientCount }})</button>
             @foreach ($categoryFilters as $filter)
-                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }} ({{ $filter['count'] }})</button>
+                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }}
+                    ({{ $filter['count'] }})</button>
             @endforeach
         </div>
 
@@ -474,7 +624,7 @@
                         <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
                         <div class="nb-stat-l">{{ $stat['label'] }}</div>
                     </div>
-                    @if (! $loop->last)
+                    @if (!$loop->last)
                         <div class="nb-sdiv"></div>
                     @endif
                 @endforeach
@@ -496,30 +646,32 @@
         <div style="max-width:1200px;margin:0 auto;">
             <span class="sec-eye">Real Results</span>
             <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
-            <p class="sec-sub">90 days of {{ $product->name }} — visible, measurable, life-changing results reported by thousands of
+            <p class="sec-sub">90 days of {{ $product->name }} — visible, measurable, life-changing results reported by
+                thousands of
                 parents.</p> visible, measurable, life-changing results reported by thousands of
-                parents.</p>
-             <div class="transform-grid">
+            parents.</p>
+            <div class="transform-grid">
                 <div class="transform-visual">
                     <img src="/img/child-iamges.png" alt="">
                     <!-- <div
-                        style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
-                        </div>
-                    <div class="before-after">
-                        <div class="ba-card">
-                            <div class="ba-label">Before</div>
-                            <div class="ba-val">😔 Tired</div>
-                        </div>
-                        <div class="ba-arrow">→</div>
-                        <div class="ba-card after">
-                            <div class="ba-label">After 90 Days</div>
-                            <div class="ba-val">🦸 Superhero!</div>
-                        </div>
-                    </div> -->
+                            style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
+                            </div>
+                        <div class="before-after">
+                            <div class="ba-card">
+                                <div class="ba-label">Before</div>
+                                <div class="ba-val">😔 Tired</div>
+                            </div>
+                            <div class="ba-arrow">→</div>
+                            <div class="ba-card after">
+                                <div class="ba-label">After 90 Days</div>
+                                <div class="ba-val">🦸 Superhero!</div>
+                            </div>
+                        </div> -->
                 </div>
                 <div class="transform-list">
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,77,143,.12)"><img src="/img/immune.png" alt=""></div>
+                        <div class="tr-icon" style="background:rgba(255,77,143,.12)"><img src="/img/immune.png"
+                                alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Stronger Immunity</div>
                             <div class="tr-desc">Kids fall sick less often. Parents report 60% fewer sick days in the first
@@ -529,7 +681,8 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,191,255,.12)"><img src="/img/check-height.png" alt=""></div>
+                        <div class="tr-icon" style="background:rgba(0,191,255,.12)"><img src="/img/check-height.png"
+                                alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Height & Growth Spurt</div>
                             <div class="tr-desc">Ashwagandha + Zinc work synergistically to support natural growth hormone
@@ -539,7 +692,8 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,214,143,.12)"><img src="/img/energy-drink.png" alt=""></div>
+                        <div class="tr-icon" style="background:rgba(0,214,143,.12)"><img src="/img/energy-drink.png"
+                                alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">All-Day Energy</div>
                             <div class="tr-desc">No more afternoon crashes. Kids stay energetic and active through school,
@@ -549,7 +703,8 @@
                         </div>
                     </div>
                     <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,214,0,.15)"><img src="/img/mental-health.png" alt=""></div>
+                        <div class="tr-icon" style="background:rgba(255,214,0,.15)"><img src="/img/mental-health.png"
+                                alt=""></div>
                         <div class="tr-body">
                             <div class="tr-title">Better Mood & Calm</div>
                             <div class="tr-desc">Adaptogenic Ashwagandha reduces cortisol — kids feel less stressed, sleep
@@ -631,9 +786,9 @@
 
     <!--  -->
     <!-- ══════════════════════════════
-             FEATURES — NO GELATIN etc.
-        ══════════════════════════════ -->
-     <section class="features-section reveal" id="features">
+                 FEATURES — NO GELATIN etc.
+            ══════════════════════════════ -->
+    <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
                 <div>
@@ -644,7 +799,8 @@
                         Because your child's body deserves only the best.</p>
                     <div class="feat-list">
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png" alt=""></div>
+                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png"
+                                    alt=""></div>
                             <div>
                                 <div class="feat-item-title">Zero Gelatin — 100% Vegetarian</div>
                                 <div class="feat-item-desc">Most international gummies use animal gelatin (pig or bovine).
@@ -655,7 +811,8 @@
                             </div>
                         </div>
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png" alt=""></div>
+                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png"
+                                    alt=""></div>
                             <div>
                                 <div class="feat-item-title">No Refined Sugar</div>
                                 <div class="feat-item-desc">We sweeten with Stevia + monk fruit extract — giving a
@@ -666,7 +823,8 @@
                         </div>
 
                         <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png" alt=""></div>
+                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png"
+                                    alt=""></div>
                             <div>
                                 <div class="feat-item-title">No Artificial Colors or Flavors</div>
                                 <div class="feat-item-desc">Our vibrant colors come from beetroot, turmeric, and spirulina.
@@ -759,45 +917,45 @@
 
 
     <!-- ══════════════════════════════════════════
-               HOW IT WORKS
-          ══════════════════════════════════════════ -->
+                   HOW IT WORKS
+              ══════════════════════════════════════════ -->
     <!-- <section class="how-section reveal">
-            <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
-            <h2 class="sec-title">How It <span class="acc">Works</span></h2>
-            <div class="steps">
-              <div class="step-new">
-                <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
-                <div class="snum">Step 01</div>
-                <div class="stitle">Take the Quiz</div>
-                <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
-              </div>
-              <div class="step-new">
-                   <div class="sball s2"><img src="img/plan.png" alt=""></div>
-                <div class="snum">Step 02</div>
-                <div class="stitle">Get Your Plan</div>
-                <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
-              </div>
-              <div class="step-new">
-                 <div class="sball s3"><img src="img/order.png" alt=""></div>
-                <div class="snum">Step 03</div>
-                <div class="stitle">Order & Save</div>
-                <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
-              </div>
-              <div class="step-new">
-                  <div class="sball s4"><img src="img/rising.png" alt=""></div>
-                <div class="snum">Step 04</div>
-                <div class="stitle">Track Progress</div>
-                <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
-              </div>
-            </div>
-          </section> -->
+                <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
+                <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+                <div class="steps">
+                  <div class="step-new">
+                    <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
+                    <div class="snum">Step 01</div>
+                    <div class="stitle">Take the Quiz</div>
+                    <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
+                  </div>
+                  <div class="step-new">
+                       <div class="sball s2"><img src="img/plan.png" alt=""></div>
+                    <div class="snum">Step 02</div>
+                    <div class="stitle">Get Your Plan</div>
+                    <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
+                  </div>
+                  <div class="step-new">
+                     <div class="sball s3"><img src="img/order.png" alt=""></div>
+                    <div class="snum">Step 03</div>
+                    <div class="stitle">Order & Save</div>
+                    <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
+                  </div>
+                  <div class="step-new">
+                      <div class="sball s4"><img src="img/rising.png" alt=""></div>
+                    <div class="snum">Step 04</div>
+                    <div class="stitle">Track Progress</div>
+                    <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                  </div>
+                </div>
+              </section> -->
 
 
 
 
     <!-- SECTION problem and solution -->
 
-   <!-- SECTION -->
+    <!-- SECTION -->
     <section class="ps-section">
         <div class="ps-inner">
 
@@ -814,9 +972,9 @@
 
             <!-- PROBLEMS -->
             <!-- <div class="block-label reveal">
-                <div class="blabel bl-prob">😟 Today's Challenges</div>
-                <div class="bline"></div>
-            </div> -->
+                    <div class="blabel bl-prob">😟 Today's Challenges</div>
+                    <div class="bline"></div>
+                </div> -->
 
             <div class="problem-grid">
                 <div class="prob-card pc1 reveal d1">
@@ -869,255 +1027,276 @@
 
             <!-- SOLUTION -->
             <!-- <div class="block-label reveal">
-                <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
-                <div class="bline g"></div>
-            </div> -->
+                    <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
+                    <div class="bline g"></div>
+                </div> -->
 
-            
+
     </section>
     <section>
         <!-- HERO -->
-            <div class="sol-hero reveal">
-                <div class="sol-hero-text">
-                    <img src="/img/posr.png" alt="">
+        <div class="sol-hero reveal">
+            <div class="sol-hero-text">
+                <img src="/img/posr.png" alt="">
 
-                    <!-- <div class="sol-badge">🏆 India's #1 Kids Wellness Gummy</div>
-                  <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
-                      Compromise.</span></h3>
-                  <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
-                    parents love the results.</p>
-                  <div class="sol-pills">
-                    <div class="spill"> 100% Natural</div>
-                    <div class="spill">🧪 Lab Tested</div>
-                    <div class="spill">🩺 Pediatrician Approved</div>
-                    <div class="spill">😋 Kids Love It</div>
-                  </div>
-                </div> -->
-
-                </div>
-
-                
-
-
-
-
-                <!-- CTA -->
-                <!-- <div class="ps-cta reveal">
-                    <div class="cta-inner">
-                        <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
-                        <h3 class="cta-title">Give Your Child the Best Start</h3>
-                        <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
-                            certified
-                            Ayurvedic nutritionists. No sign-up, no cost.</p>
-                        <div class="cta-btns">
-                            <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
-                            <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
-                        </div>
-                    </div>
-                </div> -->
+                <!-- <div class="sol-badge">🏆 India's #1 Kids Wellness Gummy</div>
+                      <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
+                          Compromise.</span></h3>
+                      <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
+                        parents love the results.</p>
+                      <div class="sol-pills">
+                        <div class="spill"> 100% Natural</div>
+                        <div class="spill">🧪 Lab Tested</div>
+                        <div class="spill">🩺 Pediatrician Approved</div>
+                        <div class="spill">😋 Kids Love It</div>
+                      </div>
+                    </div> -->
 
             </div>
+
+
+
+
+
+
+            <!-- CTA -->
+            <!-- <div class="ps-cta reveal">
+                        <div class="cta-inner">
+                            <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
+                            <h3 class="cta-title">Give Your Child the Best Start</h3>
+                            <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
+                                certified
+                                Ayurvedic nutritionists. No sign-up, no cost.</p>
+                            <div class="cta-btns">
+                                <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
+                                <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
+                            </div>
+                        </div>
+                    </div> -->
+
+        </div>
     </section>
     <section class="ps-section">
         <!-- EQUATION -->
-                <div class="eq-card reveal">
-                    <div class="eq-lbl">✨ The NutriBuddy Formula</div>
-                    <div class="eq-wrap">
-                        <div class="eq-item">
-                            <div class="eq-icon ei1"><img src="/img/natural-organic.png" alt=""></div>
-                            <div class="eq-nm">Ayurvedic Wisdom</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei2"><img src="/img/observation.png" alt=""></div>
-                            <div class="eq-nm">Modern Science</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei3"><img src="/img/tongue.png" alt=""></div>
-                            <div class="eq-nm">Kid-Approved Taste</div>
-                        </div>
-                        <div class="eq-op">+</div>
-                        <div class="eq-item">
-                            <div class="eq-icon ei4"><img src="/img/pediatrician.png" alt=""></div>
-                            <div class="eq-nm">Pediatrician Verified</div>
-                        </div>
-                        <div class="eq-eq">=</div>
-                        <div class="eq-result">
-                            <div class="eq-res-icon"><img src="/img/product2.png" alt=""></div>
-                            <div class="eq-res-nm">NutriBuddy</div>
-                        </div>
-                    </div>
+        <div class="eq-card reveal">
+            <div class="eq-lbl">✨ The NutriBuddy Formula</div>
+            <div class="eq-wrap">
+                <div class="eq-item">
+                    <div class="eq-icon ei1"><img src="/img/natural-organic.png" alt=""></div>
+                    <div class="eq-nm">Ayurvedic Wisdom</div>
                 </div>
+                <div class="eq-op">+</div>
+                <div class="eq-item">
+                    <div class="eq-icon ei2"><img src="/img/observation.png" alt=""></div>
+                    <div class="eq-nm">Modern Science</div>
+                </div>
+                <div class="eq-op">+</div>
+                <div class="eq-item">
+                    <div class="eq-icon ei3"><img src="/img/tongue.png" alt=""></div>
+                    <div class="eq-nm">Kid-Approved Taste</div>
+                </div>
+                <div class="eq-op">+</div>
+                <div class="eq-item">
+                    <div class="eq-icon ei4"><img src="/img/pediatrician.png" alt=""></div>
+                    <div class="eq-nm">Pediatrician Verified</div>
+                </div>
+                <div class="eq-eq">=</div>
+                <div class="eq-result">
+                    <div class="eq-res-icon"><img src="/img/product2.png" alt=""></div>
+                    <div class="eq-res-nm">NutriBuddy</div>
+                </div>
+            </div>
+        </div>
 
     </section>
 
     <!-- ════════════════════════════════════════════════
-             NUTRIBUDDY INGREDIENT SECTION
-        ════════════════════════════════════════════════ -->
-    @if($product->ingredients->isNotEmpty())
-    <section id="nb-ingredients">
+                 NUTRIBUDDY INGREDIENT SECTION
+            ════════════════════════════════════════════════ -->
+    @if ($product->ingredients->isNotEmpty())
+        <section id="nb-ingredients">
 
-        <!-- Mesh BG -->
-        <div class="nb-mesh">
-            <div class="nb-blob nb-blob-1"></div>
-            <div class="nb-blob nb-blob-2"></div>
-            <div class="nb-blob nb-blob-3"></div>
-            <div class="nb-blob nb-blob-4"></div>
-            <!-- Stars -->
-            <div class="nb-star" style="width:3px;height:3px;top:12%;left:8%;--dur:5s;--del:0s"></div>
-            <div class="nb-star" style="width:4px;height:4px;top:28%;left:22%;--dur:7s;--del:1s"></div>
-            <div class="nb-star" style="width:2px;height:2px;top:55%;left:75%;--dur:4s;--del:.5s"></div>
-            <div class="nb-star" style="width:5px;height:5px;top:78%;left:90%;--dur:8s;--del:2s"></div>
-            <div class="nb-star" style="width:3px;height:3px;top:40%;left:5%;--dur:6s;--del:1.5s"></div>
-            <div class="nb-star" style="width:4px;height:4px;top:90%;left:40%;--dur:5s;--del:3s"></div>
-            <div class="nb-star" style="width:2px;height:2px;top:18%;left:88%;--dur:9s;--del:.8s"></div>
-            <div class="nb-star" style="width:3px;height:3px;top:65%;left:52%;--dur:6s;--del:2.5s"></div>
-        </div>
+            <!-- Mesh BG -->
+            <div class="nb-mesh">
+                <div class="nb-blob nb-blob-1"></div>
+                <div class="nb-blob nb-blob-2"></div>
+                <div class="nb-blob nb-blob-3"></div>
+                <div class="nb-blob nb-blob-4"></div>
+                <!-- Stars -->
+                <div class="nb-star" style="width:3px;height:3px;top:12%;left:8%;--dur:5s;--del:0s"></div>
+                <div class="nb-star" style="width:4px;height:4px;top:28%;left:22%;--dur:7s;--del:1s"></div>
+                <div class="nb-star" style="width:2px;height:2px;top:55%;left:75%;--dur:4s;--del:.5s"></div>
+                <div class="nb-star" style="width:5px;height:5px;top:78%;left:90%;--dur:8s;--del:2s"></div>
+                <div class="nb-star" style="width:3px;height:3px;top:40%;left:5%;--dur:6s;--del:1.5s"></div>
+                <div class="nb-star" style="width:4px;height:4px;top:90%;left:40%;--dur:5s;--del:3s"></div>
+                <div class="nb-star" style="width:2px;height:2px;top:18%;left:88%;--dur:9s;--del:.8s"></div>
+                <div class="nb-star" style="width:3px;height:3px;top:65%;left:52%;--dur:6s;--del:2.5s"></div>
+            </div>
 
-        <!-- ── Header ── -->
-        <div class="nb-ing-header">
-            <div class="nb-eyebrow">🔬 Ingredient Transparency</div>
-            <h2 class="nb-ing-title">
-                What Goes Into Every<br>
-                <span class="nb-acc-ye">{{ $product->name }}</span> <span class="nb-acc-pk">Gummy?</span>
-            </h2>
-            <p class="nb-ing-sub">Every single ingredient explained — from ancient Ayurvedic herbs to essential vitamins
-                and
-                minerals. Click any ingredient to learn its full story.</p>
-        </div>
+            <!-- ── Header ── -->
+            <div class="nb-ing-header">
+                <div class="nb-eyebrow">🔬 Ingredient Transparency</div>
+                <h2 class="nb-ing-title">
+                    What Goes Into Every<br>
+                    <span class="nb-acc-ye">{{ $product->name }}</span> <span class="nb-acc-pk">Gummy?</span>
+                </h2>
+                <p class="nb-ing-sub">Every single ingredient explained — from ancient Ayurvedic herbs to essential
+                    vitamins
+                    and
+                    minerals. Click any ingredient to learn its full story.</p>
+            </div>
 
-        <!-- ── Category Filter (desktop) ── -->
-        @php
-            $productIngredients = $product->ingredients ?? collect();
+            <!-- ── Category Filter (desktop) ── -->
+            @php
+                $productIngredients = $product->ingredients ?? collect();
 
-            // Build category filters
-            $categoryFilters = $productIngredients->groupBy(function($ing) {
-                return $ing->category->name ?? 'General';
-            })->map(function($group, $name) {
-                return [
-                    'key'       => \Illuminate\Support\Str::slug($name),
-                    'name'      => $name,
-                    'count'     => $group->count(),
-                    'dot_color' => 'rgba(0,214,143,.6)',
+                // Build category filters
+                $categoryFilters = $productIngredients
+                    ->groupBy(function ($ing) {
+                        return $ing->category->name ?? 'General';
+                    })
+                    ->map(function ($group, $name) {
+                        return [
+                            'key' => \Illuminate\Support\Str::slug($name),
+                            'name' => $name,
+                            'count' => $group->count(),
+                            'dot_color' => 'rgba(0,214,143,.6)',
+                        ];
+                    })
+                    ->values();
+
+                $totalIngredientCount = $productIngredients->count();
+
+                // Build ingredient items for JS
+                $ingredientItems = $productIngredients
+                    ->map(function ($ing) {
+                        return [
+                            'id' => $ing->id,
+                            'name' => $ing->main_heading,
+                            'shortName' => $ing->short_heading,
+                            'cat' => \Illuminate\Support\Str::slug($ing->category->name ?? 'general'),
+                            'catLabel' => $ing->category->name ?? 'General',
+                            'image' => $ing->icon_path
+                                ? asset('storage/' . $ing->icon_path)
+                                : asset('img/gradient1.webp'),
+                            'latin' => $ing->dosage_heading_one ?? '',
+                            'dosage' => $ing->dosage_heading_two ?? '',
+                            'desc' => $ing->description ?? '',
+                            'benefits' => $ing->benefits->pluck('heading')->toArray(),
+                        ];
+                    })
+                    ->values();
+
+                // Summary stats
+                $ingredientSummaryStats = [
+                    ['value' => $totalIngredientCount, 'label' => 'Active Ingredients', 'color' => '#00d68f'],
+                    [
+                        'value' => $productIngredients
+                            ->where('category.name', '!=', null)
+                            ->groupBy('ingredient_category_id')
+                            ->count(),
+                        'label' => 'Ingredient Categories',
+                        'color' => '#ff8c00',
+                    ],
+                    ['value' => '100%', 'label' => 'Natural Sources', 'color' => '#00bfff'],
+                    ['value' => '3rd Party', 'label' => 'Lab Tested', 'color' => '#ff4d8f'],
                 ];
-            })->values();
-
-            $totalIngredientCount = $productIngredients->count();
-
-            // Build ingredient items for JS
-            $ingredientItems = $productIngredients->map(function($ing) {
-                return [
-                    'id'          => $ing->id,
-                    'name'        => $ing->main_heading,
-                    'shortName'   => $ing->short_heading,
-                    'cat'         => \Illuminate\Support\Str::slug($ing->category->name ?? 'general'),
-                    'catLabel'    => $ing->category->name ?? 'General',
-                    'image'       => $ing->icon_path ? asset('storage/' . $ing->icon_path) : asset('img/gradient1.webp'),
-                    'latin'       => $ing->dosage_heading_one ?? '',
-                    'dosage'      => $ing->dosage_heading_two ?? '',
-                    'desc'        => $ing->description ?? '',
-                    'benefits'    => $ing->benefits->pluck('heading')->toArray(),
-                ];
-            })->values();
-
-            // Summary stats
-            $ingredientSummaryStats = [
-                ['value' => $totalIngredientCount, 'label' => 'Active Ingredients', 'color' => '#00d68f'],
-                ['value' => $productIngredients->where('category.name', '!=', null)->groupBy('ingredient_category_id')->count(), 'label' => 'Ingredient Categories', 'color' => '#ff8c00'],
-                ['value' => '100%', 'label' => 'Natural Sources', 'color' => '#00bfff'],
-                ['value' => '3rd Party', 'label' => 'Lab Tested', 'color' => '#ff4d8f'],
-            ];
-        @endphp
-        <div class="nb-cat-row">
-            <button class="nb-cat-pill nb-active" onclick="nbFilter('all',this)">
-                <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All ({{ $totalIngredientCount }})
-            </button>
-            @foreach ($categoryFilters as $filter)
-                <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
-                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }} ({{ $filter['count'] }})
+            @endphp
+            <div class="nb-cat-row">
+                <button class="nb-cat-pill nb-active" onclick="nbFilter('all',this)">
+                    <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All
+                    ({{ $totalIngredientCount }})
                 </button>
-            @endforeach
-        </div>
-
-        <!-- ── Mobile Tabs ── -->
-        <div class="nb-mobile-tabs" id="nbMobTabs">
-            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All ({{ $totalIngredientCount }})</button>
-            @foreach ($categoryFilters as $filter)
-                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }} ({{ $filter['count'] }})</button>
-            @endforeach
-        </div>
-
-        <!-- ── Mobile Accordion Cards ── -->
-        <div class="nb-mob-cards" id="nbMobCards">
-            <!-- Generated by JS -->
-        </div>
-
-        <!-- ── Desktop: Two-column layout ── -->
-        <div class="nb-ing-body">
-
-            <!-- LEFT LIST -->
-            <div class="nb-list-panel">
-                <div class="nb-list-head">
-                    <div class="nb-list-head-icon">📋</div>
-                    <div>
-                        <h4>Full Ingredient List</h4>
-                        <p>{{ $totalIngredientCount }} ingredients · click to explore</p>
-                    </div>
-                </div>
-                <div class="nb-list-scroll" id="nbList">
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-
-            <!-- RIGHT DETAIL -->
-            <div class="nb-detail-wrap">
-                <div class="nb-detail-empty" id="nbDetailEmpty">
-                    <div class="nb-empty-ico">🔬</div>
-                    <h3>Select an Ingredient</h3>
-                    <p>Click any ingredient from the list on the left to discover its story, benefits, and why we chose it
-                        for
-                        your child.</p>
-                </div>
-                <div id="nbDetailCards">
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-        </div><!-- /nb-ing-body -->
-
-        <!-- ── Summary Bar ── -->
-        <div class="nb-summary-bar">
-            <div class="nb-summary-inner">
-                @foreach ($ingredientSummaryStats as $stat)
-                    <div class="nb-stat">
-                        <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
-                        <div class="nb-stat-l">{{ $stat['label'] }}</div>
-                    </div>
-                    @if (! $loop->last)
-                        <div class="nb-sdiv"></div>
-                    @endif
+                @foreach ($categoryFilters as $filter)
+                    <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
+                        <span class="nb-cat-dot"
+                            style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }}
+                        ({{ $filter['count'] }})
+                    </button>
                 @endforeach
             </div>
-        </div>
 
-        <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
+            <!-- ── Mobile Tabs ── -->
+            <div class="nb-mobile-tabs" id="nbMobTabs">
+                <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All
+                    ({{ $totalIngredientCount }})</button>
+                @foreach ($categoryFilters as $filter)
+                    <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }}
+                        ({{ $filter['count'] }})</button>
+                @endforeach
+            </div>
 
-    </section>
+            <!-- ── Mobile Accordion Cards ── -->
+            <div class="nb-mob-cards" id="nbMobCards">
+                <!-- Generated by JS -->
+            </div>
+
+            <!-- ── Desktop: Two-column layout ── -->
+            <div class="nb-ing-body">
+
+                <!-- LEFT LIST -->
+                <div class="nb-list-panel">
+                    <div class="nb-list-head">
+                        <div class="nb-list-head-icon">📋</div>
+                        <div>
+                            <h4>Full Ingredient List</h4>
+                            <p>{{ $totalIngredientCount }} ingredients · click to explore</p>
+                        </div>
+                    </div>
+                    <div class="nb-list-scroll" id="nbList">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- RIGHT DETAIL -->
+                <div class="nb-detail-wrap">
+                    <div class="nb-detail-empty" id="nbDetailEmpty">
+                        <div class="nb-empty-ico">🔬</div>
+                        <h3>Select an Ingredient</h3>
+                        <p>Click any ingredient from the list on the left to discover its story, benefits, and why we chose
+                            it
+                            for
+                            your child.</p>
+                    </div>
+                    <div id="nbDetailCards">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div><!-- /nb-ing-body -->
+
+            <!-- ── Summary Bar ── -->
+            <div class="nb-summary-bar">
+                <div class="nb-summary-inner">
+                    @foreach ($ingredientSummaryStats as $stat)
+                        <div class="nb-stat">
+                            <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
+                            <div class="nb-stat-l">{{ $stat['label'] }}</div>
+                        </div>
+                        @if (!$loop->last)
+                            <div class="nb-sdiv"></div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+
+            <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
+
+        </section>
     @endif
 
 
     <!-- end ingredients -->
 
-   
-   
+
+
     <!-- ══════════════════════════════════════════
-                 PARENT REVIEWS
-            ══════════════════════════════════════════ -->
+                     PARENT REVIEWS
+                ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-                 FAQ
-            ══════════════════════════════════════════ -->
+                     FAQ
+                ══════════════════════════════════════════ -->
     @include('partials.faq-section')
 
     <div class="newsletter reveal">
@@ -1131,86 +1310,86 @@
         </div>
     </div>
 
-  
+
 @endsection
 
 @push('scripts')
-<script>
-    let selectedVariantId = '{{ $defVariant ? $defVariant->id : "" }}';
-    
-    function changePdpImage(el, src) {
-        document.getElementById('mainPdpImage').src = src;
-        document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-    }
+    <script>
+        let selectedVariantId = '{{ $defVariant ? $defVariant->id : '' }}';
 
-    function handleAddToCart(productId, btn) {
-        const variantId = selectedVariantId || null;
-        if (typeof window.addToCart === 'function') {
-            window.addToCart(productId, 1, variantId, btn);
-        } else {
-            console.warn('Global addToCart not found, using fallback');
-            alert('Added to cart!');
+        function changePdpImage(el, src) {
+            document.getElementById('mainPdpImage').src = src;
+            document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
         }
-    }
 
-    function handleBuyNow(productId, btn) {
-        const variantId = selectedVariantId || null;
-        if (typeof window.buyNow === 'function') {
-            window.buyNow(productId, 1, variantId, btn);
-        } else {
-            window.location.href = "{{ route('checkout') }}?id=" + (variantId || productId);
-        }
-    }
-
-    // Star Rating Interaction
-    document.querySelectorAll('.star-opt').forEach(star => {
-        star.addEventListener('click', function() {
-            const val = this.getAttribute('data-val');
-            document.getElementById('ratingValue').value = val;
-            
-            // Color stars
-            document.querySelectorAll('.star-opt').forEach(s => {
-                if(s.getAttribute('data-val') <= val) {
-                    s.style.color = '#FFD700'; // Gold
-                } else {
-                    s.style.color = '#ddd';
-                }
-            });
-        });
-        
-        star.addEventListener('mouseover', function() {
-            const val = this.getAttribute('data-val');
-            document.querySelectorAll('.star-opt').forEach(s => {
-                if(s.getAttribute('data-val') <= val) {
-                    s.style.color = '#FFD700';
-                } else {
-                    s.style.color = '#ddd';
-                }
-            });
-        });
-        
-        star.addEventListener('mouseout', function() {
-            const val = document.getElementById('ratingValue').value;
-            document.querySelectorAll('.star-opt').forEach(s => {
-                if(s.getAttribute('data-val') <= val) {
-                    s.style.color = '#FFD700';
-                } else {
-                    s.style.color = '#ddd';
-                }
-            });
-        });
-    });
-
-    // Default set 5 stars
-    window.addEventListener('DOMContentLoaded', () => {
-        const defaultVal = 5;
-        document.querySelectorAll('.star-opt').forEach(s => {
-            if(s.getAttribute('data-val') <= defaultVal) {
-                s.style.color = '#FFD700';
+        function handleAddToCart(productId, btn) {
+            const variantId = selectedVariantId || null;
+            if (typeof window.addToCart === 'function') {
+                window.addToCart(productId, 1, variantId, btn);
+            } else {
+                console.warn('Global addToCart not found, using fallback');
+                alert('Added to cart!');
             }
+        }
+
+        function handleBuyNow(productId, btn) {
+            const variantId = selectedVariantId || null;
+            if (typeof window.buyNow === 'function') {
+                window.buyNow(productId, 1, variantId, btn);
+            } else {
+                window.location.href = "{{ route('checkout') }}?id=" + (variantId || productId);
+            }
+        }
+
+        // Star Rating Interaction
+        document.querySelectorAll('.star-opt').forEach(star => {
+            star.addEventListener('click', function() {
+                const val = this.getAttribute('data-val');
+                document.getElementById('ratingValue').value = val;
+
+                // Color stars
+                document.querySelectorAll('.star-opt').forEach(s => {
+                    if (s.getAttribute('data-val') <= val) {
+                        s.style.color = '#FFD700'; // Gold
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
+
+            star.addEventListener('mouseover', function() {
+                const val = this.getAttribute('data-val');
+                document.querySelectorAll('.star-opt').forEach(s => {
+                    if (s.getAttribute('data-val') <= val) {
+                        s.style.color = '#FFD700';
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
+
+            star.addEventListener('mouseout', function() {
+                const val = document.getElementById('ratingValue').value;
+                document.querySelectorAll('.star-opt').forEach(s => {
+                    if (s.getAttribute('data-val') <= val) {
+                        s.style.color = '#FFD700';
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
         });
 
-    });
-</script>
+        // Default set 5 stars
+        window.addEventListener('DOMContentLoaded', () => {
+            const defaultVal = 5;
+            document.querySelectorAll('.star-opt').forEach(s => {
+                if (s.getAttribute('data-val') <= defaultVal) {
+                    s.style.color = '#FFD700';
+                }
+            });
+
+        });
+    </script>
 @endpush
