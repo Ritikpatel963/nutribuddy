@@ -12,12 +12,13 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Conversation</h5>
-                    <a href="{{ route('admin.ecommerce.support-tickets.index') }}" class="btn btn-sm btn-outline-secondary">
-                        <iconify-icon icon="mingcute:arrow-left-line"></iconify-icon> Back
+                    <a href="{{ route('admin.ecommerce.support-tickets.index') }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="mingcute:arrow-left-line" class="text-xl"></iconify-icon> 
+                        <span>Back</span>
                     </a>
                 </div>
-                <div class="card-body p-4" style="background-color: #f8f9fa;">
-                    <div class="d-flex flex-column gap-3 mb-4">
+                <div class="card-body p-24" style="background-color: #f8f9fa;">
+                    <div class="d-flex flex-column gap-4 mb-24">
                         @forelse($ticket->messages as $msg)
                             <div class="card shadow-sm border-0" style="border-left: 4px solid {{ $msg->is_admin ? '#487fff' : '#6c757d' }} !important;">
                                 <div class="card-header bg-white border-bottom-0 pt-3 pb-0 d-flex justify-content-between align-items-center">

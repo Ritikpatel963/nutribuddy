@@ -104,17 +104,17 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold">System Status</label>
                             <div class="d-flex align-items-center gap-3 mt-1">
-                                <div class="form-check form-switch">
-                                    <input type="hidden" name="loyalty_enabled" value="0">
-                                    <input class="form-check-input" type="checkbox" name="loyalty_enabled" value="1" id="loyalty_enabled" {{ $settings['loyalty_enabled'] ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="loyalty_enabled">Enable NB Coins System</label>
+                                <input type="hidden" name="loyalty_enabled" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="loyalty_enabled" value="1" id="loyalty_enabled" {{ $settings['loyalty_enabled'] ? 'checked' : '' }}>
+                                    <label class="form-check-label m-0" for="loyalty_enabled">Enable NB Coins System</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12 mt-4">
-                            <button type="submit" class="btn btn-primary-600 px-32">
-                                <iconify-icon icon="solar:check-read-outline" class="me-2"></iconify-icon> Update Loyalty Rules
+                        <div class="col-12 mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary-600 px-32 d-inline-flex align-items-center gap-2">
+                                <iconify-icon icon="solar:check-read-outline" style="font-size: 20px;"></iconify-icon> Update Loyalty Rules
                             </button>
                         </div>
                     </div>

@@ -60,5 +60,14 @@ class AppServiceProvider extends ServiceProvider
                 'seoKeywords' => $metaKeywords,
             ]);
         });
+
+        View::composer('components.navbar', function ($view) {
+            $notifications = \Illuminate\Notifications\DatabaseNotification::orderBy('created_at', 'desc')->take(5)->get();
+            $unreadCount = \Illuminate\Notifications\DatabaseNotification::whereNull('read_at')->count();
+            $view->with([
+                'navbarNotifications' => $notifications,
+                'unreadNotificationsCount' => $unreadCount
+            ]);
+        });
     }
 }

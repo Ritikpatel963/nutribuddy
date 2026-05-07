@@ -9,7 +9,7 @@
 
     <div class="row g-4">
         <div class="col-xl-4">
-            <div class="card h-100">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Update Order Status</h5>
                 </div>
@@ -48,8 +48,8 @@
             </div>
         </div>
 
-        <div class="col-xl-8">
-            <div class="card mb-24">
+        <div class="col-xl-8 d-flex flex-column gap-4">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Summary</h5>
                 </div>
@@ -87,7 +87,7 @@
             </div>
 
             @if($order->returns()->exists())
-                <div class="card mb-24 border border-warning shadow-none">
+                <div class="card border border-warning shadow-none">
                     <div class="card-header bg-warning-focus d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0 text-warning-main">Return Information ↩️</h5>
                         <a href="{{ route('admin.ecommerce.order-returns.show', $order->returns()->latest()->first()) }}" class="btn btn-sm btn-warning-main">View Full Return Details</a>
@@ -103,7 +103,7 @@
                 </div>
             @endif
 
-            <div class="card mb-24">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Items</h5>
                 </div>
@@ -188,7 +188,7 @@
                 </div>
             </div>
 
-            <div class="card mt-4">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Status Timeline</h5>
                 </div>

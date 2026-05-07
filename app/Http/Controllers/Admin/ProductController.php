@@ -65,6 +65,7 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
@@ -185,6 +186,7 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
@@ -332,6 +334,7 @@ class ProductController extends Controller
             'flavour' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'stock_qty' => ['required', 'integer', 'min:0'],
         ]);
 
@@ -382,6 +385,8 @@ class ProductController extends Controller
             ]
         );
 
+        $product->update(['dosage' => $validated['dosage'] ?? $product->dosage]);
+        
         return back()->with('success', 'Product details updated successfully.');
     }
     public function addVariant(Request $request, Product $product): RedirectResponse
