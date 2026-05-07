@@ -93,6 +93,10 @@
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Products</a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.ecommerce.attributes.index') }}"><i
+                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> Attributes</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin.ecommerce.ingredient-categories.index') }}"><i class="ri-circle-fill circle-icon text-success-main w-auto"></i> Ingredient Categories</a>
                     </li>
                     <li>

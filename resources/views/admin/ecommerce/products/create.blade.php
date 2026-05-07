@@ -117,6 +117,12 @@
                                 <small class="text-muted">Coins awarded to customer after purchase</small>
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Dosage</label>
+                                <input type="text" name="dosage" value="{{ old('dosage') }}" class="form-control"
+                                    placeholder="e.g. 1 Gummy daily">
+                            </div>
+
                             <div class="col-md-6 d-flex align-items-end gap-24">
                                 <input type="hidden" name="track_stock" value="0">
                                 <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
@@ -141,36 +147,7 @@
                     </div>
                 </div>
 
-                <!-- 3. PRODUCT ATTRIBUTES (FLAVOR, PACK SIZE, AGE) -->
-                <div class="card border-0 radius-12 mb-24">
-                    <div class="card-header bg-base border-bottom py-16 px-24">
-                        <h5 class="card-title mb-0">Product Attributes</h5>
-                    </div>
-                    <div class="card-body p-24">
-                        <div class="row g-4">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Flavor (e.g. Mango, Berry)</label>
-                                <input type="text" name="flavor" value="{{ old('flavor') }}" class="form-control"
-                                    placeholder="Product flavor">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Pack Size (e.g. 30 Gummies, 100ml)</label>
-                                <input type="text" name="pack_size" value="{{ old('pack_size') }}" class="form-control"
-                                    placeholder="Quantity and unit">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Age Group (e.g. 2-7 Yrs, Adult)</label>
-                                <input type="text" name="age_group" value="{{ old('age_group') }}" class="form-control"
-                                    placeholder="Target age range">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">Dosage (e.g. 1 Gummy daily)</label>
-                                <input type="text" name="dosage" value="{{ old('dosage') }}" class="form-control"
-                                    placeholder="Recommended dosage">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('admin.ecommerce.products._attribute_variations', ['attributes' => $attributes])
 
                 <!-- 4. DESCRIPTIONS -->
                 <div class="card border-0 radius-12 mb-24">

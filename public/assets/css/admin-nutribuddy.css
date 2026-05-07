@@ -457,6 +457,119 @@ body.admin-nb-theme {
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12) !important;
 }
 
+.admin-nb-theme .switch,
+.admin-nb-theme .form-switch .form-check-input {
+    --secondary-container: #3a4b39;
+    --primary: #84da89;
+}
+
+.admin-nb-theme .form-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline-start: 0 !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input {
+    position: relative;
+    flex: 0 0 auto;
+    display: inline-block;
+    width: 3.7em;
+    height: 1.8em;
+    margin: 0 !important;
+    float: none !important;
+    cursor: pointer;
+    appearance: none;
+    background-color: #313033 !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 30px !important;
+    box-shadow: none !important;
+    transition: 0.2s;
+}
+
+.admin-nb-theme .form-switch .form-check-input::before {
+    position: absolute;
+    content: "";
+    width: 1.4em;
+    height: 1.4em;
+    left: 0.2em;
+    bottom: 0.2em;
+    top: auto;
+    border-radius: 20px;
+    background-color: #aeaaae;
+    transform: none;
+    transition: 0.4s;
+}
+
+.admin-nb-theme .form-switch .form-check-input:checked {
+    background-color: var(--secondary-container) !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input:checked::before {
+    left: 0.2em;
+    background-color: var(--primary);
+    transform: translateX(1.9em);
+}
+
+.admin-nb-theme .form-switch .form-check-input:focus {
+    box-shadow: 0 0 1px var(--secondary-container) !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.admin-nb-theme .switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 3.7em;
+    height: 1.8em;
+}
+
+.admin-nb-theme .switch input {
+    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.admin-nb-theme .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #313033;
+    transition: 0.2s;
+    border-radius: 30px;
+}
+
+.admin-nb-theme .switch .slider::before {
+    position: absolute;
+    content: "";
+    width: 1.4em;
+    height: 1.4em;
+    left: 0.2em;
+    bottom: 0.2em;
+    border-radius: 20px;
+    background-color: #aeaaae;
+    transition: 0.4s;
+}
+
+.admin-nb-theme .switch input:checked + .slider {
+    background-color: var(--secondary-container);
+}
+
+.admin-nb-theme .switch input:checked + .slider::before {
+    background-color: var(--primary);
+    transform: translateX(1.9em);
+}
+
+.admin-nb-theme .switch input:focus + .slider {
+    box-shadow: 0 0 1px var(--secondary-container);
+}
+
 .text-primary-light,
 .text-secondary-light {
     color: var(--nb-ink) !important;
