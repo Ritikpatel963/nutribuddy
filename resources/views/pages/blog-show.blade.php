@@ -87,7 +87,7 @@
 @push('styles')
     <style>
         .blog-detail-hero {
-            background: linear-gradient(145deg, #FFF0FA 0%, #F0E5FF 50%, #FFDCF0 100%);
+            background: #0d0028;
             padding: 100px 5% 60px;
             position: relative;
             overflow: hidden;
@@ -107,6 +107,7 @@
         }
 
         .blog-detail-header {
+            padding-top: 23px;
             max-width: 900px;
             margin: 0 auto;
             position: relative;
@@ -118,7 +119,7 @@
             gap: 12px;
             margin-bottom: 24px;
             font-size: 0.9rem;
-            color: #888;
+            color: #ffffff;
             flex-wrap: wrap;
         }
 
@@ -147,7 +148,7 @@
         .blog-detail-title {
             font-family: 'Fredoka One', cursive;
             font-size: clamp(1.8rem, 5vw, 2.8rem);
-            color: var(--dk);
+            color: var(--wh);
             line-height: 1.3;
             margin-bottom: 20px;
         }
@@ -156,7 +157,7 @@
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
-            color: #777;
+            color: #ffffff;
             font-size: 0.95rem;
             padding-bottom: 24px;
             border-bottom: 2px solid #f0f0f0;
@@ -198,7 +199,7 @@
 
         .blog-detail-author-title {
             font-size: 0.8rem;
-            color: #aaa;
+            color: #ffffff;
         }
 
         /* Article Content */

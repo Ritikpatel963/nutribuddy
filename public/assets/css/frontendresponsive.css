@@ -365,40 +365,111 @@
 /* ══════════════════════════════════════════
    08. PRODUCTS
 ══════════════════════════════════════════ */
+@media (max-width: 1100px) {
+    .products-section {
+        padding: 72px 5%;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 22px !important;
+    }
+
+    .pc-head {
+        height: 230px !important;
+        padding: 18px !important;
+    }
+
+    .pc-body {
+        padding: 20px 20px 18px !important;
+    }
+
+    .pc-name {
+        font-size: 1.15rem;
+    }
+
+    .pc-foot {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pc-price {
+        font-size: 1.2rem;
+    }
+
+    .btn-add {
+        width: 100%;
+    }
+}
+
 @media (max-width: 992px) {
     .products-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 20px !important;
     }
+
+    .newcarda {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 640px) {
+    .products-section {
+        padding: 56px 4%;
+    }
+
     .products-grid {
         grid-template-columns: 1fr !important;
         gap: 16px !important;
-        padding: 0 10px;
+        padding: 0;
     }
 
     .pc-head {
-        height: 280px !important;
+        height: 250px !important;
+        padding: 16px !important;
+    }
+
+    .pc-body {
+        padding: 18px 16px 16px !important;
+    }
+
+    .pc-stars {
+        font-size: 0.84rem;
+    }
+
+    .pc-stars span {
+        font-size: 0.72rem !important;
+    }
+
+    .pc-name {
+        font-size: 1.08rem;
+    }
+
+    .pc-features {
+        gap: 8px;
+        margin: 12px 0 16px;
+    }
+
+    .newcarda {
+        gap: 8px;
     }
 }
 
 @media (max-width: 576px) {
-    .pc-features {
-        gap: 6px;
+    .pc {
+        border-radius: 28px;
     }
 
     .pc-features span {
-        font-size: 0.75rem;
-        padding: 5px 10px;
+        font-size: 0.76rem;
+        padding: 8px 10px;
     }
 
     .prob-icon {}
 }
 
 /* 📲 Tablet */
-@media (max-width: 768px) {
+@media (min-width: 577px) and (max-width: 768px) {
     .pc-features span {
         font-size: 0.8rem;
         padding: 6px 10px;
@@ -765,7 +836,10 @@
     }
 
     .testi-section {
-        padding: 50px 4%;
+        padding: 15px 4%;
+    }
+    .ing-text {
+       text-align: center;
     }
 
     .rev-summary {

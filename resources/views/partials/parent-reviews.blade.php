@@ -1,6 +1,7 @@
     <!-- ══════════════════════════════════════════
                    TESTIMONIALS
               ══════════════════════════════════════════ -->
+              <section class="testi-section-new reveal ">
     <section class="testi-section reveal" id="reviews">
         <span class="sec-eye">Parent Reviews</span>
         <h2 class="sec-title" style="text-align:center">10,000+ Happy Families </h2>
@@ -45,7 +46,7 @@
                                  </div>
             </div>
         </div>
-
+</section>
         <div class="reels-section-wrap">
 
             <!-- Header row with title + nav buttons -->

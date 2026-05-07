@@ -2095,6 +2095,7 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 991px) {
+     
       .origin-grid {
         grid-template-columns: 1fr;
         gap: 40px;
@@ -2116,6 +2117,13 @@
     }
 
     @media (max-width: 640px) {
+        .proper-set {
+      height: 32px !important;
+    }
+    .gapfix-footer-banner img {
+    height: 12%;
+    width: 73% !important;
+}
       .origin-section {
         padding: 60px 5%;
       }
@@ -3638,7 +3646,9 @@
       .nbap-badge:nth-child(9) .nbap-bico {
         background: rgba(168, 255, 62, 0.22);
       }
-
+      .nbap-bico img {
+            height: 24px;
+      }
       .nbap-bsep {
         width: 1px;
         height: 26px;
@@ -4203,7 +4213,7 @@
       <!-- BADGE BAR -->
       <div class="nbap-badges">
         <div class="nbap-badge">
-          <div class="nbap-bico">🌿</div><span>100% Natural</span>
+          <div class="nbap-bico" ><img src="img/new-btn-2.png" alt=""></div><span>100% Natural</span>
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">
@@ -4215,7 +4225,7 @@
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">
-          <div class="nbap-bico">🌱</div><span>Vegetarian Friendly</span>
+          <div class="nbap-bico"><img src="img/new-btn-1.png" alt=""></div><span>Vegetarian Friendly</span>
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">

@@ -82,7 +82,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
     align-items: center;
-    padding: 50px 6%;
+    padding: 125px 6%;
     opacity: 0;
     pointer-events: none;
     transition: opacity .6s;
@@ -93,7 +93,7 @@ body {
     pointer-events: all;
 }
 
-.slide.slide-1 {
+/* .slide.slide-1 {
     grid-template-columns: 1fr;
     padding: 0;
     background: #fdf1f3;
@@ -105,7 +105,7 @@ body {
     display: block;
     object-fit: contain;
     object-position: center;
-}
+} */
 
 /* end tghis  */
 
@@ -911,8 +911,8 @@ nav.scrolled {
 }
 
 .slide-1 {
-    background: #fdf1f3;
-    /* background: linear-gradient(145deg, #fff0f3 0%, #ffe5f8 50%, #ffdcee 100%) */
+    /* background: #fdf1f3; */
+    background: linear-gradient(145deg, #fff0f3 0%, #ffe5f8 50%, #ffdcee 100%)
 }
 
 .slide-2 {
@@ -5175,6 +5175,10 @@ h1.htitle {
     transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
     cursor: pointer;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 0;
 }
 
 .pc:hover {
@@ -5213,6 +5217,7 @@ h1.htitle {
     justify-content: center;
     position: relative;
     overflow: hidden;
+    padding: 22px;
 }
 
 .pc-head-pk {
@@ -5231,6 +5236,14 @@ h1.htitle {
     width: 100%;
 }
 
+.pc-emoji.p-image img {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 18px;
+    object-fit: contain;
+}
+
 .pc-badge {
     position: absolute;
     top: 14px;
@@ -5246,12 +5259,21 @@ h1.htitle {
 
 .pc-body {
     padding: 21px 26px 19px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .pc-stars {
     color: var(--ye);
     font-size: .9rem;
     margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    line-height: 1.4;
 }
 
 .pc-cat {
@@ -5279,22 +5301,23 @@ h1.htitle {
     font-size: 1.35rem;
     color: var(--dk);
     margin-bottom: 8px;
+    line-height: 1.25;
 }
 
 
 /* add ooo */
 
 .newcarda {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .pc-features {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0 14px;
+    flex-direction: column;
+    gap: 10px;
+    margin: 12px 0 18px;
 }
 
 /* Pills */
@@ -5304,12 +5327,14 @@ h1.htitle {
     gap: 6px;
     background: #f8e0e9;
     color: #393941;
-    padding: 3px 3px;
+    min-width: 0;
+    min-height: 100%;
+    padding: 8px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
     font-family: 'DM Sans', sans-serif;
     font-weight: 500;
-    white-space: nowrap;
+    line-height: 1.35;
     transition: all 0.3s ease;
 }
 
@@ -5339,12 +5364,19 @@ h1.htitle {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 14px;
+    margin-top: auto;
 }
 
 .pc-price {
     font-family: 'Fredoka One', cursive;
     font-size: 1.4rem;
     color: var(--dk);
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    line-height: 1;
 }
 
 .pc-price s {
@@ -5366,6 +5398,10 @@ h1.htitle {
     transition: all .25s;
     position: relative;
     overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .btn-add::after {
@@ -6897,7 +6933,7 @@ h1.htitle {
 .ing-panel {
     display: none;
     grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    gap: 28px;
     align-items: center;
     animation: fadeInPanel .5s ease;
 }
@@ -7396,10 +7432,10 @@ h1.htitle {
 /* ══════════════════════════════════════════
    14. TESTIMONIALS
 ══════════════════════════════════════════ */
-.testi-section {
+testi-section {
     padding: 80px 5%;
     background: linear-gradient(135deg, #FFF0FA, #F0E8FF, #FFE8F5);
-}
+}.
 
 .testi-section .sec-eye,
 .testi-section .sec-title {
@@ -9691,8 +9727,12 @@ h1.htitle {
    19-E. TESTIMONIALS SECTION (PDP)
 ══════════════════════════════════════════ */
 .testi-section {
-    padding: 80px 5%;
+    padding: 5px 8%;
     background: var(--cr);
+}
+.testi-section-new {
+    padding: 60px 5%;
+      background: var(--cr);
 }
 
 .testi-section .sec-eye {

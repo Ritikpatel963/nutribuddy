@@ -109,6 +109,7 @@ Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
 Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/blog', 'pages.blog')->name('blog');
+Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 Route::view('/blog/{id}', 'pages.blog-show')->name('blog.show');
 Route::get('/checkout', [FrontendCheckoutController::class, 'page'])->name('checkout');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
