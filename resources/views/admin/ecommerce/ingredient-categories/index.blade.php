@@ -14,32 +14,22 @@
         <div class="card-body p-24">
             <form method="POST" action="{{ route('admin.ecommerce.ingredient-categories.store') }}" class="row g-3">
                 @csrf
-                <div class="col-md-4">
+                <div class="col-md-8">
                     <label class="form-label">Name</label>
                     <div class="icon-field">
                         <span class="icon"><iconify-icon icon="f7:tag"></iconify-icon></span>
                         <input type="text" name="name" class="form-control" placeholder="Category Name" required>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Slug (optional)</label>
-                    <div class="icon-field">
-                        <span class="icon"><iconify-icon icon="lucide:link"></iconify-icon></span>
-                        <input type="text" name="slug" class="form-control" placeholder="category-slug">
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <input type="hidden" name="is_active" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none" type="checkbox" value="1" name="is_active" id="createIsActive" checked>
+                        <label class="form-check-label m-0" for="createIsActive">Active</label>
                     </div>
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" value="1" name="is_active" checked>
-                        <label class="form-check-label">Active</label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="2" placeholder="Category description"></textarea>
-                </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary-600">Create Category</button>
                 </div>
@@ -57,7 +47,6 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Slug</th>
                             <th>Ingredients</th>
                             <th>Status</th>
                             <th class="text-end">Actions</th>
@@ -67,7 +56,6 @@
                         @foreach ($categories as $category)
                             <tr>
                                 <td>{{ $category->name }}</td>
-                                <td>{{ $category->slug }}</td>
                                 <td><span class="badge bg-info-100 text-info-600">{{ $category->ingredients_count }}</span></td>
                                 <td>
                                     @if($category->is_active)
@@ -82,8 +70,6 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#editIngredientCategoryModal"
                                             data-name="{{ $category->name }}"
-                                            data-slug="{{ $category->slug }}"
-                                            data-description="{{ $category->description ?? '' }}"
                                             data-sort_order="{{ $category->sort_order }}"
                                             data-is_active="{{ $category->is_active }}"
                                             data-action="{{ route('admin.ecommerce.ingredient-categories.update', $category) }}">
@@ -119,19 +105,10 @@
                             <label class="form-label">Name</label>
                             <input type="text" name="name" id="edit_name" class="form-control" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Slug</label>
-                            <input type="text" name="slug" id="edit_slug" class="form-control">
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input type="hidden" name="is_active" value="0">
-                            <input class="form-check-input" type="checkbox" value="1" name="is_active" id="edit_is_active">
-                            <label class="form-check-label" for="edit_is_active">Active</label>
+                        <input type="hidden" name="is_active" value="0">
+                        <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0">
+                            <input class="form-check-input m-0 float-none" type="checkbox" value="1" name="is_active" id="edit_is_active">
+                            <label class="form-check-label m-0" for="edit_is_active">Active</label>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -157,9 +134,6 @@
                     form.setAttribute('action', button.getAttribute('data-action'));
 
                     editModal.querySelector('#edit_name').value = button.getAttribute('data-name') || '';
-                    editModal.querySelector('#edit_slug').value = button.getAttribute('data-slug') || '';
-
-                    editModal.querySelector('#edit_description').value = button.getAttribute('data-description') || '';
                     editModal.querySelector('#edit_is_active').checked = button.getAttribute('data-is_active') === '1';
                 });
             }

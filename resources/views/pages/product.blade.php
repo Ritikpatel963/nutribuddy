@@ -189,6 +189,13 @@
                         <div class="variant-row"><div class="vopt active">{{ $defAge }}</div></div>
                     </div>
                 @endif
+
+                @if($product->dosage)
+                    <div class="variant-block">
+                        <div class="variant-label">Dosage:</div>
+                        <div class="variant-row"><div class="vopt active">{{ $product->dosage }}</div></div>
+                    </div>
+                @endif
             </div>
 
             <div class="variant-block">
@@ -222,7 +229,7 @@
                                         <span style="font-size: 28px; display: inline-block;">✨</span>
                                     @endif
                                 </div>
-                                <div class="flavor-name">{!! nl2br(e($tag['text'] ?? '')) !!}</div>
+                                <div class="flavor-name">{!! nl2br(e(\Illuminate\Support\Str::limit($tag['text'] ?? '', 15))) !!}</div>
                             </div>
                         @endforeach
                     @else

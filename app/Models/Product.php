@@ -44,6 +44,7 @@ class Product extends Model
         'pack_size',
         'age_group',
         'coins_reward',
+        'dosage',
     ];
 
     protected function casts(): array

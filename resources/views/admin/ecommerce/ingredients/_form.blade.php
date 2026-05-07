@@ -60,20 +60,20 @@
 
 
                 <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $isEdit ? $ingredient->is_active : true) ? 'checked' : '' }}>
-                        <label class="form-check-label">Active</label>
+                    <input type="hidden" name="is_active" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none" type="checkbox" name="is_active" value="1" id="isActive" {{ old('is_active', $isEdit ? $ingredient->is_active : true) ? 'checked' : '' }}>
+                        <label class="form-check-label m-0" for="isActive">Active</label>
                     </div>
                 </div>
 
                 <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_featured" value="0">
-                        <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="isFeatured" {{ old('is_featured', $isEdit ? $ingredient->is_featured : false) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="isFeatured">
+                    <input type="hidden" name="is_featured" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none mt-1" type="checkbox" name="is_featured" value="1" id="isFeatured" {{ old('is_featured', $isEdit ? $ingredient->is_featured : false) ? 'checked' : '' }}>
+                        <label class="form-check-label m-0" for="isFeatured">
                             <strong>Featured on Homepage</strong>
-                            <small class="d-block text-secondary" style="font-size:0.75rem">Show in Ingredient Highlight section</small>
+                            <small class="d-block text-secondary" style="font-size:0.75rem">Show in Highlight section</small>
                         </label>
                     </div>
                 </div>

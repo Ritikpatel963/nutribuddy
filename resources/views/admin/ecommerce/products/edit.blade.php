@@ -13,11 +13,11 @@
                 <input type="hidden" name="product_type" value="{{ $product->product_type }}">
 
                 <!-- 1. GENERAL INFORMATION -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">General Information</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">General Information</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="row g-4">
                             <div class="col-md-12">
                                 <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
@@ -57,11 +57,11 @@
                 </div>
 
                 <!-- 2. PRICING & STOCK -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">Pricing & Inventory</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Pricing & Inventory</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="row g-4">
                             <div class="col-md-3">
                                 <label class="form-label fw-bold text-success">Selling Price (₹) <span class="text-danger">*</span></label>
@@ -104,20 +104,20 @@
                             </div>
 
                             <div class="col-md-6 d-flex align-items-end gap-24">
-                                <div class="form-check form-switch mb-8">
-                                    <input type="hidden" name="track_stock" value="0">
-                                    <input class="form-check-input" type="checkbox" name="track_stock" value="1" id="track_stock" {{ old('track_stock', $product->inventory?->track_stock ?? true) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-semibold" for="track_stock">Track Inventory</label>
+                                <input type="hidden" name="track_stock" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="track_stock" value="1" id="track_stock" {{ old('track_stock', $product->inventory?->track_stock ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label m-0 fw-semibold" for="track_stock">Track Inventory</label>
                                 </div>
-                                <div class="form-check form-switch mb-8">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-semibold" for="is_active">Active</label>
+                                <input type="hidden" name="is_active" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="is_active" value="1" id="is_active" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+                                    <label class="form-check-label m-0 fw-semibold" for="is_active">Active</label>
                                 </div>
-                                <div class="form-check form-switch mb-8">
-                                    <input type="hidden" name="is_featured" value="0">
-                                    <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="is_featured" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
-                                    <label class="form-check-label fw-semibold" for="is_featured">Featured</label>
+                                <input type="hidden" name="is_featured" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="is_featured" value="1" id="is_featured" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                                    <label class="form-check-label m-0 fw-semibold" for="is_featured">Featured</label>
                                 </div>
                             </div>
                         </div>
@@ -125,34 +125,38 @@
                 </div>
 
                 <!-- 3. PRODUCT ATTRIBUTES (FLAVOR, PACK SIZE, AGE) -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">Product Attributes</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Product Attributes</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="row g-4">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold">Flavor (e.g. Mango, Berry)</label>
                                 <input type="text" name="flavor" value="{{ old('flavor', $product->flavor) }}" class="form-control" placeholder="Product flavor">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold">Pack Size (e.g. 30 Gummies, 100ml)</label>
                                 <input type="text" name="pack_size" value="{{ old('pack_size', $product->pack_size) }}" class="form-control" placeholder="Quantity and unit">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-bold">Age Group (e.g. 2-7 Yrs, Adult)</label>
                                 <input type="text" name="age_group" value="{{ old('age_group', $product->age_group) }}" class="form-control" placeholder="Target age range">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Dosage (e.g. 1 Gummy daily)</label>
+                                <input type="text" name="dosage" value="{{ old('dosage', $product->dosage) }}" class="form-control" placeholder="Recommended dosage">
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 4. DESCRIPTIONS -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">Content & Descriptions</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Content & Descriptions</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="row g-4">
                             <div class="col-12">
                                 <label class="form-label fw-bold">Short Description (Summary)</label>
@@ -167,11 +171,11 @@
                 </div>
 
                 <!-- 5. MEDIA -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">Product Gallery</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Product Gallery</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="upload-area border-dashed radius-12 p-32 text-center cursor-pointer bg-white transition-base border-2"
                             onclick="document.getElementById('images').click()" id="dropZone">
                             <input type="file" name="images[]" id="images" class="d-none" multiple accept="image/*">
@@ -200,22 +204,22 @@
                 </div>
 
                 <!-- 6. PRODUCT FEATURES -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom d-flex justify-content-between align-items-center py-16 px-24">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-primary-subtle text-primary-emphasis p-2 rounded-2">
+                            <span class="badge bg-primary-100 text-primary-600 p-2 rounded-2">
                                 <iconify-icon icon="lucide:sparkles" class="fs-5"></iconify-icon>
                             </span>
                             <div>
-                                <h6 class="mb-0 fw-bold">Product Features</h6>
-                                <small class="text-muted">Key features shown on the product card and detail page</small>
+                                <h5 class="card-title mb-0">Product Features</h5>
+                                <small class="text-secondary">Key features shown on the product card and detail page</small>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary btn-sm px-3" id="addTagBtn">
-                            <iconify-icon icon="lucide:plus" class="me-1"></iconify-icon> Add Feature
+                        <button type="button" class="btn btn-primary-600 btn-sm px-3 d-inline-flex align-items-center gap-1" id="addTagBtn">
+                            <iconify-icon icon="lucide:plus" style="font-size: 16px;"></iconify-icon> Add Feature
                         </button>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-24">
                         <div id="tagsWrapper">
                             <!-- Feature rows injected here -->
                         </div>
@@ -227,11 +231,11 @@
                 </div>
 
                 <!-- 7. SEO -->
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header bg-white py-16">
-                        <h6 class="card-title mb-0 text-primary">SEO Settings (Google Search)</h6>
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">SEO Settings (Google Search)</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-24">
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Meta Title</label>

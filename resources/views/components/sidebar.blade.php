@@ -139,18 +139,7 @@
                 </ul>
             </li>
 
-            <li class="dropdown">
-                <a href="javascript:void(0)">
-                    <iconify-icon icon="solar:users-group-two-rounded-outline" class="menu-icon"></iconify-icon>
-                    <span>Side Section</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li>
-                        <a href="{{ route('admin.ecommerce.side-section.index') }}"><i
-                                class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Side section</a>
-                    </li>
-                </ul>
-            </li>
+
 
 
             <li class="dropdown">
@@ -219,8 +208,12 @@
                                 class="ri-circle-fill circle-icon text-orange w-auto"></i> Contact Leads</a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.ecommerce.side-section.index') }}"><i
+                                class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Header & Footer</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin.ecommerce.settings.general') }}"><i
-                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> Site Settings</a>
+                                class="ri-circle-fill circle-icon text-success w-auto"></i> SEO Settings</a>
                     </li>
                 </ul>
             </li>

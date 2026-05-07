@@ -18,12 +18,18 @@ class NotificationController extends Controller
     {
         $notification = \Illuminate\Notifications\DatabaseNotification::findOrFail($id);
         $notification->markAsRead();
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Notification marked as read.']);
+        }
         return back()->with('success', 'Notification marked as read.');
     }
 
     public function markAllAsRead()
     {
         \Illuminate\Notifications\DatabaseNotification::whereNull('read_at')->update(['read_at' => now()]);
+        if (request()->ajax()) {
+            return response()->json(['success' => true, 'message' => 'All notifications marked as read.']);
+        }
         return back()->with('success', 'All notifications marked as read.');
     }
 

@@ -17,7 +17,7 @@ class CouponController extends Controller
     {
         return view('admin.ecommerce.coupons.index', [
             'coupons' => Coupon::with('user')->latest()->get(),
-            'users' => User::select('id', 'name', 'email')->where('role', 'customer')->get(),
+            'users' => User::select('id', 'name', 'email', 'phone')->where('role', 'customer')->get(),
         ]);
     }
 

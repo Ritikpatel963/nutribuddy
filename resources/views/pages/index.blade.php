@@ -331,7 +331,7 @@
                                                     @endif
                                                 </i>
                                             @endif
-                                            {{ $tag['text'] ?? '' }}
+                                            {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
                                         </span>
                                     @endforeach
                                 </div>
