@@ -287,7 +287,7 @@ function resolveCartItemMeta(productId, productVariantId = null, sourceEl = null
   const productPageName  = document.querySelector('.pdp-name');
   const productPagePrice = document.querySelector('.price-now');
   const productPageImage = document.getElementById('mainPdpImage');
-  const selectedVariant  = document.querySelector('.qty-opt.active .flavor-name, .qty-opt.active');
+  const selectedVariant  = document.querySelector('#pdpVariantSelected, .qty-opt.active .flavor-name, .qty-opt.active');
 
   if (productPageName && productPagePrice) {
     return {

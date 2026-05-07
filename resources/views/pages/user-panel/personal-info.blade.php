@@ -207,31 +207,68 @@
             <div class="section-icon" style="background:var(--skl)">📍</div>
             Saved Addresses
           </div>
+          <a href="{{ route('user.addresses.create') }}" class="s-edit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Address
+          </a>
         </div>
-        <div class="address-grid" id="addressGrid">
+        <div class="nb-address-grid" id="addressGrid">
           @forelse($savedAddresses as $addr)
-          <div class="address-card {{ $loop->first ? 'default' : '' }}" id="addr-card-{{ $addr->id }}">
-            <div class="addr-type" style="color:{{ $loop->first ? 'var(--pk)' : 'var(--pu)' }}">
-              {{ $addr->label === 'Work' ? '🏢' : ($addr->label === 'Other' ? '📍' : '🏠') }} {{ $addr->label ?? 'Home' }}
-              @if($loop->first)<span class="addr-default-tag">Default</span>@endif
+          <div class="nb-address-card {{ $addr->is_default_shipping ? 'is-default' : '' }}" id="addr-card-{{ $addr->id }}">
+            <div class="nb-addr-header">
+              <span class="nb-addr-badge {{ strtolower($addr->label ?? 'home') }}">
+                {{ $addr->label === 'Work' ? '🏢' : ($addr->label === 'Other' ? '📍' : '🏠') }} {{ $addr->label ?? 'Home' }}
+              </span>
+              @if($addr->is_default_shipping)
+                <span class="nb-addr-default-tag">DEFAULT</span>
+              @endif
             </div>
-            <div class="addr-name">{{ $addr->full_name }}</div>
-            <div class="addr-text">
-              {{ $addr->address_line_1 }}{{ $addr->address_line_2 ? ', '.$addr->address_line_2 : '' }}{{ $addr->landmark ? ', Near '.$addr->landmark : '' }}<br>
-              {{ $addr->city }}, {{ $addr->state }} - {{ $addr->postal_code }}<br>
-              📞 {{ $addr->phone }}
+            <div class="nb-addr-body">
+              <h5 class="nb-addr-name">{{ $addr->full_name }}</h5>
+              <p class="nb-addr-text">
+                {{ $addr->address_line_1 }}{{ $addr->address_line_2 ? ', '.$addr->address_line_2 : '' }}
+                @if($addr->landmark)<br><span class="nb-addr-landmark">📍 Near {{ $addr->landmark }}</span>@endif
+                <br>{{ $addr->city }}, {{ $addr->state }} - {{ $addr->postal_code }}
+              </p>
+              <div class="nb-addr-contact">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>{{ $addr->phone }}</span>
+              </div>
             </div>
-            <div class="addr-actions">
-              <button class="addr-btn addr-del" onclick="deleteAddress({{ $addr->id }}, this)">🗑 Delete</button>
+            <div class="nb-addr-footer">
+              @if(!$addr->is_default_shipping)
+                <button class="nb-addr-btn btn-def" onclick="setDefaultAddress({{ $addr->id }}, this)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  Set Default
+                </button>
+              @endif
+              <a href="{{ route('user.addresses.edit', $addr->id) }}" class="nb-addr-btn btn-edit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </a>
+              <button class="nb-addr-btn btn-del" onclick="deleteAddress({{ $addr->id }}, this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                Delete
+              </button>
             </div>
           </div>
           @empty
-          <div class="no-addr-msg" id="noAddrMsg">
+          <div class="nb-no-addr" id="noAddrMsg">
             <div style="font-size:2.5rem;margin-bottom:8px">📭</div>
             <div style="font-weight:700;color:var(--dk);margin-bottom:4px">No saved addresses yet</div>
             <div style="font-size:.82rem;color:var(--text-light)">You don't have any saved addresses.</div>
           </div>
           @endforelse
+          
+          <div class="nb-add-card" onclick="window.location.href='{{ route('user.addresses.create') }}'">
+            <div class="nb-add-card-inner">
+              <div class="nb-add-circle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span>Add New Address</span>
+              <p>Ship to a different location</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -327,158 +364,227 @@
   </div>
 </div>
 
-{{-- ── ADD ADDRESS MODAL ── --}}
-<div class="modal-backdrop" id="addressModal" style="display:none;align-items:center;justify-content:center;">
-  <div class="modal" style="max-width:560px;width:95%;max-height:90vh;overflow-y:auto;">
-    <div class="modal-header">
-      <h3>📍 Add New Address</h3>
-      <div class="modal-close" onclick="closeAddressModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </div>
-    </div>
-    <div style="padding:24px;">
-
-      {{-- Address Type --}}
-      <div style="margin-bottom:18px;">
-        <label class="form-label" style="margin-bottom:10px;display:block;">Address Type</label>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="addr-type-pill active" data-type="Home" onclick="selectType(this)">🏠 Home</button>
-          <button class="addr-type-pill" data-type="Work" onclick="selectType(this)">💼 Work</button>
-          <button class="addr-type-pill" data-type="Other" onclick="selectType(this)">📍 Other</button>
-        </div>
-      </div>
-
-      <div class="form-grid" style="gap:14px;">
-        <div class="form-group">
-          <label class="form-label">Full Name *</label>
-          <input type="text" class="form-input" id="addrFullName" placeholder="e.g. Priya Sharma">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mobile Number *</label>
-          <input type="tel" class="form-input" id="addrPhone" placeholder="+91 XXXXX XXXXX">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Flat / House / Apartment *</label>
-          <input type="text" class="form-input" id="addrLine1" placeholder="e.g. 42, Sunshine Residency">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Street / Area / Colony</label>
-          <input type="text" class="form-input" id="addrLine2" placeholder="e.g. HSR Layout, Sector 3">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Landmark</label>
-          <input type="text" class="form-input" id="addrLandmark" placeholder="Near park, opposite school…">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Pincode *</label>
-          <input type="text" class="form-input" id="addrPincode" maxlength="6" placeholder="6-digit pincode">
-        </div>
-        <div class="form-group">
-          <label class="form-label">City *</label>
-          <input type="text" class="form-input" id="addrCity" placeholder="City">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">State *</label>
-          <select class="form-input" id="addrState">
-            <option value="">Select State</option>
-            <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
-            <option>Delhi</option><option>Goa</option><option>Gujarat</option>
-            <option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option>
-            <option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option>
-            <option>Maharashtra</option><option>Odisha</option><option>Punjab</option>
-            <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
-            <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
-          </select>
-        </div>
-      </div>
-
-
-
-      <div class="modal-btns" style="margin-top:22px;">
-        <button class="m-btn-cancel" onclick="closeAddressModal()">Cancel</button>
-        <button class="m-btn-save" id="addrSaveBtn" onclick="saveNewAddress()">💾 Save Address</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 @push('styles')
 <style>
-.addr-type-pill {
-  border: 2px solid var(--border);
-  border-radius: 50px;
-  padding: 8px 16px;
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-  font-size: .8rem;
-  cursor: pointer;
-  background: white;
-  color: var(--text-light);
-  transition: all .25s;
+/* Modern Address UI */
+.address-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
 }
-.addr-type-pill.active {
-  border-color: var(--pk);
-  background: var(--pkl);
-  color: var(--pkd);
-}
+
 .address-card {
-  background: white;
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  position: relative;
-  transition: all .3s;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
-.address-card.default {
-  border-color: var(--pk);
-  background: linear-gradient(135deg, rgba(255,77,143,.04), white);
-}
+
 .address-card:hover {
-  box-shadow: 0 6px 20px rgba(0,0,0,.08);
-  transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    border-color: var(--pk);
 }
-.addr-default-tag {
-  background: var(--pkl);
-  color: var(--pkd);
-  font-size: .62rem;
-  font-weight: 900;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-family: 'Nunito', sans-serif;
-  margin-left: 6px;
+
+.address-card.default {
+    border: 2px solid var(--pk);
+    background: linear-gradient(to bottom right, #fff, var(--pkl));
 }
-.addr-name { font-family:'Nunito',sans-serif; font-weight:900; font-size:.95rem; color:var(--dk); margin:6px 0 4px; }
-.addr-text { font-size:.83rem; color:var(--text-light); line-height:1.6; }
-.addr-actions { margin-top:12px; display:flex; gap:8px; }
-.addr-btn { border:none; border-radius:10px; padding:7px 14px; font-family:'Nunito',sans-serif; font-weight:800; font-size:.78rem; cursor:pointer; transition:all .2s; }
-.addr-del { background: #fff0f0; color: #e74c3c; }
-.addr-del:hover { background:#e74c3c; color:white; }
-.add-address {
-  border: 2.5px dashed var(--pkl);
-  border-radius: 16px;
-  padding: 32px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  color: var(--pk);
-  font-family: 'Nunito', sans-serif;
-  font-weight: 900;
-  font-size: .9rem;
-  transition: all .25s;
+
+.nb-address-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+    margin-top: 32px;
 }
-.add-address:hover { background: var(--pkl); border-style:solid; }
-.add-icon { font-size: 1.6rem; }
-.no-addr-msg {
-  text-align: center;
-  padding: 28px 18px;
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  color: var(--text-light);
-  grid-column: 1 / -1;
+
+.nb-address-card {
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+    border-radius: 28px !important;
+    padding: 30px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+    overflow: hidden;
 }
+
+.nb-address-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08) !important;
+    border-color: var(--pk) !important;
+}
+
+.nb-address-card.is-default {
+    border: 2px solid var(--pk) !important;
+    background: linear-gradient(135deg, #fff, #fff9fb) !important;
+}
+
+.nb-addr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nb-addr-badge {
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: #f8f9fa;
+    color: #666;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nb-addr-badge.home { background: #eef2ff !important; color: #4338ca !important; }
+.nb-addr-badge.work { background: #fdf2f8 !important; color: #be185d !important; }
+.nb-addr-badge.other { background: #fffbeb !important; color: #b45309 !important; }
+
+.nb-addr-default-tag {
+    background: var(--pk);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+.nb-addr-name {
+    font-size: 19px;
+    font-weight: 900;
+    margin: 0;
+    color: #1a202c;
+}
+
+.nb-addr-text {
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.nb-addr-landmark {
+    color: #718096;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.nb-addr-contact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #2d3748;
+}
+
+.nb-addr-footer {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: auto !important;
+    padding-top: 22px !important;
+    border-top: 1px solid #f1f5f9 !important;
+}
+
+.nb-addr-btn {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 10px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.25s !important;
+    text-decoration: none !important;
+    font-family: 'Nunito', sans-serif !important;
+    line-height: 1 !important;
+}
+
+.nb-addr-btn.btn-def { background: #f0f9ff !important; color: #0369a1 !important; }
+.nb-addr-btn.btn-def:hover { background: #0369a1 !important; color: #fff !important; transform: translateY(-2px); }
+
+.nb-addr-btn.btn-edit { background: #f0fdf4 !important; color: #15803d !important; }
+.nb-addr-btn.btn-edit:hover { background: #15803d !important; color: #fff !important; transform: translateY(-2px); }
+
+.nb-addr-btn.btn-del { background: #fff1f2 !important; color: #be123c !important; }
+.nb-addr-btn.btn-del:hover { background: #be123c !important; color: #fff !important; transform: translateY(-2px); }
+
+/* Add Address Card */
+.nb-add-card {
+    border: 2px dashed #cbd5e0 !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    min-height: 220px !important;
+    transition: all 0.3s !important;
+    background: #fafafa !important;
+}
+
+.nb-add-card:hover {
+    border-color: var(--pk) !important;
+    background: #fff9fb !important;
+}
+
+.nb-add-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.nb-add-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.3s;
+}
+
+.nb-add-card:hover .nb-add-circle {
+    background: var(--pk);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+.nb-add-card-inner span { font-weight: 900; color: #334155; font-size: 16px; }
+.nb-add-card-inner p { font-size: 13px; color: #94a3b8; margin: 0; }
+
+.nb-no-addr {
+    text-align: center;
+    padding: 40px 24px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 24px;
+    color: #64748b;
+    grid-column: 1 / -1;
+}
+
 #addressModal.show,
 #editModal.show {
   display: flex !important;
@@ -606,100 +712,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (modalInput) modalInput.addEventListener('change', (e) => handleAvatarSelect(e, 'modalAvatarPreview'));
 });
 
-// ── Address Type Pill ──
-let _selectedType = 'Home';
-function selectType(btn){
-  document.querySelectorAll('.addr-type-pill').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  _selectedType = btn.dataset.type;
-}
-
-// ── Open / Close Address Modal ──
-function openAddressModal(){
-  document.getElementById('addrSaveError').style.display = 'none';
-  document.getElementById('addressModal').classList.add('show');
-  document.getElementById('addressModal').style.display = 'flex';
-}
-function closeAddressModal(){
-  document.getElementById('addressModal').classList.remove('show');
-  document.getElementById('addressModal').style.display = 'none';
-  ['addrFullName','addrPhone','addrLine1','addrLine2','addrLandmark','addrPincode','addrCity','addrState']
-    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  _selectedType = 'Home';
-  document.querySelectorAll('.addr-type-pill').forEach((b,i)=>b.classList.toggle('active',i===0));
-}
-document.getElementById('addressModal').addEventListener('click',function(e){ if(e.target===this)closeAddressModal(); });
-
-// ── Save New Address ──
-async function saveNewAddress(){
-  const btn = document.getElementById('addrSaveBtn');
-
-  const full_name    = document.getElementById('addrFullName').value.trim();
-  const phone        = document.getElementById('addrPhone').value.trim();
-  const address_line_1 = document.getElementById('addrLine1').value.trim();
-  const address_line_2 = document.getElementById('addrLine2').value.trim();
-  const landmark     = document.getElementById('addrLandmark').value.trim();
-  const postal_code  = document.getElementById('addrPincode').value.trim();
-  const city         = document.getElementById('addrCity').value.trim();
-  const state        = document.getElementById('addrState').value;
-
-  if(!full_name||!phone||!address_line_1||!postal_code||!city||!state){
-    nbToast('Please fill all required fields.', 'warning');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-
-  try {
-    const res = await fetch(_addrStoreUrl, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': _csrf, 'Accept':'application/json' },
-      body: JSON.stringify({ label: _selectedType, full_name, phone, address_line_1, address_line_2, landmark, postal_code, city, state })
-    });
-    const json = await res.json();
-    if(!res.ok){ throw new Error(Object.values(json.errors||{}).flat().join(' ') || json.message || 'Error saving.'); }
-
-    // Inject new card into grid
-    const addr = json.data;
-    const grid = document.getElementById('addressGrid');
-    const noMsg = document.getElementById('noAddrMsg');
-    if(noMsg) noMsg.remove();
-
-    const typeIcon = addr.label==='Work'?'🏢':(addr.label==='Other'?'📍':'🏠');
-    const isFirst  = grid.querySelectorAll('.address-card').length === 0;
-
-    const card = document.createElement('div');
-    card.id = 'addr-card-'+addr.id;
-    card.className = 'address-card' + (isFirst?' default':'');
-    card.innerHTML = `
-      <div class="addr-type" style="color:${isFirst?'var(--pk)':'var(--pu)'}">
-        ${typeIcon} ${addr.label||'Home'}
-        ${isFirst?'<span class="addr-default-tag">Default</span>':''}
-      </div>
-      <div class="addr-name">${addr.full_name}</div>
-      <div class="addr-text">
-        ${addr.address_line_1}${addr.address_line_2?', '+addr.address_line_2:''}${addr.landmark?', Near '+addr.landmark:''}<br>
-        ${addr.city}, ${addr.state} - ${addr.postal_code}<br>
-        📞 ${addr.phone}
-      </div>
-      <div class="addr-actions">
-        <button class="addr-btn addr-del" onclick="deleteAddress(${addr.id}, this)">🗑 Delete</button>
-      </div>`;
-
-    // Insert before the last "add" tile
-    const addTile = grid.querySelector('.add-address');
-    grid.insertBefore(card, addTile);
-
-    closeAddressModal();
-    nbToast('Address saved successfully!', 'success');
-  } catch(err){
-    nbToast(err.message || 'Could not save address.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '💾 Save Address';
-  }
-}
+// Address management is now on dedicated pages.
+// Only setDefaultAddress and deleteAddress remain here.
 
 // ── Delete Address ──
 function deleteAddress(id, btn){
@@ -725,6 +739,25 @@ function deleteAddress(id, btn){
   }, { title: 'Delete Address?', okText: 'Yes, Delete' });
 }
 
+// ── Set Default Address ──
+async function setDefaultAddress(id, btn){
+  btn.disabled = true;
+  btn.textContent = 'Updating...';
+  try {
+    const res = await fetch(_addrDeleteBase+'/'+id+'/default', {
+      method: 'PATCH',
+      headers: { 'X-CSRF-TOKEN': _csrf, 'Accept': 'application/json' }
+    });
+    if(!res.ok) throw new Error('Update failed');
+    nbToast('Default address updated successfully.', 'success');
+    setTimeout(() => window.location.reload(), 800);
+  } catch(e){
+    nbToast('Could not update default address.', 'error');
+    btn.disabled = false;
+    btn.textContent = '⭐ Set as Default';
+  }
+}
+
 function checkEmpty(){
   const grid = document.getElementById('addressGrid');
   if(!grid) return;
@@ -734,7 +767,7 @@ function checkEmpty(){
     msg.id = 'noAddrMsg';
     msg.className = 'no-addr-msg';
     msg.innerHTML = '<div style="font-size:2.5rem;margin-bottom:8px">📭</div><div style="font-weight:700;color:var(--dk);margin-bottom:4px">No saved addresses yet</div><div style="font-size:.82rem;color:var(--text-light)">You don\'t have any saved addresses.</div>';
-    grid.appendChild(msg);
+    grid.insertBefore(msg, grid.querySelector('.nb-add-card'));
   }
 }
 </script>

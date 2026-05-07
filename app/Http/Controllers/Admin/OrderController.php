@@ -18,7 +18,7 @@ class OrderController extends Controller
     {
         $status = $request->string('status')->toString();
 
-        $orders = Order::with(['user', 'coupon'])
+        $orders = Order::with(['user', 'coupon', 'items.product', 'items.productVariant'])
             ->withCount('items')
             ->when($status, fn ($query) => $query->where('status', $status))
             ->latest()

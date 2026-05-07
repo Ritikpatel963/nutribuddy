@@ -22,6 +22,7 @@ class Ingredient extends Model
         'dosage_heading_two',
         'sort_order',
         'is_active',
+        'is_featured',
     ];
 
     protected function casts(): array
@@ -29,6 +30,7 @@ class Ingredient extends Model
         return [
             'sort_order' => 'integer',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
         ];
     }
 
@@ -40,5 +42,10 @@ class Ingredient extends Model
     public function benefits(): HasMany
     {
         return $this->hasMany(IngredientBenefit::class)->orderBy('sort_order');
+    }
+
+    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Product::class);
     }
 }

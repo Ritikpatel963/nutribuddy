@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         };
                                     @endphp
                                     <tr>
-                                        <td><span class="fw-bold text-primary-600">{{ $order->order_number }}</span></td>
+                                        <td><a href="{{ route('admin.ecommerce.orders.show', $order) }}" class="fw-bold text-primary-600 hover-text-primary-700">#{{ $order->order_number }}</a></td>
                                         <td>{{ $order->customer_name ?: ($order->user?->name ?? 'Guest') }}</td>
                                         <td>₹{{ number_format((float) $order->grand_total, 2) }}</td>
                                         <td><span class="{{ $statusClass }} px-12 py-2 rounded-pill fw-bold text-xs">{{ ucfirst($status) }}</span></td>

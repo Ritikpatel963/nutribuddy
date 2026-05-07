@@ -6,35 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SupportTicket extends Model
+class SupportTicketMessage extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'ticket_number',
+        'support_ticket_id',
         'user_id',
-        'subject',
+        'is_admin',
         'message',
-        'status',
-        'priority',
-        'admin_note',
-        'last_replied_at',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'is_admin' => 'boolean',
+    ];
+
+    public function ticket(): BelongsTo
     {
-        return [
-            'last_replied_at' => 'datetime',
-        ];
+        return $this->belongsTo(SupportTicket::class, 'support_ticket_id');
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function messages()
-    {
-        return $this->hasMany(SupportTicketMessage::class);
     }
 }

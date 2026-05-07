@@ -29,13 +29,13 @@
                             <tr>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <span class="text-md fw-bold text-primary-600">#{{ $return->return_number }}</span>
+                                        <a href="{{ route('admin.ecommerce.order-returns.show', $return) }}" class="text-md fw-bold text-primary-600 hover-text-primary-700">#{{ $return->return_number }}</a>
                                         <small class="text-secondary-light">{{ optional($return->created_at)->format('d M Y, H:i') }}</small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <a href="{{ route('admin.ecommerce.orders.show', $return->order_id) }}" class="text-md fw-semibold text-dark">#{{ $return->order->order_number }}</a>
+                                        <a href="{{ route('admin.ecommerce.orders.show', $return->order_id) }}" class="text-md fw-bold text-primary-600 hover-text-primary-700">#{{ $return->order->order_number }}</a>
                                         <small class="text-secondary-light">Items: {{ $return->order->items_count }}</small>
                                     </div>
                                 </td>

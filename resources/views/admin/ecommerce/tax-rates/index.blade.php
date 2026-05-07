@@ -7,11 +7,11 @@
 @section('content')
     @include('admin.ecommerce._messages')
 
-    <div class="card mb-24">
-        <div class="card-header">
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom py-16 px-24">
             <h5 class="card-title mb-0">Create Tax Rate</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <form method="POST" action="{{ route('admin.ecommerce.tax-rates.store') }}" class="row g-3">
                 @csrf
                 <div class="col-md-3">
@@ -41,31 +41,20 @@
                         <input type="number" step="0.01" min="0" max="100" name="rate" class="form-control" placeholder="18.00" required>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Sort Order</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="lucide:list-ordered"></iconify-icon>
-                        </span>
-                        <input type="number" min="0" name="sort_order" value="0" class="form-control">
+
+                <div class="col-md-4 d-flex flex-column justify-content-end gap-2 pb-2">
+                    <input type="hidden" name="is_active" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0">
+                        <input class="form-check-input m-0 float-none" type="checkbox" value="1" name="is_active" id="create_tax_is_active" checked>
+                        <label class="form-check-label m-0" for="create_tax_is_active">Active</label>
+                    </div>
+                    <input type="hidden" name="show_in_checkout" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0 mt-1">
+                        <input class="form-check-input m-0 float-none" type="checkbox" value="1" name="show_in_checkout" id="create_tax_show" checked>
+                        <label class="form-check-label m-0" for="create_tax_show">Show GST in Checkout Summary</label>
                     </div>
                 </div>
-                <div class="col-md-3 d-flex flex-column justify-content-end gap-2 pb-2">
-                    <div class="form-check form-switch">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" value="1" name="is_active" checked>
-                        <label class="form-check-label">Active</label>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input type="hidden" name="show_in_checkout" value="0">
-                        <input class="form-check-input" type="checkbox" value="1" name="show_in_checkout" checked>
-                        <label class="form-check-label">Show GST in Checkout Summary</label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="2"></textarea>
-                </div>
+
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary-600">Create Tax Rate</button>
                 </div>
@@ -73,11 +62,11 @@
         </div>
     </div>
 
-    <div class="card basic-data-table">
-        <div class="card-header">
+    <div class="card basic-data-table border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom py-16 px-24">
             <h5 class="card-title mb-0">Tax Rate List</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <div class="table-responsive">
                 <table class="table bordered-table mb-0" id="dataTable" data-page-length='10'>
                     <thead>
@@ -104,7 +93,7 @@
                                         @else
                                             <span class="badge bg-danger-100 text-danger-600 w-fit">Inactive</span>
                                         @endif
-                                        <small class="text-secondary-light">Sort: {{ $taxRate->sort_order }}</small>
+
                                     </div>
                                 </td>
                                 <td class="text-end">
@@ -180,31 +169,20 @@
                                     <input type="number" step="0.01" min="0" max="100" name="rate" id="edit_tax_rate" class="form-control" placeholder="18.00" required>
                                 </div>
                             </div>
-                            <div class="col-md-8">
-                                <label class="form-label">Sort Order</label>
-                                <div class="icon-field">
-                                    <span class="icon">
-                                        <iconify-icon icon="lucide:list-ordered"></iconify-icon>
-                                    </span>
-                                    <input type="number" min="0" name="sort_order" id="edit_tax_sort_order" class="form-control">
+
+                            <div class="col-md-6 d-flex flex-column justify-content-end gap-2 pb-2">
+                                <input type="hidden" name="is_active" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="is_active" value="1" id="edit_tax_is_active">
+                                    <label class="form-check-label m-0" for="edit_tax_is_active">Active</label>
+                                </div>
+                                <input type="hidden" name="show_in_checkout" value="0">
+                                <div class="form-check form-switch d-flex align-items-center gap-2 p-0 m-0 mt-1">
+                                    <input class="form-check-input m-0 float-none" type="checkbox" name="show_in_checkout" value="1" id="edit_tax_show_in_checkout">
+                                    <label class="form-check-label m-0" for="edit_tax_show_in_checkout">Show GST in Checkout</label>
                                 </div>
                             </div>
-                            <div class="col-md-4 d-flex flex-column justify-content-end gap-2 pb-2">
-                                <div class="form-check form-switch">
-                                    <input type="hidden" name="is_active" value="0">
-                                    <input class="form-check-input" type="checkbox" name="is_active" value="1" id="edit_tax_is_active">
-                                    <label class="form-check-label" for="edit_tax_is_active">Active</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input type="hidden" name="show_in_checkout" value="0">
-                                    <input class="form-check-input" type="checkbox" name="show_in_checkout" value="1" id="edit_tax_show_in_checkout">
-                                    <label class="form-check-label" for="edit_tax_show_in_checkout">Show GST in Checkout</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Description</label>
-                                <textarea name="description" id="edit_tax_description" class="form-control" rows="3"></textarea>
-                            </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -236,7 +214,7 @@
                     const sortOrder = button.getAttribute('data-sort_order');
                     const isActive = button.getAttribute('data-is_active');
                     const showInCheckout = button.getAttribute('data-show_in_checkout');
-                    const description = button.getAttribute('data-description');
+
 
                     // Update the modal's content.
                     const form = editModal.querySelector('#editTaxForm');
@@ -245,8 +223,8 @@
                     editModal.querySelector('#edit_tax_name').value = name;
                     editModal.querySelector('#edit_tax_code').value = code;
                     editModal.querySelector('#edit_tax_rate').value = rate;
-                    editModal.querySelector('#edit_tax_sort_order').value = sortOrder;
-                    editModal.querySelector('#edit_tax_description').value = description;
+
+
                     editModal.querySelector('#edit_tax_is_active').checked = isActive === '1';
                     editModal.querySelector('#edit_tax_show_in_checkout').checked = showInCheckout === '1';
                 });

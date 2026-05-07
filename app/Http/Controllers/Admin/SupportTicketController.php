@@ -55,10 +55,36 @@ class SupportTicketController extends Controller
         return back()->with('success', 'Support ticket updated successfully.');
     }
 
+    public function show(SupportTicket $supportTicket): View
+    {
+        $supportTicket->load('messages.user');
+        
+        return view('admin.ecommerce.support-tickets.show', [
+            'ticket' => $supportTicket,
+        ]);
+    }
+
+    public function reply(Request $request, SupportTicket $supportTicket): RedirectResponse
+    {
+        $request->validate([
+            'message' => ['required', 'string'],
+        ]);
+
+        $supportTicket->messages()->create([
+            'user_id' => auth()->id(),
+            'is_admin' => true,
+            'message' => $request->message,
+        ]);
+
+        $supportTicket->update(['last_replied_at' => now(), 'status' => 'in_progress']);
+
+        return back()->with('success', 'Reply sent successfully.');
+    }
+
     public function destroy(SupportTicket $supportTicket): RedirectResponse
     {
         $supportTicket->delete();
 
-        return back()->with('success', 'Support ticket deleted successfully.');
+        return redirect()->route('admin.ecommerce.support-tickets.index')->with('success', 'Support ticket deleted successfully.');
     }
 }

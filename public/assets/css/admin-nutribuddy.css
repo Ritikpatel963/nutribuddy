@@ -1,25 +1,25 @@
 :root {
-    --nb-pink: #ff5f8f;
-    --nb-pink-dark: #e54778;
-    --nb-peach: #ffb36b;
+    --nb-pink: #10b981;
+    --nb-pink-dark: #065f46;
+    --nb-peach: #34d399;
     --nb-yellow: #ffd86b;
     --nb-mint: #8be0c8;
     --nb-sky: #8fc8ff;
-    --nb-ink: #2f2a4a;
-    --nb-ink-soft: #665f84;
-    --nb-line: rgba(92, 77, 136, 0.12);
+    --nb-ink: #062c24;
+    --nb-ink-soft: #374151;
+    --nb-line: rgba(6, 78, 59, 0.12);
     --nb-panel: rgba(255, 255, 255, 0.84);
     --nb-panel-strong: rgba(255, 255, 255, 0.96);
-    --nb-shadow: 0 22px 60px rgba(82, 56, 128, 0.14);
+    --nb-shadow: 0 22px 60px rgba(6, 78, 59, 0.14);
 }
 
 body.admin-nb-theme {
     font-family: 'DM Sans', sans-serif;
     color: var(--nb-ink);
     background:
-        radial-gradient(circle at top left, rgba(255, 95, 143, 0.14), transparent 24%),
-        radial-gradient(circle at top right, rgba(255, 216, 107, 0.18), transparent 20%),
-        linear-gradient(180deg, #fffaf5 0%, #fff7fb 46%, #f8fbff 100%);
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(52, 211, 153, 0.1), transparent 20%),
+        linear-gradient(180deg, #f0fdf4 0%, #f7fee7 46%, #f0fdfa 100%);
 }
 
 .admin-nb-theme h1,
@@ -99,7 +99,7 @@ body.admin-nb-theme {
 
 .navbar-search input {
     background: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(255, 95, 143, 0.12) !important;
+    border: 1px solid rgba(16, 185, 129, 0.12) !important;
     border-radius: 999px !important;
     min-height: 48px;
     padding-left: 48px !important;
@@ -121,8 +121,8 @@ body.admin-nb-theme {
     min-height: 44px;
     padding: 0 16px;
     border-radius: 999px;
-    background: linear-gradient(135deg, rgba(139, 224, 200, 0.18), rgba(143, 200, 255, 0.22));
-    border: 1px solid rgba(139, 224, 200, 0.32);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(52, 211, 153, 0.16));
+    border: 1px solid rgba(16, 185, 129, 0.2);
     color: var(--nb-ink);
     font-weight: 700;
 }
@@ -136,14 +136,35 @@ body.admin-nb-theme {
 }
 
 .nb-theme-toggle,
-.nb-admin-profile {
-    background: linear-gradient(135deg, rgba(255, 95, 143, 0.12), rgba(255, 216, 107, 0.16)) !important;
-    border: 1px solid rgba(255, 95, 143, 0.16) !important;
-    box-shadow: 0 10px 22px rgba(109, 87, 155, 0.12);
+.nb-admin-profile,
+.nb-admin-notification {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(52, 211, 153, 0.16)) !important;
+    border: 1px solid rgba(16, 185, 129, 0.16) !important;
+    box-shadow: 0 10px 22px rgba(6, 78, 59, 0.12);
+}
+
+.nb-admin-notification {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    color: var(--nb-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.notification-list::-webkit-scrollbar {
+    display: none;
+}
+
+.notification-list {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .nb-admin-dropdown {
-    border: 1px solid rgba(255, 95, 143, 0.1) !important;
+    border: 1px solid rgba(16, 185, 129, 0.1) !important;
     box-shadow: var(--nb-shadow);
     border-radius: 20px !important;
     padding: 10px !important;
@@ -151,8 +172,7 @@ body.admin-nb-theme {
 }
 
 .sidebar {
-    background:
-       linear-gradient(135deg, #ec1238, #1c199a);
+    background: linear-gradient(180deg, #022c22 0%, #064e3b 100%);
 }
 
 .sidebar::before {
@@ -240,22 +260,22 @@ body.admin-nb-theme {
     padding: 22 14px 22px;
 }
 
-.sidebar-menu > li > a,
+.sidebar-menu>li>a,
 .sidebar-submenu li a {
     color: rgba(255, 255, 255, 0.92) !important;
     border-radius: 16px !important;
     font-weight: 700;
 }
 
-.sidebar-menu > li > a {
+.sidebar-menu>li>a {
     min-height: 50px;
     margin-bottom: 6px;
     padding: 12px 16px !important;
 }
 
-.sidebar-menu > li > a:hover,
-.sidebar-menu > li.active-page > a,
-.sidebar-menu > li.open > a {
+.sidebar-menu>li>a:hover,
+.sidebar-menu>li.active-page>a,
+.sidebar-menu>li.open>a {
     background: rgba(255, 255, 255, 0.16) !important;
     color: #fff !important;
 }
@@ -294,7 +314,7 @@ body.admin-nb-theme {
     border-radius: 28px !important;
     box-shadow: var(--nb-shadow) !important;
     overflow: hidden;
-    height: 100%;
+    /* height: 100%; */
 }
 
 .card .card {
@@ -403,7 +423,7 @@ body.admin-nb-theme {
 }
 
 .bordered-table tbody tr:hover {
-    background: rgba(255, 95, 143, 0.04);
+    background: rgba(16, 185, 129, 0.04);
 }
 
 .form-control,
@@ -415,10 +435,139 @@ body.admin-nb-theme {
     box-shadow: none !important;
 }
 
+.input-group > .input-group-text {
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: var(--nb-line) !important;
+}
+
+.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.input-group > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
 .form-control:focus,
 .form-select:focus {
-    border-color: rgba(255, 95, 143, 0.4) !important;
-    box-shadow: 0 0 0 4px rgba(255, 95, 143, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12) !important;
+}
+
+.admin-nb-theme .switch,
+.admin-nb-theme .form-switch .form-check-input {
+    --secondary-container: #3a4b39;
+    --primary: #84da89;
+}
+
+.admin-nb-theme .form-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline-start: 0 !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input {
+    position: relative;
+    flex: 0 0 auto;
+    display: inline-block;
+    width: 3.7em;
+    height: 1.8em;
+    margin: 0 !important;
+    float: none !important;
+    cursor: pointer;
+    appearance: none;
+    background-color: #313033 !important;
+    background-image: none !important;
+    border: 0 !important;
+    border-radius: 30px !important;
+    box-shadow: none !important;
+    transition: 0.2s;
+}
+
+.admin-nb-theme .form-switch .form-check-input::before {
+    position: absolute;
+    content: "";
+    width: 1.4em;
+    height: 1.4em;
+    left: 0.2em;
+    bottom: 0.2em;
+    top: auto;
+    border-radius: 20px;
+    background-color: #aeaaae;
+    transform: none;
+    transition: 0.4s;
+}
+
+.admin-nb-theme .form-switch .form-check-input:checked {
+    background-color: var(--secondary-container) !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input:checked::before {
+    left: 0.2em;
+    background-color: var(--primary);
+    transform: translateX(1.9em);
+}
+
+.admin-nb-theme .form-switch .form-check-input:focus {
+    box-shadow: 0 0 1px var(--secondary-container) !important;
+}
+
+.admin-nb-theme .form-switch .form-check-input:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.admin-nb-theme .switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 3.7em;
+    height: 1.8em;
+}
+
+.admin-nb-theme .switch input {
+    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.admin-nb-theme .switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #313033;
+    transition: 0.2s;
+    border-radius: 30px;
+}
+
+.admin-nb-theme .switch .slider::before {
+    position: absolute;
+    content: "";
+    width: 1.4em;
+    height: 1.4em;
+    left: 0.2em;
+    bottom: 0.2em;
+    border-radius: 20px;
+    background-color: #aeaaae;
+    transition: 0.4s;
+}
+
+.admin-nb-theme .switch input:checked + .slider {
+    background-color: var(--secondary-container);
+}
+
+.admin-nb-theme .switch input:checked + .slider::before {
+    background-color: var(--primary);
+    transform: translateX(1.9em);
+}
+
+.admin-nb-theme .switch input:focus + .slider {
+    box-shadow: 0 0 1px var(--secondary-container);
 }
 
 .text-primary-light,
@@ -433,7 +582,7 @@ body.admin-nb-theme {
 
 .bg-primary-50,
 .bg-primary-light {
-    background: rgba(255, 95, 143, 0.1) !important;
+    background: rgba(16, 185, 129, 0.1) !important;
 }
 
 .bg-success-focus,
@@ -465,6 +614,7 @@ body.admin-nb-theme {
 }
 
 @media (max-width: 767.98px) {
+
     .navbar-header,
     .d-footer {
         margin-left: 12px;

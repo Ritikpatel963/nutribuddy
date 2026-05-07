@@ -44,6 +44,7 @@ class Product extends Model
         'pack_size',
         'age_group',
         'coins_reward',
+        'dosage',
     ];
 
     protected function casts(): array
@@ -95,6 +96,11 @@ class Product extends Model
     public function primaryImage(): HasOne
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    public function ingredients(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class);
     }
 
     /**

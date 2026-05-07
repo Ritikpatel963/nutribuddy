@@ -9,7 +9,7 @@
 
     <div class="row g-4">
         <div class="col-xl-4">
-            <div class="card h-100">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Update Order Status</h5>
                 </div>
@@ -37,16 +37,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Fulfillment Status</label>
-                            <select name="fulfillment_status" class="form-select" required>
-                                @foreach ($fulfillmentStatuses as $fulfillmentStatus)
-                                    <option value="{{ $fulfillmentStatus }}" {{ $order->fulfillment_status === $fulfillmentStatus ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $fulfillmentStatus)) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Admin Note</label>
                             <textarea name="admin_note" rows="4" class="form-control">{{ $order->admin_note }}</textarea>
@@ -57,8 +48,8 @@
             </div>
         </div>
 
-        <div class="col-xl-8">
-            <div class="card mb-24">
+        <div class="col-xl-8 d-flex flex-column gap-4">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Summary</h5>
                 </div>
@@ -70,7 +61,7 @@
                         <div class="col-md-6"><strong>Email:</strong> {{ $order->customer_email ?: 'N/A' }}</div>
                         <div class="col-md-6"><strong>Payment:</strong> {{ strtoupper($order->payment_method) }} / {{ ucfirst($order->payment_status) }}</div>
                         <div class="col-md-6"><strong>Status:</strong> {{ ucfirst($order->status) }}</div>
-                        <div class="col-md-6"><strong>Fulfillment:</strong> {{ ucfirst(str_replace('_', ' ', $order->fulfillment_status)) }}</div>
+
                         <div class="col-md-6"><strong>Coupon:</strong> {{ $order->coupon_code ?: 'N/A' }}</div>
                         <div class="col-12">
                             <strong>Shipping Address:</strong>
@@ -87,7 +78,7 @@
                             <a href="{{ route('admin.ecommerce.invoices.show', $order) }}" class="btn btn-sm btn-info text-white d-inline-flex align-items-center gap-1">
                                 <iconify-icon icon="lucide:file-text"></iconify-icon> View Official Invoice
                             </a>
-                            <a href="{{ route('user.orders.invoice-download', $order) }}?print=1" target="_blank" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+                            <a href="{{ route('admin.ecommerce.orders.invoice-download', $order) }}?print=1" target="_blank" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
                                 <iconify-icon icon="lucide:printer"></iconify-icon> Print for Packaging
                             </a>
                         </div>
@@ -96,14 +87,14 @@
             </div>
 
             @if($order->returns()->exists())
-                <div class="card mb-24 border border-warning shadow-none">
+                <div class="card border border-warning shadow-none">
                     <div class="card-header bg-warning-focus d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0 text-warning-main">Return Information ↩️</h5>
                         <a href="{{ route('admin.ecommerce.order-returns.show', $order->returns()->latest()->first()) }}" class="btn btn-sm btn-warning-main">View Full Return Details</a>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-4"><strong>Return #:</strong> #{{ $order->returns()->latest()->first()->return_number }}</div>
+                            <div class="col-md-4"><strong>Return #:</strong> <a href="{{ route('admin.ecommerce.order-returns.show', $order->returns()->latest()->first()) }}" class="text-primary-600 fw-bold">#{{ $order->returns()->latest()->first()->return_number }}</a></div>
                             <div class="col-md-4"><strong>Status:</strong> <span class="badge bg-warning-focus text-warning-main">{{ strtoupper($order->returns()->latest()->first()->status) }}</span></div>
                             <div class="col-md-4"><strong>Requested At:</strong> {{ $order->returns()->latest()->first()->created_at->format('d M Y') }}</div>
                             <div class="col-12"><strong>Reason:</strong> {{ $order->returns()->latest()->first()->reason }}</div>
@@ -112,7 +103,7 @@
                 </div>
             @endif
 
-            <div class="card mb-24">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Order Items</h5>
                 </div>
@@ -197,7 +188,7 @@
                 </div>
             </div>
 
-            <div class="card mt-4">
+            <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Status Timeline</h5>
                 </div>
@@ -205,7 +196,7 @@
                     @forelse ($order->statusHistories as $history)
                         <div class="mb-3 pb-3 border-bottom">
                             <div><strong>{{ ucfirst($history->to_status) }}</strong> at {{ optional($history->created_at)->format('d M Y H:i') }}</div>
-                            <div class="text-muted">From: {{ ucfirst($history->from_status ?? 'new') }} | Fulfillment: {{ ucfirst(str_replace('_', ' ', $history->to_fulfillment_status ?? 'n/a')) }}</div>
+                            <div class="text-muted">From: {{ ucfirst($history->from_status ?? 'new') }}</div>
                             @if ($history->note)
                                 <div>{{ $history->note }}</div>
                             @endif

@@ -9,8 +9,8 @@
 
 
 
-    <div class="card basic-data-table">
-        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="card basic-data-table border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom py-16 px-24 d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
                 <h5 class="card-title mb-0">Product List</h5>
                 <form action="{{ route('admin.ecommerce.products.index') }}" method="GET" class="d-flex align-items-center gap-2">
@@ -26,7 +26,7 @@
             </div>
             <a href="{{ route('admin.ecommerce.products.create') }}" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Add New Product</a>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <div class="table-responsive">
                 <table class="table bordered-table mb-0" id="dataTable" data-page-length='10'>
                     <thead>

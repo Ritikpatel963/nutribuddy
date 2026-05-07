@@ -67,14 +67,14 @@
 
                 <div class="col-lg-6">
                     <div class="border radius-12 p-20 h-100">
-                        <h6 class="mb-16">Dosage</h6>
+                        <h6 class="mb-16">Formula & Dosage Information</h6>
                         <div class="d-flex flex-column gap-12">
                             <div class="p-12 radius-8 bg-light">
-                                <p class="text-secondary-light mb-6 text-sm">Dosage Heading 1</p>
+                                <p class="text-secondary-light mb-6 text-sm">Formula / Scientific Name</p>
                                 <p class="mb-0 fw-semibold">{{ $ingredient->dosage_heading_one ?: 'N/A' }}</p>
                             </div>
                             <div class="p-12 radius-8 bg-light">
-                                <p class="text-secondary-light mb-6 text-sm">Dosage Heading 2</p>
+                                <p class="text-secondary-light mb-6 text-sm">Dosage Amount</p>
                                 <p class="mb-0 fw-semibold">{{ $ingredient->dosage_heading_two ?: 'N/A' }}</p>
                             </div>
                         </div>

@@ -65,16 +65,18 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column gap-1">
-                                        <form action="{{ route('admin.ecommerce.reviews.update', $review) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="form-check form-switch py-0">
-                                                <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ $review->is_active ? 'checked' : '' }} onchange="this.form.submit()">
-                                                <span class="badge {{ $review->is_active ? 'bg-success-100 text-success-600' : 'bg-danger-100 text-danger-600' }} px-2">
-                                                    {{ $review->is_active ? 'Published' : 'Hidden' }}
-                                                </span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="form-check form-switch py-0 mb-0">
+                                                <input class="form-check-input review-toggle" type="checkbox"
+                                                    {{ $review->is_active ? 'checked' : '' }}
+                                                    data-id="{{ $review->id }}"
+                                                    data-url="{{ route('admin.ecommerce.reviews.update', $review) }}"
+                                                    data-token="{{ csrf_token() }}">
                                             </div>
-                                        </form>
+                                            <span class="badge review-badge-{{ $review->id }} {{ $review->is_active ? 'bg-success-100 text-success-600' : 'bg-danger-100 text-danger-600' }} px-2">
+                                                {{ $review->is_active ? 'Published' : 'Hidden' }}
+                                            </span>
+                                        </div>
                                         <small class="text-xs text-secondary-light">{{ optional($review->created_at)->format('d M Y') ?? 'N/A' }}</small>
                                     </div>
                                 </td>
@@ -99,10 +101,46 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize DataTable
             if (document.getElementById('dataTable')) {
                 new DataTable('#dataTable');
             }
+
+            document.querySelectorAll('.review-toggle').forEach(function(toggle) {
+                toggle.addEventListener('change', function() {
+                    const id = this.dataset.id;
+                    const url = this.dataset.url;
+                    const token = this.dataset.token;
+                    const isActive = this.checked ? 1 : 0;
+                    const badge = document.querySelector('.review-badge-' + id);
+
+                    fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ is_active: isActive }),
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.is_active) {
+                                badge.className = 'badge review-badge-' + id + ' bg-success-100 text-success-600 px-2';
+                                badge.textContent = 'Published';
+                            } else {
+                                badge.className = 'badge review-badge-' + id + ' bg-danger-100 text-danger-600 px-2';
+                                badge.textContent = 'Hidden';
+                            }
+                        }
+                    })
+                    .catch(() => {
+                        // Revert toggle on error
+                        toggle.checked = !toggle.checked;
+                        alert('Failed to update review status. Please try again.');
+                    });
+                });
+            });
         });
     </script>
 @endsection

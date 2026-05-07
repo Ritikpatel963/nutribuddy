@@ -331,7 +331,7 @@
                                                     @endif
                                                 </i>
                                             @endif
-                                            {{ $tag['text'] ?? '' }}
+                                            {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
                                         </span>
                                     @endforeach
                                 </div>
@@ -384,6 +384,7 @@
     <!-- ══════════════════════════════════════════
                    INGREDIENTS HIGHLIGHT
               ══════════════════════════════════════════ -->
+    @if($featuredIngredients->isNotEmpty())
     <section class="ing-section" id="ingredients">
         <div class="stars-bg" id="starsBg"></div>
 
@@ -391,263 +392,65 @@
             <span class="sec-eye">Ingredient Transparency</span>
             <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
             <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's gummy
-                —
-                an honest, magical story of every ingredient we use.</p>
+                — an honest, magical story of every ingredient we use.</p>
         </div>
 
         <div class="ing-tabs reveal">
-            <button class="itab active" data-ing="0">
-                Ashwagandha</button>
-            <button class="itab" data-ing="1"> Brahmi</button>
-            <button class="itab" data-ing="2"> Turmeric</button>
-            <button class="itab" data-ing="3">  Amla</button>
-            <button class="itab" data-ing="4">  Algal Dha</button>
-            <button class="itab" data-ing="5">  Vitamins</button>
-            <button class="itab" data-ing="6"> Minerals</button>
+            @foreach($featuredIngredients as $i => $ing)
+                <button class="itab {{ $i === 0 ? 'active' : '' }}" data-ing="{{ $i }}">
+                    {{ $ing->main_heading }}
+                </button>
+            @endforeach
         </div>
 
         <div class="ing-panels">
-
-            <!-- Ashwagandha -->
-            <div class="ing-panel active" id="ing-panel-0">
+        @foreach($featuredIngredients as $i => $ing)
+            @php
+                $orbSpeeds = ['8s','6s','7s','8.5s','7.5s','8s','6s'];
+                $orb2 = ['8s','7s','9s','15s','10s','8s','7s'];
+                $orb3 = ['13s','11s','14s','18s','18s','13s','11s'];
+                $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
+            @endphp
+            <div class="ing-panel {{ $i === 0 ? 'active' : '' }}" id="ing-panel-{{ $i }}">
                 <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="/img/gradient1.webp" alt="Ashwagandha">
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    <div class="ing-planet" style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        @if($ing->icon_path)
+                            <img class="image-big" src="{{ asset('storage/' . $ing->icon_path) }}" alt="{{ $ing->main_heading }}">
+                        @else
+                            <img class="image-big" src="{{ asset('img/gradient1.webp') }}" alt="{{ $ing->main_heading }}">
+                        @endif
+                        <div class="orbit-i" style="--orr:{{ $orbSpeeds[$i] ?? '8s' }}">⭐</div>
+                        <div class="orbit-i" style="--orr:{{ $orb2[$i] ?? '8s' }}">⭐</div>
+                        <div class="orbit-i" style="--orr:{{ $orb3[$i] ?? '13s' }};font-size:1.1rem">⭐</div>
                     </div>
                 </div>
                 <div class="ing-text">
-                    <div class="ing-num">01</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Ayurvedic
-                        Powerhouse</div>
-                    <h3 class="ing-name">Ashwagandha</h3>
-                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
-                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
-                        3,000+
-                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
-                        child's
-                        secret superpower for resilience, calm, and growth.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Builds Immunity</div>
-                        <div class="ptag">Reduces Stress</div>
-                        <div class="ptag">Muscle Growth</div>
-                        <div class="ptag">Better Sleep</div>
-                        <div class="ptag">More Energy</div>
+                    <div class="ing-num">{{ $num }}</div>
+                    <div class="ing-pill" style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        {{ $ing->short_heading }}
                     </div>
+                    <h3 class="ing-name">{{ $ing->main_heading }}</h3>
+                    @if($ing->dosage_heading_one)
+                        <p class="ing-sci">{{ $ing->dosage_heading_one }}</p>
+                    @endif
+                    @if($ing->description)
+                        <p class="ing-story">{{ $ing->description }}</p>
+                    @endif
+                    @if($ing->benefits->isNotEmpty())
+                        <div class="ing-powers">
+                            @foreach($ing->benefits as $benefit)
+                                <div class="ptag">{{ $benefit->heading }}</div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
-
-            <!-- Brahmi -->
-            <div class="ing-panel" id="ing-panel-1">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="/img/bb.png" alt="Brahmi">
-                        <div class="orbit-i" style="--orr:6s">⭐</div>
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">02</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
-                        Tonic</div>
-                    <h3 class="ing-name">Brahmi</h3>
-                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
-                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
-                        before
-                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
-                        brain
-                        sharper with every single chew.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Laser Focus</div>
-                        <div class="ptag">Memory Boost</div>
-                        <div class="ptag">Problem Solving</div>
-                        <div class="ptag">Calm Alertness</div>
-                        <div class="ptag">Better Grades</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Turmeric -->
-            <div class="ing-panel" id="ing-panel-2">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
-                        <img class="image-big" src="/img/haldi.webp" alt="Turmeric">
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:9s">⭐</div>
-                        <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">03</div>
-                    <div class="ing-pill"
-                        style="background:rgba(255,214,0,.1);color:var(--ye);border:1px solid rgba(255,214,0,.2)">Golden
-                        Healer
-                    </div>
-                    <h3 class="ing-name">Turmeric Curcumin</h3>
-                    <p class="ing-sci">Curcuma longa · 95% Curcuminoids</p>
-                    <p class="ing-story">India's golden spice — used in every kitchen and every healing ritual for 5,000
-                        years.
-                        Curcumin's anti-inflammatory magic protects your child's developing cells, soothes tummies, and
-                        builds a
-                        fortress of immunity around them.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Anti-Inflammatory</div>
-                        <div class="ptag">Antioxidant Shield</div>
-                        <div class="ptag">Gut Health</div>
-                        <div class="ptag">Joint Support</div>
-                        <div class="ptag">Cell Protection</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Amla -->
-            <div class="ing-panel" id="ing-panel-3">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
-                        <img class="image-big" src="/img/amla.webp" alt="Amla">
-                        <div class="orbit-i" style="--orr:8.5s">⭐</div>
-                        <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">04</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Superfruit</div>
-                    <h3 class="ing-name">Amla</h3>
-                    <p class="ing-sci">Phyllanthus emblica · Indian Gooseberry</p>
-                    <p class="ing-story">The holy fruit of Ayurveda — revered as the "mother" of all medicines. One tiny
-                        Amla
-                        holds 20× the Vitamin C of an orange. Our grandmothers were right all along, and now science has
-                        proven it
-                        beyond any doubt.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">20× Vitamin C</div>
-                        <div class="ptag">Iron Absorption</div>
-                        <div class="ptag">Gut Healing</div>
-                        <div class="ptag">Skin Health</div>
-                        <div class="ptag">Super Immunity</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- algal dha -->
-            <div class="ing-panel" id="ing-panel-4">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
-                        <img class="image-big" src="/img/vitamins.webp" alt="Omega-3 DHA">
-                        <div class="orbit-i" style="--orr:7.5s">⭐</div>
-                        <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">05</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.1);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Modern
-                        Science
-                    </div>
-                    <h3 class="ing-name">Omega-3 DHA</h3>
-                    <p class="ing-sci">Docosahexaenoic Acid · Marine-sourced, Triple-Purified</p>
-                    <p class="ing-story">60% of your child's brain is made of fat — and DHA is the most critical building
-                        block.
-                        From deep, pristine ocean sources, our Omega-3 is triple-purified, certified for kids, and tastes
-                        absolutely
-                        nothing like fish. Promise!</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Brain Building</div>
-                        <div class="ptag">Vision Development</div>
-                        <div class="ptag">Heart Health</div>
-                        <div class="ptag">Focus & Attention</div>
-                        <div class="ptag">Reading Skills</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- vitamins -->
-            <div class="ing-panel " id="ing-panel-5">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="/img/gradient1.webp" alt="Ashwagandha">
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:8s">⭐</div>
-                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
-                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">06</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        Ayurvedic
-                        Powerhouse</div>
-                    <h3 class="ing-name">Ashwagandha</h3>
-                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
-                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
-                        3,000+
-                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
-                        child's
-                        secret superpower for resilience, calm, and growth.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Builds Immunity</div>
-                        <div class="ptag">Reduces Stress</div>
-                        <div class="ptag">Muscle Growth</div>
-                        <div class="ptag">Better Sleep</div>
-                        <div class="ptag">More Energy</div>
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- Brahmi -->
-            <div class="ing-panel" id="ing-panel-6">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet"
-                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="/img/bb.png" alt="Brahmi">
-                        <div class="orbit-i" style="--orr:6s">⭐</div>
-                        <div class="orbit-i" style="--orr:7s">⭐</div>
-                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">07</div>
-                    <div class="ing-pill"
-                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
-                        Tonic</div>
-                    <h3 class="ing-name">Minerals</h3>
-                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
-                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
-                        before
-                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
-                        brain
-                        sharper with every single chew.</p>
-                    <div class="ing-powers">
-                        <div class="ptag">Laser Focus</div>
-                        <div class="ptag">Memory Boost</div>
-                        <div class="ptag">Problem Solving</div>
-                        <div class="ptag">Calm Alertness</div>
-                        <div class="ptag">Better Grades</div>
-                    </div>
-                </div>
-            </div>
+        @endforeach
 
         </div><!-- /ing-panels -->
     </section>
+    @endif
+
 
 
 

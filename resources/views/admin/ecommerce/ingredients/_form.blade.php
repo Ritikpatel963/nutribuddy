@@ -4,6 +4,8 @@
     if (count($existingBenefits) === 0) {
         $existingBenefits = [''];
     }
+    $selectedProductIds = old('products', $isEdit ? $ingredient->products->pluck('id')->toArray() : []);
+    $allProducts = $allProducts ?? \App\Models\Product::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 @endphp
 
 <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data">
@@ -12,12 +14,12 @@
         @method('PUT')
     @endif
 
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom d-flex justify-content-between align-items-center py-16 px-24">
             <h5 class="card-title mb-0">Ingredient Information</h5>
             <a href="{{ route('admin.ecommerce.ingredients.index') }}" class="btn btn-sm btn-secondary">Back to List</a>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Image / Icon</label>
@@ -55,30 +57,38 @@
                     <textarea name="description" class="form-control" rows="4">{{ old('description', $isEdit ? $ingredient->description : '') }}</textarea>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Sort Order</label>
-                    <input type="number" min="0" name="sort_order" class="form-control" value="{{ old('sort_order', $isEdit ? $ingredient->sort_order : 0) }}">
+
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <input type="hidden" name="is_active" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none" type="checkbox" name="is_active" value="1" id="isActive" {{ old('is_active', $isEdit ? $ingredient->is_active : true) ? 'checked' : '' }}>
+                        <label class="form-check-label m-0" for="isActive">Active</label>
+                    </div>
                 </div>
 
                 <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $isEdit ? $ingredient->is_active : true) ? 'checked' : '' }}>
-                        <label class="form-check-label">Active</label>
+                    <input type="hidden" name="is_featured" value="0">
+                    <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
+                        <input class="form-check-input m-0 float-none mt-1" type="checkbox" name="is_featured" value="1" id="isFeatured" {{ old('is_featured', $isEdit ? $ingredient->is_featured : false) ? 'checked' : '' }}>
+                        <label class="form-check-label m-0" for="isFeatured">
+                            <strong>Featured on Homepage</strong>
+                            <small class="d-block text-secondary" style="font-size:0.75rem">Show in Highlight section</small>
+                        </label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom d-flex justify-content-between align-items-center py-16 px-24">
             <h5 class="card-title mb-0">Benefits (Tabs Heading)</h5>
             <button type="button" class="btn btn-sm btn-outline-primary-600" id="addBenefitBtn">
                 <i class="ri-add-line"></i> Add Tab
             </button>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <div id="benefitsContainer" class="d-flex flex-column gap-2">
                 @foreach ($existingBenefits as $benefit)
                     <div class="input-group benefit-row">
@@ -90,26 +100,46 @@
         </div>
     </div>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Dosage (2 Headings)</h5>
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom py-16 px-24">
+            <h5 class="card-title mb-0">Formula & Dosage Information</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-24">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Dosage Heading 1</label>
+                    <label class="form-label">Formula / Scientific Name</label>
+                    <small class="d-block text-secondary mb-1">e.g., "Withania somnifera · KSM-66®"</small>
                     <input type="text" name="dosage_heading_one" class="form-control" value="{{ old('dosage_heading_one', $isEdit ? $ingredient->dosage_heading_one : '') }}">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Dosage Heading 2</label>
+                    <label class="form-label">Dosage Amount</label>
+                    <small class="d-block text-secondary mb-1">e.g., "150mg per gummy"</small>
                     <input type="text" name="dosage_heading_two" class="form-control" value="{{ old('dosage_heading_two', $isEdit ? $ingredient->dosage_heading_two : '') }}">
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-header bg-base border-bottom py-16 px-24">
+            <h5 class="card-title mb-0">Associated Products</h5>
+        </div>
+        <div class="card-body p-24">
+            <label class="form-label">Select Products that contain this ingredient</label>
+            <small class="d-block text-secondary mb-2">These products will show this ingredient in their product detail page ingredient section.</small>
+            <select name="products[]" class="form-select" multiple style="height: 180px;">
+                @foreach($allProducts as $product)
+                    <option value="{{ $product->id }}" {{ in_array($product->id, $selectedProductIds) ? 'selected' : '' }}>
+                        {{ $product->name }}
+                    </option>
+                @endforeach
+            </select>
+            <small class="text-secondary mt-1 d-block">Hold Ctrl / Cmd to select multiple products.</small>
+        </div>
+    </div>
+
+    <div class="card border-0 radius-12 mb-24">
+        <div class="card-body p-24 text-end">
             <button type="submit" class="btn btn-primary-600 px-32">{{ $submitLabel }}</button>
         </div>
     </div>

@@ -16,14 +16,7 @@
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-control" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Name</label>
-                    <input type="text" name="name" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Source</label>
-                    <input type="text" name="source" class="form-control" placeholder="website, popup, campaign">
-                </div>
+
                 <div class="col-md-2">
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select" required>
@@ -46,7 +39,6 @@
                     <thead>
                         <tr>
                             <th>Subscriber</th>
-                            <th>Source</th>
                             <th>Status</th>
                             <th>Joined At</th>
                             <th class="text-end">Actions</th>
@@ -62,9 +54,6 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info-100 text-info-600 px-2 fw-medium">{{ ucfirst($subscriber->source ?? 'organic') }}</span>
-                                </td>
-                                <td>
                                     @if($subscriber->status == 'subscribed')
                                         <span class="badge bg-success-100 text-success-600 px-2 fw-medium">Subscribed</span>
                                     @else
@@ -78,7 +67,6 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#editSubscriberModal"
                                             data-name="{{ $subscriber->name }}"
-                                            data-source="{{ $subscriber->source }}"
                                             data-status="{{ $subscriber->status }}"
                                             data-action="{{ route('admin.ecommerce.newsletter.update', $subscriber) }}">
                                             <iconify-icon icon="lucide:edit"></iconify-icon> Edit
@@ -112,14 +100,7 @@
                     @csrf
                     @method('PUT')
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" id="edit_name" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Source</label>
-                            <input type="text" name="source" id="edit_source" class="form-control">
-                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Status</label>
                             <select name="status" id="edit_status" class="form-select" required>
@@ -151,14 +132,12 @@
                     
                     const action = button.getAttribute('data-action');
                     const name = button.getAttribute('data-name');
-                    const source = button.getAttribute('data-source');
                     const status = button.getAttribute('data-status');
 
                     const form = editModal.querySelector('#editSubscriberForm');
                     form.setAttribute('action', action);
                     
-                    editModal.querySelector('#edit_name').value = name || '';
-                    editModal.querySelector('#edit_source').value = source || '';
+
                     editModal.querySelector('#edit_status').value = status;
                 });
             }

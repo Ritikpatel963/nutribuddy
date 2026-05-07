@@ -7,62 +7,7 @@
 @section('content')
     @include('admin.ecommerce._messages')
 
-    <div class="card mb-24">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Create New Customer</h5>
-        </div>
-        <div class="card-body">
-            <form method="POST" action="{{ route('admin.ecommerce.customers.store') }}" class="row g-3">
-                @csrf
-                <div class="col-md-3">
-                    <label class="form-label">Name</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="solar:user-broken"></iconify-icon>
-                        </span>
-                        <input type="text" name="name" class="form-control" placeholder="Full Name" required>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Email</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="mdi:email-outline"></iconify-icon>
-                        </span>
-                        <input type="email" name="email" class="form-control" placeholder="email@example.com" required>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Phone</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="mdi:phone-outline"></iconify-icon>
-                        </span>
-                        <input type="text" name="phone" class="form-control" placeholder="+91">
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Password</label>
-                    <div class="icon-field">
-                        <span class="icon">
-                            <iconify-icon icon="mdi:lock-outline"></iconify-icon>
-                        </span>
-                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <div class="form-check form-switch mb-8">
-                        <input type="hidden" name="is_active" value="0">
-                        <input class="form-check-input" type="checkbox" name="is_active" value="1" checked id="create_is_active">
-                        <label class="form-check-label" for="create_is_active">Active</label>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary-600">Create Customer</button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <div class="card basic-data-table">
         <div class="card-header d-flex justify-content-between align-items-center">

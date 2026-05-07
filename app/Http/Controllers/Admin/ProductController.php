@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attribute;
 use App\Models\Category;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\TaxRate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
@@ -36,6 +38,7 @@ class ProductController extends Controller
         return view('admin.ecommerce.products.create', [
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'taxRates' => TaxRate::where('is_active', true)->orderBy('sort_order')->get(['id', 'name', 'rate']),
+            'attributes' => Attribute::where('is_active', true)->orderBy('position')->orderBy('name')->get(),
         ]);
     }
 
@@ -66,22 +69,44 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
             // Inventory fields
             'is_in_stock' => ['nullable', 'boolean'],
             'tags' => ['nullable', 'array'],
+            'product_attributes' => ['nullable', 'array'],
+            'product_attribute_values' => ['nullable', 'array'],
+            'variations' => ['nullable', 'array'],
+            'variations.*.id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'variations.*.name' => ['nullable', 'string', 'max:255'],
+            'variations.*.sku' => ['required_with:variations', 'string', 'max:255'],
+            'variations.*.attributes' => ['nullable', 'array'],
+            'variations.*.price' => ['required_with:variations', 'numeric', 'min:0'],
+            'variations.*.compare_at_price' => ['nullable', 'numeric', 'min:0'],
+            'variations.*.cost_price' => ['nullable', 'numeric', 'min:0'],
+            'variations.*.stock_qty' => ['nullable', 'integer', 'min:0'],
+            'variations.*.track_stock' => ['nullable', 'boolean'],
+            'variations.*.is_in_stock' => ['nullable', 'boolean'],
+            'variations.*.is_default' => ['nullable', 'boolean'],
+            'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ]);
 
+        $variations = $this->normalizedVariations($validated['variations'] ?? []);
+        $hasVariations = ! empty($variations);
+
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
         $validated['currency'] = 'INR';
-        $validated['is_variant_enabled'] = (bool) ($validated['is_variant_enabled'] ?? false);
+        $validated['product_type'] = $hasVariations ? 'variable' : 'simple';
+        $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
         $validated['variant_types'] = json_decode($validated['variant_types'] ?? '[]', true);
+
+        unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
 
         $product = Product::create($validated);
 
@@ -97,33 +122,19 @@ class ProductController extends Controller
             $product->update(['tags' => $tags]);
         }
 
-        // Create Main Inventory and Default Variant (Hidden)
-        $variantName = $product->name;
-        if ($product->flavor) $variantName .= ' - ' . $product->flavor;
-        if ($product->pack_size) $variantName .= ' ' . $product->pack_size;
-        if ($product->age_group) $variantName .= ' (' . $product->age_group . ')';
+        if ($hasVariations) {
+            $this->syncProductVariations($product, $variations);
+        } else {
+            $variant = $this->ensureSimpleVariant($product);
 
-        $variant = \App\Models\ProductVariant::create([
-            'product_id'       => $product->id,
-            'name'             => $variantName,
-            'sku'              => $product->sku . '-DEF',
-            'attributes'       => [
-                'Flavour'    => $product->flavor ?? '',
-                'Pack Size'  => $product->pack_size ?? '',
-                'Age Group'  => $product->age_group ?? '',
-            ],
-            'price'            => $product->base_price,
-            'compare_at_price' => $product->compare_at_price,
-            'is_active'        => true,
-        ]);
-
-        Inventory::create([
-            'product_id' => $product->id,
-            'product_variant_id' => $variant->id,
-            'track_stock' => (bool) ($request->track_stock ?? true),
-            'stock_qty' => $request->stock_qty ?? 0,
-            'is_in_stock' => ($request->stock_qty ?? 0) > 0,
-        ]);
+            Inventory::create([
+                'product_id' => $product->id,
+                'product_variant_id' => $variant->id,
+                'track_stock' => (bool) ($request->track_stock ?? true),
+                'stock_qty' => $request->stock_qty ?? 0,
+                'is_in_stock' => ($request->stock_qty ?? 0) > 0,
+            ]);
+        }
 
         Inventory::create([
             'product_id' => $product->id,
@@ -156,6 +167,7 @@ class ProductController extends Controller
             'product' => $product,
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'taxRates' => TaxRate::where('is_active', true)->orderBy('sort_order')->get(['id', 'name', 'rate']),
+            'attributes' => Attribute::where('is_active', true)->orderBy('position')->orderBy('name')->get(),
         ]);
     }
 
@@ -186,22 +198,44 @@ class ProductController extends Controller
             'flavor' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['required', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
             // Inventory fields
             'is_in_stock' => ['nullable', 'boolean'],
             'tags' => ['nullable', 'array'],
+            'product_attributes' => ['nullable', 'array'],
+            'product_attribute_values' => ['nullable', 'array'],
+            'variations' => ['nullable', 'array'],
+            'variations.*.id' => ['nullable', 'integer', 'exists:product_variants,id'],
+            'variations.*.name' => ['nullable', 'string', 'max:255'],
+            'variations.*.sku' => ['required_with:variations', 'string', 'max:255'],
+            'variations.*.attributes' => ['nullable', 'array'],
+            'variations.*.price' => ['required_with:variations', 'numeric', 'min:0'],
+            'variations.*.compare_at_price' => ['nullable', 'numeric', 'min:0'],
+            'variations.*.cost_price' => ['nullable', 'numeric', 'min:0'],
+            'variations.*.stock_qty' => ['nullable', 'integer', 'min:0'],
+            'variations.*.track_stock' => ['nullable', 'boolean'],
+            'variations.*.is_in_stock' => ['nullable', 'boolean'],
+            'variations.*.is_default' => ['nullable', 'boolean'],
+            'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ]);
 
+        $variations = $this->normalizedVariations($validated['variations'] ?? []);
+        $hasVariations = ! empty($variations);
+
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
         $validated['currency'] = 'INR';
-        $validated['is_variant_enabled'] = (bool) ($validated['is_variant_enabled'] ?? false);
+        $validated['product_type'] = $hasVariations ? 'variable' : 'simple';
+        $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
         $validated['variant_types'] = json_decode($validated['variant_types'] ?? '[]', true);
+
+        unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
 
         $product->update($validated);
 
@@ -217,50 +251,25 @@ class ProductController extends Controller
             $product->update(['tags' => $tags]);
         }
 
-        // Update Default Variant (Hidden) and Inventory
-        $variantName = $product->name;
-        if ($product->flavor) $variantName .= ' - ' . $product->flavor;
-        if ($product->pack_size) $variantName .= ' ' . $product->pack_size;
-        if ($product->age_group) $variantName .= ' (' . $product->age_group . ')';
-
-        $variant = $product->variants()->first();
-        if (!$variant) {
-            $variant = \App\Models\ProductVariant::create([
-                'product_id' => $product->id,
-                'name' => $variantName,
-                'sku' => $product->sku . '-DEF',
-                'attributes' => [
-                    'Flavour' => $product->flavor ?? '',
-                    'Pack Size' => $product->pack_size ?? '',
-                    'Age Group' => $product->age_group ?? '',
-                ],
-                'price' => $product->base_price,
-                'compare_at_price' => $product->compare_at_price,
-                'is_active' => true,
-            ]);
+        if ($hasVariations) {
+            $this->syncProductVariations($product, $variations, true);
         } else {
-            $variant->update([
-                'name' => $variantName,
-                'attributes' => [
-                    'Flavour' => $product->flavor ?? '',
-                    'Pack Size' => $product->pack_size ?? '',
-                    'Age Group' => $product->age_group ?? '',
-                ],
-                'price' => $product->base_price,
-                'compare_at_price' => $product->compare_at_price,
-            ]);
-        }
+            $product->variants()->whereNotNull('attributes')->get()->each(function (ProductVariant $variant) {
+                Inventory::where('product_variant_id', $variant->id)->delete();
+                $variant->delete();
+            });
+            $variant = $this->ensureSimpleVariant($product);
 
-        // Sync inventories
-        Inventory::updateOrCreate(
-            ['product_variant_id' => $variant->id],
-            [
-                'product_id' => $product->id,
-                'track_stock' => (bool) ($request->track_stock ?? true),
-                'stock_qty' => $request->stock_qty,
-                'is_in_stock' => $request->stock_qty > 0,
-            ]
-        );
+            Inventory::updateOrCreate(
+                ['product_variant_id' => $variant->id],
+                [
+                    'product_id' => $product->id,
+                    'track_stock' => (bool) ($request->track_stock ?? true),
+                    'stock_qty' => $request->stock_qty,
+                    'is_in_stock' => $request->stock_qty > 0,
+                ]
+            );
+        }
 
         Inventory::updateOrCreate(
             ['product_id' => $product->id, 'product_variant_id' => null],
@@ -333,6 +342,7 @@ class ProductController extends Controller
             'flavour' => ['nullable', 'string', 'max:255'],
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
+            'dosage' => ['nullable', 'string', 'max:255'],
             'stock_qty' => ['required', 'integer', 'min:0'],
         ]);
 
@@ -383,6 +393,8 @@ class ProductController extends Controller
             ]
         );
 
+        $product->update(['dosage' => $validated['dosage'] ?? $product->dosage]);
+        
         return back()->with('success', 'Product details updated successfully.');
     }
     public function addVariant(Request $request, Product $product): RedirectResponse
@@ -429,5 +441,125 @@ class ProductController extends Controller
         }
 
         return back()->with('success', 'New variant added successfully.');
+    }
+
+    private function normalizedVariations(array $variations): array
+    {
+        return collect($variations)
+            ->map(function (array $variation) {
+                $attributes = collect($variation['attributes'] ?? [])
+                    ->map(fn ($value) => trim((string) $value))
+                    ->filter()
+                    ->all();
+
+                if (empty($attributes) || empty($variation['sku'])) {
+                    return null;
+                }
+
+                $variation['attributes'] = $attributes;
+                return $variation;
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function syncProductVariations(Product $product, array $variations, bool $deleteMissing = false): void
+    {
+        $keptVariantIds = [];
+        $hasDefault = collect($variations)->contains(fn ($variation) => (bool) ($variation['is_default'] ?? false));
+
+        foreach ($variations as $index => $variationData) {
+            $attributes = $variationData['attributes'];
+            $name = $variationData['name'] ?: $this->variationName($attributes);
+            $variantId = $variationData['id'] ?? null;
+
+            $variant = $variantId
+                ? $product->variants()->whereKey($variantId)->first()
+                : null;
+
+            if (! $variant) {
+                $variant = new ProductVariant(['product_id' => $product->id]);
+            }
+
+            $isDefault = $hasDefault
+                ? (bool) ($variationData['is_default'] ?? false)
+                : $index === 0;
+
+            $variant->fill([
+                'product_id' => $product->id,
+                'name' => $name,
+                'sku' => $variationData['sku'],
+                'attributes' => $attributes,
+                'price' => $variationData['price'],
+                'compare_at_price' => $variationData['compare_at_price'] ?? null,
+                'cost_price' => $variationData['cost_price'] ?? null,
+                'currency' => 'INR',
+                'is_default' => $isDefault,
+                'is_active' => (bool) ($variationData['is_active'] ?? false),
+                'position' => $index,
+            ]);
+            $variant->save();
+
+            $keptVariantIds[] = $variant->id;
+
+            Inventory::updateOrCreate(
+                ['product_variant_id' => $variant->id],
+                [
+                    'product_id' => $product->id,
+                    'track_stock' => (bool) ($variationData['track_stock'] ?? false),
+                    'stock_qty' => $variationData['stock_qty'] ?? 0,
+                    'reserved_qty' => 0,
+                    'low_stock_threshold' => 5,
+                    'is_in_stock' => (bool) ($variationData['is_in_stock'] ?? false),
+                ]
+            );
+        }
+
+        if ($deleteMissing) {
+            $variantsToDelete = $product->variants()
+                ->when($keptVariantIds, fn ($query) => $query->whereNotIn('id', $keptVariantIds))
+                ->get();
+
+            foreach ($variantsToDelete as $variant) {
+                Inventory::where('product_variant_id', $variant->id)->delete();
+                $variant->delete();
+            }
+        }
+    }
+
+    private function ensureSimpleVariant(Product $product): ProductVariant
+    {
+        $variant = $product->variants()->where(function ($query) {
+            $query->whereNull('attributes')->orWhereJsonLength('attributes', 0);
+        })->first();
+
+        if (! $variant) {
+            $variant = new ProductVariant(['product_id' => $product->id]);
+        }
+
+        $variant->fill([
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'sku' => $product->sku . '-DEF',
+            'attributes' => null,
+            'price' => $product->base_price,
+            'compare_at_price' => $product->compare_at_price,
+            'cost_price' => $product->cost_price,
+            'currency' => 'INR',
+            'is_default' => true,
+            'is_active' => true,
+            'position' => 0,
+        ]);
+        $variant->save();
+
+        return $variant;
+    }
+
+    private function variationName(array $attributes): string
+    {
+        return collect($attributes)
+            ->map(fn ($value, $name) => "{$name}: {$value}")
+            ->implode(' / ');
     }
 }

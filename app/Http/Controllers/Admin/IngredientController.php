@@ -23,6 +23,7 @@ class IngredientController extends Controller
     {
         return view('admin.ecommerce.ingredients.create', [
             'categories' => IngredientCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'allProducts' => \App\Models\Product::where('is_active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -37,9 +38,12 @@ class IngredientController extends Controller
             'dosage_heading_two' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'is_featured' => ['nullable', 'boolean'],
             'icon' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:5120'],
             'benefits' => ['nullable', 'array'],
             'benefits.*' => ['nullable', 'string', 'max:255'],
+            'products' => ['nullable', 'array'],
+            'products.*' => ['exists:products,id'],
         ]);
 
         if ($request->hasFile('icon')) {
@@ -48,12 +52,14 @@ class IngredientController extends Controller
 
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? true);
+        $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
 
-        unset($validated['icon'], $validated['benefits']);
+        unset($validated['icon'], $validated['benefits'], $validated['products']);
 
         $ingredient = Ingredient::create($validated);
 
         $this->syncBenefits($ingredient, $request->input('benefits', []));
+        $ingredient->products()->sync($request->input('products', []));
 
         return redirect()->route('admin.ecommerce.ingredients.index')->with('success', 'Ingredient created successfully.');
     }
@@ -68,8 +74,9 @@ class IngredientController extends Controller
     public function edit(Ingredient $ingredient): View
     {
         return view('admin.ecommerce.ingredients.edit', [
-            'ingredient' => $ingredient->load('benefits'),
+            'ingredient' => $ingredient->load(['benefits', 'products']),
             'categories' => IngredientCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'allProducts' => \App\Models\Product::where('is_active', true)->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -84,9 +91,12 @@ class IngredientController extends Controller
             'dosage_heading_two' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'is_featured' => ['nullable', 'boolean'],
             'icon' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,svg', 'max:5120'],
             'benefits' => ['nullable', 'array'],
             'benefits.*' => ['nullable', 'string', 'max:255'],
+            'products' => ['nullable', 'array'],
+            'products.*' => ['exists:products,id'],
         ]);
 
         if ($request->hasFile('icon')) {
@@ -98,12 +108,14 @@ class IngredientController extends Controller
 
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
+        $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
 
-        unset($validated['icon'], $validated['benefits']);
+        unset($validated['icon'], $validated['benefits'], $validated['products']);
 
         $ingredient->update($validated);
 
         $this->syncBenefits($ingredient, $request->input('benefits', []));
+        $ingredient->products()->sync($request->input('products', []));
 
         return redirect()->route('admin.ecommerce.ingredients.index')->with('success', 'Ingredient updated successfully.');
     }

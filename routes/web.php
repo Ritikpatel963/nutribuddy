@@ -12,6 +12,7 @@ use App\Http\Controllers\Frontend\UserReturnController;
 use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\Admin\AuthenticationController;
+use App\Http\Controllers\Admin\AttributeController as AdminAttributeController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
@@ -58,6 +59,7 @@ Route::middleware('auth:admin')->controller(DashboardController::class)->group(f
 
 Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:admin')->group(function () {
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('attributes', AdminAttributeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('products', AdminProductController::class);
     Route::resource('ingredients', AdminIngredientController::class);
@@ -70,7 +72,8 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('contact-leads', AdminContactLeadController::class)->only(['index', 'update', 'destroy']);
     Route::resource('newsletter', AdminNewsletterSubscriberController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('support-tickets', AdminSupportTicketController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('support-tickets', AdminSupportTicketController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
+    Route::post('support-tickets/{support_ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
     Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
     Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'update', 'destroy']);
     Route::resource('order-returns', \App\Http\Controllers\Admin\OrderReturnController::class)->only(['index', 'show', 'update', 'destroy']);
@@ -93,6 +96,7 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+    Route::get('orders/{order}/invoice-download', [UserOrderController::class, 'invoiceDownload'])->name('orders.invoice-download');
 
     Route::get('side-section', [\App\Http\Controllers\Admin\SideSectionController::class, 'index'])->name('side-section.index');
     Route::post('side-section', [\App\Http\Controllers\Admin\SideSectionController::class, 'update'])->name('side-section.update');
@@ -137,7 +141,11 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('/user/addresses')->name('user.addresses.')->group(function () {
         Route::get('/', [UserAddressController::class, 'index'])->name('index');
+        Route::get('/create', [UserAddressController::class, 'create'])->name('create');
         Route::post('/', [UserAddressController::class, 'store'])->name('store');
+        Route::get('/{address}/edit', [UserAddressController::class, 'edit'])->name('edit');
+        Route::patch('/{address}', [UserAddressController::class, 'update'])->name('update');
+        Route::patch('/{address}/default', [UserAddressController::class, 'setDefault'])->name('set-default');
         Route::delete('/{address}', [UserAddressController::class, 'destroy'])->name('destroy');
     });
 
@@ -170,10 +178,7 @@ Route::middleware('auth')->group(function () {
 
     Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
     Route::view('/order', 'pages.user-panel.order')->name('order');
-    Route::get('/personal-info', function () {
-        $addresses = \App\Models\CustomerAddress::where('user_id', auth()->id())->latest()->get();
-        return view('pages.user-panel.personal-info', ['savedAddresses' => $addresses]);
-    })->name('personal-info');
+    Route::get('/personal-info', [UserAddressController::class, 'index'])->name('personal-info');
 
     Route::post('/personal-info', function (\Illuminate\Http\Request $request) {
         $request->validate([
@@ -218,6 +223,10 @@ Route::middleware('auth')->group(function () {
     Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
     Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
     Route::get('/wallet', [\App\Http\Controllers\UserWalletController::class, 'index'])->name('wallet');
+    Route::get('/support-tickets', [\App\Http\Controllers\UserSupportTicketController::class, 'index'])->name('user.support-tickets');
+    Route::post('/support-tickets', [\App\Http\Controllers\UserSupportTicketController::class, 'store'])->name('user.support-tickets.store');
+    Route::get('/support-tickets/{ticket}', [\App\Http\Controllers\UserSupportTicketController::class, 'show'])->name('user.support-tickets.show');
+    Route::post('/support-tickets/{ticket}/reply', [\App\Http\Controllers\UserSupportTicketController::class, 'reply'])->name('user.support-tickets.reply');
     Route::get('/user/reviews', [\App\Http\Controllers\ProductReviewController::class, 'userIndex'])->name('user.reviews.index');
     Route::post('/product/{product}/reviews', [\App\Http\Controllers\ProductReviewController::class, 'store'])->name('reviews.store');
 });

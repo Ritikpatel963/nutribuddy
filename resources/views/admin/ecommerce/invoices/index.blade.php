@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>#{{ $order->order_number }}</td>
+                                <td><a href="{{ route('admin.ecommerce.orders.show', $order) }}" class="text-primary-600 fw-bold">#{{ $order->order_number }}</a></td>
                                 <td>₹{{ number_format($order->grand_total, 2) }}</td>
                                 <td>
                                     <span class="badge {{ $order->payment_status === 'paid' ? 'bg-success-100 text-success-600' : 'bg-warning-100 text-warning-600' }}">
@@ -54,7 +54,7 @@
                                         <a href="{{ route('admin.ecommerce.invoices.show', $order) }}" class="w-32-px h-32-px bg-primary-light text-primary-600 rounded-circle d-flex align-items-center justify-content-center" title="View Details">
                                             <iconify-icon icon="lucide:eye"></iconify-icon>
                                         </a>
-                                        <a href="{{ route('user.orders.invoice-download', $order) }}?print=1" target="_blank" class="w-32-px h-32-px bg-success-light text-success-600 rounded-circle d-flex align-items-center justify-content-center" title="Print Invoice">
+                                        <a href="{{ route('admin.ecommerce.orders.invoice-download', $order) }}?print=1" target="_blank" class="w-32-px h-32-px bg-success-light text-success-600 rounded-circle d-flex align-items-center justify-content-center" title="Print Invoice">
                                             <iconify-icon icon="lucide:printer"></iconify-icon>
                                         </a>
                                     </div>
