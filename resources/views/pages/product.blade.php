@@ -3,7 +3,13 @@
 
 @section('content')
     @php
-        $defVariant = $product->variants->first();
+        $variantProducts = $product->variants
+            ->filter(fn($variant) => $variant->is_active && !empty($variant->attributes))
+            ->values();
+        $defVariant =
+            $variantProducts->firstWhere('is_default', true) ?:
+            $variantProducts->first() ?:
+            $product->variants->first();
 
         $initialPrice = $defVariant ? $defVariant->display_price : $product->display_price;
         $initialComparePrice = $defVariant
@@ -13,6 +19,43 @@
         $defAge = $product->age_group ?: $defVariant->attributes['Age Group'] ?? '2–17 Yrs';
         $defPack = $product->pack_size ?: $defVariant->attributes['Pack Size'] ?? '30 Gummies';
         $defFlavour = $product->flavor ?: $defVariant->attributes['Flavour'] ?? '';
+        $variantAttributeGroups = [];
+        foreach ($variantProducts as $variant) {
+            foreach ($variant->attributes ?? [] as $name => $value) {
+                $variantAttributeGroups[$name] ??= [];
+                if ($value !== '' && !in_array($value, $variantAttributeGroups[$name], true)) {
+                    $variantAttributeGroups[$name][] = $value;
+                }
+            }
+        }
+        $initialSelectedAttributes = $defVariant?->attributes ?? [];
+        $frontendVariants = $variantProducts
+            ->map(function ($variant) use ($product) {
+                $price = (float) $variant->display_price;
+                $comparePrice = (float) ($variant->display_compare_price ?? 0);
+                $stockQty = (int) ($variant->inventory?->stock_qty ?? 0);
+                return [
+                    'id' => $variant->id,
+                    'name' => $variant->name,
+                    'sku' => $variant->sku,
+                    'attributes' => $variant->attributes ?? [],
+                    'price' => $price,
+                    'compare_price' => $comparePrice,
+                    'save_amount' => max(0, $comparePrice - $price),
+                    'discount_percent' =>
+                        $comparePrice > $price ? round((($comparePrice - $price) / $comparePrice) * 100) : 0,
+                    'coins' => !empty($product->coins_reward)
+                        ? (int) $product->coins_reward
+                        : (int) round($price * 0.05),
+                    'stock_qty' => $stockQty,
+                    'track_stock' => (bool) ($variant->inventory?->track_stock ?? false),
+                    'is_in_stock' => (bool) ($variant->inventory?->is_in_stock ?? true),
+                    'available' =>
+                        !$variant->inventory?->track_stock ||
+                        (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
+                ];
+            })
+            ->values();
     @endphp
 
     <style>
@@ -40,6 +83,127 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        .pdp-variant-panel {
+            margin: 22px 0 24px;
+            padding: 18px;
+            border: 1px solid rgba(20, 126, 89, 0.12);
+            border-radius: 22px;
+            box-shadow: 0 12px 28px rgba(40, 89, 64, 0.06);
+        }
+
+        .pdp-variant-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .pdp-variant-title {
+            margin: 0;
+            color: var(--dk);
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+        }
+
+        .pdp-variant-sub {
+            margin-top: 3px;
+            color: #6c6680;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .pdp-variant-sku {
+            flex: 0 0 auto;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(255, 214, 0, 0.16);
+            color: #865b00;
+            font-size: 0.74rem;
+            font-weight: 900;
+        }
+
+        .pdp-variant-groups {
+            display: grid;
+            gap: 16px;
+        }
+
+        .pdp-option-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pdp-option-btn {
+            min-height: 44px;
+            border: 2px solid rgba(53, 158, 111, 0.16);
+            border-radius: 14px;
+            background: #fff;
+            color: #353047;
+            padding: 0 15px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+
+        .pdp-option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: rgba(53, 158, 111, 0.42);
+            box-shadow: 0 10px 20px rgba(53, 158, 111, 0.1);
+        }
+
+        .pdp-option-btn.active {
+            color: var(--pk);
+            background: var(--pkl);
+            border: 2px solid var(--pk);
+        }
+
+        .pdp-option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+            text-decoration: line-through;
+        }
+
+        .pdp-variant-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .pdp-stock-pill,
+        .pdp-selected-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 900;
+        }
+
+        .pdp-stock-pill {
+            background: #e8f9f1;
+            color: #00885d;
+        }
+
+        .pdp-stock-pill.out {
+            background: #fff0ee;
+            color: #d02f1f;
+        }
+
+        .pdp-selected-pill {
+            background: #f6f2ff;
+            color: #6750a4;
+        }
+
+        .btn-cart:disabled,
+        .btn-buy:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .review-img-thumb {
@@ -286,42 +450,77 @@
                 </div>
             </div>
 
-
-            <div class="variant-container">
-                @if ($defFlavour)
-                    <div class="variant-block">
-                        <div class="variant-label">Flavour:</div>
-                        <div class="variant-row">
-                            <div class="vopt active">{{ $defFlavour }}</div>
+            @if ($variantProducts->isNotEmpty() && !empty($variantAttributeGroups))
+                <div class="pdp-variant-panel" id="pdpVariantPanel">
+                    <div class="pdp-variant-head">
+                        <div>
+                            <h3 class="pdp-variant-title">Choose Your Option</h3>
+                            <div class="pdp-variant-sub">Pick the exact flavour, pack, or size before adding to cart.</div>
                         </div>
+                        <div class="pdp-variant-sku" id="pdpVariantSku">SKU: {{ $defVariant?->sku }}</div>
                     </div>
-                @endif
 
-                @if ($defPack)
-                    <div class="variant-block">
-                        <div class="variant-label">Pack Size:</div>
-                        <div class="variant-row">
-                            <div class="vopt active">{{ $defPack }}</div>
+                    <div class="pdp-variant-groups">
+                        @foreach ($variantAttributeGroups as $attributeName => $values)
+                            <div class="variant-block">
+                                <div class="variant-label">{{ $attributeName }}</div>
+                                <div class="pdp-option-row" data-attribute-group="{{ $attributeName }}">
+                                    @foreach ($values as $value)
+                                        <button type="button"
+                                            class="pdp-option-btn {{ ($initialSelectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
+                                            data-attribute="{{ $attributeName }}" data-value="{{ $value }}">
+                                            {{ $value }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="pdp-variant-meta">
+                        <span class="pdp-stock-pill" id="pdpVariantStock">Checking stock</span>
+                        <span class="pdp-selected-pill" id="pdpVariantSelected">{{ $defVariant?->name }}</span>
+                    </div>
+                </div>
+            @else
+                <div class="variant-container">
+                    @if ($defFlavour)
+                        <div class="variant-block">
+                            <div class="variant-label">Flavour:</div>
+                            <div class="variant-row">
+                                <div class="vopt active">{{ $defFlavour }}</div>
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
-                @if ($defAge)
-                    <div class="variant-block">
-                        <div class="variant-label">Age Group:</div>
-                        <div class="variant-row">
-                            <div class="vopt active">{{ $defAge }}</div>
+                    @if ($defPack)
+                        <div class="variant-block">
+                            <div class="variant-label">Pack Size:</div>
+                            <div class="variant-row">
+                                <div class="vopt active">{{ $defPack }}</div>
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
 
-                @if($product->dosage)
-                    <div class="variant-block">
-                        <div class="variant-label">Dosage:</div>
-                        <div class="variant-row"><div class="vopt active">{{ $product->dosage }}</div></div>
-                    </div>
-                @endif
-            </div>
+                    @if ($defAge)
+                        <div class="variant-block">
+                            <div class="variant-label">Age Group:</div>
+                            <div class="variant-row">
+                                <div class="vopt active">{{ $defAge }}</div>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($product->dosage)
+                        <div class="variant-block">
+                            <div class="variant-label">Dosage:</div>
+                            <div class="variant-row">
+                                <div class="vopt active">{{ $product->dosage }}</div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
 
             <div class="variant-block">
                 <div class="variant-label">{{ $product->name }} Features </div>
@@ -370,7 +569,8 @@
                             <div class="flavor-name">No Added Sugar</div>
                         </div>
                         <div class="flavor-opt active">
-                            <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}" alt="">
+                            <div class="flavor-emoji"> <img src="{{ asset('img/no-preservatives.png') }}"
+                                    alt="">
                             </div>
                             <div class="flavor-name">No Preservatives</div>
                         </div>
@@ -393,16 +593,16 @@
 
             <!-- Quick Specs: Pack Size & Age -->
             <!-- <div class="pdp-specs-row" style="display:flex;gap:20px;margin: 20px 0;padding:15px;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
-                    <div class="spec-item">
-                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
-                        <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
-                    </div>
-                    <div style="width:1px;background:#ddd"></div>
-                    <div class="spec-item">
-                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
-                        <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
-                    </div>
-                </div> -->
+                        <div class="spec-item">
+                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
+                            <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
+                        </div>
+                        <div style="width:1px;background:#ddd"></div>
+                        <div class="spec-item">
+                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
+                            <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
+                        </div>
+                    </div> -->
 
 
             <!-- Pincode Check -->
@@ -418,8 +618,10 @@
 
             <!-- CTAs -->
             <div class="cta-row">
-                <button class="btn-cart" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
-                <button class="btn-buy" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
+                <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add
+                    to Cart</button>
+                <button class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy
+                    Now</button>
             </div>
 
             <!-- Guarantees -->
@@ -478,8 +680,8 @@
 
 
     <!-- ════════════════════════════════════════════════
-                 PRODUCT DESCRIPTION SECTION
-            ════════════════════════════════════════════════ -->
+                     PRODUCT DESCRIPTION SECTION
+                ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @php
         $productDescriptionParagraphs = preg_split(
@@ -582,7 +784,8 @@
                 ({{ $totalIngredientCount }})</button>
             @foreach ($categoryFilters as $filter)
                 <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }}
-                    ({{ $filter['count'] }})</button>
+                    ({{ $filter['count'] }})
+                </button>
             @endforeach
         </div>
 
@@ -661,19 +864,19 @@
                 <div class="transform-visual">
                     <img src="/img/child-iamges.png" alt="">
                     <!-- <div
-                            style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
-                            </div>
-                        <div class="before-after">
-                            <div class="ba-card">
-                                <div class="ba-label">Before</div>
-                                <div class="ba-val">😔 Tired</div>
-                            </div>
-                            <div class="ba-arrow">→</div>
-                            <div class="ba-card after">
-                                <div class="ba-label">After 90 Days</div>
-                                <div class="ba-val">🦸 Superhero!</div>
-                            </div>
-                        </div> -->
+                                style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
+                                </div>
+                            <div class="before-after">
+                                <div class="ba-card">
+                                    <div class="ba-label">Before</div>
+                                    <div class="ba-val">😔 Tired</div>
+                                </div>
+                                <div class="ba-arrow">→</div>
+                                <div class="ba-card after">
+                                    <div class="ba-label">After 90 Days</div>
+                                    <div class="ba-val">🦸 Superhero!</div>
+                                </div>
+                            </div> -->
                 </div>
                 <div class="transform-list">
                     <div class="tr-item">
@@ -793,8 +996,8 @@
 
     <!--  -->
     <!-- ══════════════════════════════
-                 FEATURES — NO GELATIN etc.
-            ══════════════════════════════ -->
+                     FEATURES — NO GELATIN etc.
+                ══════════════════════════════ -->
     <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
@@ -924,38 +1127,38 @@
 
 
     <!-- ══════════════════════════════════════════
-                   HOW IT WORKS
-              ══════════════════════════════════════════ -->
+                       HOW IT WORKS
+                  ══════════════════════════════════════════ -->
     <!-- <section class="how-section reveal">
-                <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
-                <h2 class="sec-title">How It <span class="acc">Works</span></h2>
-                <div class="steps">
-                  <div class="step-new">
-                    <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
-                    <div class="snum">Step 01</div>
-                    <div class="stitle">Take the Quiz</div>
-                    <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
-                  </div>
-                  <div class="step-new">
-                       <div class="sball s2"><img src="img/plan.png" alt=""></div>
-                    <div class="snum">Step 02</div>
-                    <div class="stitle">Get Your Plan</div>
-                    <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
-                  </div>
-                  <div class="step-new">
-                     <div class="sball s3"><img src="img/order.png" alt=""></div>
-                    <div class="snum">Step 03</div>
-                    <div class="stitle">Order & Save</div>
-                    <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
-                  </div>
-                  <div class="step-new">
-                      <div class="sball s4"><img src="img/rising.png" alt=""></div>
-                    <div class="snum">Step 04</div>
-                    <div class="stitle">Track Progress</div>
-                    <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
-                  </div>
-                </div>
-              </section> -->
+                    <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
+                    <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+                    <div class="steps">
+                      <div class="step-new">
+                        <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
+                        <div class="snum">Step 01</div>
+                        <div class="stitle">Take the Quiz</div>
+                        <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
+                      </div>
+                      <div class="step-new">
+                           <div class="sball s2"><img src="img/plan.png" alt=""></div>
+                        <div class="snum">Step 02</div>
+                        <div class="stitle">Get Your Plan</div>
+                        <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
+                      </div>
+                      <div class="step-new">
+                         <div class="sball s3"><img src="img/order.png" alt=""></div>
+                        <div class="snum">Step 03</div>
+                        <div class="stitle">Order & Save</div>
+                        <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
+                      </div>
+                      <div class="step-new">
+                          <div class="sball s4"><img src="img/rising.png" alt=""></div>
+                        <div class="snum">Step 04</div>
+                        <div class="stitle">Track Progress</div>
+                        <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                      </div>
+                    </div>
+                  </section> -->
 
 
 
@@ -979,9 +1182,9 @@
 
             <!-- PROBLEMS -->
             <!-- <div class="block-label reveal">
-                    <div class="blabel bl-prob">😟 Today's Challenges</div>
-                    <div class="bline"></div>
-                </div> -->
+                        <div class="blabel bl-prob">😟 Today's Challenges</div>
+                        <div class="bline"></div>
+                    </div> -->
 
             <div class="problem-grid">
                 <div class="prob-card pc1 reveal d1">
@@ -1034,9 +1237,9 @@
 
             <!-- SOLUTION -->
             <!-- <div class="block-label reveal">
-                    <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
-                    <div class="bline g"></div>
-                </div> -->
+                        <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
+                        <div class="bline g"></div>
+                    </div> -->
 
 
     </section>
@@ -1047,17 +1250,17 @@
                 <img src="/img/posr.png" alt="">
 
                 <!-- <div class="sol-badge">🏆 India's #1 Kids Wellness Gummy</div>
-                      <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
-                          Compromise.</span></h3>
-                      <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
-                        parents love the results.</p>
-                      <div class="sol-pills">
-                        <div class="spill"> 100% Natural</div>
-                        <div class="spill">🧪 Lab Tested</div>
-                        <div class="spill">🩺 Pediatrician Approved</div>
-                        <div class="spill">😋 Kids Love It</div>
-                      </div>
-                    </div> -->
+                          <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
+                              Compromise.</span></h3>
+                          <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
+                            parents love the results.</p>
+                          <div class="sol-pills">
+                            <div class="spill"> 100% Natural</div>
+                            <div class="spill">🧪 Lab Tested</div>
+                            <div class="spill">🩺 Pediatrician Approved</div>
+                            <div class="spill">😋 Kids Love It</div>
+                          </div>
+                        </div> -->
 
             </div>
 
@@ -1068,18 +1271,18 @@
 
             <!-- CTA -->
             <!-- <div class="ps-cta reveal">
-                        <div class="cta-inner">
-                            <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
-                            <h3 class="cta-title">Give Your Child the Best Start</h3>
-                            <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
-                                certified
-                                Ayurvedic nutritionists. No sign-up, no cost.</p>
-                            <div class="cta-btns">
-                                <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
-                                <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
+                            <div class="cta-inner">
+                                <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
+                                <h3 class="cta-title">Give Your Child the Best Start</h3>
+                                <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
+                                    certified
+                                    Ayurvedic nutritionists. No sign-up, no cost.</p>
+                                <div class="cta-btns">
+                                    <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
+                                    <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
+                                </div>
                             </div>
-                        </div>
-                    </div> -->
+                        </div> -->
 
         </div>
     </section>
@@ -1118,8 +1321,8 @@
     </section>
 
     <!-- ════════════════════════════════════════════════
-                 NUTRIBUDDY INGREDIENT SECTION
-            ════════════════════════════════════════════════ -->
+                     NUTRIBUDDY INGREDIENT SECTION
+                ════════════════════════════════════════════════ -->
     @if ($product->ingredients->isNotEmpty())
         <section id="nb-ingredients">
 
@@ -1229,7 +1432,8 @@
                     ({{ $totalIngredientCount }})</button>
                 @foreach ($categoryFilters as $filter)
                     <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }}
-                        ({{ $filter['count'] }})</button>
+                        ({{ $filter['count'] }})
+                    </button>
                 @endforeach
             </div>
 
@@ -1297,13 +1501,13 @@
 
 
     <!-- ══════════════════════════════════════════
-                     PARENT REVIEWS
-                ══════════════════════════════════════════ -->
+                         PARENT REVIEWS
+                    ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-                     FAQ
-                ══════════════════════════════════════════ -->
+                         FAQ
+                    ══════════════════════════════════════════ -->
     @include('partials.faq-section')
 
     <div class="newsletter reveal">
@@ -1323,6 +1527,8 @@
 @push('scripts')
     <script>
         let selectedVariantId = '{{ $defVariant ? $defVariant->id : '' }}';
+        const pdpVariants = @json($frontendVariants);
+        const pdpSelectedAttributes = @json($initialSelectedAttributes);
 
         function changePdpImage(el, src) {
             document.getElementById('mainPdpImage').src = src;
@@ -1330,8 +1536,111 @@
             el.classList.add('active');
         }
 
+        function formatMoney(value) {
+            return '\u20B9' + Number(value || 0).toLocaleString('en-IN', {
+                maximumFractionDigits: 0
+            });
+        }
+
+        function sameAttributes(variant, selected) {
+            const keys = Object.keys(selected);
+            if (!keys.length) return false;
+            return keys.every(key => String(variant.attributes?.[key] ?? '') === String(selected[key] ?? ''));
+        }
+
+        function findMatchingVariant() {
+            return pdpVariants.find(variant => sameAttributes(variant, pdpSelectedAttributes)) || null;
+        }
+
+        function updateVariantAvailability() {
+            document.querySelectorAll('.pdp-option-btn').forEach(button => {
+                const attribute = button.dataset.attribute;
+                const value = button.dataset.value;
+                const trial = {
+                    ...pdpSelectedAttributes,
+                    [attribute]: value
+                };
+                const possible = pdpVariants.some(variant => {
+                    return Object.keys(trial).every(key => String(variant.attributes?.[key] ?? '') ===
+                        String(trial[key] ?? ''));
+                });
+                button.disabled = !possible;
+            });
+        }
+
+        function applyVariantToPage(variant) {
+            const addBtn = document.getElementById('pdpAddToCartBtn');
+            const buyBtn = document.getElementById('pdpBuyNowBtn');
+            const stockEl = document.getElementById('pdpVariantStock');
+            const selectedEl = document.getElementById('pdpVariantSelected');
+            const skuEl = document.getElementById('pdpVariantSku');
+            const priceNow = document.getElementById('pdpPriceNow');
+            const priceOld = document.getElementById('pdpPriceOld');
+            const priceSave = document.getElementById('pdpPriceSave');
+            const discountBadge = document.getElementById('pdpDiscountBadge');
+            const cashback = document.getElementById('pdpCashback');
+
+            if (!variant) {
+                selectedVariantId = '';
+                if (stockEl) {
+                    stockEl.textContent = 'Select available options';
+                    stockEl.classList.add('out');
+                }
+                if (addBtn) addBtn.disabled = true;
+                if (buyBtn) buyBtn.disabled = true;
+                return;
+            }
+
+            selectedVariantId = variant.id;
+            if (priceNow) priceNow.textContent = formatMoney(variant.price);
+            if (priceOld) {
+                priceOld.textContent = variant.compare_price > variant.price ? formatMoney(variant.compare_price) : '';
+                priceOld.classList.toggle('d-none', !(variant.compare_price > variant.price));
+            }
+            if (priceSave) {
+                priceSave.textContent = variant.compare_price > variant.price ?
+                    `Save ${formatMoney(variant.save_amount)} (${variant.discount_percent}% Off)` :
+                    '';
+                priceSave.classList.toggle('d-none', !(variant.compare_price > variant.price));
+            }
+            if (discountBadge) {
+                discountBadge.textContent = variant.discount_percent > 0 ? `${variant.discount_percent}% OFF` : '';
+                discountBadge.classList.toggle('d-none', !(variant.discount_percent > 0));
+            }
+            if (cashback) cashback.textContent = `Get ${variant.coins} NB Coins on this purchase!`;
+            if (skuEl) skuEl.textContent = `SKU: ${variant.sku}`;
+            if (selectedEl) selectedEl.textContent = variant.name;
+            if (stockEl) {
+                stockEl.classList.toggle('out', !variant.available);
+                if (variant.available) {
+                    stockEl.textContent = variant.track_stock ? `${variant.stock_qty} in stock` : 'In stock';
+                } else {
+                    stockEl.textContent = 'Out of stock';
+                }
+            }
+            if (addBtn) addBtn.disabled = !variant.available;
+            if (buyBtn) buyBtn.disabled = !variant.available;
+        }
+
+        function selectPdpOption(button) {
+            const attribute = button.dataset.attribute;
+            const value = button.dataset.value;
+            pdpSelectedAttributes[attribute] = value;
+            document.querySelectorAll('.pdp-option-btn').forEach(item => {
+                if (item.dataset.attribute === attribute) {
+                    item.classList.toggle('active', item === button);
+                }
+            });
+            updateVariantAvailability();
+            applyVariantToPage(findMatchingVariant());
+        }
+
         function handleAddToCart(productId, btn) {
             const variantId = selectedVariantId || null;
+            if (pdpVariants.length && !variantId) {
+                if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
+                return;
+            }
             if (typeof window.addToCart === 'function') {
                 window.addToCart(productId, 1, variantId, btn);
             } else {
@@ -1342,6 +1651,10 @@
 
         function handleBuyNow(productId, btn) {
             const variantId = selectedVariantId || null;
+            if (pdpVariants.length && !variantId) {
+                if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
+                return;
+            }
             if (typeof window.buyNow === 'function') {
                 window.buyNow(productId, 1, variantId, btn);
             } else {
@@ -1390,6 +1703,12 @@
 
         // Default set 5 stars
         window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.pdp-option-btn').forEach(button => {
+                button.addEventListener('click', () => selectPdpOption(button));
+            });
+            updateVariantAvailability();
+            applyVariantToPage(findMatchingVariant() || pdpVariants[0] || null);
+
             const defaultVal = 5;
             document.querySelectorAll('.star-opt').forEach(s => {
                 if (s.getAttribute('data-val') <= defaultVal) {
