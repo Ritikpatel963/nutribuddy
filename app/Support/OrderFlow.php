@@ -59,8 +59,8 @@ class OrderFlow
 
     public static function canMoveTo(string $from, string $to): bool
     {
-        // Admins should be able to move to any status if needed.
-        // We still keep the STATUS_TRANSITIONS for potential frontend or automated logic.
-        return true;
+        $allowedTransitions = self::STATUS_TRANSITIONS[$from] ?? [];
+
+        return in_array($to, $allowedTransitions, true);
     }
 }

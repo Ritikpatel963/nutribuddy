@@ -10,6 +10,7 @@ use App\Http\Controllers\Frontend\UserAddressController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\Frontend\UserReturnController;
 use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
+use App\Http\Controllers\StorageController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\AttributeController as AdminAttributeController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -48,6 +49,9 @@ Route::name('frontend.')->group(function () {
 
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
 Route::post('/contact', [FrontendContactController::class, 'store'])->name('contact.store');
+Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
+    ->where('path', '.*')
+    ->name('storage.public');
 
 Route::middleware('auth:admin')->controller(DashboardController::class)->group(function () {
     Route::get('/admin', 'index')->name('admin.index');
@@ -109,7 +113,6 @@ Route::view('/about', 'pages.about-us')->name('about');
 Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
-Route::view('/contact', 'pages.contact')->name('contact');
 Route::view('/blog', 'pages.blog')->name('blog');
 Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 Route::view('/blog/{id}', 'pages.blog-show')->name('blog.show');

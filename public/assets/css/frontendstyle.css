@@ -75,7 +75,7 @@ body {
 
 /* Hero visual side */
 /* add banner 1 slider css  */
-.slide {
+/*.slide {
     position: absolute;
     inset: 0;
     display: grid;
@@ -93,7 +93,7 @@ body {
     pointer-events: all;
 }
 
-/* .slide.slide-1 {
+ .slide.slide-1 {
     grid-template-columns: 1fr;
     padding: 0;
     background: #fdf1f3;

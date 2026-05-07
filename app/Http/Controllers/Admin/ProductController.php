@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\TaxRate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -329,10 +330,10 @@ class ProductController extends Controller
 
     public function deleteImage(\App\Models\ProductImage $image): RedirectResponse
     {
-        if (file_exists(storage_path('app/public/' . $image->image_path))) {
-            unlink(storage_path('app/public/' . $image->image_path));
-        }
+        Storage::disk('public')->delete($image->image_path);
+
         $image->delete();
+
         return back()->with('success', 'Image removed successfully.');
     }
     public function quickUpdate(Request $request, Product $product): RedirectResponse

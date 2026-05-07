@@ -7,6 +7,10 @@
 @endphp
 
 <nav id="mainNav">
+         <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
+            <img src="{{ asset('img/menu.png') }}" alt="Menu"
+                onerror="this.style.display='none';this.parentElement.innerHTML='<span></span><span></span><span></span>'">
+        </button>
     <a href="{{ route('home') }}" class="logo-new">
         <img src="{{ $sideSectionLogoUrl }}" alt="NutriBuddy">
     </a>
@@ -28,7 +32,7 @@
 
         <div class="profile-dropdown">
             <button id="cartIconBtn" class="nav-icon-link profile-btn" title="Account">
-                <img src="{{ asset('assets/images/avatar/avatar-1.png') }}" alt="Profile" style="width:24px;height:24px;border-radius:50%;"
+                <img src="{{ asset('img/user.png') }}" alt="Profile" style="width:24px;height:24px;border-radius:50%;"
                     onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>👤</span>')">
             </button>
             <div class="dropdown-content">
@@ -61,10 +65,7 @@
 
         <a href="{{ route('contact') }}" class="nav-cta">Contact Us</a>
 
-        <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
-            <img src="{{ asset('img/menu.png') }}" alt="Menu"
-                onerror="this.style.display='none';this.parentElement.innerHTML='<span></span><span></span><span></span>'">
-        </button>
+   
     </div>
 </nav>
 

@@ -30,21 +30,29 @@ class UserReturnController extends Controller
         return view('pages.user-panel.returns', compact('returns'));
     }
 
-    public function store(Request $request, Order $order)
+    public function store(ReturnStoreRequest $request, Order $order)
     {
         abort_unless((int) $order->user_id === (int) $request->user()->id, 403);
         
         if ($order->status !== 'delivered') {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Return allowed only for delivered orders.',
+                ], 422);
+            }
+
             return back()->with('error', 'Return allowed only for delivered orders.');
         }
 
-        $validated = $request->validate([
-            'reason' => ['required', 'string', 'in:' . implode(',', \App\Support\OrderFlow::RETURN_REASONS)],
-            'comments' => ['nullable', 'string', 'max:1000'],
-            'attachments.*' => ['nullable', 'file', 'mimes:jpeg,png,jpg,mp4,mov', 'max:10240'],
-        ]);
+        $validated = $request->validated();
 
         if ($order->returns()->whereIn('status', ['pending', 'approved', 'completed'])->exists()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Return request is already raised for this order.',
+                ], 422);
+            }
+
             return back()->with('error', 'Return request is already raised for this order.');
         }
 

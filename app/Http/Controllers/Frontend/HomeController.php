@@ -3,16 +3,26 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use Illuminate\Support\Facades\Schema;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $featuredProducts = \App\Models\Product::where('is_active', true)
-            ->with(['primaryImage', 'category', 'images'])
-            ->latest()
-            ->limit(3)
-            ->get();
+        $featuredProducts = collect();
+
+        if ($this->productTablesAreReady()) {
+            try {
+                $featuredProducts = Product::where('is_active', true)
+                    ->with(['primaryImage', 'category', 'images', 'reviews'])
+                    ->latest()
+                    ->limit(3)
+                    ->get();
+            } catch (\Throwable) {
+                $featuredProducts = collect();
+            }
+        }
 
         $featuredIngredients = \App\Models\Ingredient::where('is_active', true)
             ->where('is_featured', true)
@@ -21,6 +31,18 @@ class HomeController extends Controller
             ->get();
 
         return view('pages.index', compact('featuredProducts', 'featuredIngredients'));
+    }
+
+    protected function productTablesAreReady(): bool
+    {
+        try {
+            return Schema::hasTable('products')
+                && Schema::hasTable('categories')
+                && Schema::hasTable('product_images')
+                && Schema::hasTable('product_reviews');
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public function calendar()
