@@ -3,7 +3,7 @@
         <button type="button" class="nb-modal-close" onclick="closeLoginModal()">&times;</button>
         
         <div class="nb-modal-header">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="NutriBuddy" class="nb-modal-logo">
+            <img src="{{ asset('img/logo.png') }}" alt="NutriBuddy" class="nb-modal-logo">
             <h2 id="loginModalTitle">Welcome Back! </h2>
             <p id="loginModalSub">Login or sign up to continue your healthy journey.</p>
         </div>
@@ -119,8 +119,8 @@
     }
 
     .nb-modal-logo {
-        height: 45px;
-        margin-bottom: 20px;
+        height: 100px;
+    
     }
 
     .nb-modal-header h2 {
@@ -213,7 +213,7 @@
 
     .otp-inputs {
         display: flex;
-        gap: 10px;
+        gap: 5px;
         justify-content: space-between;
     }
 

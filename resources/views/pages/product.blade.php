@@ -337,11 +337,7 @@
 
         $fallbackDescriptionParagraphs = [
             "{$product->name} is created for parents who want dependable daily nutrition in a format children genuinely enjoy. It combines a kid-friendly taste with ingredients selected to support everyday wellness, making routine supplementation feel simple instead of stressful.",
-            "This product is designed to fit naturally into busy family life. From the first chew, the focus is on convenience, consistency, and age-appropriate nourishment so parents can feel more confident about what their child is taking each day.",
-            "Every serving is planned to bring together thoughtful formulation and practical use. Whether the goal is better daily balance, steady nutritional support, or an easier wellness routine, {$product->name} is built to work as part of a long-term family habit.",
-            "The texture, flavor, and overall experience are shaped around children while the ingredient story stays parent-focused. That means you get a product that feels enjoyable for kids but still reflects a careful standard for quality, safety, and everyday usability.",
-            "Parents often look for something that supports growth, energy, focus, or seasonal wellness without adding friction to the day. This product answers that need with a format that is approachable, easy to serve, and simple to keep consistent over time.",
-            "With its blend of nutrition, taste, and convenience, {$product->name} aims to make wellness feel more manageable for the whole household. It is a practical choice for families who want supportive daily care without compromising on comfort or experience.",
+          
         ];
 
         if (count($productDescriptionParagraphs) < 5) {
@@ -766,25 +762,25 @@
             <h2 class="sec-title">How It <span class="acc">Works</span></h2>
             <div class="steps">
               <div class="step-new">
-                <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
+                <div class="sball s1 "><img src="/img/quiz.png" alt=""></div>
                 <div class="snum">Step 01</div>
                 <div class="stitle">Take the Quiz</div>
                 <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
               </div>
               <div class="step-new">
-                   <div class="sball s2"><img src="img/plan.png" alt=""></div>
+                   <div class="sball s2"><img src="/img/plan.png" alt=""></div>
                 <div class="snum">Step 02</div>
                 <div class="stitle">Get Your Plan</div>
                 <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
               </div>
               <div class="step-new">
-                 <div class="sball s3"><img src="img/order.png" alt=""></div>
+                 <div class="sball s3"><img src="/img/order.png" alt=""></div>
                 <div class="snum">Step 03</div>
                 <div class="stitle">Order & Save</div>
                 <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
               </div>
               <div class="step-new">
-                  <div class="sball s4"><img src="img/rising.png" alt=""></div>
+                  <div class="sball s4"><img src="/img/rising.png" alt=""></div>
                 <div class="snum">Step 04</div>
                 <div class="stitle">Track Progress</div>
                 <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>

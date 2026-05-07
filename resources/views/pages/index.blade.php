@@ -9,7 +9,7 @@
     <section class="hero">
         <!-- Slide 1 -->
         <div class="slide slide-1 active" data-slide="0">
-              <!-- <img src="img/img1.jpeg" alt=""> -->
+              <!-- <img src="/img/img1.jpeg" alt=""> -->
             <div class="blob b1"></div>
             <div class="blob b2"></div>
             <div class="slide-text">
@@ -40,7 +40,7 @@
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="img/boii.png" alt="">
+                            <img src="/img/boii.png" alt="">
                         </div>
                     </div>
                 </div>  
@@ -80,7 +80,7 @@
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="img/kadda.png" alt="">
+                            <img src="/img/kadda.png" alt="">
 
 
                         </div>
@@ -122,7 +122,7 @@
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="img/yello-g.png" alt="">
+                            <img src="/img/yello-g.png" alt="">
 
 
                         </div>
@@ -176,32 +176,32 @@
         <h2 class="sec-title">Numbers That <span class="acc">Speak</span></h2>
         <p class="sec-sub">Backed by science, loved by parents, and trusted by pediatricians across India.</p>
         <div class="trust-grid">
-            <div class="tc"><span class="tc-icon"><img src="img/family.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/family.png" alt=""></span>
                 <div class="tc-n" data-count="10000">0+</div>
                 <div class="tc-l">Happy Families</div>
                 <div class="tc-d">Serving kids from Jammu to Kanyakumari, every single month.</div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="img/smart-city.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/smart-city.png" alt=""></span>
                 <div class="tc-n" data-count="500">0+</div>
                 <div class="tc-l">Cities Across India</div>
                 <div class="tc-d">From metros to Tier-2 cities — NutriBuddy ships everywhere.</div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="img/cycle.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/cycle.png" alt=""></span>
                 <div class="tc-n" data-count="98">0%</div>
                 <div class="tc-l">Reorder Rate</div>
                 <div class="tc-d">When kids love it and parents see results, they keep coming back.</div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="img/rat.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/rat.png" alt=""></span>
                 <div class="tc-n">4.9</div>
                 <div class="tc-l">Average Rating</div>
                 <div class="tc-d">Across 6,000+ verified parent reviews on our platform.</div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="img/labo.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/labo.png" alt=""></span>
                 <div class="tc-n">3</div>
                 <div class="tc-l">Yrs R&D Per Product</div>
                 <div class="tc-d">We don't rush to market. Every formula is rigorously tested first.</div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="img/pediatrician.png" alt=""></span>
+            <div class="tc"><span class="tc-icon"><img src="/img/pediatrician.png" alt=""></span>
                 <div class="tc-n" data-count="50">0+</div>
                 <div class="tc-l">Pediatricians Approved</div>
                 <div class="tc-d">Recommended by certified pediatricians and nutritionists nationwide.</div>
@@ -219,32 +219,32 @@
         </h2>
         <div class="why-grid">
             <div class="wc wc1">
-                <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="img/natural.png" alt=""> </div>
+                <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="/img/natural.png" alt=""> </div>
                 <h3>Ayurveda Meets Science</h3>
                 <p>Time-tested herbs from Ayurveda, validated by modern clinical research. The best of 5,000 years and 21st
                     century together.</p>
             </div>
             <div class="wc wc2">
-                <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img src="img/observation.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img src="/img/observation.png" alt=""></div>
                 <h3>Lab-Tested Purity</h3>
                 <p>Every batch is third-party tested for heavy metals, microbials, and potency. We publish every single
                     result —
                     transparency is non-negotiable.</p>
             </div>
             <div class="wc wc3">
-                <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="img/girl.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="/img/girl.png" alt=""></div>
                 <h3>Kid-Safe Formulas</h3>
                 <p>Age-appropriate dosing for 2–14 years. Zero artificial preservatives, colors or fillers.
                     Pediatrician-reviewed at every step.</p>
             </div>
             <div class="wc wc4">
-                <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="img/tongue.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="/img/tongue.png" alt=""></div>
                 <h3>Kids Actually Love It</h3>
                 <p>98% of kids proactively ask for their NutriBuddy gummy. No battles at supplement time — ever again.
                     Seriously.</p>
             </div>
             <div class="wc wc6">
-                <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="img/value.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="/img/value.png" alt=""></div>
                 <h3>Real Value</h3>
                 <p>Premium Ayurvedic nutrition at prices every Indian family can afford. Subscribe & Save up to 20% — cancel
                     anytime.</p>
@@ -413,7 +413,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <img class="image-big" src="/img/gradient1.webp" alt="Ashwagandha">
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
@@ -448,7 +448,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <img class="image-big" src="/img/bb.png" alt="Brahmi">
                         <div class="orbit-i" style="--orr:6s">⭐</div>
                         <div class="orbit-i" style="--orr:7s">⭐</div>
                         <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
@@ -481,7 +481,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
-                        <img class="image-big" src="img/haldi.webp" alt="Turmeric">
+                        <img class="image-big" src="/img/haldi.webp" alt="Turmeric">
                         <div class="orbit-i" style="--orr:7s">⭐</div>
                         <div class="orbit-i" style="--orr:9s">⭐</div>
                         <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
@@ -515,7 +515,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
-                        <img class="image-big" src="img/amla.webp" alt="Amla">
+                        <img class="image-big" src="/img/amla.webp" alt="Amla">
                         <div class="orbit-i" style="--orr:8.5s">⭐</div>
                         <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
                         <div class="orbit-i" style="--orr:18s">⭐</div>
@@ -548,7 +548,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
-                        <img class="image-big" src="img/vitamins.webp" alt="Omega-3 DHA">
+                        <img class="image-big" src="/img/vitamins.webp" alt="Omega-3 DHA">
                         <div class="orbit-i" style="--orr:7.5s">⭐</div>
                         <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
                         <div class="orbit-i" style="--orr:18s">⭐</div>
@@ -582,7 +582,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <img class="image-big" src="/img/gradient1.webp" alt="Ashwagandha">
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
@@ -618,7 +618,7 @@
                 <div style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
-                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <img class="image-big" src="/img/bb.png" alt="Brahmi">
                         <div class="orbit-i" style="--orr:6s">⭐</div>
                         <div class="orbit-i" style="--orr:7s">⭐</div>
                         <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
@@ -711,27 +711,27 @@
                         </div>
                         <div class="age-grid" id="ageGrid">
                             <div class="age-card" data-age="2-3" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="img/girl.png" alt=""></span>
+                                <span class="age-emoji"><img src="/img/girl.png" alt=""></span>
                                 <span class="age-range">2–3 yrs</span>
                                 <span class="age-label">Toddler</span>
                             </div>
                             <div class="age-card" data-age="4-6" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="img/b1.png" alt=""></span>
+                                <span class="age-emoji"><img src="/img/b1.png" alt=""></span>
                                 <span class="age-range">4–6 yrs</span>
                                 <span class="age-label">Pre-School</span>
                             </div>
                             <div class="age-card" data-age="7-9" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="img/b2.png" alt=""></span>
+                                <span class="age-emoji"><img src="/img/b2.png" alt=""></span>
                                 <span class="age-range">7–9 yrs</span>
                                 <span class="age-label">Primary School</span>
                             </div>
                             <div class="age-card" data-age="10-12" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="img/g1.png" alt=""></span>
+                                <span class="age-emoji"><img src="/img/g1.png" alt=""></span>
                                 <span class="age-range">10–12 yrs</span>
                                 <span class="age-label">Middle School</span>
                             </div>
                             <div class="age-card" data-age="13-14" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="img/b4.png" alt=""></span>
+                                <span class="age-emoji"><img src="/img/b4.png" alt=""></span>
                                 <span class="age-range">13–14 yrs</span>
                                 <span class="age-label">Teen</span>
                             </div>
@@ -745,17 +745,17 @@
                         </div>
                         <div class="gender-row" id="genderRow">
                             <div class="gender-card" data-gender="boy" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="img/boy.png" alt=""></span>
+                                <span class="gender-emoji"><img src="/img/boy.png" alt=""></span>
                                 <div class="gender-name">Boy</div>
                             </div>
                             <div class="gender-card" data-gender="girl" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="img/girl.png" alt=""></span>
+                                <span class="gender-emoji"><img src="/img/girl.png" alt=""></span>
                                 <div class="gender-name">Girl</div>
                             </div>
-                            <div class="gender-card" data-gender="other" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="img/boyn.png" alt=""></span>
+                            <!-- <div class="gender-card" data-gender="other" onclick="dcSelectGender(this)">
+                                <span class="gender-emoji"><img src="/img/boyn.png" alt=""></span>
                                 <div class="gender-name">Prefer not to say</div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="selection-error" id="genderError">⚠️ Please select a gender to continue.</div>
                     </div>
@@ -1045,25 +1045,25 @@
         <h2 class="sec-title">How It <span class="acc">Works</span></h2>
         <div class="steps">
             <div class="step-new">
-                <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
+                <div class="sball s1 "><img src="/img/quiz.png" alt=""></div>
                 <div class="snum">Step 01</div>
                 <div class="stitle">Take the Quiz</div>
                 <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
             </div>
             <div class="step-new">
-                <div class="sball s2"><img src="img/plan.png" alt=""></div>
+                <div class="sball s2"><img src="/img/plan.png" alt=""></div>
                 <div class="snum">Step 02</div>
                 <div class="stitle">Get Your Plan</div>
                 <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
             </div>
             <div class="step-new">
-                <div class="sball s3"><img src="img/order.png" alt=""></div>
+                <div class="sball s3"><img src="/img/order.png" alt=""></div>
                 <div class="snum">Step 03</div>
                 <div class="stitle">Order & Save</div>
                 <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
             </div>
             <div class="step-new">
-                <div class="sball s4"><img src="img/rising.png" alt=""></div>
+                <div class="sball s4"><img src="/img/rising.png" alt=""></div>
                 <div class="snum">Step 04</div>
                 <div class="stitle">Track Progress</div>
                 <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
@@ -1090,17 +1090,17 @@
                   <div class="imgcar-viewport" id="imgcarViewport">
                     <div class="imgcar-pbar" id="imgcarPbar"></div>
                     <div class="imgcar-track" id="imgcarTrack">
-                      <div class="imgcar-item"><img src="img/cert-fssai.png" alt="FSSAI Certified"
+                      <div class="imgcar-item"><img src="/img/cert-fssai.png" alt="FSSAI Certified"
                           onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
-                      <div class="imgcar-item"><img src="img/cert-nabl.png" alt="NABL Lab Tested"
+                      <div class="imgcar-item"><img src="/img/cert-nabl.png" alt="NABL Lab Tested"
                           onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
-                      <div class="imgcar-item"><img src="img/cert-nongmo.png" alt="Non-GMO Verified"
+                      <div class="imgcar-item"><img src="/img/cert-nongmo.png" alt="Non-GMO Verified"
                           onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
-                      <div class="imgcar-item"><img src="img/cert-iap.png" alt="Pediatrician Approved"
+                      <div class="imgcar-item"><img src="/img/cert-iap.png" alt="Pediatrician Approved"
                           onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
-                      <div class="imgcar-item"><img src="img/cert-cruelty.png" alt="Cruelty Free"
+                      <div class="imgcar-item"><img src="/img/cert-cruelty.png" alt="Cruelty Free"
                           onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
-                      <div class="imgcar-item"><img src="img/cert-iso.png" alt="ISO 22000 GMP"
+                      <div class="imgcar-item"><img src="/img/cert-iso.png" alt="ISO 22000 GMP"
                           onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
                     </div>
                   </div>

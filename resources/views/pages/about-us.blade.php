@@ -1221,8 +1221,6 @@
       position: relative;
       padding: 80px 20px;
       font-family: 'DM Sans', sans-serif;
-      /* background-color: var(--bg); */
-      /* Subtle radial gradient to mimic the soft light */
       background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 70%);
     }
 
@@ -1237,7 +1235,9 @@
       pointer-events: none;
       z-index: 0;
     }
-
+.nbs-bg-shapes img {
+  height: 85px;
+}
     .nbs-blob-tl {
       position: absolute;
       top: -100px;
@@ -2547,7 +2547,7 @@
 
             <div class="ns-polar ns-polar--happy">
               <div class="ns-tape"></div>
-              <img src="img/mommi.jpeg" alt="Happy mother and child" />
+              <img src="/img/mommi.jpeg" alt="Happy mother and child" />
               <div class="ns-polar-caption">The reason we started</div>
             </div>
 
@@ -2649,18 +2649,8 @@
       <div class="nbs-blob-tl"></div>
       <div class="nbs-blob-br"></div>
       <!-- Leaves -->
-      <svg class="nbs-bg-leaf nbs-bg-leaf-1" viewBox="0 0 52 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M26 8 C14 12 8 30 26 56" stroke="#8DC63F" stroke-width="2" fill="none" stroke-linecap="round" />
-        <path d="M26 8 C38 12 44 30 26 56" stroke="#8DC63F" stroke-width="2" fill="none" stroke-linecap="round" />
-        <path d="M18 18 C26 20 34 18 38 14" stroke="#8DC63F" stroke-width="1.5" fill="none" stroke-linecap="round" />
-        <path d="M14 32 C22 34 32 32 38 26" stroke="#8DC63F" stroke-width="1.5" fill="none" stroke-linecap="round" />
-      </svg>
-      <svg class="nbs-bg-leaf nbs-bg-leaf-2" viewBox="0 0 52 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M26 8 C14 12 8 30 26 56" stroke="#8DC63F" stroke-width="2" fill="none" stroke-linecap="round" />
-        <path d="M26 8 C38 12 44 30 26 56" stroke="#8DC63F" stroke-width="2" fill="none" stroke-linecap="round" />
-        <path d="M18 18 C26 20 34 18 38 14" stroke="#8DC63F" stroke-width="1.5" fill="none" stroke-linecap="round" />
-        <path d="M14 32 C22 34 32 32 38 26" stroke="#8DC63F" stroke-width="1.5" fill="none" stroke-linecap="round" />
-      </svg>
+     <img src="img/btn-leafimg.png" alt="">
+      
     </div>
 
     <div class="nbs-container">
@@ -2701,19 +2691,19 @@
           <!-- Card 1 – sick child -->
           <div class="nbs-photo-card nbs-card-1">
             <div class="nbs-tape"></div>
-            <div class="nbs-photo-fill"><img src="img/d1.jpeg" alt=""></div>
+            <div class="nbs-photo-fill"><img src="/img/d1.jpeg" alt=""></div>
           </div>
 
           <!-- Card 2 – doctor visit -->
           <div class="nbs-photo-card nbs-card-2">
             <div class="nbs-tape nbs-tape-ye"></div>
-            <div class="nbs-photo-fill"><img src="img/d1.jpeg" alt=""></div>
+            <div class="nbs-photo-fill"><img src="/img/d1.jpeg" alt=""></div>
           </div>
 
           <!-- Card 3 – happy running child -->
           <div class="nbs-photo-card nbs-card-3">
             <div class="nbs-tape nbs-tape-pu"></div>
-            <div class="nbs-photo-fill"><img src="img/d1.jpeg" alt=""></div>
+            <div class="nbs-photo-fill"><img src="/img/d1.jpeg" alt=""></div>
           </div>
 
         </div><!-- /nbs-img-col -->
@@ -2747,7 +2737,7 @@
             <div class="nbs-step">
               <div class="nbs-step-left">
                 <div class="nbs-step-icon nbs-ic-pk">
-                  <img src="img/about-boy.png" alt="">
+                  <img src="/img/about-boy.png" alt="">
                 </div>
               </div>
               <p class="nbs-step-body">
@@ -2760,7 +2750,7 @@
             <div class="nbs-step">
               <div class="nbs-step-left">
                 <div class="nbs-step-icon nbs-ic-ye">
-                  <img src="img/first-addcart.png" alt="">
+                  <img src="/img/first-addcart.png" alt="">
                 </div>
               </div>
               <p class="nbs-step-body">
@@ -2773,7 +2763,7 @@
             <div class="nbs-step">
               <div class="nbs-step-left">
                 <div class="nbs-step-icon nbs-ic-pu">
-                  <img src="img/herbs.png" alt="">
+                  <img src="/img/herbs.png" alt="">
                 </div>
               </div>
               <p class="nbs-step-body">
@@ -2787,7 +2777,7 @@
             <div class="nbs-step">
               <div class="nbs-step-left">
                 <div class="nbs-step-icon nbs-ic-mn">
-                  <img src="img/leave-one.png" alt="">
+                  <img src="/img/leave-one.png" alt="">
                 </div>
               </div>
               <p class="nbs-step-body">
@@ -2800,7 +2790,7 @@
             <div class="nbs-step">
               <div class="nbs-step-left">
                 <div class="nbs-step-icon nbs-ic-pk">
-                  <img src="img/three.png" alt="">
+                  <img src="/img/three.png" alt="">
                 </div>
               </div>
               <p class="nbs-step-body">
@@ -2819,7 +2809,7 @@
 
         <div class="nbs-stat-item">
           <div class="nbs-stat-ico nbs-si-pk">
-            <img src="img/three.png" alt="">
+            <img src="/img/three.png" alt="">
           </div>
           <div class="nbs-stat-text">
             <span class="nbs-stat-num nbs-sn-pk">50K+</span>
@@ -2829,7 +2819,7 @@
 
         <div class="nbs-stat-item">
           <div class="nbs-stat-ico nbs-si-pu">
-            <img src="img/labb-about.png" alt="">
+            <img src="/img/labb-about.png" alt="">
           </div>
           <div class="nbs-stat-text">
             <span class="nbs-stat-num nbs-sn-pu">12+</span>
@@ -2839,7 +2829,7 @@
 
         <div class="nbs-stat-item">
           <div class="nbs-stat-ico nbs-si-mn">
-            <img src="img/leaves.png" alt="">
+            <img src="/img/leaves.png" alt="">
           </div>
           <div class="nbs-stat-text">
             <span class="nbs-stat-num nbs-sn-mn">100%</span>
@@ -2864,10 +2854,10 @@
       </div><!-- /nbs-stats-bar -->
 
       <!-- Gummy bears bottom-left -->
-      <div class="nbs-gummies">
-        <span class="nbs-gummy">🟣</span>
+      <!-- <div class="nbs-gummies">
+        <span class="nbs-gummy"><img src="img/blue-4.png" alt=""></span>
         <span class="nbs-gummy">🟡</span>
-      </div>
+      </div> -->
 
     </div><!-- /nbs-container -->
   </section>
@@ -2911,7 +2901,7 @@
 
           <li class="acc-item open" data-index="0">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#fde8f3;"> <img src="img/sec-2.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#fde8f3;"> <img src="/img/sec-2.png" alt=""></div>
               <span class="acc-title">Picky eating, every day</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -2932,7 +2922,7 @@
 
           <li class="acc-item" data-index="1">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#fff3e0;"><img src="img/sec-3.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#fff3e0;"><img src="/img/sec-3.png" alt=""></div>
               <span class="acc-title">Constant worry in the back of your mind</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -2953,7 +2943,7 @@
 
           <li class="acc-item" data-index="2">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#e8f0ff;"><img src="img/sec-5.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#e8f0ff;"><img src="/img/sec-5.png" alt=""></div>
               <span class="acc-title">Too much advice, too little clarity</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -2974,7 +2964,7 @@
 
           <li class="acc-item" data-index="3">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#e8faf2;"><img src="img/sec-4.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#e8faf2;"><img src="/img/sec-4.png" alt=""></div>
               <span class="acc-title">Hidden ingredients you can't see</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -2995,7 +2985,7 @@
 
           <li class="acc-item" data-index="4">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#fde8f3;"><img src="img/sec-6.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#fde8f3;"><img src="/img/sec-6.png" alt=""></div>
               <span class="acc-title">Frequent sickness and low immunity</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -3016,7 +3006,7 @@
 
           <li class="acc-item" data-index="5">
             <div class="acc-header" onclick="toggle(this)">
-              <div class="acc-icon-wrap" style="background:#fff3e0;"><img src="img/sec-1.png" alt=""></div>
+              <div class="acc-icon-wrap" style="background:#fff3e0;"><img src="/img/sec-1.png" alt=""></div>
               <span class="acc-title">Not made for Indian kids</span>
               <span class="acc-toggle">
                 <svg viewBox="0 0 14 14">
@@ -3048,7 +3038,7 @@
     <!-- Header -->
     <div class="gapfix-top">
       <span class="gapfix-eyebrow">The Gap We Found</span>
-      <h2 class="gapfix-heading">The gap we found — and <span>fixed.</span> <img class="proper-set" src="img/heartmim.png" alt=""></h2>
+      <h2 class="gapfix-heading">The gap we found — and <span>fixed.</span> <img class="proper-set" src="/img/heartmim.png" alt=""></h2>
       <p class="gapfix-subtext">
         After months of research, lab testing, and consulting paediatricians and Ayurvedic practitioners,
         we identified four critical gaps in children's nutrition products available in India.
@@ -3080,7 +3070,7 @@
       <!-- Row 1 -->
       <div class="gapfix-row">
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--problem"> <img src="img/btn-1.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--problem"> <img src="/img/btn-1.png" alt=""></div>
           <div class="gapfix-num gapfix-num--problem">01</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">The Hidden Sugar Trap</p>
@@ -3097,7 +3087,7 @@
         </div>
 
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--fix"> <img src="img/new-btn-1.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--fix"> <img src="/img/new-btn-1.png" alt=""></div>
           <div class="gapfix-num gapfix-num--fix">01</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">We use monk fruit + stevia at safe levels.</p>
@@ -3110,7 +3100,7 @@
       <!-- Row 2 -->
       <div class="gapfix-row">
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="img/btn-2.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="/img/btn-2.png" alt=""></div>
           <div class="gapfix-num gapfix-num--problem">02</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">Nutrients That Don't Absorb</p>
@@ -3126,7 +3116,7 @@
         </div>
 
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--fix"> <img src="img/new-btn-2.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--fix"> <img src="/img/new-btn-2.png" alt=""></div>
           <div class="gapfix-num gapfix-num--fix">02</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">Better Absorption, Better Results</p>
@@ -3138,7 +3128,7 @@
       <!-- Row 3 -->
       <div class="gapfix-row">
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="img/btn-3.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="/img/btn-3.png" alt=""></div>
           <div class="gapfix-num gapfix-num--problem">03</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">The Ingredient Maze</p>
@@ -3155,7 +3145,7 @@
         </div>
 
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--fix"><img src="img/new-btn-3.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--fix"><img src="/img/new-btn-3.png" alt=""></div>
           <div class="gapfix-num gapfix-num--fix">03</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">Clean. Transparent. Honest.</p>
@@ -3168,7 +3158,7 @@
       <!-- Row 4 -->
       <div class="gapfix-row">
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="img/btn-4.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--problem"><img src="/img/btn-4.png" alt=""></div>
           <div class="gapfix-num gapfix-num--problem">04</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">Built For Others, Not For Us</p>
@@ -3185,7 +3175,7 @@
         </div>
 
         <div class="gapfix-card">
-          <div class="gapfix-icon-box gapfix-icon-box--fix"><img src="img/new-btn-4.png" alt=""></div>
+          <div class="gapfix-icon-box gapfix-icon-box--fix"><img src="/img/new-btn-4.png" alt=""></div>
           <div class="gapfix-num gapfix-num--fix">04</div>
           <div class="gapfix-card-body">
             <p class="gapfix-card-title">Built For Indian Kids</p>
@@ -3199,12 +3189,12 @@
 
     <!-- Footer Banner -->
     <div class="gapfix-footer-banner">
-      <div class="gapfix-footer-icon"><img src="img/sheeld.png" alt=""></div>
+      <div class="gapfix-footer-icon"><img src="/img/sheeld.png" alt=""></div>
       <p class="gapfix-footer-text">
         Because your child deserves more than just nutrition —<br>
         they deserve <em>the right nutrition.</em>
       </p>
-      <img src="img/taddy.png" alt="">
+      <img src="/img/taddy.png" alt="">
     </div>
 
   </section>
@@ -4108,7 +4098,7 @@
           <div class="nbap-card" data-s="1">
             <div class="nbap-bubble">
               <span class="nbap-num">01</span>
-              <img src="img/blue1.png" alt="Carefully Selected Ingredients"
+              <img src="/img/blue1.png" alt="Carefully Selected Ingredients"
                 onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'nbap-emoji',textContent:'🌿'}))">
             </div>
             <div class="nbap-text-wrap">
@@ -4131,7 +4121,7 @@
           <div class="nbap-card" data-s="2">
             <div class="nbap-bubble">
               <span class="nbap-num">02</span>
-              <img src="img/blue2.png" alt="Backed by Science and Experts"
+              <img src="/img/blue2.png" alt="Backed by Science and Experts"
                 onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'nbap-emoji',textContent:'🔬'}))">
             </div>
             <div class="nbap-text-wrap">
@@ -4154,7 +4144,7 @@
           <div class="nbap-card" data-s="3">
             <div class="nbap-bubble">
               <span class="nbap-num">03</span>
-              <img src="img/blue-3.png" alt="Clean and Safe Manufacturing"
+              <img src="/img/blue-3.png" alt="Clean and Safe Manufacturing"
                 onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'nbap-emoji',textContent:'🏭'}))">
             </div>
             <div class="nbap-text-wrap">
@@ -4176,7 +4166,7 @@
           <div class="nbap-card" data-s="4">
             <div class="nbap-bubble">
               <span class="nbap-num">04</span>
-              <img src="img/blue-4.png" alt="Made Fun and Yummy"
+              <img src="/img/blue-4.png" alt="Made Fun and Yummy"
                 onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'nbap-emoji',textContent:'🐻'}))">
             </div>
             <div class="nbap-text-wrap">
@@ -4198,7 +4188,7 @@
           <div class="nbap-card" data-s="5">
             <div class="nbap-bubble">
               <span class="nbap-num">05</span>
-              <img src="img/kid.png" alt="Better Nutrition Brighter Future"
+              <img src="/img/kid.png" alt="Better Nutrition Brighter Future"
                 onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'nbap-emoji',textContent:'💪'}))">
             </div>
             <div class="nbap-text-wrap">
@@ -4213,7 +4203,7 @@
       <!-- BADGE BAR -->
       <div class="nbap-badges">
         <div class="nbap-badge">
-          <div class="nbap-bico" ><img src="img/new-btn-2.png" alt=""></div><span>100% Natural</span>
+          <div class="nbap-bico" ><img src="/img/new-btn-2.png" alt=""></div><span>100% Natural</span>
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">
@@ -4225,7 +4215,7 @@
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">
-          <div class="nbap-bico"><img src="img/new-btn-1.png" alt=""></div><span>Vegetarian Friendly</span>
+          <div class="nbap-bico"><img src="/img/new-btn-1.png" alt=""></div><span>Vegetarian Friendly</span>
         </div>
         <div class="nbap-bsep"></div>
         <div class="nbap-badge">
@@ -4263,22 +4253,22 @@
         <!-- LEFT IMAGE GRID -->
         <div class="aj-trust-grid">
           <!-- Replace with your real images -->
-          <img src="img/girl.jpeg">
-          <img src="img/cidss.jpeg">
-          <img src="img/BUSY-P.jpg">
-          <img src="img/mom.png">
-          <img src="img/girl.jpeg">
-          <img src="img/cidss.jpeg">
-          <img src="img/BUSY-P.jpg">
-          <img src="img/mom.png">
-          <img src="img/girl.jpeg">
-          <img src="img/cidss.jpeg">
-          <img src="img/BUSY-P.jpg">
-          <img src="img/mom.png">
-          <img src="img/girl.jpeg">
-          <img src="img/cidss.jpeg">
-          <img src="img/BUSY-P.jpg">
-          <img src="img/mom.png">
+          <img src="/img/girl.jpeg">
+          <img src="/img/cidss.jpeg">
+          <img src="/img/BUSY-P.jpg">
+          <img src="/img/mom.png">
+          <img src="/img/girl.jpeg">
+          <img src="/img/cidss.jpeg">
+          <img src="/img/BUSY-P.jpg">
+          <img src="/img/mom.png">
+          <img src="/img/girl.jpeg">
+          <img src="/img/cidss.jpeg">
+          <img src="/img/BUSY-P.jpg">
+          <img src="/img/mom.png">
+          <img src="/img/girl.jpeg">
+          <img src="/img/cidss.jpeg">
+          <img src="/img/BUSY-P.jpg">
+          <img src="/img/mom.png">
         </div>
 
         <!-- RIGHT CONTENT -->

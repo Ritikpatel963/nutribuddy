@@ -15,6 +15,8 @@ class ReturnStoreRequest extends FormRequest
     {
         return [
             'reason' => ['required', 'string', 'min:10', 'max:2000'],
+            'comments' => ['nullable', 'string', 'max:1000'],
+            'attachments.*' => ['nullable', 'file', 'mimes:jpeg,png,jpg,mp4,mov', 'max:10240'],
         ];
     }
 }
