@@ -5,6 +5,69 @@
 @endphp
 
 @section('content')
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        .icon-field .ts-control {
+            padding-left: 40px !important;
+            border-radius: 16px !important;
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.92) !important;
+            border: 1px solid var(--nb-line) !important;
+        }
+        .icon-field .icon {
+            z-index: 10;
+        }
+        .ts-dropdown {
+            border-radius: 16px !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12) !important;
+            border: 1px solid var(--nb-line) !important;
+            margin-top: 8px !important;
+            padding: 8px 0 !important;
+        }
+        .ts-dropdown .dropdown-input {
+            padding: 12px !important;
+            border-bottom: 1px solid var(--nb-line) !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .ts-dropdown .dropdown-input:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .ts-dropdown .option {
+            padding: 10px 16px !important;
+            font-weight: 500;
+            color: var(--nb-ink);
+            transition: all 0.2s;
+        }
+        .ts-dropdown .option.active {
+            background-color: var(--nb-pink) !important;
+            color: #fff !important;
+        }
+        .ts-dropdown .option:hover:not(.active) {
+            background-color: rgba(16, 185, 129, 0.08) !important;
+        }
+        .ts-wrapper.focus .ts-control {
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12) !important;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+        }
+        /* Make selected item look like plain text, not a tag */
+        .ts-control .item {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+        .ts-wrapper.single .ts-control:after {
+            display: none !important; /* Hide default arrow to use our own if needed, or keep clean */
+        }
+    </style>
+
     @include('admin.ecommerce._messages')
 
     <div class="card mb-24">
@@ -20,10 +83,10 @@
                         <span class="icon">
                             <iconify-icon icon="solar:user-linear"></iconify-icon>
                         </span>
-                        <select name="user_id" class="form-select" style="padding-left: 40px;">
+                        <select name="user_id" class="form-select select2-user" style="padding-left: 40px;">
                             <option value="">Any User</option>
                             @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                <option value="{{ $user->id }}">{{ $user->name }} {{ $user->phone ? '('.$user->phone.')' : ($user->email ? '('.$user->email.')' : '') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -248,10 +311,10 @@
                                     <span class="icon">
                                         <iconify-icon icon="solar:user-linear"></iconify-icon>
                                     </span>
-                                    <select name="user_id" id="edit_coupon_user_id" class="form-select" style="padding-left: 40px;">
+                                    <select name="user_id" id="edit_coupon_user_id" class="form-select select2-user" style="padding-left: 40px;">
                                         <option value="">Any User</option>
                                         @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                                            <option value="{{ $user->id }}">{{ $user->name }} {{ $user->phone ? '('.$user->phone.')' : ($user->email ? '('.$user->email.')' : '') }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -362,8 +425,28 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const tomSelects = {};
+
+            // Initialize Tom Select
+            function initTomSelects() {
+                document.querySelectorAll('.select2-user').forEach(el => {
+                    if (el.tomselect) return;
+                    
+                    tomSelects[el.id || el.name] = new TomSelect(el, {
+                        plugins: ['dropdown_input'],
+                        placeholder: 'Any User',
+                        allowEmptyOption: true,
+                        maxItems: 1,
+                        hideSelected: false,
+                    });
+                });
+            }
+
+            initTomSelects();
+
             // Initialize DataTable
             if (document.getElementById('dataTable')) {
                 new DataTable('#dataTable');
@@ -391,7 +474,12 @@
                     const form = editModal.querySelector('#editCouponForm');
                     form.setAttribute('action', action);
                     
-                    editModal.querySelector('#edit_coupon_user_id').value = userId || '';
+                    // Update Tom Select value
+                    const selectEl = editModal.querySelector('#edit_coupon_user_id');
+                    if (selectEl && selectEl.tomselect) {
+                        selectEl.tomselect.setValue(userId || '');
+                    }
+                    
                     editModal.querySelector('#edit_coupon_code').value = code || '';
                     editModal.querySelector('#edit_coupon_name').value = name || '';
                     editModal.querySelector('#edit_coupon_discount_type').value = discountType;

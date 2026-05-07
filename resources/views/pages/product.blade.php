@@ -167,7 +167,7 @@
                                         <span style="font-size: 28px; display: inline-block;">✨</span>
                                     @endif
                                 </div>
-                                <div class="flavor-name">{!! nl2br(e($tag['text'] ?? '')) !!}</div>
+                                <div class="flavor-name">{!! nl2br(e(\Illuminate\Support\Str::limit($tag['text'] ?? '', 15))) !!}</div>
                             </div>
                         @endforeach
                     @else
