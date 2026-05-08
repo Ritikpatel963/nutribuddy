@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::where('is_active', true)
-            ->with(['primaryImage', 'category', 'images', 'reviews'])
+            ->with(['primaryImage', 'category', 'images', 'reviews', 'taxRate', 'variants.inventory', 'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id')])
             ->get();
 
         return view('pages.all-products', compact('products'));
@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['category', 'taxRate', 'images', 'variants.inventory', 'reviews.user', 'ingredients.benefits', 'ingredients.category'])
+        $product = Product::with(['category', 'taxRate', 'images', 'variants.inventory', 'variants.product.taxRate', 'reviews.user', 'ingredients.benefits', 'ingredients.category'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();

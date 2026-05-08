@@ -27,7 +27,7 @@ class ProductVariantController extends Controller
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:255', 'unique:product_variants,sku'],
+            'sku' => ['nullable', 'string', 'max:255', 'unique:product_variants,sku'],
             'attributes' => ['nullable', 'json'],
             'price' => ['required', 'numeric', 'min:0'],
             'compare_at_price' => ['nullable', 'numeric', 'min:0'],
@@ -54,7 +54,7 @@ class ProductVariantController extends Controller
         $variant = ProductVariant::create([
             'product_id' => $validated['product_id'],
             'name' => $validated['name'],
-            'sku' => $validated['sku'],
+            'sku' => $this->uniqueVariantSku($validated['sku'] ?? null, $validated['name']),
             'attributes' => $validated['attributes'],
             'price' => $validated['price'],
             'compare_at_price' => $validated['compare_at_price'] ?? null,
@@ -86,7 +86,7 @@ class ProductVariantController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['required', 'string', 'max:255', Rule::unique('product_variants', 'sku')->ignore($variant->id)],
+            'sku' => ['nullable', 'string', 'max:255', Rule::unique('product_variants', 'sku')->ignore($variant->id)],
             'attributes' => ['nullable', 'json'],
             'price' => ['required', 'numeric', 'min:0'],
             'compare_at_price' => ['nullable', 'numeric', 'min:0'],
@@ -113,7 +113,7 @@ class ProductVariantController extends Controller
 
         $variant->update([
             'name' => $validated['name'],
-            'sku' => $validated['sku'],
+            'sku' => $this->uniqueVariantSku($validated['sku'] ?? null, $validated['name'], $variant->id),
             'attributes' => $validated['attributes'],
             'price' => $validated['price'],
             'compare_at_price' => $validated['compare_at_price'] ?? null,
@@ -178,5 +178,28 @@ class ProductVariantController extends Controller
         }
 
         return back()->with('success', 'Variant deleted successfully.');
+    }
+
+    private function uniqueVariantSku(?string $sku, string $name, ?int $ignoreVariantId = null): string
+    {
+        $baseSku = trim((string) $sku);
+        if ($baseSku === '') {
+            $baseSku = 'NB-' . Str::upper(Str::random(4)) . '-' . Str::upper(Str::slug($name ?: 'variant', '-'));
+        }
+
+        $baseSku = Str::upper(Str::slug($baseSku, '-')) ?: 'NB-' . Str::upper(Str::random(8));
+        $candidate = Str::limit($baseSku, 240, '');
+        $suffix = 1;
+
+        while (
+            ProductVariant::where('sku', $candidate)
+                ->when($ignoreVariantId, fn ($query) => $query->whereKeyNot($ignoreVariantId))
+                ->exists()
+        ) {
+            $suffixText = '-' . $suffix++;
+            $candidate = Str::limit($baseSku, 255 - strlen($suffixText), '') . $suffixText;
+        }
+
+        return $candidate;
     }
 }

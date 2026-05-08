@@ -1477,3 +1477,161 @@
         padding: 24px 18px;
     }
 }
+
+/* Header responsive fixes */
+@media (max-width: 768px) {
+    .blog-hero {
+        padding: 80px 5% 50px;
+    }
+
+    .blog-hero-title {
+        font-size: 2rem;
+    }
+
+    .product-listing-hero {
+        padding: 90px 6% 48px;
+    }
+}
+
+@media (max-width: 900px) {
+    nav#mainNav {
+        gap: 8px;
+        height: 76px;
+        padding: 0 16px;
+    }
+
+    #mainNav .hamburger {
+        align-items: center;
+        display: flex;
+        height: 42px;
+        justify-content: center;
+        order: 1;
+        width: 42px;
+    }
+
+    #mainNav .hamburger img {
+        width: 24px;
+    }
+
+    #mainNav .logo-new {
+        align-items: center;
+        display: flex;
+        flex: 1 1 auto;
+        min-width: 0;
+        order: 2;
+    }
+
+    #mainNav .logo-new img {
+        max-height: 58px;
+        width: clamp(150px, 36vw, 215px) !important;
+    }
+
+    #mainNav .nav-links,
+    #mainNav .nav-cta {
+        display: none;
+    }
+
+    #mainNav .nav-actions {
+        gap: 6px;
+        order: 3;
+    }
+
+    #cartIconBtn,
+    #profileIconBtn,
+    .profile-btn {
+        height: 40px;
+        width: 40px;
+    }
+
+    #cartIconBtn img,
+    #profileIconBtn img,
+    .profile-btn img {
+        max-height: 22px;
+        max-width: 22px;
+    }
+
+    .mobile-menu {
+        display: block;
+        max-height: 0;
+        top: 76px;
+    }
+
+    .mobile-menu.open {
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
+    }
+
+    .menu-overlay {
+        display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    nav#mainNav {
+        height: 72px;
+        padding: 0 12px;
+    }
+
+    #mainNav .logo-new img {
+        max-height: 100px;
+        width: clamp(132px, 42vw, 185px) !important;
+    }
+
+    #mainNav .hamburger {
+        height: 38px;
+        padding: 6px;
+        width: 38px;
+    }
+
+    #mainNav .hamburger img {
+        width: 22px;
+    }
+
+    #cartIconBtn,
+    #profileIconBtn,
+    .profile-btn {
+        height: 38px;
+        width: 38px;
+    }
+
+    .mobile-menu {
+        top: 72px;
+    }
+
+    .mobile-menu.open {
+        max-height: calc(100vh - 72px);
+    }
+}
+
+@media (max-width: 400px) {
+    nav#mainNav {
+        gap: 5px;
+        padding: 0 8px;
+    }
+
+    #mainNav .logo-new img {
+        width: clamp(118px, 38vw, 155px) !important;
+    }
+
+    #mainNav .hamburger,
+    #cartIconBtn,
+    #profileIconBtn,
+    .profile-btn {
+        height: 34px;
+        width: 34px;
+    }
+
+    #cartIconBtn img,
+    #profileIconBtn img,
+    .profile-btn img {
+        max-height: 19px;
+        max-width: 19px;
+    }
+
+    .cart-count {
+        height: 16px;
+        right: -4px;
+        top: -4px;
+        width: 16px;
+    }
+}

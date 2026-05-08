@@ -95,11 +95,6 @@
                         otpGroup.show();
                         verifyOtpBtn.show();
                         
-                        // For demo: autofill OTP
-                        if (response.otp) {
-                            console.log("DEMO OTP: " + response.otp);
-                            // showAlert(response.message + " (Demo OTP: " + response.otp + ")", 'success');
-                        }
                     },
                     error: function(xhr) {
                         sendOtpBtn.prop('disabled', false).text('Send OTP');

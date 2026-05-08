@@ -25,8 +25,8 @@
                                 @error('name')<span class="text-danger small">{{ $message }}</span>@enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">SKU Code <span class="text-danger">*</span></label>
-                                <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" class="form-control" placeholder="Unique identifier" required>
+                                <label class="form-label fw-bold">SKU Code</label>
+                                <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" class="form-control" placeholder="Auto generated if empty">
                                 @error('sku')<span class="text-danger small">{{ $message }}</span>@enderror
                             </div>
                             <div class="col-md-6">
@@ -64,17 +64,17 @@
                     <div class="card-body p-24">
                         <div class="row g-4">
                             <div class="col-md-3">
-                                <label class="form-label fw-bold text-success">Selling Price (₹) <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light border-end-0">₹</span>
-                                    <input type="number" step="0.01" min="0" name="base_price" value="{{ old('base_price', $product->base_price) }}" class="form-control border-start-0" placeholder="0.00" required>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
                                 <label class="form-label fw-bold">MRP / Compare (₹)</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0">₹</span>
                                     <input type="number" step="0.01" min="0" name="compare_at_price" value="{{ old('compare_at_price', $product->compare_at_price) }}" class="form-control border-start-0" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold text-success">Selling Price (₹) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">₹</span>
+                                    <input type="number" step="0.01" min="0" name="base_price" value="{{ old('base_price', $product->base_price) }}" class="form-control border-start-0" placeholder="0.00" required>
                                 </div>
                             </div>
 
@@ -86,11 +86,11 @@
                                 </div>
                             </div>
                             
-                            <div class="col-md-6">
+                            <div class="col-md-6" id="parentStockGroup">
                                 <label class="form-label fw-bold">Current Stock Quantity <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><iconify-icon icon="solar:box-linear"></iconify-icon></span>
-                                    <input type="number" name="stock_qty" id="productStockInput" value="{{ old('stock_qty', $product->inventory?->stock_qty ?? 0) }}" class="form-control" min="0" required>
+                                    <input type="number" name="stock_qty" id="productStockInput" value="{{ old('stock_qty', $product->inventory?->stock_qty ?? 0) }}" class="form-control" min="0">
                                 </div>
                             </div>
 
@@ -138,10 +138,6 @@
                     </div>
                     <div class="card-body p-24">
                         <div class="row g-4">
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Short Description (Summary)</label>
-                                <textarea name="short_description" class="form-control" rows="2" placeholder="Brief intro for product list page">{{ old('short_description', $product->short_description) }}</textarea>
-                            </div>
                             <div class="col-12">
                                 <label class="form-label fw-bold">Full Detailed Description</label>
                                 <textarea name="description" id="editor" class="form-control">{{ old('description', $product->description) }}</textarea>

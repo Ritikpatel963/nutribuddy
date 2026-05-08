@@ -14,24 +14,16 @@
         <div class="card-body">
             <form method="POST" action="{{ route('admin.ecommerce.attributes.store') }}" class="row g-3">
                 @csrf
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label">Attribute Name</label>
                     <input type="text" name="name" class="form-control" placeholder="Size, Color, Flavour" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Slug</label>
-                    <input type="text" name="slug" class="form-control" placeholder="Auto generated if empty">
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label">Values</label>
                     <textarea name="values_text" class="form-control" rows="2" placeholder="Small, Medium, Large or Red, Blue, Green" required></textarea>
                     <small class="text-secondary-light">Separate values with commas or new lines.</small>
                 </div>
-                <div class="col-md-1">
-                    <label class="form-label">Sort</label>
-                    <input type="number" name="position" class="form-control" min="0" value="0">
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
+                <div class="col-md-2 d-flex align-items-end">
                     <input type="hidden" name="is_active" value="0">
                     <div class="form-check form-switch mb-8">
                         <input class="form-check-input" type="checkbox" name="is_active" value="1" checked>
@@ -54,7 +46,6 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Slug</th>
                             <th>Values</th>
                             <th>Status</th>
                             <th class="text-end">Actions</th>
@@ -64,7 +55,6 @@
                         @foreach($attributes as $attribute)
                             <tr>
                                 <td class="fw-semibold">{{ $attribute->name }}</td>
-                                <td>{{ $attribute->slug }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-2">
                                         @foreach(($attribute->values ?? []) as $value)
@@ -86,9 +76,7 @@
                                         data-bs-target="#editAttributeModal"
                                         data-action="{{ route('admin.ecommerce.attributes.update', $attribute) }}"
                                         data-name="{{ $attribute->name }}"
-                                        data-slug="{{ $attribute->slug }}"
                                         data-values="{{ implode(', ', $attribute->values ?? []) }}"
-                                        data-position="{{ $attribute->position }}"
                                         data-is_active="{{ $attribute->is_active ? 1 : 0 }}">
                                         Edit
                                     </button>
@@ -122,16 +110,8 @@
                             <input type="text" name="name" id="edit_attribute_name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Slug</label>
-                            <input type="text" name="slug" id="edit_attribute_slug" class="form-control">
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label">Values</label>
                             <textarea name="values_text" id="edit_attribute_values" class="form-control" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Sort</label>
-                            <input type="number" name="position" id="edit_attribute_position" class="form-control" min="0">
                         </div>
                         <input type="hidden" name="is_active" value="0">
                         <div class="form-check form-switch mb-8">
@@ -158,9 +138,7 @@
                 button.addEventListener('click', function () {
                     document.getElementById('editAttributeForm').setAttribute('action', this.dataset.action);
                     document.getElementById('edit_attribute_name').value = this.dataset.name;
-                    document.getElementById('edit_attribute_slug').value = this.dataset.slug;
                     document.getElementById('edit_attribute_values').value = this.dataset.values;
-                    document.getElementById('edit_attribute_position').value = this.dataset.position;
                     document.getElementById('edit_attribute_active').checked = this.dataset.is_active === '1';
                 });
             });

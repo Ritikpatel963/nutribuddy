@@ -3,13 +3,13 @@
 
 @section('content')
     <!-- ══════════════════════════════════════════
-                   HERO SLIDER
-              ══════════════════════════════════════════ -->
+                       HERO SLIDER
+                  ══════════════════════════════════════════ -->
     <!-- ── HERO ── -->
     <section class="hero">
         <!-- Slide 1 -->
         <div class="slide slide-1 active" data-slide="0">
-              <!-- <img src="/img/img1.jpeg" alt=""> -->
+            <!-- <img src="/img/img1.jpeg" alt=""> -->
             <div class="blob b1"></div>
             <div class="blob b2"></div>
             <div class="slide-text">
@@ -43,7 +43,7 @@
                             <img src="/img/boii.png" alt="">
                         </div>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
 
@@ -143,8 +143,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                   TRUST BAR (Scrolling Ticker)
-              ══════════════════════════════════════════ -->
+                       TRUST BAR (Scrolling Ticker)
+                  ══════════════════════════════════════════ -->
     <!-- ── TRUST BAR ── -->
     <div class="tbar">
         <div class="tscroll">
@@ -168,8 +168,8 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-                   TRUST INDICATORS
-              ══════════════════════════════════════════ -->
+                       TRUST INDICATORS
+                  ══════════════════════════════════════════ -->
     <!-- ── TRUST INDICATORS ── -->
     <section class="trust-section reveal" id="trust">
         <span class="sec-eye">Why Parents Trust Us</span>
@@ -219,32 +219,37 @@
         </h2>
         <div class="why-grid">
             <div class="wc wc1">
-                <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="/img/natural.png" alt=""> </div>
+                <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="/img/natural.png" alt="">
+                </div>
                 <h3>Ayurveda Meets Science</h3>
                 <p>Time-tested herbs from Ayurveda, validated by modern clinical research. The best of 5,000 years and 21st
                     century together.</p>
             </div>
             <div class="wc wc2">
-                <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img src="/img/observation.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img src="/img/observation.png"
+                        alt=""></div>
                 <h3>Lab-Tested Purity</h3>
                 <p>Every batch is third-party tested for heavy metals, microbials, and potency. We publish every single
                     result —
                     transparency is non-negotiable.</p>
             </div>
             <div class="wc wc3">
-                <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="/img/girl.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="/img/girl.png" alt="">
+                </div>
                 <h3>Kid-Safe Formulas</h3>
                 <p>Age-appropriate dosing for 2–14 years. Zero artificial preservatives, colors or fillers.
                     Pediatrician-reviewed at every step.</p>
             </div>
             <div class="wc wc4">
-                <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="/img/tongue.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="/img/tongue.png" alt="">
+                </div>
                 <h3>Kids Actually Love It</h3>
                 <p>98% of kids proactively ask for their NutriBuddy gummy. No battles at supplement time — ever again.
                     Seriously.</p>
             </div>
             <div class="wc wc6">
-                <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="/img/value.png" alt=""></div>
+                <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="/img/value.png" alt="">
+                </div>
                 <h3>Real Value</h3>
                 <p>Premium Ayurvedic nutrition at prices every Indian family can afford. Subscribe & Save up to 20% — cancel
                     anytime.</p>
@@ -256,117 +261,138 @@
 
 
     <!-- ══════════════════════════════════════════
-                   PRODUCTS
-              ══════════════════════════════════════════ -->
+                       PRODUCTS
+                  ══════════════════════════════════════════ -->
     <section class="products-section reveal" id="products">
         <span class="sec-eye">Our Products</span>
         <h2 class="sec-title">Nutrition Kids <span class="acc">Actually Love</span></h2>
         <p class="sec-sub">Each product crafted with Ayurvedic wisdom + modern science. Balanced doses, kid-safe, genuinely
             delicious flavors.</p>
         <div class="products-grid">
-            @foreach($featuredProducts as $product)
-            @php 
-                $catSlug = $product->category->slug ?? 'pk';
-                // Map database slugs to CSS classes if they don't match
-                if ($catSlug == 'multivitamins') $catSlug = 'pk';
-                elseif ($catSlug == 'whey-protein') $catSlug = 'sk';
-                elseif ($catSlug == 'pre-workout') $catSlug = 'pu';
-                else $catSlug = 'pk';
-            @endphp
-            <div class="pc pc-{{ $catSlug }}">
-                <div class="pc-head pc-head-{{ $catSlug }}">
-                    <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
-                        @if($product->primaryImage)
-                            <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" class="default-img">
-                            @php $secondImage = $product->images->where('is_primary', false)->first(); @endphp
-                            @if($secondImage)
-                                <img src="{{ asset('storage/' . $secondImage->image_path) }}" alt="{{ $product->name }}" class="hover-img">
+            @foreach ($featuredProducts as $product)
+                @php
+                    $catSlug = $product->category->slug ?? 'pk';
+                    // Map database slugs to CSS classes if they don't match
+if ($catSlug == 'multivitamins') {
+    $catSlug = 'pk';
+} elseif ($catSlug == 'whey-protein') {
+    $catSlug = 'sk';
+} elseif ($catSlug == 'pre-workout') {
+    $catSlug = 'pu';
+} else {
+    $catSlug = 'pk';
+                    }
+                @endphp
+                <div class="pc pc-{{ $catSlug }}">
+                    <div class="pc-head pc-head-{{ $catSlug }}">
+                        <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
+                            @if ($product->primaryImage)
+                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                                    alt="{{ $product->name }}" class="default-img">
+                                @php $secondImage = $product->images->where('is_primary', false)->first(); @endphp
+                                @if ($secondImage)
+                                    <img src="{{ asset('storage/' . $secondImage->image_path) }}"
+                                        alt="{{ $product->name }}" class="hover-img">
+                                @else
+                                    <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                                        alt="{{ $product->name }}" class="hover-img">
+                                @endif
                             @else
-                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" class="hover-img">
+                                <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
+                                    class="default-img">
+                                <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
+                                    class="hover-img">
                             @endif
-                        @else
-                            <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="default-img">
+                        </a>
+                        @if ($product->is_featured)
+                            <div class="pc-badge">Best Seller</div>
                         @endif
-                    </a>
-                    @if($product->is_featured)
-                        <div class="pc-badge">Best Seller</div>
-                    @endif
-                </div>
-                <div class="pc-body">
-                    <div class="pc-stars">
-                        @php $rating = $product->reviews->avg('rating') ?? 5; @endphp
-                        @for($i=0; $i<5; $i++){{ $i < $rating ? '★' : '☆' }}@endfor
-                        <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
-                            ({{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} reviews)
-                        </span>
                     </div>
-                    <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}</div>
-                    <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}" style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
-                    <div class="pc-features">
-                        @php
-                            $tags = $product->tags ?? [];
-                            // Backward compatibility for old string tags
-                            if (is_string($tags)) {
-                                $tags = array_map(function($t) {
-                                    preg_match('/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u', $t, $m);
-                                    return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
-                                }, array_filter(array_map('trim', explode(',', $tags))));
-                            }
-                            $tags = array_slice($tags, 0, 4);
-                        @endphp
-                        @if(count($tags) > 0)
-                            @foreach(array_chunk($tags, 2) as $chunk)
+                    <div class="pc-body">
+                        <div class="pc-stars">
+                            @php $rating = $product->reviews->avg('rating') ?? 5; @endphp
+                            @for ($i = 0; $i < 5; $i++)
+                                {{ $i < $rating ? '★' : '☆' }}
+                            @endfor
+                            <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
+                                ({{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} reviews)
+                            </span>
+                        </div>
+                        <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}
+                        </div>
+                        <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}"
+                                style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
+                        <div class="pc-features">
+                            @php
+                                $tags = $product->tags ?? [];
+                                // Backward compatibility for old string tags
+                                if (is_string($tags)) {
+                                    $tags = array_map(function ($t) {
+                                        preg_match(
+                                            '/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u',
+                                            $t,
+                                            $m,
+                                        );
+                                        return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
+                                    }, array_filter(array_map('trim', explode(',', $tags))));
+                                }
+                                $tags = array_slice($tags, 0, 4);
+                            @endphp
+                            @if (count($tags) > 0)
+                                @foreach (array_chunk($tags, 2) as $chunk)
+                                    <div class="newcarda">
+                                        @foreach ($chunk as $tag)
+                                            <span>
+                                                @if (!empty($tag['icon']))
+                                                    @php
+                                                        $isFilePath = str_contains($tag['icon'], 'tags/');
+                                                    @endphp
+                                                    <i>
+                                                        @if ($isFilePath)
+                                                            <img src="{{ asset('storage/' . $tag['icon']) }}"
+                                                                style="width:16px; height:16px; object-fit:contain; vertical-align: middle;">
+                                                        @else
+                                                            {{ $tag['icon'] }}
+                                                        @endif
+                                                    </i>
+                                                @endif
+                                                {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            @else
                                 <div class="newcarda">
-                                    @foreach($chunk as $tag)
-                                        <span>
-                                            @if(!empty($tag['icon']))
-                                                @php
-                                                    $isFilePath = str_contains($tag['icon'], 'tags/');
-                                                @endphp
-                                                <i>
-                                                    @if($isFilePath)
-                                                        <img src="{{ asset('storage/' . $tag['icon']) }}" style="width:16px; height:16px; object-fit:contain; vertical-align: middle;">
-                                                    @else
-                                                        {{ $tag['icon'] }}
-                                                    @endif
-                                                </i>
-                                            @endif
-                                            {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
-                                        </span>
-                                    @endforeach
+                                    <span><i>🛡️</i> Boosts Immunity</span>
+                                    <span><i>📈</i> Supports Growth</span>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="newcarda">
-                                <span><i>🛡️</i> Boosts Immunity</span>
-                                <span><i>📈</i> Supports Growth</span>
-                            </div>
-                            <div class="newcarda">
-                                <span><i>⚡</i> Increases Energy</span>
-                                <span><i>😊</i> Improves Mood</span>
-                            </div>
-                        @endif
-                    </div>
+                                <div class="newcarda">
+                                    <span><i>⚡</i> Increases Energy</span>
+                                    <span><i>😊</i> Improves Mood</span>
+                                </div>
+                            @endif
+                        </div>
                         <div class="pc-foot">
                             <div class="pc-price">
-                                ₹{{ number_format($product->display_price, 0) }} 
-                                @if($product->display_compare_price > $product->display_price)
+                                ₹{{ number_format($product->display_price, 0) }}
+                                @if ($product->display_compare_price > $product->display_price)
                                     <s>₹{{ number_format($product->display_compare_price, 0) }}</s>
                                 @endif
                             </div>
-                        <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart +</button>
+                            <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart
+                                +</button>
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
         </div>
     </section>
 
 
 
-        <!-- ══════════════════════════════════════════
-                   QUIZ CTA
-              ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+                       QUIZ CTA
+                  ══════════════════════════════════════════ -->
     <div class="quiz-cta reveal" id="quiz">
         <div>
             <span class="quiz-label"> Personalized Nutrition</span>
@@ -379,84 +405,89 @@
 
 
 
-   
+
 
     <!-- ══════════════════════════════════════════
-                   INGREDIENTS HIGHLIGHT
-              ══════════════════════════════════════════ -->
-    @if($featuredIngredients->isNotEmpty())
-    <section class="ing-section" id="ingredients">
-        <div class="stars-bg" id="starsBg"></div>
+                       INGREDIENTS HIGHLIGHT
+                  ══════════════════════════════════════════ -->
+    @if ($featuredIngredients->isNotEmpty())
+        <section class="ing-section" id="ingredients">
+            <div class="stars-bg" id="starsBg"></div>
 
-        <div class="ing-header reveal">
-            <span class="sec-eye">Ingredient Transparency</span>
-            <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
-            <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's gummy
-                — an honest, magical story of every ingredient we use.</p>
-        </div>
-
-        <div class="ing-tabs reveal">
-            @foreach($featuredIngredients as $i => $ing)
-                <button class="itab {{ $i === 0 ? 'active' : '' }}" data-ing="{{ $i }}">
-                    {{ $ing->main_heading }}
-                </button>
-            @endforeach
-        </div>
-
-        <div class="ing-panels">
-        @foreach($featuredIngredients as $i => $ing)
-            @php
-                $orbSpeeds = ['8s','6s','7s','8.5s','7.5s','8s','6s'];
-                $orb2 = ['8s','7s','9s','15s','10s','8s','7s'];
-                $orb3 = ['13s','11s','14s','18s','18s','13s','11s'];
-                $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
-            @endphp
-            <div class="ing-panel {{ $i === 0 ? 'active' : '' }}" id="ing-panel-{{ $i }}">
-                <div style="display:flex;justify-content:center">
-                    <div class="ing-planet" style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        @if($ing->icon_path)
-                            <img class="image-big" src="{{ asset('storage/' . $ing->icon_path) }}" alt="{{ $ing->main_heading }}">
-                        @else
-                            <img class="image-big" src="{{ asset('img/gradient1.webp') }}" alt="{{ $ing->main_heading }}">
-                        @endif
-                        <div class="orbit-i" style="--orr:{{ $orbSpeeds[$i] ?? '8s' }}">⭐</div>
-                        <div class="orbit-i" style="--orr:{{ $orb2[$i] ?? '8s' }}">⭐</div>
-                        <div class="orbit-i" style="--orr:{{ $orb3[$i] ?? '13s' }};font-size:1.1rem">⭐</div>
-                    </div>
-                </div>
-                <div class="ing-text">
-                    <div class="ing-num">{{ $num }}</div>
-                    <div class="ing-pill" style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                        {{ $ing->short_heading }}
-                    </div>
-                    <h3 class="ing-name">{{ $ing->main_heading }}</h3>
-                    @if($ing->dosage_heading_one)
-                        <p class="ing-sci">{{ $ing->dosage_heading_one }}</p>
-                    @endif
-                    @if($ing->description)
-                        <p class="ing-story">{{ $ing->description }}</p>
-                    @endif
-                    @if($ing->benefits->isNotEmpty())
-                        <div class="ing-powers">
-                            @foreach($ing->benefits as $benefit)
-                                <div class="ptag">{{ $benefit->heading }}</div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
+            <div class="ing-header reveal">
+                <span class="sec-eye">Ingredient Transparency</span>
+                <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
+                <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's
+                    gummy
+                    — an honest, magical story of every ingredient we use.</p>
             </div>
-        @endforeach
 
-        </div><!-- /ing-panels -->
-    </section>
+            <div class="ing-tabs reveal">
+                @foreach ($featuredIngredients as $i => $ing)
+                    <button class="itab {{ $i === 0 ? 'active' : '' }}" data-ing="{{ $i }}">
+                        {{ $ing->main_heading }}
+                    </button>
+                @endforeach
+            </div>
+
+            <div class="ing-panels">
+                @foreach ($featuredIngredients as $i => $ing)
+                    @php
+                        $orbSpeeds = ['8s', '6s', '7s', '8.5s', '7.5s', '8s', '6s'];
+                        $orb2 = ['8s', '7s', '9s', '15s', '10s', '8s', '7s'];
+                        $orb3 = ['13s', '11s', '14s', '18s', '18s', '13s', '11s'];
+                        $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
+                    @endphp
+                    <div class="ing-panel {{ $i === 0 ? 'active' : '' }}" id="ing-panel-{{ $i }}">
+                        <div style="display:flex;justify-content:center">
+                            <div class="ing-planet"
+                                style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                                @if ($ing->icon_path)
+                                    <img class="image-big" src="{{ asset('storage/' . $ing->icon_path) }}"
+                                        alt="{{ $ing->main_heading }}">
+                                @else
+                                    <img class="image-big" src="{{ asset('img/gradient1.webp') }}"
+                                        alt="{{ $ing->main_heading }}">
+                                @endif
+                                <div class="orbit-i" style="--orr:{{ $orbSpeeds[$i] ?? '8s' }}">⭐</div>
+                                <div class="orbit-i" style="--orr:{{ $orb2[$i] ?? '8s' }}">⭐</div>
+                                <div class="orbit-i" style="--orr:{{ $orb3[$i] ?? '13s' }};font-size:1.1rem">⭐</div>
+                            </div>
+                        </div>
+                        <div class="ing-text">
+                            <div class="ing-num">{{ $num }}</div>
+                            <div class="ing-pill"
+                                style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                                {{ $ing->short_heading }}
+                            </div>
+                            <h3 class="ing-name">{{ $ing->main_heading }}</h3>
+                            @if ($ing->dosage_heading_one)
+                                <p class="ing-sci">{{ $ing->dosage_heading_one }}</p>
+                            @endif
+                            @if ($ing->description)
+                                <p class="ing-story">{{ $ing->description }}</p>
+                            @endif
+                            @if ($ing->benefits->isNotEmpty())
+                                <div class="ing-powers">
+                                    @foreach ($ing->benefits as $benefit)
+                                        <div class="ptag">{{ $benefit->heading }}</div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+
+            </div><!-- /ing-panels -->
+        </section>
     @endif
 
 
 
 
-        <!-- ══════════════════════════════════════════
-                 DIET CHART SECTION
-            ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+                     DIET CHART SECTION
+                ══════════════════════════════════════════ -->
     <section class="diet-section" id="diet-chart">
 
         <div class="diet-header">
@@ -556,9 +587,9 @@
                                 <div class="gender-name">Girl</div>
                             </div>
                             <!-- <div class="gender-card" data-gender="other" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="/img/boyn.png" alt=""></span>
-                                <div class="gender-name">Prefer not to say</div>
-                            </div> -->
+                                    <span class="gender-emoji"><img src="/img/boyn.png" alt=""></span>
+                                    <div class="gender-name">Prefer not to say</div>
+                                </div> -->
                         </div>
                         <div class="selection-error" id="genderError">⚠️ Please select a gender to continue.</div>
                     </div>
@@ -795,8 +826,8 @@
         </div><!-- /stepper-wrap -->
     </section>
     <!-- ══════════════════════════════════════════
-                 SUBSCRIPTION MODAL
-            ══════════════════════════════════════════ -->
+                     SUBSCRIPTION MODAL
+                ══════════════════════════════════════════ -->
     <div class="modal-overlay" id="dcModalOverlay" onclick="dcCloseModalOutside(event)">
         <div class="modal-box">
             <button class="modal-close-btn" onclick="dcCloseModal()">✕</button>
@@ -841,8 +872,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                   HOW IT WORKS
-              ══════════════════════════════════════════ -->
+                       HOW IT WORKS
+                  ══════════════════════════════════════════ -->
     <section class="how-section reveal">
         <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
         <h2 class="sec-title">How It <span class="acc">Works</span></h2>
@@ -878,53 +909,53 @@
 
 
     <!-- ══════════════════════════════════════════
-                   CERTIFICATIONS CAROUSEL
-              ══════════════════════════════════════════ -->
+                       CERTIFICATIONS CAROUSEL
+                  ══════════════════════════════════════════ -->
     <!-- <section class="imgcar-section reveal" id="certificates">
-                <div class="imgcar-header">
-                  <span class="sec-eye">Our Certifications</span>
-                  <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
-                  <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
-                    recognised certifications.</p>
-                </div>
-
-                <div class="imgcar-wrapper">
-                  <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
-                  <div class="imgcar-viewport" id="imgcarViewport">
-                    <div class="imgcar-pbar" id="imgcarPbar"></div>
-                    <div class="imgcar-track" id="imgcarTrack">
-                      <div class="imgcar-item"><img src="/img/cert-fssai.png" alt="FSSAI Certified"
-                          onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
-                      <div class="imgcar-item"><img src="/img/cert-nabl.png" alt="NABL Lab Tested"
-                          onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
-                      <div class="imgcar-item"><img src="/img/cert-nongmo.png" alt="Non-GMO Verified"
-                          onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
-                      <div class="imgcar-item"><img src="/img/cert-iap.png" alt="Pediatrician Approved"
-                          onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
-                      <div class="imgcar-item"><img src="/img/cert-cruelty.png" alt="Cruelty Free"
-                          onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
-                      <div class="imgcar-item"><img src="/img/cert-iso.png" alt="ISO 22000 GMP"
-                          onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
+                    <div class="imgcar-header">
+                      <span class="sec-eye">Our Certifications</span>
+                      <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
+                      <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
+                        recognised certifications.</p>
                     </div>
-                  </div>
-                  <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
-                </div>
 
-                <div class="imgcar-dots" id="imgcarDots"></div>
-              </section> -->
+                    <div class="imgcar-wrapper">
+                      <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
+                      <div class="imgcar-viewport" id="imgcarViewport">
+                        <div class="imgcar-pbar" id="imgcarPbar"></div>
+                        <div class="imgcar-track" id="imgcarTrack">
+                          <div class="imgcar-item"><img src="/img/cert-fssai.png" alt="FSSAI Certified"
+                              onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
+                          <div class="imgcar-item"><img src="/img/cert-nabl.png" alt="NABL Lab Tested"
+                              onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
+                          <div class="imgcar-item"><img src="/img/cert-nongmo.png" alt="Non-GMO Verified"
+                              onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
+                          <div class="imgcar-item"><img src="/img/cert-iap.png" alt="Pediatrician Approved"
+                              onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
+                          <div class="imgcar-item"><img src="/img/cert-cruelty.png" alt="Cruelty Free"
+                              onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
+                          <div class="imgcar-item"><img src="/img/cert-iso.png" alt="ISO 22000 GMP"
+                              onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
+                        </div>
+                      </div>
+                      <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
+                    </div>
+
+                    <div class="imgcar-dots" id="imgcarDots"></div>
+                  </section> -->
 
     <!-- ══════════════════════════════════════════
-                   TESTIMONIALS
-              ══════════════════════════════════════════ -->
+                       TESTIMONIALS
+                  ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-                   FAQ
-              ══════════════════════════════════════════ -->
+                       FAQ
+                  ══════════════════════════════════════════ -->
     @include('partials.faq-section')
     <!-- ══════════════════════════════════════════
-                   NEWSLETTER
-              ══════════════════════════════════════════ -->
+                       NEWSLETTER
+                  ══════════════════════════════════════════ -->
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>

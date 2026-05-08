@@ -66,8 +66,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb0"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp0">▶</div>
@@ -83,8 +83,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb1"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp1">▶</div>
@@ -100,8 +100,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb2"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp2">▶</div>
@@ -117,8 +117,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb3"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp3">▶</div>
@@ -134,8 +134,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb4"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp4">▶</div>
@@ -151,8 +151,8 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb5"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
                         <div class="reel-play-btn" id="rp5">▶</div>
@@ -167,11 +167,11 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb6"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
+                        <div class="reel-play-btn" id="rp6">▶</div>
                         <div class="reel-info">
                             <div class="reel-stars">★★★★★</div>
                             <div class="reel-ava">👱‍♀️</div>
@@ -183,11 +183,11 @@
                         <div class="reel-prog">
                             <div class="reel-bar" id="rb7"></div>
                         </div>
-                        <div class="reel-bg"><video autoplay muted loop playsinline>
-                                <source src="img/v.mp4" type="video/mp4">
+                        <div class="reel-bg"><video muted loop playsinline preload="auto">
+                                <source src="{{ asset('img/v.mp4') }}" type="video/mp4">
                             </video></div>
                         <div class="reel-ov"></div>
-                        <div class="reel-play-btn" id="rp5">▶</div>
+                        <div class="reel-play-btn" id="rp7">▶</div>
                         <div class="reel-info">
                             <div class="reel-stars">★★★★★</div>
                             <div class="reel-ava">👱‍♀️</div>
@@ -207,6 +207,8 @@
                 <button class="reels-dot" data-index="3"></button>
                 <button class="reels-dot" data-index="4"></button>
                 <button class="reels-dot" data-index="5"></button>
+                <button class="reels-dot" data-index="6"></button>
+                <button class="reels-dot" data-index="7"></button>
             </div>
 
         </div><!-- /reels-section-wrap -->

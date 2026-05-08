@@ -160,18 +160,19 @@
 @endpush
 
 @section('content')
-    <div class="page-hero">
-        <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
-        <h1 class="hero-title">Privacy &amp; <span>Policy</span></h1>
-        <p class="hero-subtitle">Please read this policy carefully to understand how we collect, use, and protect your
-            personal information.</p>
-        <div class="hero-meta">
-            <div class="meta-pill">Last Updated: June 1, 2025</div>
-            <div class="meta-pill">NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">Governed by Indian Law</div>
+    <section class="product-listing-hero">
+        <div class="product-listing-hero-inner">
+            <div class="product-listing-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span>/</span>
+                <span>Privacy Policy</span>
+            </div>
+            <span class="product-listing-hero-badge">Legal · NutriBuddy Kids</span>
+            <h1 class="product-listing-hero-title">Privacy Policy</h1>
+            <p class="product-listing-hero-sub">Please read this policy carefully to understand how we collect, use, and protect your
+                personal information.</p>
         </div>
-    </div>
-
+    </section>
     <section class="privacy-text-wrap">
         <div class="privacy-block">
             <h2>Privacy Policy</h2>

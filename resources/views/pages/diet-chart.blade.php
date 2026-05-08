@@ -3,11 +3,100 @@
 @push('styles')
     <style>
 
+        .diet-page-hero {
+            background: #0d0028;
+            overflow: hidden;
+            padding: 100px 5% 60px;
+            position: relative;
+        }
+
+        .diet-page-hero::before {
+            animation: blobMorph 10s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(255, 77, 143, .12), transparent 70%);
+            border-radius: 62% 38% 56% 44%/48% 62% 38% 52%;
+            content: '';
+            height: 560px;
+            pointer-events: none;
+            position: absolute;
+            right: -120px;
+            top: -160px;
+            width: 560px;
+        }
+
+        .diet-page-hero::after {
+            animation: blobMorph 14s ease-in-out infinite reverse;
+            background: radial-gradient(circle, rgba(124, 58, 237, .09), transparent 70%);
+            border-radius: 38% 62% 44% 56%/62% 38% 55% 45%;
+            bottom: -80px;
+            content: '';
+            height: 380px;
+            left: -80px;
+            pointer-events: none;
+            position: absolute;
+            width: 380px;
+        }
+
+        .diet-page-hero-inner {
+            margin: 0 auto;
+            max-width: 900px;
+            padding-top: 23px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .diet-page-breadcrumb {
+            align-items: center;
+            color: #ffffff;
+            display: flex;
+            flex-wrap: wrap;
+            font-size: .9rem;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .diet-page-breadcrumb a {
+            color: var(--pk);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .diet-page-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .diet-page-hero-badge {
+            background: var(--pkl);
+            border-radius: 50px;
+            color: var(--pk);
+            display: inline-block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .75rem;
+            font-weight: 900;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+        }
+
+        .diet-page-hero-title {
+            color: var(--wh);
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        .diet-page-hero-sub {
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin: 0;
+            max-width: 650px;
+        }
+
         /* ══ LAYOUT ══ */
         .diet-section {
             max-width: 780px;
             margin: 0 auto;
-            padding: 48px 20px 80px;
+            padding: 56px 20px 80px;
         }
 
         /* ══ HEADER ══ */
@@ -1289,8 +1378,478 @@
             font-weight: 700;
         }
 
+        .diet-page-hero {
+            background:
+                radial-gradient(circle at 12% 22%, rgba(255, 214, 0, .16), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(255, 77, 143, .2), transparent 34%),
+                linear-gradient(135deg, #170032 0%, #321064 52%, #0d0028 100%);
+            padding: 120px 5% 74px;
+        }
+
+        .diet-page-hero-inner {
+            align-items: center;
+            display: grid;
+            gap: 42px;
+            grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+            max-width: 1180px;
+        }
+
+        .diet-page-breadcrumb {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, .86);
+            display: inline-flex;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            margin-bottom: 22px;
+            padding: 8px 14px;
+            width: fit-content;
+        }
+
+        .diet-page-breadcrumb a {
+            color: #fff;
+        }
+
+        .diet-page-hero-badge {
+            box-shadow: 0 12px 30px rgba(255, 77, 143, .2);
+        }
+
+        .diet-page-hero-title {
+            font-size: clamp(2.15rem, 5vw, 4.1rem);
+            letter-spacing: 0;
+            line-height: 1.08;
+            margin-bottom: 18px;
+            max-width: 720px;
+        }
+
+        .diet-page-hero-sub {
+            color: rgba(255, 255, 255, .78);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.04rem;
+            max-width: 630px;
+        }
+
+        .diet-hero-actions {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .diet-hero-btn,
+        .diet-hero-link {
+            align-items: center;
+            border-radius: 999px;
+            display: inline-flex;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            min-height: 48px;
+            padding: 0 22px;
+            text-decoration: none;
+        }
+
+        .diet-hero-btn {
+            background: linear-gradient(135deg, var(--pk), var(--pkd));
+            box-shadow: 0 16px 34px rgba(255, 77, 143, .32);
+            color: #fff;
+        }
+
+        .diet-hero-link {
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: #fff;
+        }
+
+        .diet-hero-visual {
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid rgba(255, 255, 255, .48);
+            border-radius: 30px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, .24);
+            overflow: hidden;
+            padding: 24px;
+            position: relative;
+        }
+
+        .diet-hero-visual::before {
+            background: linear-gradient(135deg, rgba(255, 77, 143, .16), rgba(124, 58, 237, .13));
+            border-radius: 999px;
+            content: '';
+            height: 160px;
+            position: absolute;
+            right: -56px;
+            top: -56px;
+            width: 160px;
+        }
+
+        .diet-visual-top {
+            align-items: center;
+            display: flex;
+            gap: 14px;
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .diet-visual-icon {
+            align-items: center;
+            background: var(--pkl);
+            border-radius: 20px;
+            color: var(--pk);
+            display: inline-flex;
+            font-size: 1.7rem;
+            height: 58px;
+            justify-content: center;
+            width: 58px;
+        }
+
+        .diet-visual-title {
+            color: var(--dk);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.25rem;
+            line-height: 1.2;
+        }
+
+        .diet-visual-sub {
+            color: #888;
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
+            font-weight: 800;
+            margin-top: 3px;
+        }
+
+        .diet-visual-list {
+            display: grid;
+            gap: 12px;
+            position: relative;
+        }
+
+        .diet-visual-item {
+            align-items: center;
+            background: #fff;
+            border: 1px solid #f4e6ef;
+            border-radius: 18px;
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .diet-visual-dot {
+            align-items: center;
+            border-radius: 14px;
+            color: #fff;
+            display: inline-flex;
+            flex: 0 0 42px;
+            font-family: 'Fredoka One', cursive;
+            height: 42px;
+            justify-content: center;
+            width: 42px;
+        }
+
+        .diet-visual-item:nth-child(1) .diet-visual-dot {
+            background: var(--pk);
+        }
+
+        .diet-visual-item:nth-child(2) .diet-visual-dot {
+            background: var(--pu);
+        }
+
+        .diet-visual-item:nth-child(3) .diet-visual-dot {
+            background: var(--mn);
+        }
+
+        .diet-visual-copy strong {
+            color: var(--dk);
+            display: block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 900;
+        }
+
+        .diet-visual-copy span {
+            color: #8a8790;
+            display: block;
+            font-size: .8rem;
+            line-height: 1.45;
+            margin-top: 2px;
+        }
+
+        .diet-section {
+            background:
+                radial-gradient(circle at 0% 8%, rgba(255, 77, 143, .08), transparent 26%),
+                radial-gradient(circle at 100% 42%, rgba(0, 214, 143, .09), transparent 28%);
+            max-width: none;
+            padding: 76px 5% 92px;
+        }
+
+        .diet-section-inner {
+            margin: 0 auto;
+            max-width: 1180px;
+        }
+
+        .diet-header {
+            align-items: end;
+            display: grid;
+            gap: 22px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .sec-eye {
+            background: var(--mnl);
+            color: #009463;
+            margin-bottom: 12px;
+        }
+
+        .sec-title {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            margin-bottom: 10px;
+        }
+
+        .sec-sub {
+            margin: 0;
+            max-width: 650px;
+        }
+
+        .diet-mini-stats {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            min-width: 390px;
+        }
+
+        .diet-mini-stat {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 20px;
+            box-shadow: 0 14px 34px rgba(13, 0, 40, .06);
+            padding: 16px;
+        }
+
+        .diet-mini-stat strong {
+            color: var(--pk);
+            display: block;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .diet-mini-stat span {
+            color: #888;
+            display: block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .74rem;
+            font-weight: 900;
+            line-height: 1.25;
+            margin-top: 7px;
+        }
+
+        .diet-planner-shell {
+            align-items: start;
+            display: grid;
+            gap: 28px;
+            grid-template-columns: 300px minmax(0, 1fr);
+        }
+
+        .diet-side-panel {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 28px;
+            box-shadow: 0 20px 52px rgba(13, 0, 40, .08);
+            overflow: hidden;
+            padding: 24px;
+            position: sticky;
+            top: 110px;
+        }
+
+        .diet-side-panel h3 {
+            color: var(--dk);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.35rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .diet-side-panel p {
+            color: #888;
+            font-size: .9rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+
+        .diet-check-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .diet-check-item {
+            align-items: flex-start;
+            display: flex;
+            gap: 10px;
+            color: var(--dk);
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 900;
+            line-height: 1.35;
+        }
+
+        .diet-check-item span {
+            align-items: center;
+            background: var(--mnl);
+            border-radius: 50%;
+            color: #029864;
+            display: inline-flex;
+            flex: 0 0 22px;
+            font-size: .75rem;
+            height: 22px;
+            justify-content: center;
+            margin-top: -1px;
+            width: 22px;
+        }
+
+        .diet-side-note {
+            background: linear-gradient(135deg, var(--pkl), #fff5fb);
+            border: 1px solid rgba(255, 77, 143, .16);
+            border-radius: 20px;
+            color: #777;
+            font-size: .82rem;
+            line-height: 1.55;
+            margin-top: 20px;
+            padding: 16px;
+        }
+
+        .stepper-wrap {
+            min-width: 0;
+        }
+
+        .stepper-progress {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 24px;
+            box-shadow: 0 14px 34px rgba(13, 0, 40, .06);
+            justify-content: stretch;
+            margin-bottom: 18px;
+            padding: 18px;
+        }
+
+        .sp-step {
+            min-width: 86px;
+        }
+
+        .sp-ball {
+            height: 42px;
+            width: 42px;
+        }
+
+        .diet-card {
+            border: 1px solid #f3e5ef;
+            border-radius: 30px;
+            box-shadow: 0 24px 64px rgba(13, 0, 40, .09);
+            padding: clamp(24px, 4vw, 42px);
+        }
+
+        .step-head {
+            margin: 0 auto 30px;
+            max-width: 620px;
+        }
+
+        .step-head h3 {
+            font-size: clamp(1.45rem, 3vw, 2rem);
+            margin-bottom: 10px;
+        }
+
+        .name-input-field,
+        .hw-group input {
+            background: #fff;
+            border-color: #efe5ef;
+            min-height: 52px;
+        }
+
+        .age-card,
+        .gender-card,
+        .prob-tag,
+        .dpref,
+        .atag {
+            background: #fff;
+            border-color: #efe5ef;
+        }
+
+        .age-card,
+        .gender-card {
+            min-height: 118px;
+            justify-content: center;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .prob-tag {
+            border-radius: 18px;
+            justify-content: flex-start;
+            min-height: 54px;
+        }
+
+        .btn-next,
+        .btn-generate,
+        .btn-back,
+        .btn-restart,
+        .btn-subscribe {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            min-height: 48px;
+        }
+
         /* ══ RESPONSIVE ══ */
+        @media (max-width: 1040px) {
+            .diet-page-hero-inner,
+            .diet-header,
+            .diet-planner-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .diet-hero-visual,
+            .diet-side-panel {
+                position: relative;
+                top: auto;
+            }
+
+            .diet-mini-stats {
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .diet-mini-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
         @media (max-width: 680px) {
+            .diet-page-hero {
+                padding: 90px 6% 48px;
+            }
+
+            .diet-page-hero-inner {
+                gap: 28px;
+            }
+
+            .diet-hero-visual,
+            .diet-side-panel {
+                border-radius: 24px;
+                padding: 20px;
+            }
+
+            .diet-section {
+                padding: 46px 16px 70px;
+            }
+
             .diet-card {
                 padding: 24px 18px;
                 border-radius: 24px;
@@ -1358,8 +1917,23 @@
         }
 
         @media (max-width: 440px) {
+            .diet-hero-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .diet-hero-btn,
+            .diet-hero-link {
+                justify-content: center;
+                width: 100%;
+            }
+
             .age-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
             }
 
             .meal-plan-grid {
@@ -1411,15 +1985,95 @@
 @endpush
 @section('content')
     <main>
-        <section class="diet-section" id="diet-chart">
-            <div class="diet-header">
-                <span class="sec-eye">Free for Every Parent</span>
-                <h2 class="sec-title">Get Your Child's <span class="acc">Personalized</span><br>Diet Chart </h2>
-                <p class="sec-sub">Answer 4 quick questions — get a free 2-day expert diet plan. Subscribe to unlock the full
-                    7-day plan + PDF download.</p>
-            </div>
+        <section class="diet-page-hero">
+            <div class="diet-page-hero-inner">
+                <div class="diet-hero-copy">
+                    <div class="diet-page-breadcrumb">
+                        <a href="{{ route('home') }}">Home</a>
+                        <span>/</span>
+                        <span>Personalized Diet Chart</span>
+                    </div>
+                    <span class="diet-page-hero-badge">Free for Every Parent</span>
+                    <h1 class="diet-page-hero-title">Get Your Child's Personalized Diet Chart</h1>
+                    <p class="diet-page-hero-sub">Answer a few simple questions and get a nutrition plan shaped around your child's age, goals, diet preference, and daily routine.</p>
+                    <div class="diet-hero-actions">
+                        <a class="diet-hero-btn" href="#diet-chart">Start Free Plan</a>
+                        <a class="diet-hero-link" href="{{ route('product') }}">Shop Wellness Gummies</a>
+                    </div>
+                </div>
 
-            <div class="stepper-wrap">
+                <div class="diet-hero-visual" aria-hidden="true">
+                    <div class="diet-visual-top">
+                        <div class="diet-visual-icon">🥣</div>
+                        <div>
+                            <div class="diet-visual-title">Smart Meal Planner</div>
+                            <div class="diet-visual-sub">2-day preview now, full 7-day plan after unlock</div>
+                        </div>
+                    </div>
+                    <div class="diet-visual-list">
+                        <div class="diet-visual-item">
+                            <div class="diet-visual-dot">1</div>
+                            <div class="diet-visual-copy">
+                                <strong>Child profile</strong>
+                                <span>Age, gender, height and weight for better personalization.</span>
+                            </div>
+                        </div>
+                        <div class="diet-visual-item">
+                            <div class="diet-visual-dot">2</div>
+                            <div class="diet-visual-copy">
+                                <strong>Health goals</strong>
+                                <span>Focus on immunity, growth, digestion, sleep or picky eating.</span>
+                            </div>
+                        </div>
+                        <div class="diet-visual-item">
+                            <div class="diet-visual-dot">3</div>
+                            <div class="diet-visual-copy">
+                                <strong>Meal plan</strong>
+                                <span>Daily meals, nutrition targets, tips and supplement suggestions.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="diet-section" id="diet-chart">
+            <div class="diet-section-inner">
+                <div class="diet-header">
+                    <div>
+                        <span class="sec-eye">Free for Every Parent</span>
+                        <h2 class="sec-title">Build a <span class="acc">personalized</span> diet chart</h2>
+                        <p class="sec-sub">A guided planner for parents who want practical meals, clearer nutrition targets, and simple next steps without guesswork.</p>
+                    </div>
+                    <div class="diet-mini-stats">
+                        <div class="diet-mini-stat">
+                            <strong>4</strong>
+                            <span>guided steps</span>
+                        </div>
+                        <div class="diet-mini-stat">
+                            <strong>2</strong>
+                            <span>free preview days</span>
+                        </div>
+                        <div class="diet-mini-stat">
+                            <strong>7</strong>
+                            <span>day full plan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diet-planner-shell">
+                    <aside class="diet-side-panel">
+                        <h3>What you get</h3>
+                        <p>Designed for busy parents, with clean steps and output that is easy to follow at home.</p>
+                        <div class="diet-check-list">
+                            <div class="diet-check-item"><span>✓</span>Meal ideas based on diet preference and goals</div>
+                            <div class="diet-check-item"><span>✓</span>Daily nutrition targets for calories, protein and micronutrients</div>
+                            <div class="diet-check-item"><span>✓</span>Parent tips and a matching NutriBuddy product suggestion</div>
+                        </div>
+                        <div class="diet-side-note">Tip: add height and weight if you know them. The plan still works without them, but the summary becomes more accurate.</div>
+                    </aside>
+
+                    <div class="stepper-wrap">
 
                 <!-- Stepper Progress -->
                 <div class="stepper-progress">
@@ -1756,6 +2410,8 @@
                     </div><!-- /result-state -->
                 </div><!-- /diet-card -->
             </div><!-- /stepper-wrap -->
+                </div><!-- /diet-planner-shell -->
+            </div><!-- /diet-section-inner -->
         </section>
 
 
@@ -1813,7 +2469,7 @@
                     plan: 'pro'
                 };
 
-                /* â”€â”€ Selectors â”€â”€ */
+                /* -- Selectors -- */
                 window.dcSelectAge = function(el) {
                     document.querySelectorAll('#ageGrid .age-card').forEach(c => c.classList.remove('selected'));
                     el.classList.add('selected');
@@ -1871,7 +2527,7 @@
                     document.getElementById('plan' + p.charAt(0).toUpperCase() + p.slice(1)).classList.add('active');
                 };
 
-                /* â”€â”€ Step navigation â”€â”€ */
+                /* -- Step navigation -- */
                 window.dcGoStep = function(step) {
                     if (step === 2) {
                         // Validate name
@@ -1927,7 +2583,7 @@
                         s.classList.remove('active', 'done');
                         if (i < step) {
                             s.classList.add('done');
-                            s.querySelector('.sp-ball').textContent = 'âœ“';
+                            s.querySelector('.sp-ball').textContent = 'OK';
                         } else if (i === step) {
                             s.classList.add('active');
                             s.querySelector('.sp-ball').textContent = i;
@@ -1941,7 +2597,7 @@
                     }
                 }
 
-                /* â”€â”€ Generate â”€â”€ */
+                /* -- Generate -- */
                 window.dcGenerateChart = function() {
                     if (!dcState.pref) {
                         document.getElementById('prefError').classList.add('show');
@@ -1952,7 +2608,7 @@
                     setTimeout(dcBuildResult, 2400);
                 };
 
-                /* â”€â”€ BMI â”€â”€ */
+                /* -- BMI -- */
                 function dcGetBMI() {
                     if (!dcState.height || !dcState.weight) return null;
                     var h = parseFloat(dcState.height) / 100,
@@ -1964,13 +2620,13 @@
                         status = 'Underweight';
                         color = '#FF6B35';
                     } else if (bmi < 22) {
-                        status = 'Healthy Weight âœ“';
+                        status = 'Healthy Weight OK';
                         color = '#00D68F';
                     } else if (bmi < 25) {
                         status = 'Slightly Overweight';
                         color = '#FFD600';
                     } else {
-                        status = 'High BMI â€” Focus on Healthy Weight';
+                        status = 'High BMI  -  Focus on Healthy Weight';
                         color = '#FF4D8F';
                     }
                     return {
@@ -1980,14 +2636,14 @@
                     };
                 }
 
-                /* â”€â”€ Build result â”€â”€ */
+                /* -- Build result -- */
                 function dcBuildResult() {
                     var ageMap = {
-                        '2-3': 'Toddler (2â€“3 yrs)',
-                        '4-6': 'Pre-Schooler (4â€“6 yrs)',
-                        '7-9': 'Primary Schooler (7â€“9 yrs)',
-                        '10-12': 'Middle Schooler (10â€“12 yrs)',
-                        '13-14': 'Teen (13â€“14 yrs)'
+                        '2-3': 'Toddler (2-3 yrs)',
+                        '4-6': 'Pre-Schooler (4-6 yrs)',
+                        '7-9': 'Primary Schooler (7-9 yrs)',
+                        '10-12': 'Middle Schooler (10-12 yrs)',
+                        '13-14': 'Teen (13-14 yrs)'
                     };
                     var pmap = {
                         immunity: 'Immunity',
@@ -2008,7 +2664,7 @@
                     var cname = dcState.childName ? dcState.childName + "'s" : "Your Child's";
                     document.getElementById('resultTitle').textContent = cname + ' 7-Day Nutrition Plan';
                     document.getElementById('resultDesc').textContent = 'Personalized for a ' + (ageMap[dcState.age] ||
-                        dcState.age) + ' â€” focused on ' + dcState.problems.slice(0, 2).map(p => pmap[p] || p).join(
+                        dcState.age) + '  -  focused on ' + dcState.problems.slice(0, 2).map(p => pmap[p] || p).join(
                         ' & ') + '.';
 
                     // BMI
@@ -2016,7 +2672,7 @@
                     if (bmiInfo) {
                         document.getElementById('bmiRow').innerHTML = '<div class="bmi-badge" style="background:' + bmiInfo
                             .color + '22;color:' + bmiInfo.color + ';border:1.5px solid ' + bmiInfo.color +
-                            '44"><span style="font-size:16px">âš–ï¸</span> BMI ' + bmiInfo.bmi + ' â€” ' + bmiInfo.status +
+                            '44"><span style="font-size:16px">BMI</span> BMI ' + bmiInfo.bmi + '  -  ' + bmiInfo.status +
                             '</div>';
                     } else {
                         document.getElementById('bmiRow').innerHTML = '';
@@ -2024,10 +2680,10 @@
 
                     // Tags
                     var tags = [];
-                    if (dcState.childName) tags.push('ðŸ‘¦ ' + dcState.childName);
+                    if (dcState.childName) tags.push(dcState.childName);
                     if (dcState.pref) tags.push(dcState.pref.charAt(0).toUpperCase() + dcState.pref.slice(1));
                     if (dcState.age) tags.push(dcState.age + ' yrs');
-                    if (dcState.height && dcState.weight) tags.push(dcState.height + 'cm Â· ' + dcState.weight + 'kg');
+                    if (dcState.height && dcState.weight) tags.push(dcState.height + 'cm | ' + dcState.weight + 'kg');
                     dcState.problems.slice(0, 3).forEach(p => {
                         if (pmap[p]) tags.push(pmap[p]);
                     });
@@ -2059,7 +2715,7 @@
                         '<div class="prod-info"><div class="prod-tag">Recommended for ' + (dcState.childName ||
                             'Your Child') + '</div><div class="prod-name">' + rec.name + '</div><div class="prod-why">' +
                         rec.why + '</div></div>' +
-                        '<button class="prod-btn" onclick="alert(\'Added to cart! ðŸ›’\')">Add to Cart â€” ' + rec.price +
+                        '<button class="prod-btn" type="button">Add to Cart  -  ' + rec.price +
                         '</button>';
 
                     // Tips
@@ -2083,11 +2739,11 @@
                     return '<div class="meal-card"><div class="meal-time"><div class="meal-dot" style="background:' + m
                         .color + '"></div><div class="meal-label" style="color:' + m.color + '">' + m.time +
                         '</div></div><span class="meal-icon">' + m.icon + '</span><div class="meal-name">' + m.name +
-                        '</div><div class="meal-items">' + m.items + '</div><div class="meal-tag">ðŸŒ¿ ' + m.benefit +
+                        '</div><div class="meal-items">' + m.items + '</div><div class="meal-tag"> ' + m.benefit +
                         '</div></div>';
                 }
 
-                /* â”€â”€ Meal data â”€â”€ */
+                /* -- Meal data -- */
                 function dcGetMeals(age, pref, problems) {
                     var isVeg = ['vegetarian', 'vegan'].includes(pref);
                     var isEgg = pref === 'eggetarian';
@@ -2097,7 +2753,7 @@
 
                     var day1 = [{
                             time: 'Wake-Up',
-                            icon: 'ðŸŒ…',
+                            icon: '',
                             color: '#FF9900',
                             name: 'Morning Boost',
                             items: 'Warm water with lemon + 1 tsp Amla powder + 5 soaked almonds',
@@ -2105,7 +2761,7 @@
                         },
                         {
                             time: 'Breakfast',
-                            icon: 'ðŸ³',
+                            icon: '',
                             color: '#FF4D8F',
                             name: isBrain ? 'Brain Power Breakfast' : 'Power Breakfast',
                             items: isBrain ? (isVeg ? 'Moong dal chilla + Walnut chutney + Fresh fruit smoothie' :
@@ -2116,7 +2772,7 @@
                         },
                         {
                             time: 'Mid-Morning',
-                            icon: 'ðŸŽ',
+                            icon: '',
                             color: '#00BFFF',
                             name: 'Smart Snack',
                             items: 'Seasonal fruit + Roasted chana or Makhana + Coconut water',
@@ -2124,7 +2780,7 @@
                         },
                         {
                             time: 'Lunch',
-                            icon: 'ðŸ±',
+                            icon: '',
                             color: '#7C3AED',
                             name: isGrowth ? 'Growth Power Lunch' : 'Nutrition Lunch',
                             items: isVeg ? 'Brown rice + Dal + Paneer sabzi + Salad + Curd' : (isEgg ?
@@ -2134,7 +2790,7 @@
                         },
                         {
                             time: 'Evening',
-                            icon: 'ðŸ¥¤',
+                            icon: '',
                             color: '#00D68F',
                             name: 'After-School Refuel',
                             items: isBrain ? 'Turmeric milk + Dates + Dark chocolate square' :
@@ -2143,7 +2799,7 @@
                         },
                         {
                             time: 'Dinner',
-                            icon: 'ðŸŒ™',
+                            icon: '',
                             color: isSleep ? '#5B21B6' : '#FF6B35',
                             name: isSleep ? 'Sleep Calm Dinner' : 'Growth Dinner',
                             items: isSleep ? 'Light khichdi + Ghee + Steamed veggies + Warm chamomile milk' : (isVeg ?
@@ -2155,7 +2811,7 @@
 
                     var day2 = [{
                             time: 'Wake-Up',
-                            icon: 'ðŸŒ…',
+                            icon: '',
                             color: '#FF9900',
                             name: 'Morning Ritual',
                             items: 'Soaked methi water + 1 tsp honey + 4 walnuts',
@@ -2163,7 +2819,7 @@
                         },
                         {
                             time: 'Breakfast',
-                            icon: 'ðŸ¥ž',
+                            icon: '',
                             color: '#FF4D8F',
                             name: 'Wholesome Breakfast',
                             items: isVeg ? 'Ragi dosa + Peanut chutney + Seasonal fruit + Buttermilk' : (isEgg ?
@@ -2172,7 +2828,7 @@
                         },
                         {
                             time: 'Mid-Morning',
-                            icon: 'ðŸŒ',
+                            icon: '',
                             color: '#00BFFF',
                             name: 'Power Snack',
                             items: 'Roasted makhana + A2 milk or coconut water + Seasonal fruit',
@@ -2180,7 +2836,7 @@
                         },
                         {
                             time: 'Lunch',
-                            icon: 'ðŸ±',
+                            icon: '',
                             color: '#7C3AED',
                             name: 'Power Lunch',
                             items: isVeg ? 'Wheat roti + Palak paneer + Rajma + Salad + Curd' : (isEgg ?
@@ -2190,7 +2846,7 @@
                         },
                         {
                             time: 'Evening',
-                            icon: 'ðŸ¥¤',
+                            icon: '',
                             color: '#00D68F',
                             name: 'Energizing Snack',
                             items: 'Dates + Roasted chana + Coconut water + Seasonal fruit',
@@ -2198,7 +2854,7 @@
                         },
                         {
                             time: 'Dinner',
-                            icon: 'ðŸŒ™',
+                            icon: '',
                             color: '#5B21B6',
                             name: 'Light Nourishing Dinner',
                             items: isVeg ? 'Vegetable daliya + Buttermilk + Salad' : (isEgg ?
@@ -2210,7 +2866,7 @@
                     return [day1, day2];
                 }
 
-                /* â”€â”€ Nutrients â”€â”€ */
+                /* -- Nutrients -- */
                 function dcGetNutrients(age) {
                     var base = {
                         '2-3': {
@@ -2256,37 +2912,37 @@
                     };
                     var d = base[age] || base['7-9'];
                     return [{
-                            name: 'ðŸ”¥ Calories',
+                            name: ' Calories',
                             val: d.cal,
                             pct: 72,
                             color: 'linear-gradient(90deg,#FF4D8F,#FFD600)'
                         },
                         {
-                            name: 'ðŸ’ª Protein',
+                            name: ' Protein',
                             val: d.pro,
                             pct: 68,
                             color: 'linear-gradient(90deg,#7C3AED,#FF4D8F)'
                         },
                         {
-                            name: 'ðŸ¦´ Calcium',
+                            name: ' Calcium',
                             val: d.ca,
                             pct: 80,
                             color: 'linear-gradient(90deg,#00BFFF,#00D68F)'
                         },
                         {
-                            name: 'ðŸ©¸ Iron',
+                            name: ' Iron',
                             val: d.fe,
                             pct: 60,
                             color: 'linear-gradient(90deg,#FF6B35,#FF4D8F)'
                         },
                         {
-                            name: 'ðŸŠ Vitamin C',
+                            name: ' Vitamin C',
                             val: d.vc,
                             pct: 90,
                             color: 'linear-gradient(90deg,#FFD600,#FF6B35)'
                         },
                         {
-                            name: 'ðŸŸ Omega-3 DHA',
+                            name: ' Omega-3 DHA',
                             val: d.om,
                             pct: 55,
                             color: 'linear-gradient(90deg,#00BFFF,#7C3AED)'
@@ -2294,78 +2950,78 @@
                     ];
                 }
 
-                /* â”€â”€ Product rec â”€â”€ */
+                /* -- Product rec -- */
                 function dcGetProductRec(problems) {
                     if (problems.includes('brain') || problems.includes('exam'))
                         return {
                             name: 'BrainBoost Chews',
-                            price: 'â‚¹649',
-                            why: 'Brahmi + Omega-3 DHA + Shankhpushpi â€” clinically shown to improve focus, memory, and learning scores in 8 weeks.'
+                            price: '₹649',
+                            why: 'Brahmi + Omega-3 DHA + Shankhpushpi  -  clinically shown to improve focus, memory, and learning scores in 8 weeks.'
                         };
                     if (problems.includes('sleep') || problems.includes('mood'))
                         return {
                             name: 'DreamCalm Drops',
-                            price: 'â‚¹549',
-                            why: 'Chamomile + L-Theanine + Jatamansi â€” helps even the most hyperactive kids sleep deeply and wake up refreshed.'
+                            price: '₹549',
+                            why: 'Chamomile + L-Theanine + Jatamansi  -  helps even the most hyperactive kids sleep deeply and wake up refreshed.'
                         };
                     return {
                         name: 'GrowStrong Gummies',
-                        price: 'â‚¹599',
-                        why: 'Ashwagandha + Vitamin D3 + Zinc â€” builds immunity, supports height & bone growth, and tastes amazing!'
+                        price: '₹599',
+                        why: 'Ashwagandha + Vitamin D3 + Zinc  -  builds immunity, supports height & bone growth, and tastes amazing!'
                     };
                 }
 
-                /* â”€â”€ Tips â”€â”€ */
+                /* -- Tips -- */
                 function dcGetTips(problems) {
                     var pool = [{
-                            icon: 'ðŸ’§',
+                            icon: '',
                             title: 'Hydration is Key',
-                            text: 'Ensure 6â€“8 glasses of water daily. Add lemon or mint for taste. Coconut water is great for electrolytes.'
+                            text: 'Ensure 6-8 glasses of water daily. Add lemon or mint for taste. Coconut water is great for electrolytes.'
                         },
                         {
-                            icon: 'â˜€ï¸',
+                            icon: 'Sun',
                             title: 'Morning Sunlight',
-                            text: '15 mins of sunlight before 9am gives natural Vitamin D â€” crucial for bone growth and mood regulation.'
+                            text: '15 mins of sunlight before 9am gives natural Vitamin D  -  crucial for bone growth and mood regulation.'
                         },
                         {
-                            icon: 'ðŸ•',
+                            icon: '',
                             title: 'Consistent Meal Times',
                             text: 'Fixed meal timings regulate hunger hormones and improve digestion and energy levels throughout the day.'
                         },
                         {
-                            icon: 'ðŸš«',
+                            icon: '',
                             title: 'Avoid Ultra-Processed Foods',
                             text: 'Chips, packaged biscuits, and sugary drinks spike blood sugar and displace nutrient-dense foods.'
                         },
                         {
-                            icon: 'ðŸ«™',
+                            icon: '',
                             title: 'Add Ghee Daily',
                             text: '1 tsp of pure ghee in dal or roti boosts fat-soluble vitamin absorption and supports brain development.'
                         },
                         {
-                            icon: 'ðŸ˜´',
+                            icon: '',
                             title: 'Sleep Schedule',
-                            text: '9â€“10 hours of sleep is non-negotiable for growth hormone release and memory consolidation.'
+                            text: '9-10 hours of sleep is non-negotiable for growth hormone release and memory consolidation.'
                         }
                     ];
                     if (problems.includes('brain')) pool.unshift({
-                        icon: 'ðŸ³',
+                        icon: '',
                         title: 'Breakfast Before School',
                         text: 'Never skip breakfast! The brain uses 20% of all energy. A good breakfast improves focus by up to 35%.'
                     });
                     if (problems.includes('immunity')) pool.unshift({
-                        icon: 'ðŸ¥›',
+                        icon: '',
                         title: 'Probiotic Power',
                         text: 'Include one portion of curd/yogurt daily. Gut health = immune health. 70% of immunity lives in the gut.'
                     });
                     return pool.slice(0, 4);
                 }
 
-                /* â”€â”€ Modal â”€â”€ */
+                /* -- Modal -- */
                 window.dcOpenModal = function() {
                     var titles = {
-                        basic: 'Unlock 7-Day Plan ðŸŒ¿',
-                        pro: 'Start Monthly Subscription ðŸŒ¿'
+                        basic: 'Unlock 7-Day Plan ',
+                        pro: 'Start Monthly Subscription '
                     };
                     var subs = {
                         basic: 'One-time payment. Receive the complete 7-day chart as a PDF instantly via email.',
@@ -2376,13 +3032,13 @@
                         pro: '7-Day Diet Chart (Monthly)'
                     };
                     var prices = {
-                        basic: 'â‚¹99',
-                        pro: 'â‚¹199'
+                        basic: '₹99',
+                        pro: '₹199'
                     };
                     document.getElementById('dcModalTitle').textContent = titles[dcState.plan] || titles.pro;
                     document.getElementById('dcModalSub').textContent = subs[dcState.plan] || subs.pro;
                     document.getElementById('dcOrderItem').textContent = items[dcState.plan] || items.pro;
-                    document.getElementById('dcOrderPrice').textContent = prices[dcState.plan] || 'â‚¹199';
+                    document.getElementById('dcOrderPrice').textContent = prices[dcState.plan] || '₹199';
                     document.getElementById('dcModalOverlay').classList.add('open');
                 };
 
@@ -2413,7 +3069,7 @@
 
                 window.dcDownload = function() {
                     var lines = [
-                        'NUTRIBUDDY â€” 7-DAY PERSONALIZED DIET CHART',
+                        'NUTRIBUDDY  -  7-DAY PERSONALIZED DIET CHART',
                         '='.repeat(46),
                         'Child: ' + (dcState.childName || 'N/A') + ' | Age: ' + (dcState.age || 'N/A') +
                         ' yrs | Diet: ' + (dcState.pref || 'N/A'),
@@ -2422,10 +3078,10 @@
                         ' kg',
                         '',
                         'Day 1 & Day 2 shown on screen.',
-                        'Day 3â€“7: Personalized plan sent to your email.',
+                        'Day 3-7: Personalized plan sent to your email.',
                         '',
                         'Thank you for choosing NutriBuddy Kids!',
-                        'Generated by NutriBuddy â€” nutribuddy.in'
+                        'Generated by NutriBuddy  -  nutribuddy.in'
                     ].join('\n');
                     var blob = new Blob([lines], {
                         type: 'text/plain'
@@ -2436,7 +3092,7 @@
                     a.click();
                 };
 
-                /* â”€â”€ Restart â”€â”€ */
+                /* -- Restart -- */
                 window.dcRestart = function() {
                     dcState = {
                         childName: null,

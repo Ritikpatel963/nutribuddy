@@ -131,10 +131,33 @@ function getPendingCartItems() {
     const parsed = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(parsed)) return [];
 
-    const normalized = parsed.map(it => ({
-      ...it,
-      unit_price: normalizePendingUnitPrice(it?.unit_price)
-    }));
+    const normalized = parsed.reduce((items, item) => {
+      const productId = Number(item?.product_id || 0);
+      if (!productId) return items;
+
+      const existing = items.find(it => Number(it.product_id || 0) === productId);
+      const normalizedItem = {
+        ...item,
+        product_id: productId,
+        product_variant_id: item?.product_variant_id ? Number(item.product_variant_id) : null,
+        quantity: Number(item?.quantity || 1),
+        unit_price: normalizePendingUnitPrice(item?.unit_price)
+      };
+
+      if (existing) {
+        existing.quantity = Number(existing.quantity || 0) + normalizedItem.quantity;
+        existing.product_variant_id = existing.product_variant_id || normalizedItem.product_variant_id;
+        existing.product_name = existing.product_name || normalizedItem.product_name || 'Product';
+        existing.variant_name = existing.variant_name || normalizedItem.variant_name || '';
+        existing.image = existing.image || normalizedItem.image || '/img/product2.png';
+        existing.unit_price = Number(existing.unit_price || 0) || normalizedItem.unit_price;
+        existing.product_url = existing.product_url || normalizedItem.product_url || '/product';
+      } else {
+        items.push(normalizedItem);
+      }
+
+      return items;
+    }, []);
 
     if (JSON.stringify(normalized) !== JSON.stringify(parsed)) {
       savePendingCartItems(normalized);
@@ -151,7 +174,7 @@ function savePendingCartItems(items) {
 }
 
 function getPendingCartItemKey(productId, productVariantId = null) {
-  return `${Number(productId || 0)}::${Number(productVariantId || 0)}`;
+  return String(Number(productId || 0));
 }
 
 function removePendingCartItem(productId, productVariantId = null) {
@@ -166,6 +189,7 @@ function addPendingCartItem(productId, quantity = 1, productVariantId = null, me
   const found = current.find(it => getPendingCartItemKey(it.product_id, it.product_variant_id) === getPendingCartItemKey(productId, productVariantId));
   if (found) {
     found.quantity = Number(found.quantity || 0) + Number(quantity || 1);
+    found.product_variant_id = found.product_variant_id || (productVariantId ? Number(productVariantId) : null);
     found.product_name = meta.product_name || found.product_name || 'Product';
     found.variant_name = meta.variant_name || found.variant_name || '';
     found.image = meta.image || found.image || '/img/product2.png';
@@ -794,6 +818,19 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
   let activeReel = -1;
   let reelTimers = {};
 
+  cards.forEach(card => {
+    const video = card.querySelector('video');
+    if (!video) return;
+
+    video.muted = true;
+    video.playsInline = true;
+    video.load();
+
+    video.addEventListener('loadeddata', () => {
+      card.classList.add('is-video-ready');
+    }, { once: true });
+  });
+
   function perView() {
     const vw = viewport.offsetWidth;
     const cw = cards[0] ? cards[0].offsetWidth : 200;
@@ -844,15 +881,35 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
     resizeTimer = setTimeout(refresh, 120);
   });
 
+  function getReel(idx) {
+    return track.querySelector('.reel[data-reel="' + idx + '"]');
+  }
+
+  function setReelButton(card, isPlaying) {
+    const btn = card ? card.querySelector('.reel-play-btn') : null;
+    if (btn) btn.textContent = isPlaying ? 'II' : '▶';
+  }
+
   function playReel(idx) {
     stopAllReels();
-    const card = document.querySelector('.reel[data-reel="' + idx + '"]');
-    const bar  = document.getElementById('rb' + idx);
-    const btn  = document.getElementById('rp' + idx);
+    const card = getReel(idx);
     if (!card) return;
+
+    const video = card.querySelector('video');
+    const bar   = card.querySelector('.reel-bar');
+
     activeReel = idx;
     if (bar) { bar.style.transition = 'width 8s linear'; bar.style.width = '100%'; }
-    if (btn) btn.textContent = '⏸';
+    setReelButton(card, true);
+
+    if (video) {
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => stopReel(idx));
+      }
+    }
+
     reelTimers[idx] = setTimeout(() => {
       stopReel(idx);
       playReel((idx + 1) % cards.length);
@@ -860,15 +917,20 @@ if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
   }
 
   function stopReel(idx) {
-    const bar = document.getElementById('rb' + idx);
-    const btn = document.getElementById('rp' + idx);
+    const card = getReel(idx);
+    if (!card) return;
+
+    const video = card.querySelector('video');
+    const bar   = card.querySelector('.reel-bar');
+
+    if (video) video.pause();
     if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; }
-    if (btn) btn.textContent = '▶';
+    setReelButton(card, false);
     clearTimeout(reelTimers[idx]);
     if (activeReel === idx) activeReel = -1;
   }
 
-  function stopAllReels() { cards.forEach((_, i) => stopReel(i)); }
+  function stopAllReels() { cards.forEach(r => stopReel(+r.dataset.reel)); }
 
   cards.forEach(r => {
     r.addEventListener('click', () => {
@@ -1395,6 +1457,7 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
     const items     = payload.cart?.items || [];
     const countNow  = Number(payload.cart_count || 0) || items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
     if (cartCountEl) cartCountEl.textContent = String(countNow);
+    if (cartPopup?.classList.contains('open')) loadCartPopup();
     _flashCartBtn(sourceEl);
     return true;
 

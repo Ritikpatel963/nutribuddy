@@ -1,5 +1,5 @@
 ﻿@extends('layouts.main')
-@section('title', 'Refunds & Return Policy — NutriBuddy Kids')
+@section('title', 'Returns & Refunds — NutriBuddy Kids')
 
 @push('styles')
     <style>
@@ -160,21 +160,23 @@
 @endpush
 
 @section('content')
-    <div class="page-hero">
-        <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
-        <h1 class="hero-title">Refunds &amp; <span>Return Policy</span></h1>
-        <p class="hero-subtitle">Please read our refund and return policy carefully to understand eligibility,
-            timelines, and how to request support.</p>
-        <div class="hero-meta">
-            <div class="meta-pill">Last Updated: June 1, 2025</div>
-            <div class="meta-pill">NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">Governed by Indian Law</div>
+    <section class="product-listing-hero">
+        <div class="product-listing-hero-inner">
+            <div class="product-listing-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span>/</span>
+                <span>Returns &amp; Refunds</span>
+            </div>
+            <span class="product-listing-hero-badge">Legal · NutriBuddy Kids</span>
+            <h1 class="product-listing-hero-title">Returns &amp; Refunds</h1>
+            <p class="product-listing-hero-sub">Please read our refund and return policy carefully to understand eligibility,
+                timelines, and how to request support.</p>
         </div>
-    </div>
+    </section>
 
     <section class="return-text-wrap">
         <div class="return-block">
-            <h2>Refunds &amp; Return Policy</h2>
+            <h2>Returns &amp; Refunds</h2>
 
             <p>At NutriBuddy, your satisfaction is important to us. If you are not satisfied with a product, you may
                 request a return or refund as per the terms below. This policy applies to purchases made through our

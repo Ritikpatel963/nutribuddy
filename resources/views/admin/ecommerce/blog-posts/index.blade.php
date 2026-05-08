@@ -63,6 +63,15 @@
                     <textarea name="excerpt" class="form-control" rows="2"></textarea>
                 </div>
                 <div class="col-12">
+                    <label class="form-label">Featured Image</label>
+                    <div class="icon-field">
+                        <span class="icon">
+                            <iconify-icon icon="lucide:image"></iconify-icon>
+                        </span>
+                        <input type="text" name="featured_image" class="form-control" placeholder="Image URL or storage path">
+                    </div>
+                </div>
+                <div class="col-12">
                     <label class="form-label">Content</label>
                     <textarea name="content" id="blog_content" class="form-control" rows="5" required></textarea>
                 </div>
@@ -74,7 +83,15 @@
     </div>
 
     <div class="card basic-data-table">
-        <div class="card-header"><h5 class="card-title mb-0">Post List</h5></div>
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <h5 class="card-title mb-0">Post List</h5>
+            <a href="{{ route('admin.ecommerce.blog-posts.trash') }}" class="btn btn-sm btn-outline-danger-600">
+                <iconify-icon icon="lucide:trash-2"></iconify-icon> Trash
+                @if(($trashCount ?? 0) > 0)
+                    <span class="badge bg-danger-600 text-white ms-1">{{ $trashCount }}</span>
+                @endif
+            </a>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table bordered-table mb-0" id="dataTable" data-page-length='10'>
@@ -124,6 +141,7 @@
                                             data-author_id="{{ $post->author_id }}"
                                             data-status="{{ $post->status }}"
                                             data-excerpt="{{ $post->excerpt }}"
+                                            data-featured_image="{{ $post->featured_image }}"
                                             data-content="{{ $post->content }}"
                                             data-action="{{ route('admin.ecommerce.blog-posts.update', $post) }}">
                                             <iconify-icon icon="lucide:edit"></iconify-icon> Edit
@@ -131,7 +149,7 @@
                                         <form method="POST" action="{{ route('admin.ecommerce.blog-posts.destroy', $post) }}" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1" onclick="return confirm('Delete this post?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1" onclick="return confirm('Move this post to trash?')">
                                                 <iconify-icon icon="mingcute:delete-2-line"></iconify-icon> Delete
                                             </button>
                                         </form>
@@ -207,6 +225,15 @@
                                 <textarea name="excerpt" id="edit_excerpt" class="form-control" rows="2"></textarea>
                             </div>
                             <div class="col-12">
+                                <label class="form-label">Featured Image</label>
+                                <div class="icon-field">
+                                    <span class="icon">
+                                        <iconify-icon icon="lucide:image"></iconify-icon>
+                                    </span>
+                                    <input type="text" name="featured_image" id="edit_featured_image" class="form-control" placeholder="Image URL or storage path">
+                                </div>
+                            </div>
+                            <div class="col-12">
                                 <label class="form-label">Content</label>
                                 <textarea name="content" id="edit_blog_content" class="form-control" rows="5" required></textarea>
                             </div>
@@ -255,6 +282,7 @@
                     const authorId = button.getAttribute('data-author_id');
                     const status = button.getAttribute('data-status');
                     const excerpt = button.getAttribute('data-excerpt');
+                    const featuredImage = button.getAttribute('data-featured_image');
                     const content = button.getAttribute('data-content');
 
                     const form = editModal.querySelector('#editBlogPostForm');
@@ -266,6 +294,7 @@
                     editModal.querySelector('#edit_author_id').value = authorId || '';
                     editModal.querySelector('#edit_status').value = status || '';
                     editModal.querySelector('#edit_excerpt').value = excerpt || '';
+                    editModal.querySelector('#edit_featured_image').value = featuredImage || '';
                     
                     if (editEditor) {
                         editEditor.setData(content || '');

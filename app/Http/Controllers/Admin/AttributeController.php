@@ -31,7 +31,7 @@ class AttributeController extends Controller
 
         Attribute::create([
             'name' => $validated['name'],
-            'slug' => $validated['slug'] ?: Str::slug($validated['name']),
+            'slug' => $validated['slug'] ?? Str::slug($validated['name']),
             'values' => $this->parseValues($validated['values_text']),
             'position' => $validated['position'] ?? 0,
             'is_active' => (bool) ($validated['is_active'] ?? true),
@@ -52,9 +52,9 @@ class AttributeController extends Controller
 
         $attribute->update([
             'name' => $validated['name'],
-            'slug' => $validated['slug'] ?: Str::slug($validated['name']),
+            'slug' => $validated['slug'] ?? Str::slug($validated['name']),
             'values' => $this->parseValues($validated['values_text']),
-            'position' => $validated['position'] ?? 0,
+            'position' => $validated['position'] ?? $attribute->position,
             'is_active' => (bool) ($validated['is_active'] ?? false),
         ]);
 

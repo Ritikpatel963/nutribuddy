@@ -55,13 +55,19 @@ Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
 
 Route::middleware('auth:admin')->controller(DashboardController::class)->group(function () {
     Route::get('/admin', 'index')->name('admin.index');
+    Route::get('/admin/export', 'export')->name('admin.dashboard.export');
+    Route::get('/admin/analytics', 'analytics')->name('admin.analytics');
 });
 
 Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:admin')->group(function () {
     Route::resource('categories', AdminCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('attributes', AdminAttributeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('products', AdminProductController::class);
+    Route::get('products-trash', [AdminProductController::class, 'trash'])->name('products.trash');
+    Route::delete('products-trash/bulk-force-delete', [AdminProductController::class, 'bulkForceDestroy'])->name('products.bulk-force-destroy');
+    Route::patch('products-trash/{product}/restore', [AdminProductController::class, 'restore'])->name('products.restore');
+    Route::delete('products-trash/{product}/force-delete', [AdminProductController::class, 'forceDestroy'])->name('products.force-destroy');
+    Route::resource('products', AdminProductController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('ingredients', AdminIngredientController::class);
     Route::patch('products/{product}/inventory', [AdminProductController::class, 'updateInventory'])->name('products.inventory.update');
     Route::resource('variants', AdminProductVariantController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -69,6 +75,10 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::resource('coupons', AdminCouponController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('tax-rates', AdminTaxRateController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('blog-categories', AdminBlogCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('blog-posts-trash', [AdminBlogPostController::class, 'trash'])->name('blog-posts.trash');
+    Route::delete('blog-posts-trash/bulk-force-delete', [AdminBlogPostController::class, 'bulkForceDestroy'])->name('blog-posts.bulk-force-destroy');
+    Route::patch('blog-posts-trash/{blogPost}/restore', [AdminBlogPostController::class, 'restore'])->name('blog-posts.restore');
+    Route::delete('blog-posts-trash/{blogPost}/force-delete', [AdminBlogPostController::class, 'forceDestroy'])->name('blog-posts.force-destroy');
     Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('contact-leads', AdminContactLeadController::class)->only(['index', 'update', 'destroy']);
     Route::resource('newsletter', AdminNewsletterSubscriberController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -113,7 +123,15 @@ Route::view('/about', 'pages.about-us')->name('about');
 Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
-Route::view('/blog', 'pages.blog')->name('blog');
+Route::get('/blog', function () {
+    $blogPosts = \App\Models\BlogPost::with('category')
+        ->where('status', 'published')
+        ->latest('published_at')
+        ->latest()
+        ->get();
+
+    return view('pages.blog', compact('blogPosts'));
+})->name('blog');
 Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 Route::view('/blog/{id}', 'pages.blog-show')->name('blog.show');
 Route::get('/checkout', [FrontendCheckoutController::class, 'page'])->name('checkout');

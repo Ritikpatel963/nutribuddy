@@ -77,6 +77,12 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.analytics') }}">
+                    <iconify-icon icon="solar:chart-2-outline" class="menu-icon"></iconify-icon>
+                    <span>Analytics</span>
+                </a>
+            </li>
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
@@ -91,6 +97,10 @@
                     <li>
                         <a href="{{ route('admin.ecommerce.products.index') }}"><i
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Products</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.products.trash') }}"><i
+                                class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Product Trash</a>
                     </li>
                     <li>
                         <a href="{{ route('admin.ecommerce.attributes.index') }}"><i
@@ -235,6 +245,10 @@
                     <li>
                         <a href="{{ route('admin.ecommerce.blog-posts.index') }}"><i
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Blog Posts</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.blog-posts.trash') }}"><i
+                                class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Blog Trash</a>
                     </li>
                 </ul>
             </li>

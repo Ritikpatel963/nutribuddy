@@ -458,6 +458,19 @@
             if (countLabel) countLabel.textContent = rows;
             if (emptyRow) emptyRow.style.display = rows ? 'none' : '';
             if (variantEnabledInput) variantEnabledInput.value = rows ? '1' : '0';
+            syncParentStockVisibility(rows);
+        }
+
+        function syncParentStockVisibility(rows = null) {
+            const parentStockGroup = document.getElementById('parentStockGroup');
+            const productStockInput = document.getElementById('productStockInput');
+            const variationCount = rows ?? body.querySelectorAll('.variation-row').length;
+            if (!parentStockGroup || !productStockInput) return;
+
+            const useVariationStock = variationCount > 0;
+            parentStockGroup.classList.toggle('d-none', useVariationStock);
+            productStockInput.required = !useVariationStock;
+            productStockInput.disabled = useVariationStock;
         }
 
         function selectedAttributeGroups() {
@@ -523,16 +536,16 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold">SKU</label>
-                            <input type="text" name="variations[${index}][sku]" class="form-control" value="${escapeHtml(sku)}" required>
+                            <input type="text" name="variations[${index}][sku]" class="form-control" value="${escapeHtml(sku)}" placeholder="Auto generated if empty">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label fw-bold">Regular Price (INR)</label>
-                            <input type="number" step="0.01" min="0" name="variations[${index}][price]" class="form-control" value="${escapeHtml(price)}" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Sale / MRP Price</label>
+                            <label class="form-label fw-bold">MRP / Compare (INR)</label>
                             <input type="number" step="0.01" min="0" name="variations[${index}][compare_at_price]" class="form-control" value="${escapeHtml(compareAtPrice)}" placeholder="MRP">
                             <input type="hidden" name="variations[${index}][cost_price]" value="${escapeHtml(costPrice)}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Selling Price (INR)</label>
+                            <input type="number" step="0.01" min="0" name="variations[${index}][price]" class="form-control" value="${escapeHtml(price)}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label fw-bold">Stock Quantity</label>
@@ -543,10 +556,8 @@
                         <div class="col-md-8">
                             <label class="form-label fw-bold">Variation Settings</label>
                             <div class="wc-checkbox-grid">
-                                <label>
-                                    <input class="form-check-input" type="checkbox" name="variations[${index}][track_stock]" value="1" ${variation.track_stock === false ? '' : 'checked'}>
-                                    Manage stock
-                                </label>
+                                <input type="hidden" name="variations[${index}][track_stock]" value="1">
+                                <input type="hidden" name="variations[${index}][is_in_stock]" value="1">
                                 <input type="hidden" name="variations[${index}][is_active]" value="0">
                                 <input type="hidden" class="variation-default-hidden" name="variations[${index}][is_default]" value="${variation.is_default ? 1 : 0}">
                                 <label>
@@ -556,10 +567,6 @@
                                 <label>
                                     <input class="form-check-input" type="checkbox" name="variations[${index}][is_active]" value="1" ${variation.is_active === false ? '' : 'checked'}>
                                     Enabled
-                                </label>
-                                <label>
-                                    <input class="form-check-input" type="checkbox" name="variations[${index}][is_in_stock]" value="1" ${variation.is_in_stock === false ? '' : 'checked'}>
-                                    In stock
                                 </label>
                             </div>
                         </div>
@@ -596,6 +603,7 @@
             appendVariationRow(variation);
         });
         syncDefaultVariation();
+        syncCount();
 
         generateButton.addEventListener('click', function () {
             const groups = selectedAttributeGroups();

@@ -17,7 +17,10 @@ class CartController extends Controller
 {
     public function index(Request $request, PricingService $pricingService): JsonResponse
     {
-        $cart = $this->resolveUserCart($request)->load(['items.product.taxRate', 'items.productVariant']);
+        $cart = $this->resolveUserCart($request);
+        $this->consolidateCartProductRows($cart);
+
+        $cart->load(['items.product.taxRate', 'items.productVariant']);
         $pricing = $pricingService->calculate($cart->items);
 
         return response()->json([
@@ -40,15 +43,26 @@ class CartController extends Controller
         }
 
         $cart = $this->resolveUserCart($request);
-        $item = $cart->items()
+        $matchingItems = $cart->items()
             ->where('product_id', $product->id)
-            ->where('product_variant_id', $variantId)
-            ->first();
+            ->orderBy('id')
+            ->get();
+        $item = $matchingItems->first();
 
         if ($item) {
-            $newQuantity = $item->quantity + (int) $validated['quantity'];
-            $this->assertInventoryForQuantity($product->id, $variantId, $newQuantity);
-            $item->update(['quantity' => $newQuantity]);
+            $newQuantity = (int) $matchingItems->sum('quantity') + (int) $validated['quantity'];
+            $effectiveVariantId = $item->product_variant_id ?: $variantId;
+
+            $this->assertInventoryForQuantity($product->id, $effectiveVariantId, $newQuantity);
+            $item->update([
+                'product_variant_id' => $effectiveVariantId,
+                'quantity' => $newQuantity,
+            ]);
+
+            $duplicateIds = $matchingItems->where('id', '!=', $item->id)->pluck('id');
+            if ($duplicateIds->isNotEmpty()) {
+                $cart->items()->whereIn('id', $duplicateIds)->delete();
+            }
         } else {
             $this->assertInventoryForQuantity($product->id, $variantId, (int) $validated['quantity']);
             $cart->items()->create([
@@ -117,6 +131,30 @@ class CartController extends Controller
             ['user_id' => $user->id],
             ['currency' => 'INR']
         );
+    }
+
+    private function consolidateCartProductRows(Cart $cart): void
+    {
+        $cart->loadMissing('items');
+
+        $cart->items
+            ->groupBy('product_id')
+            ->filter(fn ($items) => $items->count() > 1)
+            ->each(function ($items) use ($cart) {
+                $primary = $items->sortBy('id')->first();
+                $variantId = $items->first(fn ($item) => $item->product_variant_id)?->product_variant_id;
+
+                $primary->update([
+                    'product_variant_id' => $primary->product_variant_id ?: $variantId,
+                    'quantity' => (int) $items->sum('quantity'),
+                ]);
+
+                $cart->items()
+                    ->whereIn('id', $items->where('id', '!=', $primary->id)->pluck('id'))
+                    ->delete();
+            });
+
+        $cart->unsetRelation('items');
     }
 
     private function assertInventoryForQuantity(int $productId, ?int $variantId, int $requestedQuantity): void

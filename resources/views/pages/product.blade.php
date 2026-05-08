@@ -457,7 +457,6 @@
                             <h3 class="pdp-variant-title">Choose Your Option</h3>
                             <div class="pdp-variant-sub">Pick the exact flavour, pack, or size before adding to cart.</div>
                         </div>
-                        <div class="pdp-variant-sku" id="pdpVariantSku">SKU: {{ $defVariant?->sku }}</div>
                     </div>
 
                     <div class="pdp-variant-groups">
@@ -593,16 +592,16 @@
 
             <!-- Quick Specs: Pack Size & Age -->
             <!-- <div class="pdp-specs-row" style="display:flex;gap:20px;margin: 20px 0;padding:15px;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
-                        <div class="spec-item">
-                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
-                            <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
-                        </div>
-                        <div style="width:1px;background:#ddd"></div>
-                        <div class="spec-item">
-                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
-                            <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
-                        </div>
-                    </div> -->
+                            <div class="spec-item">
+                                <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
+                                <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
+                            </div>
+                            <div style="width:1px;background:#ddd"></div>
+                            <div class="spec-item">
+                                <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
+                                <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
+                            </div>
+                        </div> -->
 
 
             <!-- Pincode Check -->
@@ -680,8 +679,8 @@
 
 
     <!-- ════════════════════════════════════════════════
-                     PRODUCT DESCRIPTION SECTION
-                ════════════════════════════════════════════════ -->
+                         PRODUCT DESCRIPTION SECTION
+                    ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @php
         $productDescriptionParagraphs = preg_split(
@@ -864,19 +863,19 @@
                 <div class="transform-visual">
                     <img src="/img/child-iamges.png" alt="">
                     <!-- <div
-                                style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
-                                </div>
-                            <div class="before-after">
-                                <div class="ba-card">
-                                    <div class="ba-label">Before</div>
-                                    <div class="ba-val">😔 Tired</div>
-                                </div>
-                                <div class="ba-arrow">→</div>
-                                <div class="ba-card after">
-                                    <div class="ba-label">After 90 Days</div>
-                                    <div class="ba-val">🦸 Superhero!</div>
-                                </div>
-                            </div> -->
+                                    style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
+                                    </div>
+                                <div class="before-after">
+                                    <div class="ba-card">
+                                        <div class="ba-label">Before</div>
+                                        <div class="ba-val">😔 Tired</div>
+                                    </div>
+                                    <div class="ba-arrow">→</div>
+                                    <div class="ba-card after">
+                                        <div class="ba-label">After 90 Days</div>
+                                        <div class="ba-val">🦸 Superhero!</div>
+                                    </div>
+                                </div> -->
                 </div>
                 <div class="transform-list">
                     <div class="tr-item">
@@ -996,8 +995,8 @@
 
     <!--  -->
     <!-- ══════════════════════════════
-                     FEATURES — NO GELATIN etc.
-                ══════════════════════════════ -->
+                         FEATURES — NO GELATIN etc.
+                    ══════════════════════════════ -->
     <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
@@ -1127,38 +1126,38 @@
 
 
     <!-- ══════════════════════════════════════════
-                       HOW IT WORKS
-                  ══════════════════════════════════════════ -->
+                           HOW IT WORKS
+                      ══════════════════════════════════════════ -->
     <!-- <section class="how-section reveal">
-                    <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
-                    <h2 class="sec-title">How It <span class="acc">Works</span></h2>
-                    <div class="steps">
-                      <div class="step-new">
-                        <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
-                        <div class="snum">Step 01</div>
-                        <div class="stitle">Take the Quiz</div>
-                        <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
-                      </div>
-                      <div class="step-new">
-                           <div class="sball s2"><img src="img/plan.png" alt=""></div>
-                        <div class="snum">Step 02</div>
-                        <div class="stitle">Get Your Plan</div>
-                        <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
-                      </div>
-                      <div class="step-new">
-                         <div class="sball s3"><img src="img/order.png" alt=""></div>
-                        <div class="snum">Step 03</div>
-                        <div class="stitle">Order & Save</div>
-                        <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
-                      </div>
-                      <div class="step-new">
-                          <div class="sball s4"><img src="img/rising.png" alt=""></div>
-                        <div class="snum">Step 04</div>
-                        <div class="stitle">Track Progress</div>
-                        <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
-                      </div>
-                    </div>
-                  </section> -->
+                        <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
+                        <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+                        <div class="steps">
+                          <div class="step-new">
+                            <div class="sball s1 "><img src="img/quiz.png" alt=""></div>
+                            <div class="snum">Step 01</div>
+                            <div class="stitle">Take the Quiz</div>
+                            <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
+                          </div>
+                          <div class="step-new">
+                               <div class="sball s2"><img src="img/plan.png" alt=""></div>
+                            <div class="snum">Step 02</div>
+                            <div class="stitle">Get Your Plan</div>
+                            <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
+                          </div>
+                          <div class="step-new">
+                             <div class="sball s3"><img src="img/order.png" alt=""></div>
+                            <div class="snum">Step 03</div>
+                            <div class="stitle">Order & Save</div>
+                            <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
+                          </div>
+                          <div class="step-new">
+                              <div class="sball s4"><img src="img/rising.png" alt=""></div>
+                            <div class="snum">Step 04</div>
+                            <div class="stitle">Track Progress</div>
+                            <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                          </div>
+                        </div>
+                      </section> -->
 
 
 
@@ -1182,9 +1181,9 @@
 
             <!-- PROBLEMS -->
             <!-- <div class="block-label reveal">
-                        <div class="blabel bl-prob">😟 Today's Challenges</div>
-                        <div class="bline"></div>
-                    </div> -->
+                            <div class="blabel bl-prob">😟 Today's Challenges</div>
+                            <div class="bline"></div>
+                        </div> -->
 
             <div class="problem-grid">
                 <div class="prob-card pc1 reveal d1">
@@ -1237,9 +1236,9 @@
 
             <!-- SOLUTION -->
             <!-- <div class="block-label reveal">
-                        <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
-                        <div class="bline g"></div>
-                    </div> -->
+                            <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
+                            <div class="bline g"></div>
+                        </div> -->
 
 
     </section>
@@ -1250,17 +1249,17 @@
                 <img src="/img/posr.png" alt="">
 
                 <!-- <div class="sol-badge">🏆 India's #1 Kids Wellness Gummy</div>
-                          <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
-                              Compromise.</span></h3>
-                          <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
-                            parents love the results.</p>
-                          <div class="sol-pills">
-                            <div class="spill"> 100% Natural</div>
-                            <div class="spill">🧪 Lab Tested</div>
-                            <div class="spill">🩺 Pediatrician Approved</div>
-                            <div class="spill">😋 Kids Love It</div>
-                          </div>
-                        </div> -->
+                              <h3 class="sol-title">One Gummy.<br><span class="hy">Complete Nutrition.</span><br><span class="hm">Zero
+                                  Compromise.</span></h3>
+                              <p class="sol-desc">A simple, delicious, science-backed answer to every problem above. Kids love taking it —
+                                parents love the results.</p>
+                              <div class="sol-pills">
+                                <div class="spill"> 100% Natural</div>
+                                <div class="spill">🧪 Lab Tested</div>
+                                <div class="spill">🩺 Pediatrician Approved</div>
+                                <div class="spill">😋 Kids Love It</div>
+                              </div>
+                            </div> -->
 
             </div>
 
@@ -1271,18 +1270,18 @@
 
             <!-- CTA -->
             <!-- <div class="ps-cta reveal">
-                            <div class="cta-inner">
-                                <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
-                                <h3 class="cta-title">Give Your Child the Best Start</h3>
-                                <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
-                                    certified
-                                    Ayurvedic nutritionists. No sign-up, no cost.</p>
-                                <div class="cta-btns">
-                                    <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
-                                    <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
+                                <div class="cta-inner">
+                                    <span class="cta-emoji"><img src="/img/nutrigummi.png" alt=""></span>
+                                    <h3 class="cta-title">Give Your Child the Best Start</h3>
+                                    <p class="cta-sub">Take a 2-minute quiz and get a FREE personalized diet chart — crafted by
+                                        certified
+                                        Ayurvedic nutritionists. No sign-up, no cost.</p>
+                                    <div class="cta-btns">
+                                        <a class="btn-main" href="#"> Shop NutriBuddy Now</a>
+                                        <a class="btn-ghost" href="#">📋 Get Free Diet Chart →</a>
+                                    </div>
                                 </div>
-                            </div>
-                        </div> -->
+                            </div> -->
 
         </div>
     </section>
@@ -1321,8 +1320,8 @@
     </section>
 
     <!-- ════════════════════════════════════════════════
-                     NUTRIBUDDY INGREDIENT SECTION
-                ════════════════════════════════════════════════ -->
+                         NUTRIBUDDY INGREDIENT SECTION
+                    ════════════════════════════════════════════════ -->
     @if ($product->ingredients->isNotEmpty())
         <section id="nb-ingredients">
 
@@ -1501,13 +1500,13 @@
 
 
     <!-- ══════════════════════════════════════════
-                         PARENT REVIEWS
-                    ══════════════════════════════════════════ -->
+                             PARENT REVIEWS
+                        ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-                         FAQ
-                    ══════════════════════════════════════════ -->
+                             FAQ
+                        ══════════════════════════════════════════ -->
     @include('partials.faq-section')
 
     <div class="newsletter reveal">

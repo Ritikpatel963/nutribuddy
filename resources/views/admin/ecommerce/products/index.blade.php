@@ -24,7 +24,15 @@
                     </select>
                 </form>
             </div>
-            <a href="{{ route('admin.ecommerce.products.create') }}" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Add New Product</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('admin.ecommerce.products.trash') }}" class="btn btn-sm btn-outline-danger-600">
+                    <iconify-icon icon="lucide:trash-2"></iconify-icon> Trash
+                    @if(($trashCount ?? 0) > 0)
+                        <span class="badge bg-danger-600 text-white ms-1">{{ $trashCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('admin.ecommerce.products.create') }}" class="btn btn-sm btn-primary-600"><i class="ri-add-line"></i> Add New Product</a>
+            </div>
         </div>
         <div class="card-body p-24">
             <div class="table-responsive">
@@ -99,7 +107,7 @@
                                         <form method="POST" action="{{ route('admin.ecommerce.products.destroy', $product) }}" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1" onclick="return confirm('Delete this product?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1" onclick="return confirm('Move this product to trash?')">
                                                 <iconify-icon icon="mingcute:delete-2-line"></iconify-icon> Delete
                                             </button>
                                         </form>

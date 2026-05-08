@@ -38,7 +38,7 @@
                             <span class="icon">
                                 <iconify-icon icon="ant-design:barcode-outlined"></iconify-icon>
                             </span>
-                            <input type="text" name="sku" class="form-control" placeholder="SKU Code" required>
+                            <input type="text" name="sku" class="form-control" placeholder="Auto generated if empty">
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -214,7 +214,7 @@
                                         <iconify-icon icon="ant-design:barcode-outlined"></iconify-icon>
                                     </span>
                                     <input type="text" name="sku" id="edit_variant_sku" class="form-control"
-                                        placeholder="SKU Code" required>
+                                        placeholder="Auto generated if empty">
                                 </div>
                             </div>
                             <div class="col-md-6">

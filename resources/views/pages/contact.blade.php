@@ -5,11 +5,11 @@
     <style>
         /* Contact Page Specific Styles */
         .contact-hero {
-            padding: 180px 5% 80px;
-            text-align: center;
+            padding: 130px 5% 80px;
+            text-align: left;
             position: relative;
             overflow: hidden;
-            background-color: var(--lbg);
+            background: linear-gradient(135deg, var(--dk) 0%, #260050 50%, #0d0030 100%);
         }
 
         .contact-hero .blob {
@@ -36,6 +36,8 @@
         }
 
         .contact-content-wrapper {
+            margin: 0 auto;
+            max-width: 900px;
             position: relative;
             z-index: 2;
         }
@@ -43,16 +45,16 @@
         .contact-title {
             font-family: 'Fredoka One', cursive;
             font-size: clamp(2.5rem, 5vw, 4rem);
-            color: var(--dk);
+            color: #fff;
             margin-bottom: 20px;
             line-height: 1.1;
         }
 
         .contact-subtitle {
             font-size: clamp(1rem, 2vw, 1.2rem);
-            color: #555;
+            color: rgba(255, 255, 255, .68);
             max-width: 600px;
-            margin: 0 auto;
+            margin: 0;
         }
 
         .contact-grid {
@@ -255,6 +257,11 @@
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
         <div class="contact-content-wrapper">
+            <div class="page-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span>/</span>
+                <span>Contact Us</span>
+            </div>
             <div class="slide-badge badge-pk" style="margin: 0 auto 20px; display: inline-block;">Hello There</div>
             <h1 class="contact-title">Let's Get In <span class="acc" style="color:var(--pk);">Touch</span></h1>
             <p class="contact-subtitle">Have a question about our gummies, need help with your child's personalized plan, or

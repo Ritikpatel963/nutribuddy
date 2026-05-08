@@ -18,8 +18,17 @@ class BlogPostController extends Controller
     {
         return view('admin.ecommerce.blog-posts.index', [
             'posts' => BlogPost::with(['category', 'author'])->latest()->get(),
+            'trashCount' => BlogPost::onlyTrashed()->count(),
             'categories' => BlogCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'users' => User::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    public function trash(): View
+    {
+        return view('admin.ecommerce.blog-posts.trash', [
+            'posts' => BlogPost::onlyTrashed()->with(['category', 'author'])->latest('deleted_at')->get(),
+            'activeCount' => BlogPost::count(),
         ]);
     }
 
@@ -81,6 +90,40 @@ class BlogPostController extends Controller
     {
         $blogPost->delete();
 
-        return back()->with('success', 'Blog post deleted successfully.');
+        return back()->with('success', 'Blog post moved to trash successfully.');
+    }
+
+    public function restore(int $blogPost): RedirectResponse
+    {
+        $trashedPost = BlogPost::onlyTrashed()->findOrFail($blogPost);
+        $trashedPost->restore();
+
+        return back()->with('success', 'Blog post restored successfully.');
+    }
+
+    public function forceDestroy(int $blogPost): RedirectResponse
+    {
+        $trashedPost = BlogPost::onlyTrashed()->findOrFail($blogPost);
+        $trashedPost->forceDelete();
+
+        return back()->with('success', 'Blog post permanently deleted successfully.');
+    }
+
+    public function bulkForceDestroy(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'post_ids' => ['required', 'array', 'min:1'],
+            'post_ids.*' => ['integer'],
+        ]);
+
+        $posts = BlogPost::onlyTrashed()
+            ->whereIn('id', $validated['post_ids'])
+            ->get();
+
+        foreach ($posts as $post) {
+            $post->forceDelete();
+        }
+
+        return back()->with('success', $posts->count() . ' blog post(s) permanently deleted successfully.');
     }
 }

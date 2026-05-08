@@ -1,5 +1,5 @@
 ﻿@extends('layouts.main')
-@section('title', 'Terms & Conditions — NutriBuddy Kids')
+@section('title', 'Terms of Service — NutriBuddy Kids')
 
 @push('styles')
     <style>
@@ -160,24 +160,26 @@
 @endpush
 
 @section('content')
-    <div class="page-hero">
-        <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
-        <h1 class="hero-title">Terms &amp; <span>Conditions</span></h1>
-        <p class="hero-subtitle">Please read these terms carefully before using our website or purchasing our products. They
-            govern your relationship with NutriBuddy.</p>
-        <div class="hero-meta">
-            <div class="meta-pill">Last Updated: June 1, 2025</div>
-            <div class="meta-pill">NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">Governed by Indian Law</div>
+    <section class="product-listing-hero">
+        <div class="product-listing-hero-inner">
+            <div class="product-listing-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span>/</span>
+                <span>Terms of Service</span>
+            </div>
+            <span class="product-listing-hero-badge">Legal · NutriBuddy Kids</span>
+            <h1 class="product-listing-hero-title">Terms of Service</h1>
+            <p class="product-listing-hero-sub">Please read these terms carefully before using our website or purchasing our products. They
+                govern your relationship with NutriBuddy.</p>
         </div>
-    </div>
+    </section>
 
     <section class="terms-text-wrap">
         <div class="terms-block">
-            <h2>Terms &amp; Conditions</h2>
+            <h2>Terms of Service</h2>
 
             <p>By using NutriBuddy's website, products, or services, you agree to comply with and be bound by these
-                Terms &amp; Conditions. Please review them carefully before placing an order or using any of our
+                Terms of Service. Please review them carefully before placing an order or using any of our
                 services.</p>
 
             <p>These terms apply to all visitors, users, and customers. If you do not agree with any part of these

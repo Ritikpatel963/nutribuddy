@@ -7,7 +7,7 @@
 @endphp
 
 <nav id="mainNav">
-         <button class="hamburger" id="hamburgerBtn" aria-expanded="false">
+         <button type="button" class="hamburger" id="hamburgerBtn" aria-expanded="false" aria-label="Open menu">
             <img src="{{ asset('img/menu.png') }}" alt="Menu"
                 onerror="this.style.display='none';this.parentElement.innerHTML='<span></span><span></span><span></span>'">
         </button>
@@ -31,7 +31,7 @@
         </button>
 
         <div class="profile-dropdown">
-            <button id="cartIconBtn" class="nav-icon-link profile-btn" title="Account">
+            <button type="button" id="profileIconBtn" class="nav-icon-link profile-btn" title="Account">
                 <img src="{{ asset('img/user.png') }}" alt="Profile" style="width:24px;height:24px;border-radius:50%;"
                     onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>👤</span>')">
             </button>
@@ -131,6 +131,10 @@
         display: block;
     }
 
+    .profile-dropdown:focus-within .dropdown-content {
+        display: block;
+    }
+
     .dropdown-content a {
         color: #444;
         padding: 12px 20px;
@@ -190,6 +194,15 @@
     .login-link {
         font-weight: 700 !important;
         color: var(--pk) !important;
+    }
+
+    @media (max-width: 900px) {
+        .dropdown-content {
+            position: fixed;
+            right: 12px;
+            top: 72px;
+            max-width: calc(100vw - 24px);
+        }
     }
 </style>
 
