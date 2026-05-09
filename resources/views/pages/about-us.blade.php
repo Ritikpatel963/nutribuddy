@@ -802,6 +802,9 @@
     .ns-story-hero .ns-right {
       position: relative;
       height: 440px;
+      justify-self: start;
+      max-width: 540px;
+      width: 100%;
     }
 
     .ns-story-hero .ns-tape {
@@ -843,7 +846,7 @@
     .ns-story-hero .ns-polar--worry {
       width: 192px;
       top: 10px;
-      left: 120px;
+      left: 0px;
       transform: rotate(-7deg);
       z-index: 3;
       padding: 8px 8px 0;
@@ -856,7 +859,7 @@
     .ns-story-hero .ns-polar--happy {
       width: 305px;
       top: 28px;
-      right: 14px;
+      right: -100px;
       transform: rotate(2.5deg);
       z-index: 4;
       padding: 8px 8px 0;
@@ -868,10 +871,12 @@
 
     .ns-story-hero .ns-arrow-svg {
       position: absolute;
-      top: 198px;
-      left: 192px;
+      top: 270px;
+      left: 100px;
       z-index: 6;
       pointer-events: none;
+      transform: scale(1.12);
+      transform-origin: top left;
     }
 
     .ns-story-hero .ns-promise {
@@ -1061,6 +1066,64 @@
       margin-top: 3px;
     }
 
+    @media(min-width:1440px) {
+      .ns-story-hero .ns-grid {
+        grid-template-columns: 436px minmax(620px, 680px);
+        gap: 160px;
+      }
+
+      .ns-story-hero .ns-right {
+        height: 520px;
+        max-width: 680px;
+      }
+
+      .ns-story-hero .ns-polar--worry {
+        width: 240px;
+        left: 10px;
+      }
+
+      .ns-story-hero .ns-polar--worry img {
+        height: 208px;
+      }
+
+      .ns-story-hero .ns-polar--happy {
+        width: 362px;
+        right: 18px;
+      }
+
+      .ns-story-hero .ns-polar--happy img {
+        height: 318px;
+      }
+
+      .ns-story-hero .ns-arrow-svg {
+        top: 270px;
+        left: 100px;
+      }
+
+      .ns-story-hero .ns-promise {
+        bottom: 28px;
+        right: 26px;
+        width: 210px;
+        font-size: 1rem;
+      }
+    }
+
+    @media(max-width:1180px) {
+      .ns-story-hero .ns-section {
+        padding-left: 48px;
+        padding-right: 48px;
+      }
+
+      .ns-story-hero .ns-grid {
+        grid-template-columns: minmax(360px, 436px) minmax(430px, 540px);
+        justify-content: center;
+      }
+
+      .ns-story-hero .ns-polar--happy {
+        right: 0;
+      }
+    }
+
     @media(max-width:960px) {
      
       .ns-story-hero .ns-section {
@@ -1078,23 +1141,39 @@
 
       .ns-story-hero .ns-right {
         height: 370px;
+        justify-self: center;
         margin-top: 16px;
+        max-width: 560px;
       }
 
       .ns-story-hero .ns-polar--worry {
-        width: 162px;
+        left: 58px;
+        top: 8px;
+        width: 174px;
       }
 
       .ns-story-hero .ns-polar--worry img {
-        height: 150px;
+        height: 160px;
       }
 
       .ns-story-hero .ns-polar--happy {
-        width: 252px;
+        right: 26px;
+        top: 24px;
+        width: 270px;
       }
 
       .ns-story-hero .ns-polar--happy img {
-        height: 220px;
+        height: 236px;
+      }
+
+      .ns-story-hero .ns-arrow-svg {
+        top: 240px;
+        left: 60px;
+      }
+
+      .ns-story-hero .ns-promise {
+        bottom: 12px;
+        right: 28px;
       }
 
       .ns-story-hero .ns-mascot-wrap {
@@ -3884,6 +3963,13 @@
 
         .nbap-badge {
           padding: 0 8px;
+        }
+      }
+
+      @media (min-width: 541px) and (max-width: 1024px) {
+        .ns-story-hero .ns-arrow-svg {
+          top: 240px;
+          left: 60px;
         }
       }
 

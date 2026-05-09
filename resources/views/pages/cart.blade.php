@@ -290,7 +290,7 @@
                     <span id="cartPageSubtotal">Rs. 0</span>
                 </div>
                 <div style="margin-top:14px;display:flex;gap:10px;flex-direction:column;">
-                    <a href="{{ route('checkout') }}" class="nav-cta"
+                    <a href="{{ route('checkout') }}" class="nav-cta" id="cartCheckoutBtn"
                         style="text-align:center;text-decoration:none;">Checkout</a>
                     <a href="{{ route('product') }}" class="nav-cta"
                         style="border:2px solid var(--pkl);text-align:center;text-decoration:none;">Continue Shopping</a>
@@ -351,6 +351,14 @@
             function setCartSummary(count, total) {
                 document.getElementById('cartPageCount').textContent   = count;
                 document.getElementById('cartPageSubtotal').textContent = money(total);
+
+                const checkoutBtn = document.getElementById('cartCheckoutBtn');
+                if (checkoutBtn) {
+                    const hasItems = Number(count || 0) > 0;
+                    checkoutBtn.style.opacity = hasItems ? '' : '0.55';
+                    checkoutBtn.style.pointerEvents = hasItems ? '' : 'none';
+                    checkoutBtn.setAttribute('aria-disabled', hasItems ? 'false' : 'true');
+                }
             }
 
             /* ── build a cart row DOM element ── */
@@ -541,7 +549,14 @@
                 });
             }
 
-            document.addEventListener('DOMContentLoaded', loadCart);
+            document.addEventListener('DOMContentLoaded', () => {
+                const notice = sessionStorage.getItem('nb_cart_notice');
+                if (notice) {
+                    sessionStorage.removeItem('nb_cart_notice');
+                    if (typeof nbToast === 'function') nbToast(notice, 'warning');
+                }
+                loadCart();
+            });
         })();
         </script>
     @endpush

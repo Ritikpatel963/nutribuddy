@@ -77,6 +77,42 @@
     }
 }
 
+@media (max-width: 1024px) {
+    .how-section .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 720px;
+    }
+}
+
+@media (max-width: 580px) {
+    .how-section {
+        padding: 64px 4%;
+    }
+
+    .how-section .steps {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 34px;
+        max-width: 360px;
+    }
+
+    .how-section .step-new {
+        min-height: 0;
+        padding: 20px;
+    }
+
+    .how-section .sball {
+        height: 66px;
+        margin: 10px 0 20px;
+        width: 66px;
+    }
+
+    .how-section .sball img {
+        height: 34px;
+        width: 34px;
+    }
+}
+
 @media (max-width: 560px) {
     .slide {
         padding: 32px 4%;
@@ -1645,5 +1681,111 @@
         right: -4px;
         top: -4px;
         width: 16px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .how-layout {
+        display: block;
+    }
+
+    .how-layout .how-head {
+        text-align: center;
+    }
+
+    .how-layout .how-head .sec-eye {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .how-section .steps {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: 720px;
+    }
+}
+
+@media (max-width: 580px) {
+    .how-layout {
+        gap: 20px;
+    }
+
+    .how-layout .how-head {
+        padding: 26px 20px;
+    }
+
+    .how-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .how-section {
+        padding: 64px 4%;
+    }
+
+    .how-section .steps {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-top: 34px;
+        max-width: 360px;
+    }
+
+    .how-section .steps::before {
+        bottom: 30px;
+        height: auto;
+        left: 50px;
+        right: auto;
+        top: 30px;
+        width: 3px;
+    }
+
+    .how-section .step-new {
+        align-items: flex-start;
+        min-height: 0;
+        padding: 20px 20px 20px 96px;
+        position: relative;
+        text-align: left;
+    }
+
+    .step-top {
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .how-section .sball {
+        height: 62px;
+        left: 18px;
+        margin: 0;
+        position: absolute;
+        top: 20px;
+        width: 62px;
+    }
+
+    .how-section .sball img {
+        height: 30px;
+        width: 30px;
+    }
+
+    .how-stats {
+        display: grid;
+        grid-template-columns: 1fr;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 260px;
+    }
+
+    .how-section .sdesc {
+        margin-left: 0;
+        max-width: none;
+    }
+
+    .how-cta-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .how-cta-row .hbtn {
+        justify-content: center;
+        width: 100%;
     }
 }

@@ -321,9 +321,23 @@
             line-height: 1.8;
         }
 
-        .pdp-description-copy {
-            column-count: 2;
-            column-gap: 30px;
+        .pdp-description-copy.is-html {
+            column-count: 1;
+        }
+
+        .pdp-description-copy > * {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        .pdp-description-columns {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .pdp-description-column {
+            min-width: 0;
         }
 
         .pdp-description-copy p {
@@ -341,9 +355,6 @@
                 border-radius: 24px;
             }
 
-            .pdp-description-copy {
-                column-count: 1;
-            }
         }
 
         @media (max-width: 640px) {
@@ -359,6 +370,228 @@
             .pdp-description-copy p {
                 font-size: 0.95rem;
                 line-height: 1.8;
+            }
+        }
+
+        .ps-problems-section {
+            padding: 88px 5% 76px;
+            background:
+                radial-gradient(circle at 8% 14%, rgba(255, 77, 143, 0.12), transparent 28%),
+                radial-gradient(circle at 92% 8%, rgba(124, 58, 237, 0.1), transparent 30%),
+                linear-gradient(180deg, #fff8fb 0%, #f8f3ff 52%, #fffdf7 100%);
+        }
+
+        .ps-problems-section .ps-inner {
+            max-width: 1220px;
+        }
+
+        .ps-problems-section .ps-header {
+            max-width: 780px;
+            margin: 0 auto 44px;
+            text-align: center;
+        }
+
+        .ps-problems-section .eyebrow {
+            padding: 9px 18px;
+            border: 1px solid rgba(255, 77, 143, 0.18);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.78);
+            box-shadow: 0 12px 30px rgba(30, 24, 64, 0.06);
+        }
+
+        .ps-problems-section .eyebrow::before,
+        .ps-problems-section .eyebrow::after {
+            display: none;
+        }
+
+        .ps-problems-section .ps-title {
+            margin-bottom: 14px;
+            font-size: clamp(2rem, 4.4vw, 3.45rem);
+            letter-spacing: 0;
+        }
+
+        .ps-problems-section .ps-title .acc {
+            color: var(--pk);
+        }
+
+        .ps-problems-section .ps-title .acc2 {
+            color: var(--mn);
+        }
+
+        .ps-problems-section .ps-sub {
+            max-width: 650px;
+            color: #625b76;
+            font-size: 1rem;
+        }
+
+        .ps-problems-section .problem-grid {
+            counter-reset: problem-card;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            margin-bottom: 50px;
+            align-items: stretch;
+        }
+
+        .ps-problems-section .prob-card {
+            --prob-accent: var(--pk);
+            --prob-soft: var(--pkl);
+            position: relative;
+            display: grid;
+            grid-template-rows: 182px auto 1fr;
+            min-height: 382px;
+            overflow: hidden;
+            padding: 0;
+            border: 1px solid rgba(30, 24, 64, 0.08);
+            border-radius: 24px;
+            background: #fff;
+            box-shadow: 0 18px 44px rgba(30, 24, 64, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .ps-problems-section .prob-card.pc2 {
+            --prob-accent: var(--or);
+            --prob-soft: var(--orl);
+        }
+
+        .ps-problems-section .prob-card.pc3 {
+            --prob-accent: var(--pu);
+            --prob-soft: var(--pul);
+        }
+
+        .ps-problems-section .prob-card::before {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            z-index: 2;
+            height: 5px;
+            border-radius: 0;
+            opacity: 1;
+            background: linear-gradient(90deg, var(--prob-accent), var(--ye));
+        }
+
+        .ps-problems-section .prob-card::after {
+            counter-increment: problem-card;
+            content: "0" counter(problem-card);
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 46px;
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--prob-accent);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 900;
+            box-shadow: 0 10px 24px rgba(30, 24, 64, 0.12);
+        }
+
+        .ps-problems-section .prob-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 77, 143, 0.16);
+            box-shadow: 0 26px 58px rgba(30, 24, 64, 0.12);
+        }
+
+        .ps-problems-section .prob-icon {
+            width: 100%;
+            height: 182px;
+            margin: 0;
+            border-radius: 0;
+            background: var(--prob-soft);
+            overflow: hidden;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .ps-problems-section .prob-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transform: scale(1.02);
+            transition: transform 0.35s ease;
+        }
+
+        .ps-problems-section .prob-card:hover .prob-icon {
+            transform: none;
+        }
+
+        .ps-problems-section .prob-card:hover .prob-icon img {
+            transform: scale(1.08);
+        }
+
+        .ps-problems-section .prob-name {
+            margin: 0;
+            padding: 22px 22px 0;
+            color: var(--dk);
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.06rem;
+            font-weight: 900;
+            line-height: 1.3;
+        }
+
+        .ps-problems-section .prob-text {
+            margin: 0;
+            padding: 10px 22px 24px;
+            color: #625b76;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.94rem;
+            line-height: 1.72;
+        }
+
+        .ps-problems-section .ps-divider {
+            margin: 46px auto 0;
+        }
+
+        .ps-problems-section .div-badge {
+            background: linear-gradient(135deg, var(--mn), #00a872);
+            box-shadow: 0 12px 28px rgba(0, 214, 143, 0.22);
+        }
+
+        @media (max-width: 1024px) {
+            .ps-problems-section .problem-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .ps-problems-section {
+                padding: 62px 4% 56px;
+            }
+
+            .ps-problems-section .ps-header {
+                margin-bottom: 30px;
+            }
+
+            .ps-problems-section .problem-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .ps-problems-section .prob-card {
+                grid-template-rows: 166px auto 1fr;
+                min-height: 0;
+                border-radius: 20px;
+            }
+
+            .ps-problems-section .prob-icon {
+                height: 166px;
+            }
+
+            .ps-problems-section .prob-name {
+                padding: 18px 18px 0;
+                font-size: 1rem;
+            }
+
+            .ps-problems-section .prob-text {
+                padding: 9px 18px 20px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -685,128 +918,40 @@
     @php
         $productDescription = trim((string) ($product->description ?? ''));
         $productDescriptionHasHtml = $productDescription !== strip_tags($productDescription);
+        $productDescriptionBlocks = collect(
+            preg_split('/\R{2,}|\R/', $productDescription, -1, PREG_SPLIT_NO_EMPTY)
+        )
+            ->map(fn ($block) => trim($block))
+            ->filter()
+            ->values();
+        $productDescriptionSplitAt = (int) ceil($productDescriptionBlocks->count() / 2);
     @endphp
 
     @if ($productDescription !== '')
         <section class="pdp-description-section">
             <div class="pdp-description-wrap">
                 <div class="pdp-description-label">Product Details</div>
-                <h2 class="pdp-description-title">Product Description</h2>
-                <div class="pdp-description-copy">
-                    @if ($productDescriptionHasHtml)
+                @if ($productDescriptionHasHtml)
+                    <div class="pdp-description-copy is-html">
                         {!! $productDescription !!}
-                    @else
-                        {!! nl2br(e($productDescription)) !!}
-                    @endif
-                </div>
+                    </div>
+                @else
+                    <div class="pdp-description-columns">
+                        <div class="pdp-description-column pdp-description-copy">
+                            @foreach ($productDescriptionBlocks->slice(0, $productDescriptionSplitAt) as $block)
+                                <p>{{ $block }}</p>
+                            @endforeach
+                        </div>
+                        <div class="pdp-description-column pdp-description-copy">
+                            @foreach ($productDescriptionBlocks->slice($productDescriptionSplitAt) as $block)
+                                <p>{{ $block }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </section>
     @endif
-
-    <section id="nb-ingredients">
-
-        <!-- Mesh BG -->
-        <div class="nb-mesh">
-            <div class="nb-blob nb-blob-1"></div>
-            <div class="nb-blob nb-blob-2"></div>
-            <div class="nb-blob nb-blob-3"></div>
-            <div class="nb-blob nb-blob-4"></div>
-            <!-- Stars -->
-            <div class="nb-star" style="width:3px;height:3px;top:12%;left:8%;--dur:5s;--del:0s"></div>
-            <div class="nb-star" style="width:4px;height:4px;top:28%;left:22%;--dur:7s;--del:1s"></div>
-            <div class="nb-star" style="width:2px;height:2px;top:55%;left:75%;--dur:4s;--del:.5s"></div>
-            <div class="nb-star" style="width:5px;height:5px;top:78%;left:90%;--dur:8s;--del:2s"></div>
-            <div class="nb-star" style="width:3px;height:3px;top:40%;left:5%;--dur:6s;--del:1.5s"></div>
-            <div class="nb-star" style="width:4px;height:4px;top:90%;left:40%;--dur:5s;--del:3s"></div>
-            <div class="nb-star" style="width:2px;height:2px;top:18%;left:88%;--dur:9s;--del:.8s"></div>
-            <div class="nb-star" style="width:3px;height:3px;top:65%;left:52%;--dur:6s;--del:2.5s"></div>
-        </div>
-
-        <!-- ── Header ── -->
-        <div class="nb-ing-header">
-            <div class="nb-eyebrow">🔬 Ingredient Transparency</div>
-            <h2 class="nb-ing-title">
-                What Goes Into Every<br>
-                <span class="nb-acc-ye">GrowStrong</span> <span class="nb-acc-pk">Gummy?</span>
-            </h2>
-            <p class="nb-ing-sub">Every single ingredient explained — from ancient Ayurvedic herbs to essential vitamins
-                and
-                minerals. Click any ingredient to learn its full story.</p>
-        </div>
-
-        <!-- ── Category Filter (desktop) ── -->
-        @php
-            $categoryFilters = $ingredientCategoryFilters ?? collect();
-            $totalIngredientCount = $ingredientTotalCount ?? 0;
-            $ingredientItems = $ingredientItems ?? collect();
-            $ingredientSummaryStats = $ingredientSummaryStats ?? [];
-        @endphp
-        <div class="nb-cat-row">
-            <button class="nb-cat-pill nb-active" onclick="nbFilter('all',this)">
-                <span class="nb-cat-dot" style="background:rgba(255,255,255,.5)"></span>All ({{ $totalIngredientCount }})
-            </button>
-            @foreach ($categoryFilters as $filter)
-                <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
-                    <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }}
-                    ({{ $filter['count'] }})
-                </button>
-            @endforeach
-        </div>
-
-        <!-- ── Mobile Tabs ── -->
-        <div class="nb-mobile-tabs" id="nbMobTabs">
-            <button class="nb-mob-tab nb-sel-mob" onclick="nbMobFilter('all',this)">All
-                ({{ $totalIngredientCount }})</button>
-            @foreach ($categoryFilters as $filter)
-                <button class="nb-mob-tab" onclick="nbMobFilter('{{ $filter['key'] }}',this)">{{ $filter['name'] }}
-                    ({{ $filter['count'] }})
-                </button>
-            @endforeach
-        </div>
-
-        <!-- ── Mobile Accordion Cards ── -->
-        <div class="nb-mob-cards" id="nbMobCards">
-            <!-- Generated by JS -->
-        </div>
-
-        <!-- ── Desktop: Two-column layout ── -->
-        <div class="nb-ing-body">
-
-            <!-- LEFT LIST -->
-            <div class="nb-list-panel">
-                <div class="nb-list-head">
-                    <div class="nb-list-head-icon">📋</div>
-                    <div>
-                        <h4>Full Ingredient List</h4>
-                        <p>{{ $totalIngredientCount }} ingredients · click to explore</p>
-                    </div>
-                </div>
-                <div class="nb-list-scroll" id="nbList">
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-
-            <!-- RIGHT DETAIL -->
-            <div class="nb-detail-wrap">
-                <div class="nb-detail-empty" id="nbDetailEmpty">
-                    <div class="nb-empty-ico">🔬</div>
-                    <h3>Select an Ingredient</h3>
-                    <p>Click any ingredient from the list on the left to discover its story, benefits, and why we chose it
-                        for
-                        your child.</p>
-                </div>
-                <div id="nbDetailCards">
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-        </div><!-- /nb-ing-body -->
-        <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
-
-    </section>
-
-
-    <!-- end ingredients -->
-
 
     <!-- ══ DESCRIPTION & DETAILS ══ -->
 
@@ -1125,7 +1270,7 @@
     <!-- SECTION problem and solution -->
 
     <!-- SECTION -->
-    <section class="ps-section">
+    <section class="ps-section ps-problems-section">
         <div class="ps-inner">
 
             <!-- HEADER -->
@@ -1491,6 +1636,14 @@
         let selectedVariantId = '{{ $defVariant ? $defVariant->id : '' }}';
         const pdpVariants = @json($frontendVariants);
         const pdpSelectedAttributes = @json($initialSelectedAttributes);
+        const pdpIsLoggedIn = @json(auth()->check());
+        const pdpFallbackCartMeta = {
+            product_name: @json($product->name),
+            variant_name: '',
+            image: @json($product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('img/product2.png')),
+            unit_price: Number(@json((float) $initialPrice)),
+            product_url: @json(request()->path()),
+        };
 
         function changePdpImage(el, src) {
             document.getElementById('mainPdpImage').src = src;
@@ -1544,6 +1697,15 @@
 
             if (!variant) {
                 selectedVariantId = '';
+                if (!pdpVariants.length) {
+                    if (stockEl) {
+                        stockEl.textContent = 'In stock';
+                        stockEl.classList.remove('out');
+                    }
+                    if (addBtn) addBtn.disabled = false;
+                    if (buyBtn) buyBtn.disabled = false;
+                    return;
+                }
                 if (stockEl) {
                     stockEl.textContent = 'Select available options';
                     stockEl.classList.add('out');
@@ -1584,6 +1746,51 @@
             if (buyBtn) buyBtn.disabled = !variant.available;
         }
 
+        function addPdpGuestCartFallback(productId, quantity = 1, variantId = null) {
+            const key = 'nb_pending_cart';
+            const itemKey = String(Number(productId || 0));
+            let items = [];
+
+            try {
+                const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+                items = Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                items = [];
+            }
+
+            const activeVariant = pdpVariants.find(variant => String(variant.id) === String(variantId));
+            const meta = {
+                ...pdpFallbackCartMeta,
+                variant_name: activeVariant?.name || '',
+                unit_price: Number(activeVariant?.price || pdpFallbackCartMeta.unit_price || 0),
+            };
+            const found = items.find(item => String(Number(item.product_id || 0)) === itemKey);
+
+            if (found) {
+                found.quantity = Number(found.quantity || 0) + Number(quantity || 1);
+                found.product_variant_id = variantId ? Number(variantId) : null;
+                found.product_name = meta.product_name;
+                found.variant_name = meta.variant_name;
+                found.image = meta.image;
+                found.unit_price = meta.unit_price;
+                found.product_url = meta.product_url;
+            } else {
+                items.push({
+                    product_id: Number(productId),
+                    product_variant_id: variantId ? Number(variantId) : null,
+                    quantity: Number(quantity || 1),
+                    ...meta,
+                });
+            }
+
+            localStorage.setItem(key, JSON.stringify(items));
+
+            const count = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+            const cartCount = document.getElementById('cartCount');
+            if (cartCount) cartCount.textContent = String(count);
+            return true;
+        }
+
         function selectPdpOption(button) {
             const attribute = button.dataset.attribute;
             const value = button.dataset.value;
@@ -1597,30 +1804,52 @@
             applyVariantToPage(findMatchingVariant());
         }
 
-        function handleAddToCart(productId, btn) {
+        async function handleAddToCart(productId, btn) {
             const variantId = selectedVariantId || null;
             if (pdpVariants.length && !variantId) {
                 if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
                 return;
             }
             if (typeof window.addToCart === 'function') {
-                window.addToCart(productId, 1, variantId, btn);
+                if (btn) btn.disabled = true;
+                const added = await window.addToCart(productId, 1, variantId, btn);
+                if (btn) btn.disabled = false;
+                if (added && typeof nbToast === 'function') {
+                    nbToast('Product added to cart.', 'success');
+                } else if (!added && !pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                    if (typeof nbToast === 'function') nbToast('Product added to cart.', 'success');
+                }
             } else {
                 console.warn('Global addToCart not found, using fallback');
-                alert('Added to cart!');
+                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                    if (typeof nbToast === 'function') nbToast('Product added to cart.', 'success');
+                } else if (typeof nbToast === 'function') {
+                    nbToast('Cart is still loading. Please try again.', 'warning');
+                }
             }
         }
 
-        function handleBuyNow(productId, btn) {
+        async function handleBuyNow(productId, btn) {
             const variantId = selectedVariantId || null;
             if (pdpVariants.length && !variantId) {
                 if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
                 return;
             }
-            if (typeof window.buyNow === 'function') {
-                window.buyNow(productId, 1, variantId, btn);
+            if (typeof window.addToCart === 'function') {
+                if (btn) btn.disabled = true;
+                const added = await window.addToCart(productId, 1, variantId, btn);
+                if (btn) btn.disabled = false;
+                if (added) {
+                    window.location.href = "{{ route('checkout') }}";
+                } else if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                    window.location.href = "{{ route('checkout') }}";
+                }
             } else {
-                window.location.href = "{{ route('checkout') }}?id=" + (variantId || productId);
+                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                    window.location.href = "{{ route('checkout') }}";
+                } else if (typeof nbToast === 'function') {
+                    nbToast('Cart is still loading. Please try again.', 'warning');
+                }
             }
         }
 
@@ -1669,7 +1898,11 @@
                 button.addEventListener('click', () => selectPdpOption(button));
             });
             updateVariantAvailability();
-            applyVariantToPage(findMatchingVariant() || pdpVariants[0] || null);
+            if (pdpVariants.length) {
+                applyVariantToPage(findMatchingVariant() || pdpVariants[0] || null);
+            } else {
+                applyVariantToPage(null);
+            }
 
             const defaultVal = 5;
             document.querySelectorAll('.star-opt').forEach(s => {

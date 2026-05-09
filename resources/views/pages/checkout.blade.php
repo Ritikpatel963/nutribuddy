@@ -1063,6 +1063,36 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
+        .coin-redeem-toggle {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 800;
+            color: var(--dk);
+            line-height: 1.45;
+        }
+
+        .coin-redeem-toggle input {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
+            accent-color: var(--or);
+            flex-shrink: 0;
+        }
+
+        .coin-redeem-toggle.is-disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .coin-redeem-box.is-disabled .coin-slider {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
         /* Price Breakdown */
         .price-breakdown {
             display: flex;
@@ -1852,18 +1882,43 @@
 @endpush
 
 @section('content')
+    @guest
+        <script>
+            (function () {
+                try {
+                    const raw = localStorage.getItem('nb_pending_cart');
+                    const items = raw ? JSON.parse(raw) : [];
+                    const count = Array.isArray(items)
+                        ? items.reduce((sum, item) => sum + Number(item && item.quantity || 0), 0)
+                        : 0;
+
+                    if (count < 1) {
+                        sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+                        window.location.replace(@json(route('cart.page')));
+                    }
+                } catch (error) {
+                    sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+                    window.location.replace(@json(route('cart.page')));
+                }
+            })();
+        </script>
+    @endguest
+
     <!-- HERO -->
-    <div class="page-hero">
-        <span class="hero-eyebrow">Legal · NutriBuddy Kids</span>
-        <h1 class="hero-title">Check<span>Out</span></h1>
-        <p class="hero-subtitle">Please read these terms carefully before using our website or purchasing our products. They
-            govern your relationship with NutriBuddy.</p>
-        <div class="hero-meta">
-            <div class="meta-pill">📅 Last Updated: June 1, 2025</div>
-            <div class="meta-pill">🏢 NutriBuddy Kids Pvt. Ltd.</div>
-            <div class="meta-pill">🇮🇳 Governed by Indian Law</div>
+    <section class="product-listing-hero reveal">
+        <div class="product-listing-hero-inner">
+            <div class="product-listing-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span>/</span>
+                <a href="{{ route('cart.page') }}">Cart</a>
+                <span>/</span>
+                <span>Checkout</span>
+            </div>
+            <span class="product-listing-hero-badge">Secure Checkout</span>
+            <h1 class="product-listing-hero-title">Complete Your Order</h1>
+            <p class="product-listing-hero-sub">Review your delivery details, confirm payment, and place your NutriBuddy order securely.</p>
         </div>
-    </div>
+    </section>
     <!-- Menu Overlay -->
     <div class="menu-overlay" id="menuOverlay"></div>
 
@@ -1885,11 +1940,11 @@
     <header class="checkout-topbar">
 
         <div class="topbar-steps">
-            <div class="ts done" id="step-login">
-                <div class="ts-num">✓</div> Login
+            <div class="ts {{ auth()->check() ? 'done' : 'active' }}" id="step-login">
+                <div class="ts-num">{!! auth()->check() ? '&#10003;' : '1' !!}</div> Login
             </div>
             <div class="ts-arrow">›</div>
-            <div class="ts active" id="step-addr">
+            <div class="ts {{ auth()->check() ? 'active' : '' }}" id="step-addr">
                 <div class="ts-num">2</div> Address
             </div>
             <div class="ts-arrow">›</div>
@@ -2090,14 +2145,19 @@
                     $checkoutCoinSliderMax = $adminMaxRedeemableCoins > 0
                         ? min((int) auth()->user()->coins_balance, $adminMaxRedeemableCoins)
                         : (int) auth()->user()->coins_balance;
+                    $canRedeemCoins = $checkoutCoinSliderMax > 0;
                 @endphp
                 <div class="loyalty-row" id="coinRedeemRow" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 20px;">
                     <div class="d-flex justify-content-between align-items-center mb-10" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <div class="coupon-label" style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--dk);">Redeem NB Coins 🪙</div>
                         <div class="lb-pts" id="userCoinBalance" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.85rem;">{{ auth()->user()->coins_balance }} Available</div>
                     </div>
-                    <div class="coin-redeem-box">
-                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ $checkoutCoinSliderMax }}" value="0" step="1" data-admin-max="{{ $adminMaxRedeemableCoins }}">
+                    <div class="coin-redeem-box is-disabled" id="coinRedeemBox">
+                        <label class="coin-redeem-toggle {{ $canRedeemCoins ? '' : 'is-disabled' }}" for="coinRedeemToggle">
+                            <input type="checkbox" id="coinRedeemToggle" {{ $canRedeemCoins ? '' : 'disabled' }}>
+                            <span>{{ $canRedeemCoins ? 'Use NB Coins on this order' : 'No NB Coins available to redeem' }}</span>
+                        </label>
+                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ $checkoutCoinSliderMax }}" value="0" step="1" data-admin-max="{{ $adminMaxRedeemableCoins }}" disabled>
                         <div style="display: flex; justify-content: space-between; margin-top: 8px;">
                             <span style="font-size: 0.7rem; color: #aaa;">0</span>
                             <span id="coinsToRedeemValue" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.95rem;">Redeeming: 0 Coins</span>
@@ -2287,20 +2347,6 @@
     <!-- ══════════════════════════════════════════
                        NEWSLETTER
                   ══════════════════════════════════════════ -->
-    <div class="newsletter reveal">
-        <span class="sec-eye">Stay in the Loop</span>
-        <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
-        <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access
-            every week.</p>
-        <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
-            @csrf
-            <input type="hidden" name="source" value="newsletter_block">
-            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
-            <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-            <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
-        </form>
-    </div>
-
     <!-- ══════════════════════════════════════════
                        FOOTER
                   ══════════════════════════════════════════ -->
@@ -2682,7 +2728,31 @@
             let isVerifyingOtp = false;
             let isPlacingOrder = false;
             const pendingCartKey = 'nb_pending_cart';
+            const cartPageUrl = @json(route('cart.page'));
             let currentTotal = 0;
+
+            function markLoginStepDone() {
+                const loginStep = document.getElementById('step-login');
+                const addressStep = document.getElementById('step-addr');
+                if (loginStep) {
+                    loginStep.classList.remove('active');
+                    loginStep.classList.add('done');
+                    const loginNum = loginStep.querySelector('.ts-num');
+                    if (loginNum) loginNum.textContent = '\u2713';
+                }
+                if (addressStep && !addressStep.classList.contains('done')) {
+                    addressStep.classList.add('active');
+                }
+                const progress = document.getElementById('progressFill');
+                if (progress && progress.style.width === '') {
+                    progress.style.width = '33%';
+                }
+            }
+
+            function redirectEmptyCheckout() {
+                sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+                window.location.replace(cartPageUrl);
+            }
 
             function updateCsrfToken(token) {
                 if (!token) {
@@ -2840,6 +2910,45 @@
                 localStorage.removeItem(pendingCartKey);
             }
 
+            function coinRedemptionEnabled() {
+                const toggle = document.getElementById('coinRedeemToggle');
+                return !!(toggle && !toggle.disabled && toggle.checked);
+            }
+
+            function getCoinsToRedeem() {
+                const slider = document.getElementById('coinSlider');
+                if (!slider || !coinRedemptionEnabled()) {
+                    return 0;
+                }
+
+                return Math.max(0, Number(slider.value || 0));
+            }
+
+            function updateCoinRedemptionUI(preferMax = false) {
+                const slider = document.getElementById('coinSlider');
+                const toggle = document.getElementById('coinRedeemToggle');
+                const box = document.getElementById('coinRedeemBox');
+                const label = document.getElementById('coinsToRedeemValue');
+                const discountText = document.getElementById('coinDiscountText');
+
+                if (!slider) {
+                    return;
+                }
+
+                const enabled = coinRedemptionEnabled();
+                slider.disabled = !enabled;
+                if (box) box.classList.toggle('is-disabled', !enabled);
+
+                if (!enabled) {
+                    slider.value = 0;
+                } else if (preferMax && toggle && slider.value === '0') {
+                    slider.value = slider.max || 0;
+                }
+
+                if (label) label.textContent = `Redeeming: ${slider.value || 0} Coins`;
+                if (!enabled && discountText) discountText.textContent = 'Value: ₹0.00 off';
+            }
+
             function updatePriceUI(pricing, itemsCount) {
                 const mrp = Number(pricing.display_subtotal !== undefined ? pricing.display_subtotal : (pricing.subtotal || 0));
                 const totalDiscount = Number(pricing.display_discount_total !== undefined ? pricing.display_discount_total : (pricing.discount_total || 0));
@@ -2892,10 +3001,11 @@
                 const coinSlider = document.getElementById('coinSlider');
                 if (coinSlider && pricing.coins_redeemed !== undefined) {
                     const redeemedCoins = Number(pricing.coins_redeemed || 0);
-                    coinSlider.value = Math.min(Number(coinSlider.max || 0), redeemedCoins);
+                    coinSlider.value = coinRedemptionEnabled() ? Math.min(Number(coinSlider.max || 0), redeemedCoins) : 0;
                     const redeemLabel = document.getElementById('coinsToRedeemValue');
                     if (redeemLabel) redeemLabel.textContent = `Redeeming: ${coinSlider.value} Coins`;
                 }
+                updateCoinRedemptionUI();
 
                 if (gstEl) {
                     const gstRow = gstEl.closest('.pb-row');
@@ -2921,6 +3031,10 @@
             async function renderPendingCheckoutCart() {
                 const pending = getPendingCartItems();
                 const totalQuantity = pending.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+                if (totalQuantity < 1) {
+                    redirectEmptyCheckout();
+                    return;
+                }
                 
                 let lineItemsToRender = [];
 
@@ -3103,7 +3217,7 @@
                     },
                     body: JSON.stringify({
                         coupon_code: normalizedCode || null,
-                        coins_to_redeem: document.getElementById('coinSlider')?.value || 0
+                        coins_to_redeem: getCoinsToRedeem()
                     })
                 });
 
@@ -3143,8 +3257,6 @@
                 const couponInput = document.getElementById('couponInput');
                 const code = couponInput ? couponInput.value.trim().toUpperCase() : (window.__couponCode || '');
                 const msg = document.getElementById('couponMsg');
-                const coinSlider = document.getElementById('coinSlider');
-                const coins = coinSlider ? coinSlider.value : 0;
 
                 if (msg) {
                     msg.classList.add('show');
@@ -3410,6 +3522,7 @@
 
                 clearInterval(otpTimer);
                 isLoggedIn = true;
+                markLoginStepDone();
                 updateCsrfToken(payload.csrf_token || '');
                 await syncPendingCartToServer();
 
@@ -3464,6 +3577,7 @@
                     if (typeof openLoginModal === 'function') {
                         openLoginModal(async (data) => {
                             isLoggedIn = true;
+                            markLoginStepDone();
                             if (typeof updateCsrfToken === 'function') updateCsrfToken(data.csrf_token);
                             await syncPendingCartToServer();
                             await loadCartSummary();
@@ -3513,7 +3627,7 @@
                     body: JSON.stringify({
                         address_id: Number(addressId),
                         coupon_code: window.__couponCode || null,
-                        coins_to_redeem: document.getElementById('coinSlider')?.value || 0,
+                        coins_to_redeem: getCoinsToRedeem(),
                         payment_method: 'cod',
                         checkout_token: window.__checkoutToken || ''
                     })
@@ -3619,6 +3733,11 @@
                 const items = payload.cart?.items || [];
                 const pricing = payload.pricing || {};
                 const totalQuantity = items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+                if (totalQuantity < 1) {
+                    redirectEmptyCheckout();
+                    return;
+                }
+
                 currentTotal = Number(pricing.grand_total || 0);
                 updatePriceUI(pricing, totalQuantity);
 
@@ -3714,13 +3833,26 @@
                 const cod = document.getElementById('payMethodCod');
                 if (cod) selectPayMethod(cod, 'cod');
 
-                // Coin Slider Event
+                // Coin redemption controls
+                const coinToggle = document.getElementById('coinRedeemToggle');
                 const slider = document.getElementById('coinSlider');
+                if (coinToggle && slider) {
+                    updateCoinRedemptionUI();
+                    coinToggle.addEventListener('change', function() {
+                        if (this.checked && slider.value === '0') {
+                            slider.value = slider.max || 0;
+                        }
+                        updateCoinRedemptionUI(true);
+                        refreshCheckoutSummary();
+                    });
+                }
                 if (slider) {
                     slider.addEventListener('input', function() {
+                        if (!coinRedemptionEnabled()) return;
                         document.getElementById('coinsToRedeemValue').textContent = `Redeeming: ${this.value} Coins`;
                     });
                     slider.addEventListener('change', function() {
+                        if (!coinRedemptionEnabled()) return;
                         refreshCheckoutSummary(); // Unified refresh
                     });
                 }

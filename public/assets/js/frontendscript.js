@@ -232,6 +232,22 @@ function formatCartMoney(value, maximumFractionDigits = 2) {
   return `Rs. ${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits })}`;
 }
 
+function isAuthRedirectResponse(res) {
+  const responseUrl = res?.url || '';
+  const contentType = res?.headers?.get('content-type') || '';
+  const isJsonResponse = contentType.toLowerCase().includes('application/json');
+  const authPagePattern = /\/(?:login|signin)(?:[/?#]|$)/i;
+  return res?.status === 401 ||
+    res?.status === 403 ||
+    res?.status === 419 ||
+    (res?.redirected && authPagePattern.test(responseUrl)) ||
+    (!isJsonResponse && authPagePattern.test(responseUrl));
+}
+
+function isJsonResponse(res) {
+  return String(res?.headers?.get('content-type') || '').toLowerCase().includes('application/json');
+}
+
 function extractDisplayedPrice(value) {
   const text = String(value || '');
   const match = text.match(/\d[\d,]*(?:\.\d+)?/);
@@ -354,17 +370,21 @@ async function syncCartCount() {
   if (!cartCountEl) return;
   try {
     let res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
-    if (res.status === 401 || res.status === 419) {
+    if (isAuthRedirectResponse(res)) {
       cartCountEl.textContent = String(getPendingCartCount());
       return;
     }
-    if (!res.ok) return;
+    if (!res.ok || !isJsonResponse(res)) return;
 
     if (getPendingCartItems().length) {
       const synced = await syncPendingCartToServer();
       if (synced) {
         res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
-        if (!res.ok) return;
+        if (isAuthRedirectResponse(res)) {
+          cartCountEl.textContent = String(getPendingCartCount());
+          return;
+        }
+        if (!res.ok || !isJsonResponse(res)) return;
       }
     }
 
@@ -463,7 +483,7 @@ async function loadCartPopup() {
   try {
     const res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
 
-    if (res.status === 401 || res.status === 419) {
+    if (isAuthRedirectResponse(res)) {
       /* ── Guest / pending cart ── */
       const pendingItems = getPendingCartItems();
       const pendingCount = getPendingCartCount();
@@ -506,7 +526,7 @@ async function loadCartPopup() {
       return;
     }
 
-    if (!res.ok) throw new Error('cart');
+    if (!res.ok || !isJsonResponse(res)) throw new Error('cart');
 
     /* ── Authenticated cart ── */
     const payload  = await res.json().catch(() => ({}));
@@ -1433,9 +1453,8 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
       body: JSON.stringify({ product_id: productId, product_variant_id: productVariantId, quantity })
     });
 
-    const responseUrl            = res.url || '';
-    const wasRedirectedToLogin   = res.redirected && /\/login(?:[/?#]|$)/i.test(responseUrl);
-    const isGuestFallback        = res.status === 401 || res.status === 403 || res.status === 419 || wasRedirectedToLogin;
+    const responseIsJson  = isJsonResponse(res);
+    const isGuestFallback = isAuthRedirectResponse(res);
 
     if (isGuestFallback) {
       addPendingCartItem(productId, quantity, productVariantId, itemMeta);
@@ -1446,7 +1465,7 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
       return true;
     }
 
-    if (!res.ok) {
+    if (!res.ok || !responseIsJson) {
       const payload = await res.json().catch(() => ({}));
       if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to add item to cart.', 'error');
       return false;
@@ -1681,8 +1700,9 @@ document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
     };
   }
 
+  const payloadEl = document.getElementById('nbIngredientsData');
   const liveIngredients = readIngredientPayload();
-  const ingredients = (liveIngredients && liveIngredients.length ? liveIngredients : fallbackIngredients).map(normalizeIngredient);
+  const ingredients = (payloadEl ? (liveIngredients || []) : fallbackIngredients).map(normalizeIngredient);
 
   const listEl     = document.getElementById('nbList');
   const detailEl   = document.getElementById('nbDetailCards');

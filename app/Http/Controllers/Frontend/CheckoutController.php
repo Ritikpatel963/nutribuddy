@@ -25,10 +25,17 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    public function page(): \Illuminate\View\View
+    public function page(Request $request): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         $savedAddresses = collect();
         if (auth()->check()) {
+            $cart = Cart::where('user_id', auth()->id())->withCount('items')->first();
+            if (!$cart || $cart->items_count < 1) {
+                return redirect()
+                    ->route('cart.page')
+                    ->with('warning', 'Please add at least one item to your cart before checkout.');
+            }
+
             $savedAddresses = CustomerAddress::where('user_id', auth()->id())
                 ->latest()
                 ->get();

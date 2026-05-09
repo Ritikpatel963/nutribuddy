@@ -704,16 +704,6 @@
                 </div>
 
                 <div class="shop-filter-group">
-                    <div class="shop-filter-label">Product Type</div>
-                    <label class="d-flex align-items-center gap-2 text-sm fw-bold mb-10">
-                        <input type="checkbox" id="shopFeaturedOnly"> Featured products
-                    </label>
-                    <label class="d-flex align-items-center gap-2 text-sm fw-bold">
-                        <input type="checkbox" id="shopDiscountOnly"> Offers only
-                    </label>
-                </div>
-
-                <div class="shop-filter-group">
                     <div class="shop-filter-label">Rating</div>
                     <select class="shop-select" id="shopRating">
                         <option value="0">Any rating</option>
@@ -827,7 +817,7 @@
                                     <div class="pc-variant-meta">
                                         <span class="pc-stock-pill {{ $preparedProduct['isAvailable'] ? '' : 'out' }}">
                                             @if($preparedProduct['isAvailable'])
-                                                {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' in stock' : 'In stock' }}
+                                                {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' unit in stock' : 'In stock' }}
                                             @else
                                                 Out of stock
                                             @endif
@@ -912,8 +902,6 @@
             const maxPrice = document.getElementById('shopMaxPrice');
             const priceRange = document.getElementById('shopPriceRange');
             const priceText = document.getElementById('shopPriceText');
-            const featuredOnly = document.getElementById('shopFeaturedOnly');
-            const discountOnly = document.getElementById('shopDiscountOnly');
             const rating = document.getElementById('shopRating');
             const sort = document.getElementById('shopSort');
             const clear = document.getElementById('shopClearFilters');
@@ -956,8 +944,6 @@
                 const min = numberValue(minPrice, initialMin);
                 const max = numberValue(maxPrice, initialMax);
                 const minRating = Number(rating?.value || 0);
-                const wantFeatured = !!featuredOnly?.checked;
-                const wantDiscount = !!discountOnly?.checked;
 
                 const visible = cards.filter(card => {
                     const price = Number(card.dataset.price || 0);
@@ -965,8 +951,6 @@
                     if (q && !String(card.dataset.search || '').includes(q)) return false;
                     if (price < min || price > max) return false;
                     if (Number(card.dataset.rating || 0) < minRating) return false;
-                    if (wantFeatured && card.dataset.featured !== '1') return false;
-                    if (wantDiscount && card.dataset.discount !== '1') return false;
                     return true;
                 });
 
@@ -989,7 +973,7 @@
                 });
             });
 
-            [search, minPrice, maxPrice, featuredOnly, discountOnly, rating, sort].forEach(input => {
+            [search, minPrice, maxPrice, rating, sort].forEach(input => {
                 input?.addEventListener('input', applyFilters);
                 input?.addEventListener('change', applyFilters);
             });
@@ -1006,8 +990,6 @@
                 if (minPrice) minPrice.value = initialMin;
                 if (maxPrice) maxPrice.value = initialMax;
                 if (priceRange) priceRange.value = initialMax;
-                if (featuredOnly) featuredOnly.checked = false;
-                if (discountOnly) discountOnly.checked = false;
                 if (rating) rating.value = '0';
                 if (sort) sort.value = 'featured';
                 applyFilters();

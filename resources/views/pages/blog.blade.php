@@ -187,8 +187,8 @@
             font-size: .72rem;
             font-weight: 900;
             margin-bottom: 14px;
-            min-height: 28px;
-            padding: 0 12px;
+            
+            padding: 5px 12px;
             text-transform: uppercase;
             width: fit-content;
         }

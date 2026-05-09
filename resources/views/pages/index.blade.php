@@ -875,33 +875,54 @@ if ($catSlug == 'multivitamins') {
                        HOW IT WORKS
                   ══════════════════════════════════════════ -->
     <section class="how-section reveal">
-        <span class="sec-eye" style="display:block;text-align:center">Simple Process</span>
-        <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+        <div class="how-layout">
+        <div class="how-head">
+            <span class="sec-eye">Simple Process</span>
+            <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+            <p>From a quick parent quiz to a plan you can actually follow, NutriBuddy keeps each step simple.</p>
+            <div class="how-stats">
+                <div><strong>2 min</strong><span>quick quiz</span></div>
+                <div><strong>Free</strong><span>diet plan</span></div>
+            </div>
+        </div>
         <div class="steps">
             <div class="step-new">
-                <div class="sball s1 "><img src="/img/quiz.png" alt=""></div>
-                <div class="snum">Step 01</div>
+                <div class="step-top">
+                    <div class="sball s1"><img src="/img/quiz.png" alt=""></div>
+                    <div class="snum">Step 01</div>
+                </div>
                 <div class="stitle">Take the Quiz</div>
                 <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
             </div>
             <div class="step-new">
-                <div class="sball s2"><img src="/img/plan.png" alt=""></div>
-                <div class="snum">Step 02</div>
+                <div class="step-top">
+                    <div class="sball s2"><img src="/img/plan.png" alt=""></div>
+                    <div class="snum">Step 02</div>
+                </div>
                 <div class="stitle">Get Your Plan</div>
                 <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
             </div>
             <div class="step-new">
-                <div class="sball s3"><img src="/img/order.png" alt=""></div>
-                <div class="snum">Step 03</div>
+                <div class="step-top">
+                    <div class="sball s3"><img src="/img/order.png" alt=""></div>
+                    <div class="snum">Step 03</div>
+                </div>
                 <div class="stitle">Order & Save</div>
                 <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
             </div>
             <div class="step-new">
-                <div class="sball s4"><img src="/img/rising.png" alt=""></div>
-                <div class="snum">Step 04</div>
+                <div class="step-top">
+                    <div class="sball s4"><img src="/img/rising.png" alt=""></div>
+                    <div class="snum">Step 04</div>
+                </div>
                 <div class="stitle">Track Progress</div>
                 <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
             </div>
+        </div>
+        <div class="how-cta-row">
+            <a href="#diet-chart" class="hbtn hbtn-main">Start Free Quiz</a>
+            <span>No sign-up required to begin</span>
+        </div>
         </div>
     </section>
 

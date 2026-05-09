@@ -10,7 +10,7 @@
                 radial-gradient(circle at 88% 16%, rgba(255, 77, 143, .2), transparent 34%),
                 linear-gradient(135deg, #170032 0%, #321064 52%, #0d0028 100%);
             overflow: hidden;
-            padding: 120px 5% 76px;
+            padding: 150px 5% 76px;
             position: relative;
         }
 
