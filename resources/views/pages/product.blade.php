@@ -683,49 +683,25 @@
                     ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @php
-        $productDescriptionParagraphs = preg_split(
-            '/\r\n\r\n|\n\n|\r\r|[\r\n]+/',
-            strip_tags((string) ($product->description ?? '')),
-        );
-        $productDescriptionParagraphs = array_values(array_filter(array_map('trim', $productDescriptionParagraphs)));
-
-        $fallbackDescriptionParagraphs = [
-            "{$product->name} is created for parents who want dependable daily nutrition in a format children genuinely enjoy. It combines a kid-friendly taste with ingredients selected to support everyday wellness, making routine supplementation feel simple instead of stressful.",
-            'This product is designed to fit naturally into busy family life. From the first chew, the focus is on convenience, consistency, and age-appropriate nourishment so parents can feel more confident about what their child is taking each day.',
-            "Every serving is planned to bring together thoughtful formulation and practical use. Whether the goal is better daily balance, steady nutritional support, or an easier wellness routine, {$product->name} is built to work as part of a long-term family habit.",
-            'The texture, flavor, and overall experience are shaped around children while the ingredient story stays parent-focused. That means you get a product that feels enjoyable for kids but still reflects a careful standard for quality, safety, and everyday usability.',
-            'Parents often look for something that supports growth, energy, focus, or seasonal wellness without adding friction to the day. This product answers that need with a format that is approachable, easy to serve, and simple to keep consistent over time.',
-            "With its blend of nutrition, taste, and convenience, {$product->name} aims to make wellness feel more manageable for the whole household. It is a practical choice for families who want supportive daily care without compromising on comfort or experience.",
-        ];
-
-        if (count($productDescriptionParagraphs) < 5) {
-            foreach ($fallbackDescriptionParagraphs as $fallbackParagraph) {
-                if (count($productDescriptionParagraphs) >= 6) {
-                    break;
-                }
-
-                $productDescriptionParagraphs[] = $fallbackParagraph;
-            }
-        }
-
-        $productDescriptionParagraphs = array_slice($productDescriptionParagraphs, 0, 6);
+        $productDescription = trim((string) ($product->description ?? ''));
+        $productDescriptionHasHtml = $productDescription !== strip_tags($productDescription);
     @endphp
 
-    <section class="pdp-description-section">
-        <div class="pdp-description-wrap">
-            <div class="pdp-description-label">Product Details</div>
-            <h2 class="pdp-description-title">Product Description</h2>
-            <p class="pdp-description-intro">
-                Discover what makes {{ $product->name }} a thoughtful choice for modern families, from its daily-use
-                comfort to the wellness support parents expect.
-            </p>
-            <div class="pdp-description-copy">
-                @foreach ($productDescriptionParagraphs as $descriptionParagraph)
-                    <p>{{ $descriptionParagraph }}</p>
-                @endforeach
+    @if ($productDescription !== '')
+        <section class="pdp-description-section">
+            <div class="pdp-description-wrap">
+                <div class="pdp-description-label">Product Details</div>
+                <h2 class="pdp-description-title">Product Description</h2>
+                <div class="pdp-description-copy">
+                    @if ($productDescriptionHasHtml)
+                        {!! $productDescription !!}
+                    @else
+                        {!! nl2br(e($productDescription)) !!}
+                    @endif
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <section id="nb-ingredients">
 
@@ -824,22 +800,6 @@
                 </div>
             </div>
         </div><!-- /nb-ing-body -->
-
-        <!-- ── Summary Bar ── -->
-        <div class="nb-summary-bar">
-            <div class="nb-summary-inner">
-                @foreach ($ingredientSummaryStats as $stat)
-                    <div class="nb-stat">
-                        <div class="nb-stat-n" style="color:{{ $stat['color'] }}">{{ $stat['value'] }}</div>
-                        <div class="nb-stat-l">{{ $stat['label'] }}</div>
-                    </div>
-                    @if (!$loop->last)
-                        <div class="nb-sdiv"></div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-
         <script id="nbIngredientsData" type="application/json">@json($ingredientItems)</script>
 
     </section>
@@ -861,7 +821,7 @@
             parents.</p>
             <div class="transform-grid">
                 <div class="transform-visual">
-                    <img src="/img/child-iamges.png" alt="">
+                    <img src="/img/child-iamges.png" alt="" loading="lazy" decoding="async">
                     <!-- <div
                                     style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
                                     </div>
@@ -1187,40 +1147,40 @@
 
             <div class="problem-grid">
                 <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt=""></div>
+                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Vitamin & Mineral Deficiency</div>
                     <p class="prob-text">Processed food strips away nutrients. 80% of Indian kids are Vitamin D deficient —
                         affecting bones, immunity & mood.</p>
                 </div>
                 <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt=""></div>
+                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Busy Parent, Skipped Nutrition</div>
                     <p class="prob-text">Between work and school runs, balanced meals slip through the cracks. Convenience
                         wins
                         over nutrition — every single day.</p>
                 </div>
                 <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt=""></div>
+                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Junk Food Addiction</div>
                     <p class="prob-text">Pizza, chips, sugary drinks — kids crave them and get them. High calories, zero
                         nutrition, and taste buds that reject healthy food.</p>
                 </div>
                 <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt=""></div>
+                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Less Outdoor Play, More Screens</div>
                     <p class="prob-text">No sunlight means no Vitamin D. No movement means weak bones and low immunity —
                         visible
                         on the outside, starting from within.</p>
                 </div>
                 <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi5"><img src="/img/test-product.jpg" alt=""></div>
+                    <div class="prob-icon pi5"><img src="/img/test-product.jpg" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Adulterated Food</div>
                     <p class="prob-text">Preservatives, artificial colors, hidden additives — what's really in your child's
                         food?
                         Nobody gives you a guarantee.</p>
                 </div>
                 <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi6"><img src="/img/illness.jpg" alt=""></div>
+                    <div class="prob-icon pi6"><img src="/img/illness.jpg" alt="" loading="lazy" decoding="async"></div>
                     <div class="prob-name">Weak Immunity — Frequent Illness</div>
                     <p class="prob-text">The end result: kids fall sick repeatedly. School missed, exams affected, parents
                         stressed. A cycle that's hard to break.</p>
@@ -1514,10 +1474,13 @@
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
         <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access
             every week.</p>
-        <div class="nl-form">
-            <input class="nl-input" type="email" placeholder="Enter your email address">
-            <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-        </div>
+        <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
+            @csrf
+            <input type="hidden" name="source" value="newsletter_block">
+            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
+            <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+            <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
+        </form>
     </div>
 
 

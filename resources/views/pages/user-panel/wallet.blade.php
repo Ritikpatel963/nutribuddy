@@ -210,7 +210,7 @@
 
         <div class="page">
             <!-- WALLET HEADER -->
-            <div class="welcome-banner" style="background: linear-gradient(135deg, #ff9100, #ff6b00); min-height: 180px;">
+            <div class="welcome-banner" style="min-height: 180px;">
                 <div class="welcome-text">
                     <h2>Total NB Coins</h2>
                     <div style="font-family: 'Fredoka One', cursive; font-size: 3.5rem; color: #fff; margin-top: 10px;">

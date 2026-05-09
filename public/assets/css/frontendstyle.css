@@ -1713,6 +1713,9 @@ h1.htitle {
 .main-img-wrap .p-image img {
     position: static;
     display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .p-image .default-img {
@@ -5086,6 +5089,18 @@ h1.htitle {
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
     gap: 26px;
     margin-top: 48px;
+}
+
+.product-listing-section .products-grid {
+    align-items: start;
+}
+
+.product-listing-section .pc {
+    height: auto;
+}
+
+.product-listing-section .pc-foot {
+    margin-top: 18px;
 }
 
 .product-filter-section {
@@ -9034,8 +9049,10 @@ testi-section {
 }
 
 .main-img-wrap .p-image img {
- 
     width: 100%;
+    height: 100%;
+    max-height: 340px;
+    object-fit: contain;
     display: block;
     margin: 0 auto;
 }
@@ -9560,16 +9577,25 @@ testi-section {
     display: grid;
     grid-template-columns: 1fr 1.3fr;
     gap: 48px;
-    align-items: center;
+    align-items: stretch;
     margin-top: 48px;
 }
 
-.transform-visual img {
-    height: 498px;
-}
 .transform-visual {
     text-align: center;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.transform-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .before-after {

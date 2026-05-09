@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\TaxRate;
 use Illuminate\Support\Collection;
 
@@ -102,22 +103,26 @@ class PricingService
 
         // ══ COIN REDEMPTION LOGIC ══
         $coinDiscount = 0.0;
-        $maxCoinDiscountPercent = (int) \App\Models\Setting::get('loyalty_max_redemption_percent', 30);
-        $coinToCashRate = (int) \App\Models\Setting::get('loyalty_conversion_rate', 10);
-        $isLoyaltyEnabled = (bool) \App\Models\Setting::get('loyalty_enabled', 1);
+        $coinsRedeemed = 0;
+        $maxCoinDiscountPercent = (int) Setting::get('loyalty_max_redemption_percent', 30);
+        $maxRedeemableCoins = (int) Setting::get('loyalty_max_redeemable_coins', 0);
+        $coinToCashRate = max(1, (int) Setting::get('loyalty_conversion_rate', 10));
+        $isLoyaltyEnabled = (bool) Setting::get('loyalty_enabled', 1);
         
         if ($isLoyaltyEnabled && $coinsToRedeem > 0) {
-            $requestedCashValue = $coinsToRedeem / $coinToCashRate;
-            
-            // User wants coins to be a flat deduction on the final price
-            $potentialCoinDiscount = $requestedCashValue;
+            $requestedCoins = $maxRedeemableCoins > 0
+                ? min($coinsToRedeem, $maxRedeemableCoins)
+                : $coinsToRedeem;
 
             // Limit based on max percentage of the total MRP
             $maxAllowedCoinDiscount = (($subtotal + $taxTotal) * $maxCoinDiscountPercent) / 100;
             
             // Apply after coupon
             $remainingBalance = ($subtotal + $taxTotal) - $discountTotal;
-            $coinDiscount = min($potentialCoinDiscount, $maxAllowedCoinDiscount, $remainingBalance);
+            $maxCoinsByOrderValue = (int) floor(max(0, min($maxAllowedCoinDiscount, $remainingBalance)) * $coinToCashRate);
+
+            $coinsRedeemed = min($requestedCoins, $maxCoinsByOrderValue);
+            $coinDiscount = $coinsRedeemed / $coinToCashRate;
         }
 
         // ══ TOTALS CALCULATION ══
@@ -139,7 +144,8 @@ class PricingService
             'tax_total' => round($taxTotal, 2),
             'discount_total' => round($discountTotal, 2),
             'coin_discount' => round($coinDiscount, 2),
-            'coins_redeemed' => $coinsToRedeem,
+            'coins_redeemed' => $coinsRedeemed,
+            'max_redeemable_coins' => $maxRedeemableCoins,
             'total_coins_earned' => $totalCoinsEarned,
             'display_subtotal' => round($displaySubtotal, 2),
             'display_tax_total' => round($displayTaxTotal, 2),

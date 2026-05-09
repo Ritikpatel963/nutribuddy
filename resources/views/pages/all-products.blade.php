@@ -296,6 +296,32 @@
             visibility: visible;
         }
 
+        .product-listing-section .products-grid {
+            align-items: stretch;
+        }
+
+        .product-listing-section .product-filter-card {
+            align-self: stretch;
+            height: 100% !important;
+            min-height: 0 !important;
+        }
+
+        .product-listing-section .product-filter-card .pc-foot {
+            margin-top: auto !important;
+        }
+
+        .product-listing-section .pc-variant-placeholder {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            min-height: 182px;
+        }
+
+        .product-listing-section .pc-variant-placeholder .pc-features {
+            margin: 0;
+            width: 100%;
+        }
+
         .product-listing-section .pc-variant-panel {
             background: linear-gradient(180deg, #fffdf7 0%, #ffffff 100%);
             border: 1px solid rgba(255, 77, 143, .14);
@@ -727,8 +753,16 @@
                             $secondImage = $product->images->where('is_primary', false)->first();
                             $primaryImage = $product->primaryImage;
                             $hasDiscount = $product->display_compare_price > $product->display_price;
+                            $hasVariantOptions = !empty($variantGroups) || !empty($variations);
+                            $featureTags = $preparedProduct['tags'] ?? [];
+                            $fallbackFeatures = collect(preg_split('/\r\n|\r|\n/', (string) ($product->short_description ?? '')))
+                                ->map(fn ($feature) => trim(preg_replace('/^[•\-\*]\s*/', '', $feature)))
+                                ->filter()
+                                ->take(4)
+                                ->values()
+                                ->all();
                         @endphp
-                        <div class="pc pc-{{ $catSlug }} product-filter-card"
+                        <div class="pc pc-{{ $catSlug }} product-filter-card {{ $hasVariantOptions ? 'has-variants' : 'no-variants' }}"
                             data-category="{{ $preparedProduct['categorySlug'] }}"
                             data-search="{{ e($preparedProduct['search']) }}"
                             data-price="{{ $preparedProduct['price'] }}"
@@ -739,11 +773,11 @@
                             <div class="pc-head pc-head-{{ $catSlug }}">
                                 <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
                                     @if($primaryImage)
-                                        <img src="{{ asset('storage/' . $primaryImage->image_path) }}" alt="{{ $product->name }}" class="default-img">
-                                        <img src="{{ asset('storage/' . ($secondImage?->image_path ?? $primaryImage->image_path)) }}" alt="{{ $product->name }}" class="hover-img">
+                                        <img src="{{ asset('storage/' . $primaryImage->image_path) }}" alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
+                                        <img src="{{ asset('storage/' . ($secondImage?->image_path ?? $primaryImage->image_path)) }}" alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                     @else
-                                        <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="default-img">
-                                        <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="hover-img">
+                                        <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
+                                        <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                     @endif
                                 </a>
                                 @if($product->is_featured)
@@ -762,6 +796,7 @@
                                 <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}</div>
                                 <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}" style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
 
+                                @if($hasVariantOptions)
                                 <div class="pc-variant-panel">
                                     @if(!empty($variantGroups))
                                         <div class="pc-variant-groups">
@@ -802,6 +837,41 @@
                                         </span>
                                     </div>
                                 </div>
+                                @else
+                                <div class="pc-variant-panel pc-variant-placeholder">
+                                    <div class="pc-features">
+                                        @if(count($featureTags) > 0)
+                                            @foreach(array_chunk($featureTags, 2) as $chunk)
+                                                <div class="newcarda">
+                                                    @foreach($chunk as $tag)
+                                                        <span>
+                                                            @if(!empty($tag['icon']))
+                                                                @php $isFilePath = str_contains($tag['icon'], 'tags/'); @endphp
+                                                                <i>
+                                                                    @if($isFilePath)
+                                                                        <img src="{{ asset('storage/' . $tag['icon']) }}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;" loading="lazy" decoding="async">
+                                                                    @else
+                                                                        {{ $tag['icon'] }}
+                                                                    @endif
+                                                                </i>
+                                                            @endif
+                                                            {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            @foreach(array_chunk($fallbackFeatures, 2) as $chunk)
+                                                <div class="newcarda">
+                                                    @foreach($chunk as $feature)
+                                                        <span>{{ \Illuminate\Support\Str::limit($feature, 18) }}</span>
+                                                    @endforeach
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
 
                                 <div class="pc-foot">
                                     <div class="pc-price">

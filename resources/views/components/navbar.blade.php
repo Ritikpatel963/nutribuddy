@@ -25,7 +25,7 @@
                             </span>
                         @endif
                     </button>
-                    <div class="dropdown-menu to-top dropdown-menu-lg nb-admin-dropdown p-0" style="width: 320px;">
+                    <div class="dropdown-menu to-top dropdown-menu-lg nb-admin-dropdown p-0 nb-notification-dropdown" style="width: min(320px, calc(100vw - 24px)); max-width: calc(100vw - 24px); overflow-x: hidden;">
                         <div class="p-16 border-bottom d-flex align-items-center justify-content-between">
                             <h6 class="mb-0">Notifications</h6>
                             @if($unreadNotificationsCount > 0)
@@ -38,11 +38,11 @@
                                     $data = $notification->data;
                                     $isUnread = is_null($notification->read_at);
                                 @endphp
-                                <a href="{{ $data['action_url'] ?? 'javascript:void(0)' }}" class="dropdown-item p-16 border-bottom d-flex align-items-start gap-3 {{ $isUnread ? 'bg-primary-50' : '' }}">
+                                <a href="{{ $data['action_url'] ?? 'javascript:void(0)' }}" class="dropdown-item p-16 border-bottom d-flex align-items-start gap-3 nb-notification-dropdown-item {{ $isUnread ? 'bg-primary-50' : '' }}">
                                     <div class="flex-shrink-0 w-40-px h-40-px radius-circle bg-primary-100 text-primary-600 d-flex align-items-center justify-content-center text-xl">
                                         <iconify-icon icon="lucide:bell"></iconify-icon>
                                     </div>
-                                    <div class="flex-grow-1">
+                                    <div class="flex-grow-1 nb-notification-dropdown-copy">
                                         <h6 class="text-sm mb-1 fw-bold {{ $isUnread ? 'text-primary-600' : 'text-secondary-light' }}">{{ $data['title'] ?? 'System Notification' }}</h6>
                                         <p class="text-xs mb-1 text-secondary-light">{{ Str::limit($data['message'] ?? '', 50) }}</p>
                                         <span class="text-xs text-secondary-light">{{ $notification->created_at->diffForHumans() }}</span>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle nb-admin-profile" type="button" data-bs-toggle="dropdown">
-                        <img src="{{ asset('assets/images/user.png') }}" alt="image" class="w-40-px h-40-px object-fit-cover rounded-circle">
+                        <img src="{{ asset('img/user.png') }}" alt="Admin" class="nb-admin-profile-img">
                     </button>
                     <div class="dropdown-menu to-top dropdown-menu-sm nb-admin-dropdown">
                         <div class="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
@@ -89,6 +89,24 @@
         </div>
     </div>
 </div>
+
+<style>
+    .nb-notification-dropdown-item {
+        min-width: 0;
+        white-space: normal;
+    }
+
+    .nb-notification-dropdown-copy {
+        min-width: 0;
+    }
+
+    .nb-notification-dropdown-copy h6,
+    .nb-notification-dropdown-copy p {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        white-space: normal;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

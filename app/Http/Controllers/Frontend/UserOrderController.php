@@ -113,6 +113,8 @@ class UserOrderController extends Controller
             'totals' => [
                 'subtotal' => $order->subtotal,
                 'discount_total' => $order->discount_total,
+                'coins_redeemed' => $order->coins_redeemed,
+                'coin_discount' => $order->coin_discount,
                 'tax_total' => $order->tax_total,
                 'gst_total' => $order->gst_total,
                 'cgst_total' => $order->cgst_total,

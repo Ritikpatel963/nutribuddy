@@ -26,7 +26,7 @@ class SideSectionController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,webp|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'contact_number' => 'required|string',
             'email' => 'required|email',
             'address' => 'nullable|string',

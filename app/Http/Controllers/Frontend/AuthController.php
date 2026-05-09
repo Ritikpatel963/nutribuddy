@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -92,7 +93,7 @@ class AuthController extends Controller
             Auth::guard('web')->login($user, true);
             $request->session()->regenerate();
 
-            $redirect = $request->redirect_to ?: route('userdashboard');
+            $redirect = $this->safeRedirect($request->redirect_to);
 
             return response()->json([
                 'success' => true,
@@ -117,5 +118,22 @@ class AuthController extends Controller
         Auth::guard('web')->logout();
 
         return redirect()->route('home')->with('success', 'Logged out successfully.');
+    }
+
+    private function safeRedirect(?string $redirectTo): string
+    {
+        if (! $redirectTo) {
+            return route('userdashboard');
+        }
+
+        if (str_starts_with($redirectTo, '/') && ! str_starts_with($redirectTo, '//')) {
+            return $redirectTo;
+        }
+
+        if (URL::isValidUrl($redirectTo) && parse_url($redirectTo, PHP_URL_HOST) === request()->getHost()) {
+            return $redirectTo;
+        }
+
+        return route('userdashboard');
     }
 }

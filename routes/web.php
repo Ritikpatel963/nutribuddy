@@ -10,6 +10,7 @@ use App\Http\Controllers\Frontend\UserAddressController;
 use App\Http\Controllers\Frontend\UserOrderController;
 use App\Http\Controllers\Frontend\UserReturnController;
 use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
+use App\Http\Controllers\Frontend\NewsletterSubscriberController as FrontendNewsletterSubscriberController;
 use App\Http\Controllers\StorageController;
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Admin\AttributeController as AdminAttributeController;
@@ -41,14 +42,15 @@ Route::prefix('authentication')->group(function () {
 Route::name('frontend.')->group(function () {
     Route::controller(FrontendAuthController::class)->group(function () {
         Route::get('/login', 'showLogin')->name('login');
-        Route::post('/send-otp', 'sendOtp')->name('sendOtp');
-        Route::post('/verify-otp', 'verifyOtp')->name('verifyOtp');
+        Route::post('/send-otp', 'sendOtp')->middleware('throttle:5,1')->name('sendOtp');
+        Route::post('/verify-otp', 'verifyOtp')->middleware('throttle:10,1')->name('verifyOtp');
         Route::post('/logout', 'logout')->name('logout');
     });
 });
 
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
-Route::post('/contact', [FrontendContactController::class, 'store'])->name('contact.store');
+Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:10,1')->name('contact.store');
+Route::post('/newsletter/subscribe', [FrontendNewsletterSubscriberController::class, 'store'])->middleware('throttle:10,1')->name('newsletter.subscribe');
 Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
     ->where('path', '.*')
     ->name('storage.public');
@@ -81,6 +83,7 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::delete('blog-posts-trash/{blogPost}/force-delete', [AdminBlogPostController::class, 'forceDestroy'])->name('blog-posts.force-destroy');
     Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('contact-leads', AdminContactLeadController::class)->only(['index', 'update', 'destroy']);
+    Route::get('newsletter/export', [AdminNewsletterSubscriberController::class, 'export'])->name('newsletter.export');
     Route::resource('newsletter', AdminNewsletterSubscriberController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('support-tickets', AdminSupportTicketController::class)->only(['index', 'store', 'update', 'destroy', 'show']);
     Route::post('support-tickets/{support_ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');

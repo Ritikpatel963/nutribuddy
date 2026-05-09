@@ -110,6 +110,8 @@ class ProductController extends Controller
             'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'tag_images' => ['nullable', 'array'],
+            'tag_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
         $variations = $this->normalizedVariations($validated['variations'] ?? []);
@@ -138,6 +140,9 @@ class ProductController extends Controller
             if ($request->hasFile('tag_images')) {
                 foreach ($request->file('tag_images') as $index => $file) {
                     $path = $file->store('tags', 'public');
+                    if (! isset($tags[$index]) || ! is_array($tags[$index])) {
+                        $tags[$index] = [];
+                    }
                     $tags[$index]['icon'] = $path;
                 }
             }
@@ -244,6 +249,8 @@ class ProductController extends Controller
             'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'tag_images' => ['nullable', 'array'],
+            'tag_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
 
         $variations = $this->normalizedVariations($validated['variations'] ?? []);
@@ -272,6 +279,9 @@ class ProductController extends Controller
             if ($request->hasFile('tag_images')) {
                 foreach ($request->file('tag_images') as $index => $file) {
                     $path = $file->store('tags', 'public');
+                    if (! isset($tags[$index]) || ! is_array($tags[$index])) {
+                        $tags[$index] = [];
+                    }
                     $tags[$index]['icon'] = $path;
                 }
             }

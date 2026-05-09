@@ -32,7 +32,17 @@
     </div>
 
     <div class="card basic-data-table">
-        <div class="card-header"><h5 class="card-title mb-0">Subscriber List</h5></div>
+        <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h5 class="card-title mb-0">Subscriber List</h5>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="{{ route('admin.ecommerce.newsletter.export', ['status' => 'subscribed']) }}" class="btn btn-sm btn-success-600 d-inline-flex align-items-center gap-1">
+                    <iconify-icon icon="lucide:download"></iconify-icon> Export Subscribed CSV
+                </a>
+                <a href="{{ route('admin.ecommerce.newsletter.export') }}" class="btn btn-sm btn-outline-primary-600 d-inline-flex align-items-center gap-1">
+                    <iconify-icon icon="lucide:file-down"></iconify-icon> Export All CSV
+                </a>
+            </div>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table bordered-table mb-0" id="dataTable" data-page-length='10'>
@@ -40,6 +50,7 @@
                         <tr>
                             <th>Subscriber</th>
                             <th>Status</th>
+                            <th>Source</th>
                             <th>Joined At</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -59,6 +70,9 @@
                                     @else
                                         <span class="badge bg-danger-100 text-danger-600 px-2 fw-medium">Unsubscribed</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-100 text-info-600 px-2 fw-medium">{{ ucfirst(str_replace('_', ' ', $subscriber->source ?: 'manual')) }}</span>
                                 </td>
                                 <td><span class="text-sm text-secondary-light fw-medium">{{ optional($subscriber->created_at)->format('d M Y') ?? 'N/A' }}</span></td>
                                 <td class="text-end">

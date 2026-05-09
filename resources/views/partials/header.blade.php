@@ -77,18 +77,24 @@
     }
 
     .profile-btn {
-        background: none;
-        border: none;
+        background: var(--cr);
+        border: 2.5px solid var(--pkl);
+        border-radius: 50%;
         cursor: pointer;
-        padding: 5px;
+        padding: 0;
+        width: 44px;
+        height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: transform 0.3s;
+        transition: all 0.2s;
+        flex-shrink: 0;
     }
 
     .profile-btn:hover {
-        transform: scale(1.1);
+        background: var(--pkl);
+        border-color: var(--pk);
+        transform: scale(1.08);
     }
 
     .dropdown-content {

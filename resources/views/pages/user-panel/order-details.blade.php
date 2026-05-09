@@ -117,28 +117,26 @@
                 <h3 class="card-title" style="margin-bottom: 15px; font-size: 1.2rem;">Payment Summary</h3>
                 <div style="font-size: 0.95rem; line-height: 1.8; color: #444;">
                     @php
-                        $taxableAmount = $order->subtotal - $order->discount_total - $order->coin_discount;
-                        $effectiveTaxRate = $taxableAmount > 0 ? ($order->tax_total / $taxableAmount) : 0;
-                        $displayCouponDiscount = $order->discount_total * (1 + $effectiveTaxRate);
-                        $displayCoinDiscount = $order->coin_discount * (1 + $effectiveTaxRate);
+                        $couponDiscount = (float) $order->discount_total;
+                        $coinDiscount = (float) $order->coin_discount;
                     @endphp
 
                     <div style="display: flex; justify-content: space-between;">
                         <span>Subtotal:</span>
-                        <span>₹{{ number_format($order->subtotal * (1 + $effectiveTaxRate), 2) }}</span>
+                        <span>₹{{ number_format((float) $order->subtotal, 2) }}</span>
                     </div>
                     
-                    @if($displayCouponDiscount > 0)
+                    @if($couponDiscount > 0)
                     <div style="display: flex; justify-content: space-between; color: var(--mn);">
                         <span>Coupon Discount:</span>
-                        <span>-₹{{ number_format($displayCouponDiscount, 2) }}</span>
+                        <span>-₹{{ number_format($couponDiscount, 2) }}</span>
                     </div>
                     @endif
 
-                    @if($displayCoinDiscount > 0)
+                    @if($coinDiscount > 0)
                     <div style="display: flex; justify-content: space-between; color: var(--or);">
-                        <span>NB Coins Discount:</span>
-                        <span>-₹{{ number_format($displayCoinDiscount, 2) }}</span>
+                        <span>NB Coins Discount{{ (int) $order->coins_redeemed > 0 ? ' (' . number_format((int) $order->coins_redeemed) . ' coins)' : '' }}:</span>
+                        <span>-₹{{ number_format($coinDiscount, 2) }}</span>
                     </div>
                     @endif
 
@@ -226,7 +224,7 @@
                             <td>{{ $item->quantity }}</td>
                             <td>₹{{ number_format($item->unit_price, 2) }}</td>
                             <td>₹{{ number_format($item->tax_amount, 2) }}</td>
-                            <td>₹{{ number_format($item->line_total, 2) }}</td>
+                            <td>₹{{ number_format((float) $item->line_total + (float) $item->tax_amount, 2) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="5">No items found.</td></tr>

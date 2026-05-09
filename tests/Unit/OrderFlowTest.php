@@ -21,4 +21,13 @@ class OrderFlowTest extends TestCase
         $this->assertFalse(OrderFlow::canMoveTo('cancelled', 'processing'));
         $this->assertFalse(OrderFlow::canMoveTo('returned', 'delivered'));
     }
+
+    public function test_admin_can_move_active_orders_directly_to_delivered(): void
+    {
+        $this->assertTrue(OrderFlow::canAdminMoveTo('pending', 'delivered'));
+        $this->assertTrue(OrderFlow::canAdminMoveTo('confirmed', 'delivered'));
+        $this->assertTrue(OrderFlow::canAdminMoveTo('processing', 'delivered'));
+        $this->assertFalse(OrderFlow::canAdminMoveTo('cancelled', 'delivered'));
+        $this->assertFalse(OrderFlow::canAdminMoveTo('returned', 'delivered'));
+    }
 }

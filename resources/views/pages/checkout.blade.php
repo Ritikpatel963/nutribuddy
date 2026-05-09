@@ -2085,18 +2085,29 @@
 
                 <!-- Loyalty Coins -->
                 @auth
+                @php
+                    $adminMaxRedeemableCoins = (int) \App\Models\Setting::get('loyalty_max_redeemable_coins', 0);
+                    $checkoutCoinSliderMax = $adminMaxRedeemableCoins > 0
+                        ? min((int) auth()->user()->coins_balance, $adminMaxRedeemableCoins)
+                        : (int) auth()->user()->coins_balance;
+                @endphp
                 <div class="loyalty-row" id="coinRedeemRow" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 20px;">
                     <div class="d-flex justify-content-between align-items-center mb-10" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <div class="coupon-label" style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--dk);">Redeem NB Coins 🪙</div>
                         <div class="lb-pts" id="userCoinBalance" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.85rem;">{{ auth()->user()->coins_balance }} Available</div>
                     </div>
                     <div class="coin-redeem-box">
-                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ auth()->user()->coins_balance }}" value="0" step="1">
+                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ $checkoutCoinSliderMax }}" value="0" step="1" data-admin-max="{{ $adminMaxRedeemableCoins }}">
                         <div style="display: flex; justify-content: space-between; margin-top: 8px;">
                             <span style="font-size: 0.7rem; color: #aaa;">0</span>
                             <span id="coinsToRedeemValue" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.95rem;">Redeeming: 0 Coins</span>
-                            <span style="font-size: 0.7rem; color: #aaa;">{{ auth()->user()->coins_balance }}</span>
+                            <span id="coinSliderMaxValue" style="font-size: 0.7rem; color: #aaa;">{{ $checkoutCoinSliderMax }}</span>
                         </div>
+                        @if($adminMaxRedeemableCoins > 0)
+                            <div style="font-size: 0.7rem; color: #777; text-align: center; margin-top: 6px; font-weight: 700;">
+                                Max {{ $adminMaxRedeemableCoins }} coins per order
+                            </div>
+                        @endif
                         <div id="coinDiscountText" style="font-size: 0.72rem; color: #777; text-align: center; margin-top: 8px; font-weight: 600;">
                             Value: ₹0.00 off
                         </div>
@@ -2281,10 +2292,13 @@
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
         <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access
             every week.</p>
-        <div class="nl-form">
-            <input class="nl-input" type="email" placeholder="Enter your email address">
-            <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-        </div>
+        <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
+            @csrf
+            <input type="hidden" name="source" value="newsletter_block">
+            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
+            <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+            <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
+        </form>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -2873,6 +2887,14 @@
                     document.getElementById('coinDiscountVal').textContent = `− ₹${coinDiscount.toLocaleString('en-IN')}`;
                     const discountText = document.getElementById('coinDiscountText');
                     if (discountText) discountText.textContent = `Value: ₹${coinDiscount.toLocaleString('en-IN')} off`;
+                }
+
+                const coinSlider = document.getElementById('coinSlider');
+                if (coinSlider && pricing.coins_redeemed !== undefined) {
+                    const redeemedCoins = Number(pricing.coins_redeemed || 0);
+                    coinSlider.value = Math.min(Number(coinSlider.max || 0), redeemedCoins);
+                    const redeemLabel = document.getElementById('coinsToRedeemValue');
+                    if (redeemLabel) redeemLabel.textContent = `Redeeming: ${coinSlider.value} Coins`;
                 }
 
                 if (gstEl) {

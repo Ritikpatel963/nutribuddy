@@ -4304,10 +4304,13 @@
     <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
     <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product access
       every week.</p>
-    <div class="nl-form">
-      <input class="nl-input" type="email" placeholder="Enter your email address">
-      <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-    </div>
+    <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
+      @csrf
+      <input type="hidden" name="source" value="newsletter_block">
+      <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
+      <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+      <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
+    </form>
   </div>
 @endsection
 @push('scripts')

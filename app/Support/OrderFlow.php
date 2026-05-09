@@ -63,4 +63,17 @@ class OrderFlow
 
         return in_array($to, $allowedTransitions, true);
     }
+
+    public static function canAdminMoveTo(string $from, string $to): bool
+    {
+        if ($from === $to) {
+            return true;
+        }
+
+        if ($to === 'delivered' && ! in_array($from, ['cancelled', 'returned'], true)) {
+            return true;
+        }
+
+        return self::canMoveTo($from, $to);
+    }
 }

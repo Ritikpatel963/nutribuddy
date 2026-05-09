@@ -642,11 +642,22 @@
 
     .main-img-wrap .p-image img {
         max-width: 220px;
+        max-height: 260px;
     }
 
     .transform-grid {
         grid-template-columns: 1fr;
         gap: 32px;
+    }
+
+    .transform-visual {
+        height: auto;
+        min-height: 0;
+    }
+
+    .transform-visual img {
+        height: auto;
+        max-height: 420px;
     }
 
     .feat-layout {
@@ -704,6 +715,7 @@
 
     .main-img-wrap .p-image img {
         max-width: 250px;
+        max-height: 230px;
     }
 
     .float-badge {

@@ -5,6 +5,29 @@
 @endphp
 
 @section('content')
+    <style>
+        .order-money-stack {
+            min-width: 170px;
+        }
+
+        .order-money-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .order-money-label {
+            color: #6b7280;
+        }
+
+        .order-items-preview {
+            min-width: 240px;
+            max-width: 360px;
+        }
+    </style>
+
     @include('admin.ecommerce._messages')
 
     <div class="card border-0 radius-12 mb-24">
@@ -40,15 +63,18 @@
                             <th>Order Details</th>
                             <th>Customer</th>
                             <th>Status/Payment</th>
-                            <th>Total</th>
-                            <th>Items</th>
+                            <th>Amount Summary</th>
+                            <th>Items Ordered</th>
                             <th class="text-end">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($orders as $order)
+                            @php
+                                $grossTotal = (float) $order->subtotal + (float) $order->tax_total + (float) $order->shipping_total;
+                            @endphp
                             <tr>
-                                <td>
+                                <td data-order="{{ optional($order->placed_at ?? $order->created_at)->timestamp ?? 0 }}">
                                     <div class="d-flex flex-column">
                                         <a href="{{ route('admin.ecommerce.orders.show', $order) }}" class="text-md fw-bold text-primary-600 hover-text-primary-700">#{{ $order->order_number }}</a>
                                         <small class="text-secondary-light">{{ optional($order->placed_at)->format('d M Y, H:i') ?? $order->created_at->format('d M Y, H:i') }}</small>
@@ -76,10 +102,31 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-primary-600">INR {{ number_format((float) $order->grand_total, 2) }}</span>
+                                    <div class="order-money-stack d-flex flex-column gap-1">
+                                        <div class="order-money-row">
+                                            <span class="order-money-label">Items + tax + ship</span>
+                                            <span>INR {{ number_format($grossTotal, 2) }}</span>
+                                        </div>
+                                        @if((float) $order->discount_total > 0)
+                                            <div class="order-money-row text-success-600">
+                                                <span>Coupon</span>
+                                                <span>- INR {{ number_format((float) $order->discount_total, 2) }}</span>
+                                            </div>
+                                        @endif
+                                        @if((int) $order->coins_redeemed > 0 || (float) $order->coin_discount > 0)
+                                            <div class="order-money-row text-warning-600">
+                                                <span>{{ number_format((int) $order->coins_redeemed) }} coins</span>
+                                                <span>- INR {{ number_format((float) $order->coin_discount, 2) }}</span>
+                                            </div>
+                                        @endif
+                                        <div class="pt-1 mt-1 border-top">
+                                            <span class="fw-bold text-primary-600">Collect: INR {{ number_format((float) $order->grand_total, 2) }}</span>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>
-                                    @foreach ($order->items as $item)
+                                    <div class="order-items-preview">
+                                    @foreach ($order->items->take(2) as $item)
                                         <div class="mb-2 pb-1 {{ !$loop->last ? 'border-bottom border-secondary-light border-dashed' : '' }}">
                                             <div class="d-flex align-items-start justify-content-between gap-2">
                                                 <span class="text-xs fw-bold text-dark" style="line-height: 1.2;">{{ $item->product_name }}</span>
@@ -107,6 +154,12 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @if($order->items->count() > 2)
+                                        <span class="badge bg-secondary-100 text-secondary-600 text-xs">
+                                            +{{ $order->items->count() - 2 }} more item{{ $order->items->count() - 2 > 1 ? 's' : '' }}
+                                        </span>
+                                    @endif
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex align-items-center justify-content-end gap-2">
@@ -175,7 +228,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('dataTable')) {
-                new DataTable('#dataTable');
+                new DataTable('#dataTable', {
+                    order: [[0, 'desc']]
+                });
             }
 
             const editModal = document.getElementById('editOrderStatusModal');

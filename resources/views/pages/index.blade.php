@@ -288,20 +288,20 @@ if ($catSlug == 'multivitamins') {
                         <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
                             @if ($product->primaryImage)
                                 <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
-                                    alt="{{ $product->name }}" class="default-img">
+                                    alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
                                 @php $secondImage = $product->images->where('is_primary', false)->first(); @endphp
                                 @if ($secondImage)
                                     <img src="{{ asset('storage/' . $secondImage->image_path) }}"
-                                        alt="{{ $product->name }}" class="hover-img">
+                                        alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                 @else
                                     <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
-                                        alt="{{ $product->name }}" class="hover-img">
+                                        alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                 @endif
                             @else
                                 <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
-                                    class="default-img">
+                                    class="default-img" loading="lazy" decoding="async">
                                 <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
-                                    class="hover-img">
+                                    class="hover-img" loading="lazy" decoding="async">
                             @endif
                         </a>
                         @if ($product->is_featured)
@@ -350,7 +350,7 @@ if ($catSlug == 'multivitamins') {
                                                     <i>
                                                         @if ($isFilePath)
                                                             <img src="{{ asset('storage/' . $tag['icon']) }}"
-                                                                style="width:16px; height:16px; object-fit:contain; vertical-align: middle;">
+                                                                style="width:16px; height:16px; object-fit:contain; vertical-align: middle;" loading="lazy" decoding="async">
                                                         @else
                                                             {{ $tag['icon'] }}
                                                         @endif
@@ -962,10 +962,13 @@ if ($catSlug == 'multivitamins') {
         <p class="nl-sub">Join 25,000+ parents getting Ayurvedic parenting tips, exclusive discounts & early product
             access
             every week.</p>
-        <div class="nl-form">
-            <input class="nl-input" type="email" placeholder="Enter your email address">
-            <button class="hbtn hbtn-main" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-        </div>
+        <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
+            @csrf
+            <input type="hidden" name="source" value="newsletter_block">
+            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
+            <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
+            <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
+        </form>
     </div>
 
 @endsection

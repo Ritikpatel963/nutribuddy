@@ -5,11 +5,82 @@
 @endphp
 
 @section('content')
+    <style>
+        .notification-feed-card,
+        .notification-feed-card .card-body,
+        .notification-feed-card .list-group,
+        .notification-feed-card .list-group-item {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .notification-row {
+            min-width: 0;
+        }
+
+        .notification-content {
+            min-width: 0;
+        }
+
+        .notification-heading {
+            min-width: 0;
+        }
+
+        .notification-title,
+        .notification-message {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .notification-time {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .notification-actions {
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .notification-delete-form {
+            margin-left: auto;
+        }
+
+        @media (max-width: 575.98px) {
+            .notification-item {
+                padding: 16px !important;
+            }
+
+            .notification-row {
+                gap: 12px !important;
+            }
+
+            .notification-heading {
+                align-items: flex-start !important;
+                flex-direction: column;
+            }
+
+            .notification-time {
+                white-space: normal;
+            }
+
+            .notification-actions {
+                align-items: flex-start !important;
+                flex-direction: column;
+                gap: 8px !important;
+            }
+
+            .notification-delete-form {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+
     <div class="row g-4">
         <div class="col-lg-12">
             @include('admin.ecommerce._messages')
 
-            <div class="card basic-data-table">
+            <div class="card basic-data-table notification-feed-card">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <h5 class="card-title mb-0">Activity Feed</h5>
                     @if($notifications->whereNull('read_at')->count() > 0)
@@ -40,23 +111,23 @@
                                     $bgClass = 'bg-info-100 text-info-600';
                                 }
                             @endphp
-                            <div id="notification-{{ $notification->id }}" class="list-group-item list-group-item-action p-24 {{ $isUnread ? 'bg-primary-50 notification-unread' : '' }}">
-                                <div class="d-flex align-items-start gap-3">
+                            <div id="notification-{{ $notification->id }}" class="list-group-item list-group-item-action p-24 notification-item {{ $isUnread ? 'bg-primary-50 notification-unread' : '' }}">
+                                <div class="d-flex align-items-start gap-3 notification-row">
                                     <div class="flex-shrink-0 w-48-px h-48-px radius-circle {{ $bgClass }} d-flex align-items-center justify-content-center text-2xl">
                                         <iconify-icon icon="{{ $icon }}"></iconify-icon>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center justify-content-between gap-2 mb-4">
+                                    <div class="flex-grow-1 notification-content">
+                                        <div class="d-flex align-items-center justify-content-between gap-2 mb-4 notification-heading">
                                             <h6 class="notification-title text-md mb-0 fw-bold {{ $isUnread ? 'text-primary-600' : 'text-secondary-light' }}">
                                                 {{ $data['title'] ?? 'System Notification' }}
                                             </h6>
-                                            <span class="text-xs text-secondary-light fw-medium">{{ $notification->created_at->diffForHumans() }}</span>
+                                            <span class="text-xs text-secondary-light fw-medium notification-time">{{ $notification->created_at->diffForHumans() }}</span>
                                         </div>
-                                        <p class="text-sm mb-12 text-secondary-light">
+                                        <p class="text-sm mb-12 text-secondary-light notification-message">
                                             {{ $data['message'] ?? 'You have a new activity in your store.' }}
                                         </p>
                                         
-                                        <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center gap-3 notification-actions">
                                             @if($isUnread)
                                                 <button type="button" class="btn btn-sm btn-outline-primary px-16 py-4 radius-4 text-xs mark-as-read" 
                                                         data-id="{{ $notification->id }}" 
@@ -71,7 +142,7 @@
                                                 </a>
                                             @endif
 
-                                            <form action="{{ route('admin.ecommerce.notifications.destroy', $notification->id) }}" method="POST" class="ms-auto" onsubmit="return confirm('Delete this notification?')">
+                                            <form action="{{ route('admin.ecommerce.notifications.destroy', $notification->id) }}" method="POST" class="ms-auto notification-delete-form" onsubmit="return confirm('Delete this notification?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-danger-main hover-text-danger-600 text-xl d-flex align-items-center bg-transparent border-0 p-0">

@@ -421,26 +421,21 @@
                     });
 
                     // 2. The MRP Subtotal is the Base Subtotal + Original GST
-                    $displaySubtotal = $order->subtotal + $totalOriginalGst;
+                    $displaySubtotal = (float) $order->subtotal;
 
                     // 3. To maintain Grand Total consistency, the discount shown must be the difference
-                    $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
+                    $totalSavings = (float) $order->discount_total + (float) $order->coin_discount;
 
                     // 4. Distribute savings
                     $dbCoupon = $order->discount_total;
                     $dbCoins = $order->coin_discount;
                     $totalDbDiscount = $dbCoupon + $dbCoins;
 
-                    if ($totalDbDiscount > 0) {
-                        $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
-                        $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
-                    } else {
-                        $displayCouponDiscount = 0;
-                        $displayCoinDiscount = 0;
-                    }
+                    $displayCouponDiscount = (float) $order->discount_total;
+                    $displayCoinDiscount = (float) $order->coin_discount;
                 @endphp
                 <div class="s-row">
-                    <span>Subtotal (MRP)</span>
+                    <span>Subtotal</span>
                     <strong>₹{{ number_format($displaySubtotal, 2) }}</strong>
                 </div>
                 @if($displayCouponDiscount > 0.01)
@@ -451,7 +446,7 @@
                 @endif
                 @if($displayCoinDiscount > 0.01)
                     <div class="s-row discount" style="color: #f97316;">
-                        <span>NB Coins Discount</span>
+                        <span>NB Coins Discount{{ (int) $order->coins_redeemed > 0 ? ' (' . number_format((int) $order->coins_redeemed) . ' coins)' : '' }}</span>
                         <strong>- ₹{{ number_format($displayCoinDiscount, 2) }}</strong>
                     </div>
                 @endif

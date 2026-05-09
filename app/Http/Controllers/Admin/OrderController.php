@@ -59,7 +59,7 @@ class OrderController extends Controller
         $validated['fulfillment_status'] = $validated['fulfillment_status'] ?? $order->fulfillment_status;
         $validated['payment_status'] = $validated['payment_status'] ?? $order->payment_status;
 
-        if (! OrderFlow::canMoveTo($order->status, $validated['status'])) {
+        if (! OrderFlow::canAdminMoveTo($order->status, $validated['status'])) {
             return back()->with('error', 'Invalid order status transition.');
         }
 

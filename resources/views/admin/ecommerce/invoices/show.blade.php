@@ -816,28 +816,22 @@
                                 return ($i->unit_price * $i->quantity * $rate) / 100;
                             });
 
-                            // 2. The MRP Subtotal is the Base Subtotal + Original GST
-                            $displaySubtotal = $order->subtotal + $totalOriginalGst;
+                            // Show the same stored order math used at checkout.
+                            $displaySubtotal = (float) $order->subtotal;
 
-                            // 3. To maintain Grand Total consistency, the discount shown must be the difference
-                            $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
+                            $totalSavings = (float) $order->discount_total + (float) $order->coin_discount;
 
                             // 4. Distribute savings
                             $dbCoupon = $order->discount_total;
                             $dbCoins = $order->coin_discount;
                             $totalDbDiscount = $dbCoupon + $dbCoins;
 
-                            if ($totalDbDiscount > 0) {
-                                $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
-                                $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
-                            } else {
-                                $displayCouponDiscount = 0;
-                                $displayCoinDiscount = 0;
-                            }
+                            $displayCouponDiscount = (float) $order->discount_total;
+                            $displayCoinDiscount = (float) $order->coin_discount;
                         @endphp
                         
                         <div class="inv-total-line">
-                            <span class="tl-label">Subtotal (MRP)</span>
+                            <span class="tl-label">Subtotal</span>
                             <span class="tl-value">₹{{ number_format($displaySubtotal, 2) }}</span>
                         </div>
 
@@ -850,7 +844,7 @@
 
                         @if($displayCoinDiscount > 0.01)
                             <div class="inv-total-line" style="color: #f97316; background: #fffaf0;">
-                                <span class="tl-label">NB Coins Discount</span>
+                                <span class="tl-label">NB Coins Discount ({{ number_format((int) $order->coins_redeemed) }} coins)</span>
                                 <span class="tl-value">− ₹{{ number_format($displayCoinDiscount, 2) }}</span>
                             </div>
                         @endif

@@ -154,6 +154,18 @@ body.admin-nb-theme {
     border-radius: 50%;
 }
 
+.nb-admin-profile {
+    width: 42px;
+    height: 42px;
+    color: #047857;
+}
+
+.nb-admin-profile-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 .notification-list::-webkit-scrollbar {
     display: none;
 }

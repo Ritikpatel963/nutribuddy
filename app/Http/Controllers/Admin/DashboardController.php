@@ -679,12 +679,12 @@ class DashboardController extends Controller
         ]);
         User::whereIn('id', $userIds)->get(['dob'])->each(function ($user) use (&$ageBuckets) {
             if (! $user->dob) {
-                $ageBuckets['Not set']++;
+                $ageBuckets->put('Not set', $ageBuckets->get('Not set', 0) + 1);
                 return;
             }
             $age = Carbon::parse($user->dob)->age;
             $bucket = $age < 18 ? 'Under 18' : ($age <= 24 ? '18-24' : ($age <= 34 ? '25-34' : ($age <= 44 ? '35-44' : '45+')));
-            $ageBuckets[$bucket]++;
+            $ageBuckets->put($bucket, $ageBuckets->get($bucket, 0) + 1);
         });
 
         $channelRows = $orders->groupBy(fn ($order) => strtoupper((string) ($order->payment_method ?: 'Unknown')))

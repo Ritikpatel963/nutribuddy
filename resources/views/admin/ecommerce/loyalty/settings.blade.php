@@ -102,6 +102,21 @@
                         </div>
 
                         <div class="col-md-6">
+                            <label class="form-label fw-bold">Max Coins Per Order</label>
+                            <div class="coin-input-group">
+                                <span class="coin-icon warning">
+                                    <iconify-icon icon="solar:coins-outline"></iconify-icon>
+                                </span>
+                                <input type="number" name="loyalty_max_redeemable_coins"
+                                    value="{{ old('loyalty_max_redeemable_coins', $settings['loyalty_max_redeemable_coins']) }}"
+                                    class="form-control" placeholder="e.g. 500" min="0">
+                                <span class="coin-suffix">Coins / Order</span>
+                            </div>
+                            <p class="text-xs text-secondary-light mt-2">Set 0 for no fixed coin cap. If set to 500, customers can redeem at most 500 coins at checkout.</p>
+                            @error('loyalty_max_redeemable_coins')<span class="text-danger small">{{ $message }}</span>@enderror
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="form-label fw-bold">System Status</label>
                             <div class="d-flex align-items-center gap-3 mt-1">
                                 <input type="hidden" name="loyalty_enabled" value="0">

@@ -394,31 +394,13 @@
                                 return ($i->unit_price * $i->quantity * $rate) / 100;
                             });
 
-                            // 2. The MRP Subtotal is the Base Subtotal + Original GST
-                            $displaySubtotal = $order->subtotal + $totalOriginalGst;
-
-                            // 3. To maintain Grand Total consistency, the discount shown must be the difference
-                            // Grand Total = (Subtotal + GST + Shipping) - Total Discount
-                            // So Total Discount = (Subtotal + GST + Shipping) - Grand Total
-                            $totalSavings = ($order->subtotal + $totalOriginalGst + $order->shipping_total) - $order->grand_total;
-
-                            // 4. Distribute savings between Coupon and Coins based on their relative weight in the DB
-                            $dbCoupon = $order->discount_total;
-                            $dbCoins = $order->coin_discount;
-                            $totalDbDiscount = $dbCoupon + $dbCoins;
-
-                            if ($totalDbDiscount > 0) {
-                                $displayCouponDiscount = ($dbCoupon / $totalDbDiscount) * $totalSavings;
-                                $displayCoinDiscount = ($dbCoins / $totalDbDiscount) * $totalSavings;
-                            } else {
-                                $displayCouponDiscount = 0;
-                                $displayCoinDiscount = 0;
-                            }
+                            $displayCouponDiscount = (float) $order->discount_total;
+                            $displayCoinDiscount = (float) $order->coin_discount;
                         @endphp
                         
                         <div class="inv-total-line">
-                            <span>Subtotal (MRP)</span>
-                            <strong>₹{{ number_format($displaySubtotal, 2) }}</strong>
+                            <span>Subtotal</span>
+                            <strong>₹{{ number_format((float) $order->subtotal, 2) }}</strong>
                         </div>
 
                         @if($displayCouponDiscount > 0.01)
@@ -430,7 +412,7 @@
 
                         @if($displayCoinDiscount > 0.01)
                             <div class="inv-total-line" style="color: #f97316; background: #fffaf0;">
-                                <span>NB Coins Discount</span>
+                                <span>NB Coins Discount{{ (int) $order->coins_redeemed > 0 ? ' (' . number_format((int) $order->coins_redeemed) . ' coins)' : '' }}</span>
                                 <strong>- ₹{{ number_format($displayCoinDiscount, 2) }}</strong>
                             </div>
                         @endif
