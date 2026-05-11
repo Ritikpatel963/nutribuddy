@@ -15,7 +15,7 @@ class ProductReviewController extends Controller
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|max:1000',
-            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $imagePath = null;

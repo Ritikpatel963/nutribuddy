@@ -310,18 +310,6 @@
             margin-top: auto !important;
         }
 
-        .product-listing-section .pc-variant-placeholder {
-            align-items: center;
-            display: flex;
-            justify-content: center;
-            min-height: 182px;
-        }
-
-        .product-listing-section .pc-variant-placeholder .pc-features {
-            margin: 0;
-            width: 100%;
-        }
-
         .product-listing-section .pc-variant-panel {
             background: linear-gradient(180deg, #fffdf7 0%, #ffffff 100%);
             border: 1px solid rgba(255, 77, 143, .14);
@@ -331,44 +319,6 @@
             gap: 10px;
             margin: 12px 0 18px;
             padding: 12px;
-        }
-
-        .product-listing-section .pc-variant-head {
-            align-items: flex-start;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .product-listing-section .pc-variant-title {
-            color: var(--dk);
-            font-family: 'Nunito', sans-serif;
-            font-size: .82rem;
-            font-weight: 900;
-            line-height: 1.2;
-        }
-
-        .product-listing-section .pc-variant-sub {
-            color: var(--muted);
-            font-family: 'DM Sans', sans-serif;
-            font-size: .68rem;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-
-        .product-listing-section .pc-variant-sku {
-            background: rgba(255, 214, 0, .18);
-            border-radius: 999px;
-            color: #865b00;
-            flex: 0 0 auto;
-            font-family: 'Nunito', sans-serif;
-            font-size: .62rem;
-            font-weight: 900;
-            max-width: 122px;
-            overflow: hidden;
-            padding: 5px 8px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .product-listing-section .pc-variant-groups {
@@ -543,19 +493,6 @@
 
 @section('content')
     @php
-        $categoryCounts = $products
-            ->groupBy(fn ($item) => $item->category->slug ?? 'uncategorized')
-            ->map(fn ($items, $slug) => [
-                'slug' => $slug,
-                'name' => $items->first()->category->name ?? 'Uncategorized',
-                'count' => $items->count(),
-            ])
-            ->sortBy('name')
-            ->values();
-
-        $prices = $products->map(fn ($item) => (float) $item->display_price);
-        $minPrice = max(0, (int) floor($prices->min() ?? 0));
-        $maxPrice = max($minPrice, (int) ceil($prices->max() ?? 0));
         $preparedProducts = [];
 
         foreach ($products as $product) {
@@ -575,7 +512,7 @@
             }
 
             $tagText = collect($tags)->map(fn ($tag) => $tag['text'] ?? '')->implode(' ');
-            $rating = (float) ($product->reviews->avg('rating') ?? 5);
+            $rating = (float) ($product->reviews_avg_rating ?? 5);
             $activeVariants = $product->variants
                 ->filter(fn ($variant) => $variant->is_active && !empty($variant->attributes))
                 ->values();
@@ -624,6 +561,23 @@
             $stockQty = (int) ($selectedVariant?->inventory?->stock_qty ?? 0);
             $trackStock = (bool) ($selectedVariant?->inventory?->track_stock ?? false);
             $isAvailable = ! $trackStock || (($selectedVariant?->inventory?->is_in_stock ?? true) && $stockQty > 0);
+            $frontendVariants = $activeVariants
+                ->map(function ($variant) {
+                    $stockQty = (int) ($variant->inventory?->stock_qty ?? 0);
+                    $trackStock = (bool) ($variant->inventory?->track_stock ?? false);
+
+                    return [
+                        'id' => $variant->id,
+                        'name' => $variant->name,
+                        'attributes' => $variant->attributes ?? [],
+                        'price' => (float) $variant->display_price,
+                        'stock_qty' => $stockQty,
+                        'track_stock' => $trackStock,
+                        'available' => ! $trackStock || (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
+                    ];
+                })
+                ->values()
+                ->all();
 
             $preparedProducts[] = [
                 'product' => $product,
@@ -632,7 +586,6 @@
                 'search' => strtolower(trim(($product->name ?? '') . ' ' . ($product->category->name ?? '') . ' ' . ($product->short_description ?? '') . ' ' . $tagText)),
                 'price' => (float) $product->display_price,
                 'rating' => $rating,
-                'tags' => array_slice($tags, 0, 4),
                 'variations' => $variationLabels,
                 'variantGroups' => $variantGroups,
                 'selectedVariant' => $selectedVariant,
@@ -641,6 +594,7 @@
                 'stockQty' => $stockQty,
                 'trackStock' => $trackStock,
                 'isAvailable' => $isAvailable,
+                'variantsJson' => json_encode($frontendVariants, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT),
             ];
         }
     @endphp
@@ -679,7 +633,7 @@
                     <div class="shop-category-list" id="shopCategoryList">
                         <button type="button" class="shop-category-btn is-active" data-category="all">
                             <span>All Products</span>
-                            <span class="shop-category-count">{{ $products->count() }}</span>
+                            <span class="shop-category-count">{{ $totalProducts }}</span>
                         </button>
                         @foreach ($categoryCounts as $category)
                             <button type="button" class="shop-category-btn" data-category="{{ $category['slug'] }}">
@@ -718,7 +672,7 @@
                     <button type="button" class="shop-filter-toggle" id="shopOpenFilters">Filters</button>
                     <div>
                         <div class="shop-result-meta"><span id="shopResultCount">{{ $products->count() }}</span> products found</div>
-                        <div class="text-xs" style="color: var(--muted); font-weight: 700;">Showing products that match your filters</div>
+                        <div class="text-xs" style="color: var(--muted); font-weight: 700;">Showing {{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }} of {{ $products->total() }}</div>
                     </div>
                     <div class="shop-toolbar-actions">
                         <select class="shop-select" id="shopSort" aria-label="Sort products">
@@ -738,19 +692,11 @@
                             $catSlug = $preparedProduct['cardClass'];
                             $variations = $preparedProduct['variations'];
                             $variantGroups = $preparedProduct['variantGroups'];
-                            $selectedVariant = $preparedProduct['selectedVariant'];
                             $selectedAttributes = $preparedProduct['selectedAttributes'];
                             $secondImage = $product->images->where('is_primary', false)->first();
                             $primaryImage = $product->primaryImage;
                             $hasDiscount = $product->display_compare_price > $product->display_price;
                             $hasVariantOptions = !empty($variantGroups) || !empty($variations);
-                            $featureTags = $preparedProduct['tags'] ?? [];
-                            $fallbackFeatures = collect(preg_split('/\r\n|\r|\n/', (string) ($product->short_description ?? '')))
-                                ->map(fn ($feature) => trim(preg_replace('/^[•\-\*]\s*/', '', $feature)))
-                                ->filter()
-                                ->take(4)
-                                ->values()
-                                ->all();
                         @endphp
                         <div class="pc pc-{{ $catSlug }} product-filter-card {{ $hasVariantOptions ? 'has-variants' : 'no-variants' }}"
                             data-category="{{ $preparedProduct['categorySlug'] }}"
@@ -759,6 +705,8 @@
                             data-rating="{{ $preparedProduct['rating'] }}"
                             data-featured="{{ $product->is_featured ? 1 : 0 }}"
                             data-discount="{{ $hasDiscount ? 1 : 0 }}"
+                            data-selected-variant-id="{{ $preparedProduct['selectedVariant']?->id }}"
+                            data-variants='{{ $preparedProduct['variantsJson'] }}'
                             data-name="{{ e(strtolower($product->name)) }}">
                             <div class="pc-head pc-head-{{ $catSlug }}">
                                 <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
@@ -780,87 +728,53 @@
                                 <div class="pc-stars">
                                     @for($i = 0; $i < 5; $i++){!! $i < $preparedProduct['rating'] ? '&#9733;' : '&#9734;' !!}@endfor
                                     <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
-                                        ({{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} reviews)
+                                        ({{ $product->reviews_count > 0 ? number_format($product->reviews_count) : '2,841' }} reviews)
                                     </span>
                                 </div>
                                 <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}</div>
                                 <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}" style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
 
                                 @if($hasVariantOptions)
-                                <div class="pc-variant-panel">
-                                    @if(!empty($variantGroups))
-                                        <div class="pc-variant-groups">
-                                            @foreach($variantGroups as $attributeName => $values)
-                                                <div class="pc-variant-block">
-                                                    <div class="pc-variant-label">{{ $attributeName }}</div>
-                                                    <div class="pc-option-row" data-attribute-group="{{ $attributeName }}">
-                                                        @foreach($values as $value)
-                                                            <button type="button"
-                                                                class="pc-option-btn {{ ($selectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
-                                                                data-attribute="{{ $attributeName }}"
-                                                                data-value="{{ $value }}">
-                                                                {{ $value }}
-                                                            </button>
-                                                        @endforeach
+                                    <div class="pc-variant-panel">
+                                        @if(!empty($variantGroups))
+                                            <div class="pc-variant-groups">
+                                                @foreach($variantGroups as $attributeName => $values)
+                                                    <div class="pc-variant-block">
+                                                        <div class="pc-variant-label">{{ $attributeName }}</div>
+                                                        <div class="pc-option-row" data-attribute-group="{{ $attributeName }}">
+                                                            @foreach($values as $value)
+                                                                <button type="button"
+                                                                    class="pc-option-btn {{ ($selectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
+                                                                    data-attribute="{{ $attributeName }}"
+                                                                    data-value="{{ $value }}">
+                                                                    {{ $value }}
+                                                                </button>
+                                                            @endforeach
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @else
-                                        @foreach(array_slice($variations, 0, 3) as $variation)
-                                            <div class="pc-option-row">
-                                                <button type="button" class="pc-option-btn active">{{ $variation }}</button>
+                                                @endforeach
                                             </div>
-                                        @endforeach
-                                    @endif
-
-                                    <div class="pc-variant-meta">
-                                        <span class="pc-stock-pill {{ $preparedProduct['isAvailable'] ? '' : 'out' }}">
-                                            @if($preparedProduct['isAvailable'])
-                                                {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' unit in stock' : 'In stock' }}
-                                            @else
-                                                Out of stock
-                                            @endif
-                                        </span>
-                                        <span class="pc-selected-pill" title="{{ $preparedProduct['selectedLabel'] ?: 'Product option' }}">
-                                            {{ $preparedProduct['selectedLabel'] ?: 'Product option' }}
-                                        </span>
-                                    </div>
-                                </div>
-                                @else
-                                <div class="pc-variant-panel pc-variant-placeholder">
-                                    <div class="pc-features">
-                                        @if(count($featureTags) > 0)
-                                            @foreach(array_chunk($featureTags, 2) as $chunk)
-                                                <div class="newcarda">
-                                                    @foreach($chunk as $tag)
-                                                        <span>
-                                                            @if(!empty($tag['icon']))
-                                                                @php $isFilePath = str_contains($tag['icon'], 'tags/'); @endphp
-                                                                <i>
-                                                                    @if($isFilePath)
-                                                                        <img src="{{ asset('storage/' . $tag['icon']) }}" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;" loading="lazy" decoding="async">
-                                                                    @else
-                                                                        {{ $tag['icon'] }}
-                                                                    @endif
-                                                                </i>
-                                                            @endif
-                                                            {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            @endforeach
                                         @else
-                                            @foreach(array_chunk($fallbackFeatures, 2) as $chunk)
-                                                <div class="newcarda">
-                                                    @foreach($chunk as $feature)
-                                                        <span>{{ \Illuminate\Support\Str::limit($feature, 18) }}</span>
-                                                    @endforeach
+                                            @foreach(array_slice($variations, 0, 3) as $variation)
+                                                <div class="pc-option-row">
+                                                    <button type="button" class="pc-option-btn active">{{ $variation }}</button>
                                                 </div>
                                             @endforeach
                                         @endif
+
+                                        <div class="pc-variant-meta">
+                                            <span class="pc-stock-pill {{ $preparedProduct['isAvailable'] ? '' : 'out' }}">
+                                                @if($preparedProduct['isAvailable'])
+                                                    {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' unit in stock' : 'In stock' }}
+                                                @else
+                                                    Out of stock
+                                                @endif
+                                            </span>
+                                            <span class="pc-selected-pill" title="{{ $preparedProduct['selectedLabel'] ?: 'Product option' }}">
+                                                {{ $preparedProduct['selectedLabel'] ?: 'Product option' }}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
                                 @endif
 
                                 <div class="pc-foot">
@@ -870,7 +784,7 @@
                                             <s>Rs. {{ number_format($product->display_compare_price, 0) }}</s>
                                         @endif
                                     </div>
-                                    <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart +</button>
+                                    <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}" data-variant-id="{{ $preparedProduct['selectedVariant']?->id }}">Add to Cart +</button>
                                 </div>
                             </div>
                         </div>
@@ -881,6 +795,10 @@
                     <div class="product-filter-empty-icon">+</div>
                     <h3>No products match these filters</h3>
                     <p>Try clearing filters or widening the price range.</p>
+                </div>
+
+                <div class="mt-32">
+                    {{ $products->links() }}
                 </div>
             </div>
         </div>
@@ -1000,6 +918,58 @@
             overlay?.addEventListener('click', () => document.body.classList.remove('shop-filter-open'));
 
             document.querySelectorAll('.pc-variant-panel').forEach(panel => {
+                const card = panel.closest('.product-filter-card');
+                const addButton = card?.querySelector('.btn-add');
+                const variants = (() => {
+                    try {
+                        return JSON.parse(card?.dataset.variants || '[]');
+                    } catch (_) {
+                        return [];
+                    }
+                })();
+
+                function selectedAttributes() {
+                    return Object.fromEntries(
+                        Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
+                            .map(item => [item.dataset.attribute, item.dataset.value])
+                    );
+                }
+
+                function findSelectedVariant() {
+                    const selected = selectedAttributes();
+                    return variants.find(variant => {
+                        return Object.entries(selected).every(([name, value]) => {
+                            return String(variant.attributes?.[name] ?? '') === String(value ?? '');
+                        });
+                    }) || null;
+                }
+
+                function applySelectedVariant() {
+                    const selected = Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
+                        .map(item => `${item.dataset.attribute}: ${item.dataset.value}`)
+                        .join(' / ');
+                    const selectedPill = panel.querySelector('.pc-selected-pill');
+                    const stockPill = panel.querySelector('.pc-stock-pill');
+                    const variant = findSelectedVariant();
+
+                    if (selectedPill && selected) {
+                        selectedPill.textContent = selected;
+                        selectedPill.title = selected;
+                    }
+
+                    if (card) card.dataset.selectedVariantId = variant?.id || '';
+                    if (addButton) addButton.dataset.variantId = variant?.id || '';
+
+                    if (stockPill && variant) {
+                        stockPill.classList.toggle('out', !variant.available);
+                        stockPill.textContent = variant.available
+                            ? (variant.track_stock ? `${variant.stock_qty} unit in stock` : 'In stock')
+                            : 'Out of stock';
+                    }
+                }
+
+                applySelectedVariant();
+
                 panel.querySelectorAll('.pc-option-btn[data-attribute]').forEach(button => {
                     button.addEventListener('click', event => {
                         event.preventDefault();
@@ -1010,14 +980,7 @@
                             item.classList.toggle('active', item === button);
                         });
 
-                        const selected = Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
-                            .map(item => `${item.dataset.attribute}: ${item.dataset.value}`)
-                            .join(' / ');
-                        const selectedPill = panel.querySelector('.pc-selected-pill');
-                        if (selectedPill && selected) {
-                            selectedPill.textContent = selected;
-                            selectedPill.title = selected;
-                        }
+                        applySelectedVariant();
                     });
                 });
             });

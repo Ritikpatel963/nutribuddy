@@ -12,15 +12,17 @@ use App\Models\ProductVariant;
 use App\Services\PricingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function index(Request $request, PricingService $pricingService): JsonResponse
     {
         $cart = $this->resolveUserCart($request);
+        $this->assignDefaultVariantsToLegacyRows($cart);
         $this->consolidateCartProductRows($cart);
 
-        $cart->load(['items.product.taxRate', 'items.productVariant']);
+        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
         $pricing = $pricingService->calculate($cart->items);
 
         return response()->json([
@@ -42,37 +44,44 @@ class CartController extends Controller
                 ->findOrFail($variantId);
         }
 
-        $cart = $this->resolveUserCart($request);
-        $matchingItems = $cart->items()
-            ->where('product_id', $product->id)
-            ->orderBy('id')
-            ->get();
-        $item = $matchingItems->first();
+        $cart = DB::transaction(function () use ($request, $product, $variantId, $validated) {
+            $cart = $this->resolveUserCart($request);
+            Cart::whereKey($cart->id)->lockForUpdate()->first();
 
-        if ($item) {
-            $newQuantity = (int) $matchingItems->sum('quantity') + (int) $validated['quantity'];
-            $effectiveVariantId = $item->product_variant_id ?: $variantId;
+            $matchingItems = $cart->items()
+                ->where('product_id', $product->id)
+                ->when($variantId, fn ($query) => $query->where('product_variant_id', $variantId), fn ($query) => $query->whereNull('product_variant_id'))
+                ->lockForUpdate()
+                ->orderBy('id')
+                ->get();
+            $item = $matchingItems->first();
 
-            $this->assertInventoryForQuantity($product->id, $effectiveVariantId, $newQuantity);
-            $item->update([
-                'product_variant_id' => $effectiveVariantId,
-                'quantity' => $newQuantity,
-            ]);
+            if ($item) {
+                $newQuantity = (int) $matchingItems->sum('quantity') + (int) $validated['quantity'];
 
-            $duplicateIds = $matchingItems->where('id', '!=', $item->id)->pluck('id');
-            if ($duplicateIds->isNotEmpty()) {
-                $cart->items()->whereIn('id', $duplicateIds)->delete();
+                $this->assertInventoryForQuantity($product->id, $variantId, $newQuantity);
+                $item->update([
+                    'product_variant_id' => $variantId,
+                    'quantity' => $newQuantity,
+                ]);
+
+                $duplicateIds = $matchingItems->where('id', '!=', $item->id)->pluck('id');
+                if ($duplicateIds->isNotEmpty()) {
+                    $cart->items()->whereIn('id', $duplicateIds)->delete();
+                }
+            } else {
+                $this->assertInventoryForQuantity($product->id, $variantId, (int) $validated['quantity']);
+                $cart->items()->create([
+                    'product_id' => $product->id,
+                    'product_variant_id' => $variantId,
+                    'quantity' => (int) $validated['quantity'],
+                ]);
             }
-        } else {
-            $this->assertInventoryForQuantity($product->id, $variantId, (int) $validated['quantity']);
-            $cart->items()->create([
-                'product_id' => $product->id,
-                'product_variant_id' => $variantId,
-                'quantity' => (int) $validated['quantity'],
-            ]);
-        }
 
-        $cart->load(['items.product.taxRate', 'items.productVariant']);
+            return $cart;
+        }, 3);
+
+        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
         $pricing = $pricingService->calculate($cart->items);
         $cartCount = (int) $cart->items->sum('quantity');
 
@@ -88,12 +97,17 @@ class CartController extends Controller
     {
         $validated = $request->validated();
 
-        $cart = $this->resolveUserCart($request);
-        $item = $cart->items()->findOrFail($itemId);
-        $this->assertInventoryForQuantity($item->product_id, $item->product_variant_id, (int) $validated['quantity']);
-        $item->update(['quantity' => (int) $validated['quantity']]);
+        $cart = DB::transaction(function () use ($request, $itemId, $validated) {
+            $cart = $this->resolveUserCart($request);
+            Cart::whereKey($cart->id)->lockForUpdate()->first();
+            $item = $cart->items()->lockForUpdate()->findOrFail($itemId);
+            $this->assertInventoryForQuantity($item->product_id, $item->product_variant_id, (int) $validated['quantity']);
+            $item->update(['quantity' => (int) $validated['quantity']]);
 
-        $cart->load(['items.product.taxRate', 'items.productVariant']);
+            return $cart;
+        }, 3);
+
+        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
         $pricing = $pricingService->calculate($cart->items);
         $cartCount = (int) $cart->items->sum('quantity');
 
@@ -107,11 +121,16 @@ class CartController extends Controller
 
     public function destroy(Request $request, int $itemId, PricingService $pricingService): JsonResponse
     {
-        $cart = $this->resolveUserCart($request);
-        $item = $cart->items()->findOrFail($itemId);
-        $item->delete();
+        $cart = DB::transaction(function () use ($request, $itemId) {
+            $cart = $this->resolveUserCart($request);
+            Cart::whereKey($cart->id)->lockForUpdate()->first();
+            $item = $cart->items()->lockForUpdate()->findOrFail($itemId);
+            $item->delete();
 
-        $cart->load(['items.product.taxRate', 'items.productVariant']);
+            return $cart;
+        }, 3);
+
+        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
         $pricing = $pricingService->calculate($cart->items);
         $cartCount = (int) $cart->items->sum('quantity');
 
@@ -138,7 +157,7 @@ class CartController extends Controller
         $cart->loadMissing('items');
 
         $cart->items
-            ->groupBy('product_id')
+            ->groupBy(fn ($item) => $item->product_id . '::' . ($item->product_variant_id ?: 'base'))
             ->filter(fn ($items) => $items->count() > 1)
             ->each(function ($items) use ($cart) {
                 $primary = $items->sortBy('id')->first();
@@ -153,6 +172,48 @@ class CartController extends Controller
                     ->whereIn('id', $items->where('id', '!=', $primary->id)->pluck('id'))
                     ->delete();
             });
+
+        $cart->unsetRelation('items');
+    }
+
+    private function assignDefaultVariantsToLegacyRows(Cart $cart): void
+    {
+        $legacyItems = $cart->items()
+            ->whereNull('product_variant_id')
+            ->with('product.variants')
+            ->get();
+
+        foreach ($legacyItems as $item) {
+            if (! $item->product?->is_variant_enabled) {
+                continue;
+            }
+
+            $variant = $item->product->variants
+                ->where('is_active', true)
+                ->sortBy([
+                    ['is_default', 'desc'],
+                    ['position', 'asc'],
+                    ['id', 'asc'],
+                ])
+                ->first();
+
+            if (! $variant) {
+                continue;
+            }
+
+            $existing = $cart->items()
+                ->where('product_id', $item->product_id)
+                ->where('product_variant_id', $variant->id)
+                ->first();
+
+            if ($existing) {
+                $existing->increment('quantity', (int) $item->quantity);
+                $item->delete();
+                continue;
+            }
+
+            $item->update(['product_variant_id' => $variant->id]);
+        }
 
         $cart->unsetRelation('items');
     }

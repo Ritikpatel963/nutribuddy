@@ -69,6 +69,57 @@
                 `);
             }
 
+            function csrfToken() {
+                return $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val() || '';
+            }
+
+            function updateCsrfToken(token) {
+                if (!token) return;
+                $('meta[name="csrf-token"]').attr('content', token);
+                $('input[name="_token"]').val(token);
+            }
+
+            function refreshCsrfToken() {
+                return $.ajax({
+                    url: "{{ route('csrf.token') }}",
+                    method: 'GET',
+                    dataType: 'json'
+                }).then(function(response) {
+                    updateCsrfToken(response.csrf_token);
+                    return response.csrf_token;
+                });
+            }
+
+            function otpAjax(options) {
+                const deferred = $.Deferred();
+                const requestOptions = {
+                    ...options,
+                    data: {
+                        ...(options.data || {}),
+                        _token: csrfToken()
+                    }
+                };
+
+                $.ajax(requestOptions)
+                    .done(deferred.resolve)
+                    .fail(function(xhr) {
+                        if (xhr.status !== 419) {
+                            deferred.reject(xhr);
+                            return;
+                        }
+
+                        refreshCsrfToken()
+                            .then(function() {
+                                requestOptions.data._token = csrfToken();
+                                return $.ajax(requestOptions);
+                            })
+                            .done(deferred.resolve)
+                            .fail(deferred.reject);
+                    });
+
+                return deferred.promise();
+            }
+
             sendOtpBtn.on('click', function() {
                 const phone = phoneInput.val();
                 if (!phone || phone.length !== 10) {
@@ -78,25 +129,22 @@
 
                 sendOtpBtn.prop('disabled', true).text('Sending...');
 
-                $.ajax({
+                otpAjax({
                     url: "{{ route('frontend.sendOtp') }}",
                     method: 'POST',
                     data: {
-                        _token: "{{ csrf_token() }}",
                         phone: phone
-                    },
-                    success: function(response) {
+                    }
+                }).done(function(response) {
                         showAlert(response.message, 'success');
                         phoneInput.prop('readonly', true);
                         sendOtpBtn.hide();
                         otpGroup.show();
                         verifyOtpBtn.show();
-                    },
-                    error: function(xhr) {
+                }).fail(function(xhr) {
                         sendOtpBtn.prop('disabled', false).text('Send OTP');
                         const message = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong.';
                         showAlert(message);
-                    }
                 });
             });
 
@@ -111,25 +159,23 @@
 
                 verifyOtpBtn.prop('disabled', true).text('Verifying...');
 
-                $.ajax({
+                otpAjax({
                     url: "{{ route('frontend.verifyOtp') }}",
                     method: 'POST',
                     data: {
-                        _token: "{{ csrf_token() }}",
                         phone: phone,
                         otp: otp
-                    },
-                    success: function(response) {
+                    }
+                }).done(function(response) {
                         showAlert(response.message, 'success');
+                        updateCsrfToken(response.csrf_token);
                         setTimeout(() => {
                             window.location.href = response.redirect;
                         }, 1000);
-                    },
-                    error: function(xhr) {
+                }).fail(function(xhr) {
                         verifyOtpBtn.prop('disabled', false).text('Verify & Login');
                         const message = xhr.responseJSON ? xhr.responseJSON.message : 'Invalid OTP.';
                         showAlert(message);
-                    }
                 });
             });
         });

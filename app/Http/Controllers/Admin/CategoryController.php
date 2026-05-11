@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -38,6 +39,7 @@ class CategoryController extends Controller
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
 
         Category::create($validated);
+        Cache::forget('storefront.product_catalog_meta.v1');
 
         return back()->with('success', 'Category created successfully.');
     }
@@ -61,6 +63,7 @@ class CategoryController extends Controller
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
 
         $category->update($validated);
+        Cache::forget('storefront.product_catalog_meta.v1');
 
         return back()->with('success', 'Category updated successfully.');
     }
@@ -72,6 +75,7 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+        Cache::forget('storefront.product_catalog_meta.v1');
 
         return back()->with('success', 'Category deleted successfully.');
     }

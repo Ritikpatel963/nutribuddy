@@ -86,10 +86,21 @@
             padding: 0 4px
         }
 
+        .topbar-steps .ts-arrow:first-child {
+            display: none;
+        }
+
         /* ── PROGRESS BAR ── */
         .progress-strip {
             height: 4px;
             position: relative
+        }
+
+        .progress-fill {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--pk), var(--pkd));
+            transition: width .3s ease;
         }
 
 
@@ -844,10 +855,6 @@
             padding-bottom: 0
         }
 
-        .ci-img img {
-            width: 30px !important;
-        }
-
         .user-ava img {
             width: 25px;
         }
@@ -862,7 +869,17 @@
             justify-content: center;
             font-size: 2rem;
             flex-shrink: 0;
-            border: 2px solid var(--pkl)
+            border: 2px solid var(--pkl);
+            overflow: hidden;
+            padding: 5px
+        }
+
+        .ci-img img {
+            width: 100% !important;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+            object-position: center
         }
 
         .ci-info {
@@ -1496,11 +1513,13 @@
             display: flex;
             gap: 10px;
             justify-content: center;
-            margin: 20px 0 8px
+            margin: 20px 0 8px;
+            width: 100%;
         }
 
         .otp-box {
             width: 46px;
+            flex: 0 1 46px;
             height: 60px;
             border: 2.5px solid var(--border);
             border-radius: 14px;
@@ -1815,22 +1834,50 @@
                 padding: 32px 24px
             }
 
+            .modal-overlay {
+                align-items: flex-start;
+                overflow-y: auto;
+                padding: 18px 12px;
+            }
+
+            .otp-modal {
+                width: min(100%, 420px);
+                border-radius: 20px;
+                max-height: calc(100vh - 36px);
+                overflow-y: auto;
+            }
+
             .om-body {
-                padding: 20px 20px 24px
+                padding: 22px 16px 24px
             }
 
             .om-header {
-                padding: 22px 24px 20px
+                padding: 22px 20px 18px
             }
 
             .otp-boxes {
-                gap: 8px
+                gap: 6px
             }
 
             .otp-box {
-                width: 40px;
-                height: 54px;
-                font-size: 1.4rem
+                width: 42px;
+                flex-basis: 42px;
+                height: 52px;
+                border-radius: 12px;
+                font-size: 1.35rem
+            }
+        }
+
+        @media(max-width:380px) {
+            .otp-boxes {
+                gap: 5px
+            }
+
+            .otp-box {
+                width: 38px;
+                flex-basis: 38px;
+                height: 48px;
+                font-size: 1.2rem
             }
         }
 
@@ -1940,16 +1987,13 @@
     <header class="checkout-topbar">
 
         <div class="topbar-steps">
-            <div class="ts {{ auth()->check() ? 'done' : 'active' }}" id="step-login">
-                <div class="ts-num">{!! auth()->check() ? '&#10003;' : '1' !!}</div> Login
-            </div>
             <div class="ts-arrow">›</div>
-            <div class="ts {{ auth()->check() ? 'active' : '' }}" id="step-addr">
-                <div class="ts-num">2</div> Address
+            <div class="ts active" id="step-addr">
+                <div class="ts-num">1</div> Delivery Address
             </div>
             <div class="ts-arrow">›</div>
             <div class="ts" id="step-pay">
-                <div class="ts-num">3</div> Payment
+                <div class="ts-num">2</div> Payment
             </div>
         </div>
     </header>
@@ -1963,11 +2007,11 @@
         <!-- ══ LEFT ══ -->
         <div class="left-panel">
 
-            <!-- STEP 2: ADDRESS -->
+            <!-- STEP 1: ADDRESS -->
             <div class="co-card active-card" id="addressCard">
                 <div class="card-head">
                     <div class="card-head-left">
-                        <div class="step-badge" id="addrBadge">2</div>
+                        <div class="step-badge" id="addrBadge">1</div>
                         <h3>Delivery Address</h3>
                     </div>
                     @auth
@@ -2087,11 +2131,11 @@
                 </div>
             </div>
 
-            <!-- STEP 3: PAYMENT -->
+            <!-- STEP 2: PAYMENT -->
             <div class="co-card" id="paymentCard" style="opacity:.5;pointer-events:none">
                 <div class="card-head">
                     <div class="card-head-left">
-                        <div class="step-badge" id="payBadge">3</div>
+                        <div class="step-badge" id="payBadge">2</div>
                         <h3>Payment Method</h3>
                     </div>
                     <span style="font-size:.78rem;color:var(--text-light)">Choose how to pay</span>
@@ -2251,8 +2295,8 @@
                     <div class="om-label">📱 Mobile Number</div>
                     <div class="phone-input-wrap">
                         <div class="phone-prefix">🇮🇳 +91</div>
-                        <input type="tel" id="phoneInput" maxlength="10" placeholder="Enter 10-digit number"
-                            oninput="this.value=this.value.replace(/\D/g,'')">
+                        <input type="tel" id="phoneInput" maxlength="10" inputmode="numeric" pattern="[0-9]*" autocomplete="tel"
+                            placeholder="Enter 10-digit number" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
                     </div>
                     <div id="phoneError"
                         style="font-size:.78rem;color:var(--or);margin-top:8px;font-family:'Nunito',sans-serif;font-weight:700;display:none">
@@ -2292,17 +2336,17 @@
                     <div class="om-label" style="justify-content:center">Enter 6-digit OTP</div>
 
                     <div class="otp-boxes">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp1" oninput="otpInput(this,null,'otp2')"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" id="otp1" oninput="otpInput(this,null,'otp2')"
                             onkeydown="otpKeydown(event,this,null,'otp2')">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp2" oninput="otpInput(this,'otp1','otp3')"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" id="otp2" oninput="otpInput(this,'otp1','otp3')"
                             onkeydown="otpKeydown(event,this,'otp1','otp3')">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp3" oninput="otpInput(this,'otp2','otp4')"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" id="otp3" oninput="otpInput(this,'otp2','otp4')"
                             onkeydown="otpKeydown(event,this,'otp2','otp4')">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp4" oninput="otpInput(this,'otp3','otp5')"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" id="otp4" oninput="otpInput(this,'otp3','otp5')"
                             onkeydown="otpKeydown(event,this,'otp3','otp5')">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp5" oninput="otpInput(this,'otp4','otp6')"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" id="otp5" oninput="otpInput(this,'otp4','otp6')"
                             onkeydown="otpKeydown(event,this,'otp4','otp6')">
-                        <input class="otp-box" type="tel" maxlength="1" id="otp6" oninput="otpInput(this,'otp5',null)"
+                        <input class="otp-box" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]*" id="otp6" oninput="otpInput(this,'otp5',null)"
                             onkeydown="otpKeydown(event,this,'otp5',null)">
                     </div>
 
@@ -2374,7 +2418,7 @@
                 payCard.classList.add('active-card');
                 step3.classList.add('active');
 
-                document.getElementById('progressFill').style.width = '66%';
+                document.getElementById('progressFill').style.width = '100%';
                 document.getElementById('placeOrderWrap').style.display = 'block';
 
                 payCard.scrollIntoView({
@@ -2714,6 +2758,7 @@
                 addressesUrl: '/user/addresses',
                 checkoutSummaryUrl: '/user/checkout/summary',
                 placeOrderUrl: '/user/checkout/place-order',
+                csrfTokenUrl: @json(route('csrf.token')),
                 sendOtpUrl: @json(route('frontend.sendOtp')),
                 verifyOtpUrl: @json(route('frontend.verifyOtp')),
                 csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
@@ -2732,20 +2777,13 @@
             let currentTotal = 0;
 
             function markLoginStepDone() {
-                const loginStep = document.getElementById('step-login');
                 const addressStep = document.getElementById('step-addr');
-                if (loginStep) {
-                    loginStep.classList.remove('active');
-                    loginStep.classList.add('done');
-                    const loginNum = loginStep.querySelector('.ts-num');
-                    if (loginNum) loginNum.textContent = '\u2713';
-                }
                 if (addressStep && !addressStep.classList.contains('done')) {
                     addressStep.classList.add('active');
                 }
                 const progress = document.getElementById('progressFill');
                 if (progress && progress.style.width === '') {
-                    progress.style.width = '33%';
+                    progress.style.width = '50%';
                 }
             }
 
@@ -2766,6 +2804,35 @@
                 }
             }
 
+            async function refreshCsrfToken() {
+                const res = await fetch(api.csrfTokenUrl, {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin'
+                });
+                const payload = await res.json().catch(() => ({}));
+                updateCsrfToken(payload.csrf_token || '');
+                return api.csrf;
+            }
+
+            async function fetchWithCsrfRetry(url, options = {}) {
+                const buildOptions = () => ({
+                    ...options,
+                    credentials: 'same-origin',
+                    headers: {
+                        ...(options.headers || {}),
+                        ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                    }
+                });
+
+                let response = await fetch(url, buildOptions());
+                if (response.status === 419) {
+                    await refreshCsrfToken();
+                    response = await fetch(url, buildOptions());
+                }
+
+                return response;
+            }
+
             function getPendingCartItems() {
                 try {
                     const raw = localStorage.getItem(pendingCartKey);
@@ -2782,6 +2849,57 @@
 
             function normalizeCheckoutQuantity(quantity) {
                 return Math.max(1, Math.min(10, Number(quantity || 1)));
+            }
+
+            function checkoutStorageImageUrl(path) {
+                if (!path) return '';
+                const value = String(path);
+                if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) {
+                    return value;
+                }
+                return `/storage/${value.replace(/^\/+/, '')}`;
+            }
+
+            function checkoutCartItemImage(item) {
+                return checkoutStorageImageUrl(item?.product_variant?.image_path) ||
+                    checkoutStorageImageUrl(item?.product?.primary_image?.image_path) ||
+                    checkoutStorageImageUrl(item?.product?.images?.[0]?.image_path) ||
+                    item?.fallback_image ||
+                    '/img/product2.png';
+            }
+
+            function escapeCheckoutText(value) {
+                return String(value ?? '').replace(/[&<>"']/g, char => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[char]));
+            }
+
+            function checkoutVariantLabel(item) {
+                const variant = item?.product_variant || item?.productVariant || null;
+                const attributes = variant?.attributes || {};
+                const attributeParts = Array.isArray(attributes)
+                    ? attributes.filter(Boolean).map(value => String(value))
+                    : Object.entries(attributes)
+                        .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+                        .map(([name, value]) => `${name}: ${value}`);
+
+                if (attributeParts.length) {
+                    return attributeParts.join(' · ');
+                }
+
+                const variantName = String(variant?.name || '').trim();
+                if (variantName) return variantName;
+
+                return [
+                    item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
+                    item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
+                    item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
+                    item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
+                ].filter(Boolean).join(' / ');
             }
 
             function updatePendingCartItemQuantity(productId, productVariantId = null, quantity = 1) {
@@ -2812,29 +2930,47 @@
                 const qtyRow = row.querySelector('.ci-qty-row');
                 if (!qtyRow) return;
                 const input = qtyRow.querySelector('.qty-val');
+                let currentQty = normalizeCheckoutQuantity(quantity);
+                let pendingQty = currentQty;
+                let saveTimer = null;
 
-                async function submitQuantity(nextQty) {
+                function setSaving(isSaving) {
+                    qtyRow.classList.toggle('is-updating', isSaving);
+                    qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
+                        control.disabled = isSaving;
+                    });
+                }
+
+                async function submitQuantity(nextQty, options = {}) {
                     const normalizedQty = normalizeCheckoutQuantity(nextQty);
-                    if (normalizedQty === normalizeCheckoutQuantity(quantity)) {
-                        if (input) input.value = String(normalizedQty);
+                    pendingQty = normalizedQty;
+                    if (input) input.value = String(normalizedQty);
+
+                    if (saveTimer) {
+                        clearTimeout(saveTimer);
+                        saveTimer = null;
+                    }
+
+                    if (normalizedQty === currentQty) {
                         return;
                     }
 
-                    qtyRow.classList.add('is-updating');
-                    qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
-                        control.disabled = true;
-                    });
+                    if (!options.immediate) {
+                        saveTimer = setTimeout(() => submitQuantity(pendingQty, { immediate: true }), 550);
+                        return;
+                    }
+
+                    setSaving(true);
 
                     try {
                         await onChange(normalizedQty);
+                        currentQty = normalizedQty;
                     } catch (error) {
-                        if (input) input.value = String(normalizeCheckoutQuantity(quantity));
+                        pendingQty = currentQty;
+                        if (input) input.value = String(currentQty);
                         nbToast(error.message || 'Unable to update cart quantity.', 'error');
                     } finally {
-                        qtyRow.classList.remove('is-updating');
-                        qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
-                            control.disabled = false;
-                        });
+                        setSaving(false);
                     }
                 }
 
@@ -2854,11 +2990,12 @@
                     });
                     input.addEventListener('blur', () => {
                         input.value = String(normalizeCheckoutQuantity(input.value));
+                        submitQuantity(input.value, { immediate: true });
                     });
                     input.addEventListener('keydown', event => {
                         if (event.key === 'Enter') {
                             event.preventDefault();
-                            submitQuantity(input.value);
+                            submitQuantity(input.value, { immediate: true });
                         }
                     });
                 }
@@ -3083,8 +3220,9 @@
                     // Fallback: use pending items and map to standard structure
                     lineItemsToRender = pending.map(it => ({
                         cart_item: {
-                            product: { name: it.product_name, primary_image: { image_path: it.image ? it.image.replace('/storage/', '') : '' } },
+                            product: { name: it.product_name },
                             product_variant: { name: it.variant_name },
+                            fallback_image: it.image || '/img/product2.png',
                             id: null,
                             product_id: it.product_id,
                             product_variant_id: it.product_variant_id
@@ -3111,22 +3249,17 @@
                     const name = it.product?.name || 'Product';
                     const qty = li.quantity || 1;
                     const linePrice = li.display_line_total || 0;
+                    const variantLabel = checkoutVariantLabel(it);
                     
-                    // Guest fallback image or backend image
-                    let img = 'img/product2.png';
-                    if (it.product?.primary_image?.image_path) {
-                        img = '/storage/' + it.product.primary_image.image_path;
-                    } else if (it.fallback_image) {
-                        img = it.fallback_image;
-                    }
+                    const img = checkoutCartItemImage(it);
 
                     const row = document.createElement('div');
                     row.className = 'ci';
                     row.innerHTML = `
                                       <div class="ci-img"><img src="${img}" alt=""></div>
                                       <div class="ci-info">
-                                        <div class="ci-name">${name}</div>
-                                        <div class="ci-variant">${it.product_variant?.name || ''}</div>
+                                        <div class="ci-name">${escapeCheckoutText(name)}</div>
+                                        ${variantLabel ? `<div class="ci-variant">${escapeCheckoutText(variantLabel)}</div>` : ''}
                                         <div class="ci-qty-row">
                                           ${createCheckoutQtyControls(qty)}
                                         </div>
@@ -3372,12 +3505,14 @@
             }
 
             function useSavedPhone() {
-                document.getElementById('phoneInput').value = '{{ auth()->user()->phone ?? '' }}';
+                document.getElementById('phoneInput').value = '{{ auth()->user()->phone ?? '' }}'.replace(/\D/g, '').slice(0, 10);
                 document.getElementById('phoneError').style.display = 'none';
             }
 
             async function sendOtp() {
-                const phone = document.getElementById('phoneInput').value.trim();
+                const phoneInput = document.getElementById('phoneInput');
+                phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+                const phone = phoneInput.value.trim();
                 const errEl = document.getElementById('phoneError');
 
                 if (phone.length !== 10) {
@@ -3393,14 +3528,11 @@
                 btn.disabled = true;
                 btn.textContent = 'Sending...';
 
-                const res = await fetch(api.sendOtpUrl, {
+                const res = await fetchWithCsrfRetry(api.sendOtpUrl, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...(api.csrf ? {
-                            'X-CSRF-TOKEN': api.csrf
-                        } : {})
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         phone
@@ -3441,8 +3573,14 @@
             }
 
             function otpInput(el, prevId, nextId) {
-                el.value = el.value.replace(/\D/g, '');
-                if (el.value) {
+                const digits = el.value.replace(/\D/g, '');
+                if (digits.length > 1) {
+                    fillOtpFrom(el.id, digits);
+                    return;
+                }
+
+                el.value = digits;
+                if (digits) {
                     el.classList.add('filled');
                     if (nextId) document.getElementById(nextId).focus();
                 } else {
@@ -3455,11 +3593,40 @@
             }
 
             function otpKeydown(e, el, prevId, nextId) {
+                if (e.key.length === 1 && !/^\d$/.test(e.key)) {
+                    e.preventDefault();
+                    return;
+                }
                 if (e.key === 'Backspace' && !el.value && prevId) {
                     document.getElementById(prevId).focus();
                 }
                 if (e.key === 'Enter') verifyOtp();
             }
+
+            function fillOtpFrom(startId, value) {
+                const startIndex = Math.max(0, otpFieldIds.indexOf(startId));
+                const digits = String(value || '').replace(/\D/g, '').slice(0, otpFieldIds.length - startIndex);
+
+                digits.split('').forEach((digit, offset) => {
+                    const target = document.getElementById(otpFieldIds[startIndex + offset]);
+                    if (!target) return;
+                    target.value = digit;
+                    target.classList.add('filled');
+                });
+
+                const nextIndex = Math.min(startIndex + digits.length, otpFieldIds.length - 1);
+                document.getElementById(otpFieldIds[nextIndex])?.focus();
+                document.getElementById('otpError').classList.remove('show');
+            }
+
+            otpFieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('paste', event => {
+                    event.preventDefault();
+                    fillOtpFrom(id, event.clipboardData.getData('text'));
+                });
+            });
 
             async function verifyOtp() {
                 const entered = otpFieldIds
@@ -3482,14 +3649,11 @@
                 const phone = document.getElementById('phoneInput').value.trim();
                 const otp = entered;
 
-                const res = await fetch(api.verifyOtpUrl, {
+                const res = await fetchWithCsrfRetry(api.verifyOtpUrl, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...(api.csrf ? {
-                            'X-CSRF-TOKEN': api.csrf
-                        } : {})
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         phone,
@@ -3756,16 +3920,16 @@
                             const name = it.product?.name || 'Product';
                             const qty = li.quantity || 1;
                             const linePrice = li.display_line_total || 0;
-                            const img = it.product?.primary_image?.image_path ? ('/storage/' + it.product
-                                .primary_image.image_path) : 'img/product2.png';
+                            const variantLabel = checkoutVariantLabel(it);
+                            const img = checkoutCartItemImage(it);
 
                             const row = document.createElement('div');
                             row.className = 'ci';
                             row.innerHTML = `
                                               <div class="ci-img"><img src="${img}" alt=""></div>
                                               <div class="ci-info">
-                                                <div class="ci-name">${name}</div>
-                                                <div class="ci-variant">${it.product_variant?.name || ''}</div>
+                                                <div class="ci-name">${escapeCheckoutText(name)}</div>
+                                                ${variantLabel ? `<div class="ci-variant">${escapeCheckoutText(variantLabel)}</div>` : ''}
                                                 <div class="ci-qty-row">
                                                   ${createCheckoutQtyControls(qty)}
                                                 </div>

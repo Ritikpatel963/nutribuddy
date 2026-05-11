@@ -29,11 +29,15 @@ use App\Http\Controllers\Admin\ProductVariantController as AdminProductVariantCo
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\TaxRateController as AdminTaxRateController;
 
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->name('csrf.token');
+
 Route::prefix('authentication')->group(function () {
     Route::controller(AuthenticationController::class)->group(function () {
         Route::get('/forgotpassword', 'forgotPassword')->name('forgotPassword');
         Route::get('/signin', 'signin')->name('signin');
-        Route::post('/login', 'login')->name('admin.login.post');
+        Route::post('/login', 'login')->middleware('throttle:admin-login')->name('admin.login.post');
         Route::post('/logout', 'logout')->name('admin.logout')->middleware('auth:admin');
         Route::get('/signup', 'signup')->name('signup');
     });
@@ -42,15 +46,15 @@ Route::prefix('authentication')->group(function () {
 Route::name('frontend.')->group(function () {
     Route::controller(FrontendAuthController::class)->group(function () {
         Route::get('/login', 'showLogin')->name('login');
-        Route::post('/send-otp', 'sendOtp')->middleware('throttle:5,1')->name('sendOtp');
-        Route::post('/verify-otp', 'verifyOtp')->middleware('throttle:10,1')->name('verifyOtp');
+        Route::post('/send-otp', 'sendOtp')->middleware('throttle:otp-send')->name('sendOtp');
+        Route::post('/verify-otp', 'verifyOtp')->middleware('throttle:otp-verify')->name('verifyOtp');
         Route::post('/logout', 'logout')->name('logout');
     });
 });
 
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
-Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:10,1')->name('contact.store');
-Route::post('/newsletter/subscribe', [FrontendNewsletterSubscriberController::class, 'store'])->middleware('throttle:10,1')->name('newsletter.subscribe');
+Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:form-submit')->name('contact.store');
+Route::post('/newsletter/subscribe', [FrontendNewsletterSubscriberController::class, 'store'])->middleware('throttle:form-submit')->name('newsletter.subscribe');
 Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
     ->where('path', '.*')
     ->name('storage.public');
@@ -143,21 +147,21 @@ Route::view('/return-policy', 'pages.return-policy')->name('return-policy');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/cart', 'pages.cart')->name('cart.page');
 
-Route::prefix('/guest/checkout')->name('guest.checkout.')->group(function () {
+Route::prefix('/guest/checkout')->name('guest.checkout.')->middleware('throttle:checkout')->group(function () {
     Route::post('/summary', [FrontendCheckoutController::class, 'guestSummary'])->name('summary');
 });
 
 Route::middleware('auth')->group(function () {
-    Route::prefix('/user/cart')->name('user.cart.')->group(function () {
+    Route::prefix('/user/cart')->name('user.cart.')->middleware('throttle:cart')->group(function () {
         Route::get('/', [FrontendCartController::class, 'index'])->name('index');
         Route::post('/', [FrontendCartController::class, 'store'])->name('store');
         Route::patch('/items/{itemId}', [FrontendCartController::class, 'update'])->name('items.update');
         Route::delete('/items/{itemId}', [FrontendCartController::class, 'destroy'])->name('items.destroy');
     });
 
-    Route::prefix('/user/checkout')->name('user.checkout.')->group(function () {
+    Route::prefix('/user/checkout')->name('user.checkout.')->middleware('throttle:checkout')->group(function () {
         Route::post('/summary', [FrontendCheckoutController::class, 'summary'])->name('summary');
-        Route::post('/place-order', [FrontendCheckoutController::class, 'placeOrder'])->name('place-order');
+        Route::post('/place-order', [FrontendCheckoutController::class, 'placeOrder'])->middleware('throttle:order-submit')->name('place-order');
     });
 
     Route::prefix('/user/addresses')->name('user.addresses.')->group(function () {

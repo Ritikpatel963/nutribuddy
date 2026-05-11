@@ -90,12 +90,14 @@ class CheckoutFlowTest extends TestCase
             ->assertJsonPath('order.payment_method', 'cod');
 
         $this->assertDatabaseCount('orders', 1);
+        $this->assertSame(9, (int) $product->inventory()->first()->stock_qty);
 
         $this->postJson(route('user.checkout.place-order'), $placePayload)
             ->assertOk()
             ->assertJsonPath('message', 'Order already placed for this checkout request.');
 
         $this->assertDatabaseCount('orders', 1);
+        $this->assertSame(9, (int) $product->inventory()->first()->stock_qty);
     }
 
     public function test_checkout_fails_when_stock_is_insufficient(): void

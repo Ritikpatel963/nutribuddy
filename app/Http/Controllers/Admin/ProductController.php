@@ -9,6 +9,7 @@ use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\TaxRate;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -184,6 +185,8 @@ class ProductController extends Controller
             }
         }
 
+        $this->forgetStorefrontCatalogCache();
+
         return redirect()->route('admin.ecommerce.products.index')->with('success', 'Product created successfully.');
     }
 
@@ -328,12 +331,15 @@ class ProductController extends Controller
             }
         }
 
+        $this->forgetStorefrontCatalogCache();
+
         return redirect()->route('admin.ecommerce.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'Product moved to trash successfully.');
     }
@@ -342,6 +348,7 @@ class ProductController extends Controller
     {
         $trashedProduct = Product::onlyTrashed()->findOrFail($product);
         $trashedProduct->restore();
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'Product restored successfully.');
     }
@@ -351,6 +358,7 @@ class ProductController extends Controller
         $trashedProduct = Product::onlyTrashed()->with(['images'])->findOrFail($product);
 
         $this->permanentlyDeleteProduct($trashedProduct);
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'Product permanently deleted successfully.');
     }
@@ -370,6 +378,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $this->permanentlyDeleteProduct($product);
         }
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', $products->count() . ' product(s) permanently deleted successfully.');
     }
@@ -403,6 +412,7 @@ class ProductController extends Controller
                 'is_in_stock' => (bool) ($validated['is_in_stock'] ?? false),
             ]
         );
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'Product inventory updated successfully.');
     }
@@ -412,6 +422,7 @@ class ProductController extends Controller
         Storage::disk('public')->delete($image->image_path);
 
         $image->delete();
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'Image removed successfully.');
     }
@@ -473,6 +484,7 @@ class ProductController extends Controller
         );
 
         $product->update(['dosage' => $validated['dosage'] ?? $product->dosage]);
+        $this->forgetStorefrontCatalogCache();
         
         return back()->with('success', 'Product details updated successfully.');
     }
@@ -518,6 +530,7 @@ class ProductController extends Controller
         if (!$product->is_variant_enabled) {
             $product->update(['is_variant_enabled' => true, 'product_type' => 'variable']);
         }
+        $this->forgetStorefrontCatalogCache();
 
         return back()->with('success', 'New variant added successfully.');
     }
@@ -746,5 +759,10 @@ class ProductController extends Controller
         return collect($attributes)
             ->map(fn ($value, $name) => "{$name}: {$value}")
             ->implode(' / ');
+    }
+
+    private function forgetStorefrontCatalogCache(): void
+    {
+        Cache::forget('storefront.product_catalog_meta.v1');
     }
 }

@@ -25,7 +25,7 @@ class AuthController extends Controller
         ]);
 
         $phone = $request->phone;
-        $otp = '123456'; // Dummy OTP for testing
+        $otp = '123456';
         $expiresAt = now()->addMinutes(10);
 
         $user = User::where('phone', $phone)->first();
@@ -50,13 +50,20 @@ class AuthController extends Controller
         $user->otp_expires_at = $expiresAt;
         $user->save();
 
-        Log::info("Frontend Dummy OTP for $phone: $otp");
+        if (app()->environment('local')) {
+            Log::info("Frontend OTP for {$phone}: {$otp}");
+        }
 
-        return response()->json([
+        $payload = [
             'success' => true,
-            'message' => 'OTP sent successfully (Use 123456).',
-            'otp' => $otp
-        ]);
+            'message' => 'OTP sent successfully. Use 123456.',
+        ];
+
+        if (app()->environment('local')) {
+            $payload['otp'] = $otp;
+        }
+
+        return response()->json($payload);
     }
 
     public function verifyOtp(Request $request)

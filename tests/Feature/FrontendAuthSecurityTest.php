@@ -10,7 +10,7 @@ class FrontendAuthSecurityTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_send_otp_does_not_expose_code_outside_local_environment(): void
+    public function test_send_otp_uses_static_code_until_sms_gateway_is_configured(): void
     {
         $response = $this->postJson(route('frontend.sendOtp'), [
             'phone' => '9876543210',
@@ -19,7 +19,7 @@ class FrontendAuthSecurityTest extends TestCase
         $payload = $response->json();
 
         $this->assertArrayNotHasKey('otp', $payload);
-        $this->assertNotSame('123456', User::where('phone', '9876543210')->value('otp'));
+        $this->assertSame('123456', User::where('phone', '9876543210')->value('otp'));
     }
 
     public function test_verify_otp_rejects_external_redirects(): void

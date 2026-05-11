@@ -55,7 +55,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $cart = $this->resolveUserCart($request)->load(['items.product.taxRate', 'items.productVariant']);
+        $cart = $this->resolveUserCart($request)->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
         if ($cart->items->isEmpty()) {
             return response()->json(['message' => 'Cart is empty.'], 422);
         }
@@ -99,7 +99,7 @@ class CheckoutController extends Controller
             if (empty($item['product_id']) || empty($item['quantity']))
                 continue;
 
-            $product = \App\Models\Product::with('taxRate')->find($item['product_id']);
+            $product = \App\Models\Product::with(['taxRate', 'primaryImage', 'images'])->find($item['product_id']);
             if (!$product)
                 continue;
 
@@ -161,7 +161,7 @@ class CheckoutController extends Controller
         }
 
         $order = DB::transaction(function () use ($request, $user, $address, $coupon, $pricingService, $validated, $checkoutToken) {
-            $cart = $this->resolveUserCart($request)->load(['items.product.taxRate', 'items.productVariant']);
+            $cart = $this->resolveUserCart($request)->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
             if ($cart->items->isEmpty()) {
                 abort(422, 'Cart is empty.');
             }

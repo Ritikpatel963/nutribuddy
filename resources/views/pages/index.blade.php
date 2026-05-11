@@ -282,6 +282,57 @@ if ($catSlug == 'multivitamins') {
 } else {
     $catSlug = 'pk';
                     }
+                    $activeVariants = $product->variants
+                        ->filter(fn ($variant) => $variant->is_active && !empty($variant->attributes))
+                        ->values();
+                    $variationLabels = $activeVariants
+                        ->map(function ($variant) {
+                            $label = collect($variant->attributes ?? [])
+                                ->filter(fn ($value) => trim((string) $value) !== '')
+                                ->map(fn ($value, $key) => $key . ': ' . $value)
+                                ->implode(' / ');
+
+                            return $label ?: $variant->name;
+                        })
+                        ->filter()
+                        ->unique()
+                        ->take(4)
+                        ->values()
+                        ->all();
+
+                    if (empty($variationLabels)) {
+                        $variationLabels = collect([
+                            $product->flavor ? 'Flavour: ' . $product->flavor : null,
+                            $product->pack_size ? 'Pack Size: ' . $product->pack_size : null,
+                            $product->age_group ? 'Age Group: ' . $product->age_group : null,
+                            $product->dosage ? 'Dosage: ' . $product->dosage : null,
+                        ])->filter()->take(4)->values()->all();
+                    }
+
+                    $variantGroups = [];
+                    foreach ($activeVariants as $variant) {
+                        foreach (($variant->attributes ?? []) as $name => $value) {
+                            $value = trim((string) $value);
+                            if ($value === '') {
+                                continue;
+                            }
+                            $variantGroups[$name] ??= [];
+                            if (!in_array($value, $variantGroups[$name], true)) {
+                                $variantGroups[$name][] = $value;
+                            }
+                        }
+                    }
+
+                    $selectedVariant = $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first();
+                    $selectedAttributes = $selectedVariant?->attributes ?? [];
+                    $selectedLabel = collect($selectedAttributes)
+                        ->filter(fn ($value) => trim((string) $value) !== '')
+                        ->map(fn ($value, $key) => $key . ': ' . $value)
+                        ->implode(' / ');
+                    $stockQty = (int) ($selectedVariant?->inventory?->stock_qty ?? 0);
+                    $trackStock = (bool) ($selectedVariant?->inventory?->track_stock ?? false);
+                    $isAvailable = ! $trackStock || (($selectedVariant?->inventory?->is_in_stock ?? true) && $stockQty > 0);
+                    $hasVariantOptions = !empty($variantGroups) || !empty($variationLabels);
                 @endphp
                 <div class="pc pc-{{ $catSlug }}">
                     <div class="pc-head pc-head-{{ $catSlug }}">
@@ -322,6 +373,48 @@ if ($catSlug == 'multivitamins') {
                         </div>
                         <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}"
                                 style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
+                        @if($hasVariantOptions)
+                            <div class="pc-variant-panel">
+                                @if(!empty($variantGroups))
+                                    <div class="pc-variant-groups">
+                                        @foreach($variantGroups as $attributeName => $values)
+                                            <div class="pc-variant-block">
+                                                <div class="pc-variant-label">{{ $attributeName }}</div>
+                                                <div class="pc-option-row" data-attribute-group="{{ $attributeName }}">
+                                                    @foreach($values as $value)
+                                                        <button type="button"
+                                                            class="pc-option-btn {{ ($selectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
+                                                            data-attribute="{{ $attributeName }}"
+                                                            data-value="{{ $value }}">
+                                                            {{ $value }}
+                                                        </button>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    @foreach(array_slice($variationLabels, 0, 3) as $variation)
+                                        <div class="pc-option-row">
+                                            <button type="button" class="pc-option-btn active">{{ $variation }}</button>
+                                        </div>
+                                    @endforeach
+                                @endif
+
+                                <div class="pc-variant-meta">
+                                    <span class="pc-stock-pill {{ $isAvailable ? '' : 'out' }}">
+                                        @if($isAvailable)
+                                            {{ $trackStock ? $stockQty . ' unit in stock' : 'In stock' }}
+                                        @else
+                                            Out of stock
+                                        @endif
+                                    </span>
+                                    <span class="pc-selected-pill" title="{{ $selectedLabel ?: 'Product option' }}">
+                                        {{ $selectedLabel ?: 'Product option' }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
                         <div class="pc-features">
                             @php
                                 $tags = $product->tags ?? [];
@@ -993,3 +1086,32 @@ if ($catSlug == 'multivitamins') {
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.pc-variant-panel').forEach(panel => {
+                panel.querySelectorAll('.pc-option-btn[data-attribute]').forEach(button => {
+                    button.addEventListener('click', event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        const attribute = button.dataset.attribute;
+                        panel.querySelectorAll(`.pc-option-btn[data-attribute="${CSS.escape(attribute)}"]`).forEach(item => {
+                            item.classList.toggle('active', item === button);
+                        });
+
+                        const selected = Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
+                            .map(item => `${item.dataset.attribute}: ${item.dataset.value}`)
+                            .join(' / ');
+                        const selectedPill = panel.querySelector('.pc-selected-pill');
+                        if (selectedPill && selected) {
+                            selectedPill.textContent = selected;
+                            selectedPill.title = selected;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

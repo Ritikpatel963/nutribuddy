@@ -34,6 +34,7 @@ class StockService
 
         // 1. Adjust specific inventory (variant or product)
         $inventoryQuery = Inventory::query()
+            ->lockForUpdate()
             ->where('product_id', $item->product_id);
 
         if ($item->product_variant_id) {
@@ -45,9 +46,13 @@ class StockService
         $inventory = $inventoryQuery->first();
 
         if ($inventory && $inventory->track_stock) {
-            $newQty = max(0, (int) $inventory->stock_qty + $quantityChange);
+            $newQty = (int) $inventory->stock_qty + $quantityChange;
+            if ($action === 'deduct' && $newQty < 0) {
+                abort(422, 'Some cart items are out of stock.');
+            }
+
             $inventory->update([
-                'stock_qty' => $newQty,
+                'stock_qty' => max(0, $newQty),
                 'is_in_stock' => $newQty > 0,
             ]);
             
@@ -57,14 +62,19 @@ class StockService
         // 2. If it's a variant, also adjust the main product inventory (null variant row)
         if ($item->product_variant_id) {
             $mainInventory = Inventory::query()
+                ->lockForUpdate()
                 ->where('product_id', $item->product_id)
                 ->whereNull('product_variant_id')
                 ->first();
 
             if ($mainInventory && $mainInventory->track_stock) {
-                $newMainQty = max(0, (int) $mainInventory->stock_qty + $quantityChange);
+                $newMainQty = (int) $mainInventory->stock_qty + $quantityChange;
+                if ($action === 'deduct' && $newMainQty < 0) {
+                    abort(422, 'Some cart items are out of stock.');
+                }
+
                 $mainInventory->update([
-                    'stock_qty' => $newMainQty,
+                    'stock_qty' => max(0, $newMainQty),
                     'is_in_stock' => $newMainQty > 0,
                 ]);
             }

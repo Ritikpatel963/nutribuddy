@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use App\Models\Setting;
@@ -24,6 +27,44 @@ class AppServiceProvider extends ServiceProvider
     {
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
         \App\Models\OrderItem::observe(\App\Observers\OrderItemObserver::class);
+
+        RateLimiter::for('admin-login', function (Request $request) {
+            return Limit::perMinute(10)->by('admin-login:' . $request->ip());
+        });
+
+        RateLimiter::for('otp-send', function (Request $request) {
+            $phone = preg_replace('/\D+/', '', (string) $request->input('phone'));
+
+            return [
+                Limit::perMinute(8)->by('otp-send:ip:' . $request->ip()),
+                Limit::perMinute(3)->by('otp-send:phone:' . ($phone ?: $request->ip())),
+            ];
+        });
+
+        RateLimiter::for('otp-verify', function (Request $request) {
+            $phone = preg_replace('/\D+/', '', (string) $request->input('phone'));
+
+            return [
+                Limit::perMinute(15)->by('otp-verify:ip:' . $request->ip()),
+                Limit::perMinute(8)->by('otp-verify:phone:' . ($phone ?: $request->ip())),
+            ];
+        });
+
+        RateLimiter::for('form-submit', function (Request $request) {
+            return Limit::perMinute(30)->by('form-submit:' . $request->ip());
+        });
+
+        RateLimiter::for('cart', function (Request $request) {
+            return Limit::perMinute(240)->by('cart:' . ($request->user()?->id ?: $request->ip()));
+        });
+
+        RateLimiter::for('checkout', function (Request $request) {
+            return Limit::perMinute(120)->by('checkout:' . ($request->user()?->id ?: $request->ip()));
+        });
+
+        RateLimiter::for('order-submit', function (Request $request) {
+            return Limit::perMinute(12)->by('order-submit:' . ($request->user()?->id ?: $request->ip()));
+        });
 
         View::composer('components.head', function ($view) {
             $data = $view->getData();

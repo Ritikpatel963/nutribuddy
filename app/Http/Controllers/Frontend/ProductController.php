@@ -5,16 +5,86 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::where('is_active', true)
-            ->with(['primaryImage', 'category', 'images', 'reviews', 'taxRate', 'variants.inventory', 'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id')])
-            ->get();
+        $perPage = min(max((int) $request->integer('per_page', 24), 12), 48);
 
-        return view('pages.all-products', compact('products'));
+        $catalogMeta = Cache::remember('storefront.product_catalog_meta.v1', now()->addMinutes(10), function () {
+            $products = Product::query()
+                ->where('is_active', true)
+                ->with(['category:id,name,slug,deleted_at', 'taxRate:id,rate,show_in_checkout'])
+                ->select(['id', 'category_id', 'base_price', 'tax_rate_id'])
+                ->get();
+
+            $categoryCounts = $products
+                ->groupBy(fn ($item) => $item->category->slug ?? 'uncategorized')
+                ->map(fn ($items, $slug) => [
+                    'slug' => $slug,
+                    'name' => $items->first()->category->name ?? 'Uncategorized',
+                    'count' => $items->count(),
+                ])
+                ->sortBy('name')
+                ->values();
+
+            $prices = $products->map(fn ($item) => (float) $item->display_price);
+
+            return [
+                'categoryCounts' => $categoryCounts,
+                'totalProducts' => $products->count(),
+                'minPrice' => max(0, (int) floor($prices->min() ?? 0)),
+                'maxPrice' => max(0, (int) ceil($prices->max() ?? 0)),
+            ];
+        });
+
+        $products = Product::where('is_active', true)
+            ->select([
+                'id',
+                'category_id',
+                'tax_rate_id',
+                'name',
+                'slug',
+                'sku',
+                'short_description',
+                'base_price',
+                'compare_at_price',
+                'shipping_price',
+                'is_active',
+                'is_featured',
+                'flavor',
+                'pack_size',
+                'age_group',
+                'dosage',
+                'tags',
+                'deleted_at',
+            ])
+            ->with([
+                'primaryImage:id,product_id,image_path,is_primary',
+                'category:id,name,slug,deleted_at',
+                'images:id,product_id,image_path,is_primary,sort_order',
+                'taxRate:id,rate,show_in_checkout',
+                'variants.inventory',
+                'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id'),
+            ])
+            ->withCount(['reviews' => fn ($query) => $query->where('is_active', true)])
+            ->withAvg(['reviews' => fn ($query) => $query->where('is_active', true)], 'rating')
+            ->orderByDesc('is_featured')
+            ->latest('id')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return response()
+            ->view('pages.all-products', [
+                'products' => $products,
+                'categoryCounts' => $catalogMeta['categoryCounts'],
+                'totalProducts' => $catalogMeta['totalProducts'],
+                'minPrice' => $catalogMeta['minPrice'],
+                'maxPrice' => max($catalogMeta['minPrice'], $catalogMeta['maxPrice']),
+            ])
+            ->header('Cache-Control', 'private, max-age=120');
     }
 
     public function show($slug)
@@ -42,6 +112,8 @@ class ProductController extends Controller
             $relatedProducts = $relatedProducts->concat($fallbackProducts);
         }
 
-        return view('pages.product', compact('product', 'relatedProducts'));
+        return response()
+            ->view('pages.product', compact('product', 'relatedProducts'))
+            ->header('Cache-Control', 'private, max-age=120');
     }
 }

@@ -307,6 +307,41 @@
         if (meta) meta.setAttribute('content', token);
     }
 
+    function currentPageCsrf() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    }
+
+    async function refreshPageCsrf() {
+        const response = await fetch("{{ route('csrf.token') }}", {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        });
+        const data = await response.json().catch(() => ({}));
+        updatePageCsrf(data.csrf_token || '');
+        return data.csrf_token || currentPageCsrf();
+    }
+
+    async function postLoginJson(url, payload) {
+        const makeRequest = () => fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': currentPageCsrf(),
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload)
+        });
+
+        let response = await makeRequest();
+        if (response.status === 419) {
+            await refreshPageCsrf();
+            response = await makeRequest();
+        }
+
+        return response;
+    }
+
     async function handleSendOtp() {
         const phone = document.getElementById('loginPhone').value;
         const btn = event.currentTarget;
@@ -322,19 +357,11 @@
         btn.querySelector('.btn-text').textContent = 'Sending...';
 
         try {
-            const response = await fetch("{{ route('frontend.sendOtp') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ phone })
-            });
+            const response = await postLoginJson("{{ route('frontend.sendOtp') }}", { phone });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 document.getElementById('loginStepPhone').classList.remove('active');
                 document.getElementById('loginStepOtp').classList.add('active');
                 document.getElementById('displayPhone').textContent = '+91 ' + phone;
@@ -364,23 +391,15 @@
         btn.querySelector('.btn-text').textContent = 'Verifying...';
 
         try {
-            const response = await fetch("{{ route('frontend.verifyOtp') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    phone, 
-                    otp,
-                    redirect_to: window.location.href 
-                })
+            const response = await postLoginJson("{{ route('frontend.verifyOtp') }}", {
+                phone,
+                otp,
+                redirect_to: window.location.href
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
-            if (data.success) {
+            if (response.ok && data.success) {
                 btn.querySelector('.btn-text').textContent = 'Success!';
                 updatePageCsrf(data.csrf_token);
                 

@@ -16,7 +16,7 @@ class HomeController extends Controller
         if ($this->productTablesAreReady()) {
             try {
                 $featuredProducts = Product::where('is_active', true)
-                    ->with(['primaryImage', 'category', 'images', 'reviews'])
+                    ->with(['primaryImage', 'category', 'images', 'reviews', 'variants.inventory'])
                     ->latest()
                     ->limit(3)
                     ->get();

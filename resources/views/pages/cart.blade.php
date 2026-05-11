@@ -316,6 +316,28 @@
                 return Math.max(1, Math.min(10, parseInt(v, 10) || 1));
             }
 
+            function normalizeImage(src) {
+                if (!src) return '/img/product2.png';
+                if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
+                return `/${src.replace(/^\/+/, '')}`;
+            }
+
+            function storageImageUrl(path) {
+                if (!path) return '';
+                const value = String(path);
+                if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+                return `/storage/${value.replace(/^\/+/, '')}`;
+            }
+
+            function cartItemImage(item) {
+                return normalizeImage(
+                    storageImageUrl(item?.product_variant?.image_path) ||
+                    storageImageUrl(item?.product?.primary_image?.image_path) ||
+                    storageImageUrl(item?.product?.images?.[0]?.image_path) ||
+                    '/img/product2.png'
+                );
+            }
+
             /* ── pending (guest) cart helpers ── */
             function getPendingItems() {
                 try {
@@ -388,14 +410,32 @@
                 const qtyRow = row.querySelector('.cart-page-qty-row');
                 const input  = qtyRow.querySelector('.cart-page-qty-val');
                 let   currentQty = clampQty(initialQty);
+                let pendingQty = currentQty;
+                let saveTimer = null;
 
-                async function submit(nextVal) {
+                function setSaving(isSaving) {
+                    qtyRow.classList.toggle('is-updating', isSaving);
+                    qtyRow.querySelectorAll('.cart-page-qty-btn, .cart-page-qty-val').forEach(el => el.disabled = isSaving);
+                }
+
+                async function submit(nextVal, options = {}) {
                     const next = clampQty(nextVal);
-                    if (next === currentQty) { input.value = currentQty; return; }
+                    pendingQty = next;
+                    input.value = next;
 
-                    /* disable while saving */
-                    qtyRow.classList.add('is-updating');
-                    qtyRow.querySelectorAll('.cart-page-qty-btn, .cart-page-qty-val').forEach(el => el.disabled = true);
+                    if (saveTimer) {
+                        clearTimeout(saveTimer);
+                        saveTimer = null;
+                    }
+
+                    if (next === currentQty) return;
+
+                    if (!options.immediate) {
+                        saveTimer = setTimeout(() => submit(pendingQty, { immediate: true }), 550);
+                        return;
+                    }
+
+                    setSaving(true);
 
                     try {
                         await onCommit(next);
@@ -403,10 +443,10 @@
                         input.value = next;
                     } catch (err) {
                         input.value = currentQty;
+                        pendingQty = currentQty;
                         alert(err.message || 'Unable to update quantity.');
                     } finally {
-                        qtyRow.classList.remove('is-updating');
-                        qtyRow.querySelectorAll('.cart-page-qty-btn, .cart-page-qty-val').forEach(el => el.disabled = false);
+                        setSaving(false);
                     }
                 }
 
@@ -418,8 +458,8 @@
                 });
 
                 input.addEventListener('change',  () => submit(input.value));
-                input.addEventListener('blur',    () => submit(input.value));
-                input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(input.value); } });
+                input.addEventListener('blur',    () => submit(input.value, { immediate: true }));
+                input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(input.value, { immediate: true }); } });
             }
 
             /* ── render guest/pending cart ── */
@@ -518,9 +558,7 @@
                 items.forEach(it => {
                     const qty   = Number(it.quantity || 1);
                     const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
-                    const image = it.product?.primary_image?.image_path
-                        ? '/storage/' + it.product.primary_image.image_path
-                        : '/img/product2.png';
+                    const image = cartItemImage(it);
 
                     const row = createCartRow(image, it.product?.name || 'Product', price, qty);
 
