@@ -488,6 +488,14 @@
         });
     });
 
+    // Phone input validation (allow only digits)
+    const loginPhoneInput = document.getElementById('loginPhone');
+    if (loginPhoneInput) {
+        loginPhoneInput.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    }
+
     // Close on click outside
     document.getElementById('nbLoginModal').addEventListener('click', function(e) {
         if (e.target === this) closeLoginModal();

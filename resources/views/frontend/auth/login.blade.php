@@ -61,6 +61,14 @@
             const otpInput = $('#otp');
             const alertContainer = $('#alert-container');
 
+            // Phone and OTP input validation (allow only digits)
+            phoneInput.on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+            otpInput.on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
             function showAlert(message, type = 'danger') {
                 alertContainer.html(`
                     <div class="alert alert-${type} radius-12 mb-16 px-16 py-8 text-sm">
