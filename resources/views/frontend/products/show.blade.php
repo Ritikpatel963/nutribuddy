@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <!-- Pincode Check -->
+            <!-- Pincode Check hidden for now
             <div class="pincode-row">
                 <div class="pincode-label">📍</div>
                 <input type="text" maxlength="6" placeholder="Enter pincode to check delivery date" id="pincodeInput">
@@ -117,6 +117,7 @@
             </div>
             <div id="pincode-result" style="font-size:.82rem;color:var(--mn);font-weight:700;margin-bottom:14px;display:none;padding: 0 4px;">✅ Delivery by Tomorrow!</div>
 
+            -->
             <!-- CTAs -->
             <div class="cta-row">
                 <button class="btn-cart" onclick="addToCart('{{ $product->id }}')">Add to Cart</button>

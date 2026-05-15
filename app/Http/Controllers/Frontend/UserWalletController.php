@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
 use App\Models\CoinTransaction;
-use Illuminate\Http\Request;
 
 class UserWalletController extends Controller
 {

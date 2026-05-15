@@ -1,3 +1,19 @@
+@media (max-width: 900px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    main,
+    section,
+    footer,
+    nav {
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 860px) {
     .hero {
         height: auto;
@@ -41,12 +57,6 @@
         width: min(100%, 280px);
         height: auto;
         margin: 40px auto 0;
-    }
-
-    .jar-body1 img,
-    .jar-body2 img {
-        width: 100%;
-        height: auto;
     }
 
     .slide-counter {
@@ -678,7 +688,7 @@
 
     .main-img-wrap .p-image img {
         max-width: 220px;
-        max-height: 260px;
+        max-height: 400px;
     }
 
     .transform-grid {
@@ -751,7 +761,7 @@
 
     .main-img-wrap .p-image img {
         max-width: 250px;
-        max-height: 230px;
+        max-height: 400px;
     }
 
     .float-badge {
@@ -1009,11 +1019,13 @@
         height: 220px;
     }
 
-    .comp-table th:nth-child(4),
-    .comp-table td:nth-child(4),
-    .comp-table th:nth-child(5),
-    .comp-table td:nth-child(5) {
-        display: none;
+    .comparison-box {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .comp-table {
+        min-width: 620px;
     }
 }
 
@@ -1211,6 +1223,9 @@
 
     .footer-bottom-bar .foot-links {
         justify-content: center;
+        flex-wrap: wrap;
+        max-width: 100%;
+        row-gap: 8px;
     }
 
     #cart-popup {
@@ -1708,10 +1723,12 @@
 @media (max-width: 580px) {
     .how-layout {
         gap: 20px;
+        width: 100%;
     }
 
     .how-layout .how-head {
         padding: 26px 20px;
+        width: 100%;
     }
 
     .how-stats {
@@ -1727,37 +1744,32 @@
         grid-template-columns: 1fr;
         gap: 18px;
         margin-top: 34px;
-        max-width: 360px;
+        max-width: 100%;
+        width: 100%;
     }
 
     .how-section .steps::before {
-        bottom: 30px;
-        height: auto;
-        left: 50px;
-        right: auto;
-        top: 30px;
-        width: 3px;
+        display: none;
     }
 
     .how-section .step-new {
-        align-items: flex-start;
+        align-items: center;
         min-height: 0;
-        padding: 20px 20px 20px 96px;
+        padding: 22px 20px;
         position: relative;
-        text-align: left;
+        text-align: center;
+        width: 100%;
     }
 
     .step-top {
-        align-items: flex-start;
+        align-items: center;
         margin-bottom: 12px;
     }
 
     .how-section .sball {
         height: 62px;
-        left: 18px;
         margin: 0;
-        position: absolute;
-        top: 20px;
+        position: relative;
         width: 62px;
     }
 
@@ -1775,7 +1787,8 @@
     }
 
     .how-section .sdesc {
-        margin-left: 0;
+        margin-left: auto;
+        margin-right: auto;
         max-width: none;
     }
 
@@ -1787,5 +1800,99 @@
     .how-cta-row .hbtn {
         justify-content: center;
         width: 100%;
+    }
+}
+
+/* Final mobile override for the home How It Works cards. */
+@media (max-width: 640px) {
+    .how-section {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .how-section .how-layout {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 480px;
+        width: 100%;
+    }
+
+    .how-section .how-layout .how-head {
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+    }
+
+    .how-section .how-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: none;
+        width: 100%;
+    }
+
+    .how-section .how-layout .steps {
+        display: grid !important;
+        gap: 16px;
+        grid-template-columns: minmax(0, 1fr) !important;
+        justify-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: none !important;
+        width: 100% !important;
+    }
+
+    .how-section .how-layout .steps::before {
+        display: none !important;
+    }
+
+    .how-section .how-layout .step-new {
+        align-items: center;
+        justify-self: center;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 380px;
+        min-height: 0;
+        padding: 22px 18px;
+        text-align: center;
+        width: 100% !important;
+    }
+
+    .how-section .how-layout .step-top {
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .how-section .how-layout .sball {
+        height: 70px;
+        margin: 0;
+        position: relative;
+        width: 70px;
+    }
+
+    .how-section .how-layout .sball img {
+        height: 34px;
+        width: 34px;
+    }
+
+    .how-section .how-layout .sdesc {
+        max-width: 100%;
+    }
+
+    .how-section .how-cta-row {
+        align-items: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .how-section .how-cta-row .hbtn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .how-section .how-stats {
+        grid-template-columns: 1fr;
     }
 }

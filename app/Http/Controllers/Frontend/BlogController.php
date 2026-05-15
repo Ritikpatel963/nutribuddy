@@ -3,11 +3,26 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-
-use Illuminate\Http\Request;
+use App\Models\BlogPost;
 
 class BlogController extends Controller
 {
+    public function index()
+    {
+        $blogPosts = BlogPost::with('category')
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->latest()
+            ->get();
+
+        return view('pages.blog', compact('blogPosts'));
+    }
+
+    public function show(int $id)
+    {
+        return view('pages.blog-show', compact('id'));
+    }
+
     public function addBlog()
     {
         return view('blog/addBlog');
@@ -22,5 +37,4 @@ class BlogController extends Controller
     {
         return view('blog/blogDetails');
     }
-
 }

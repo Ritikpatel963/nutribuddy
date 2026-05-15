@@ -135,11 +135,12 @@ function getPendingCartItems() {
       const productId = Number(item?.product_id || 0);
       if (!productId) return items;
 
-      const existing = items.find(it => Number(it.product_id || 0) === productId);
+      const variantId = item?.product_variant_id ? Number(item.product_variant_id) : null;
+      const existing = items.find(it => getPendingCartItemKey(it.product_id, it.product_variant_id) === getPendingCartItemKey(productId, variantId));
       const normalizedItem = {
         ...item,
         product_id: productId,
-        product_variant_id: item?.product_variant_id ? Number(item.product_variant_id) : null,
+        product_variant_id: variantId,
         quantity: Number(item?.quantity || 1),
         unit_price: normalizePendingUnitPrice(item?.unit_price)
       };
@@ -230,6 +231,49 @@ function updatePendingCartItemQuantity(productId, productVariantId = null, quant
 
 function formatCartMoney(value, maximumFractionDigits = 2) {
   return `Rs. ${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits })}`;
+}
+
+function escapeCartText(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }[char]));
+}
+
+function cartVariantLabel(item) {
+  const variant = item?.product_variant || item?.productVariant || null;
+  let attributes = variant?.attributes || {};
+  if (typeof attributes === 'string') {
+    try {
+      attributes = JSON.parse(attributes);
+    } catch (_) {
+      attributes = attributes.trim() ? { Option: attributes } : {};
+    }
+  }
+  const attributeParts = Array.isArray(attributes)
+    ? attributes.filter(Boolean).map(value => String(value))
+    : Object.entries(attributes)
+      .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+      .map(([name, value]) => `${name}: ${value}`);
+
+  if (attributeParts.length) {
+    return attributeParts.join(' / ');
+  }
+
+  const variantName = String(variant?.name || item?.variant_name || '').trim();
+  if (variantName) return variantName;
+
+  if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
+
+  return [
+    item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
+    item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
+    item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
+    item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
+  ].filter(Boolean).join(' / ');
 }
 
 function isAuthRedirectResponse(res) {
@@ -379,9 +423,11 @@ function resolveCartItemMeta(productId, productVariantId = null, sourceEl = null
   const card = sourceEl ? sourceEl.closest('.pc') : null;
   const cardPriceNow = card?.querySelector('.pc-price-now');
   if (card) {
+    const selectedPill = card.querySelector('.pc-selected-pill');
+    const selectedLabel = (selectedPill?.textContent || card.dataset.selectedVariantLabel || '').trim();
     return {
       product_name: card.querySelector('.pc-name')?.textContent?.trim() || 'Product',
-      variant_name: '',
+      variant_name: productVariantId ? selectedLabel : '',
       image: normalizeCartImage(card.querySelector('.default-img, .hover-img, img')?.getAttribute('src') || ''),
       unit_price: extractDisplayedPrice(cardPriceNow?.textContent || card.querySelector('.pc-price')?.textContent || ''),
       product_url: card.querySelector('.pc-name a, .pc-emoji')?.getAttribute('href') || '/product'
@@ -406,6 +452,66 @@ if (cartCountEl) {
 const CART_COUNT_SYNC_TTL = 10000;
 let cartCountSyncPromise = null;
 let cartCountLastSyncedAt = 0;
+let cartPayloadCache = null;
+let cartPayloadCacheAt = 0;
+let cartFetchPromise = null;
+
+function invalidateCartPayloadCache() {
+  cartPayloadCache = null;
+  cartPayloadCacheAt = 0;
+}
+
+async function fetchCartPayload(options = {}) {
+  const force = !!options.force;
+  const now = Date.now();
+
+  if (!force && cartPayloadCache && (now - cartPayloadCacheAt) < CART_COUNT_SYNC_TTL) {
+    return cartPayloadCache;
+  }
+
+  if (cartFetchPromise) {
+    return cartFetchPromise;
+  }
+
+  cartFetchPromise = (async () => {
+    let res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
+
+    if (isAuthRedirectResponse(res)) {
+      cartPayloadCache = { guest: true };
+      cartPayloadCacheAt = Date.now();
+      return cartPayloadCache;
+    }
+
+    if (!res.ok || !isJsonResponse(res)) {
+      throw new Error('cart');
+    }
+
+    if (getPendingCartItems().length) {
+      const synced = await syncPendingCartToServer();
+      if (synced) {
+        res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
+        if (isAuthRedirectResponse(res)) {
+          cartPayloadCache = { guest: true };
+          cartPayloadCacheAt = Date.now();
+          return cartPayloadCache;
+        }
+        if (!res.ok || !isJsonResponse(res)) {
+          throw new Error('cart');
+        }
+      }
+    }
+
+    cartPayloadCache = await res.json().catch(() => ({}));
+    cartPayloadCacheAt = Date.now();
+    return cartPayloadCache;
+  })();
+
+  try {
+    return await cartFetchPromise;
+  } finally {
+    cartFetchPromise = null;
+  }
+}
 
 async function syncCartCount(options = {}) {
   if (!cartCountEl) return;
@@ -422,28 +528,13 @@ async function syncCartCount(options = {}) {
 
   cartCountSyncPromise = (async () => {
   try {
-    let res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
-    if (isAuthRedirectResponse(res)) {
+    const payload = await fetchCartPayload({ force });
+    if (payload?.guest) {
       cartCountEl.textContent = String(getPendingCartCount());
       cartCountLastSyncedAt = Date.now();
       return;
     }
-    if (!res.ok || !isJsonResponse(res)) return;
 
-    if (getPendingCartItems().length) {
-      const synced = await syncPendingCartToServer();
-      if (synced) {
-        res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
-        if (isAuthRedirectResponse(res)) {
-          cartCountEl.textContent = String(getPendingCartCount());
-          cartCountLastSyncedAt = Date.now();
-          return;
-        }
-        if (!res.ok || !isJsonResponse(res)) return;
-      }
-    }
-
-    const payload = await res.json().catch(() => ({}));
     const items = payload.cart?.items || [];
     cartCountEl.textContent = String(getCartCount(items));
     cartCountLastSyncedAt = Date.now();
@@ -497,7 +588,9 @@ async function updateServerCartItemQuantity(itemId, quantity) {
     body: JSON.stringify({ quantity: Math.max(1, Number(quantity || 1)) })
   }).catch(() => null);
 
-  return !!(res && res.ok);
+  const ok = !!(res && res.ok);
+  if (ok) invalidateCartPayloadCache();
+  return ok;
 }
 
 function toggleCart() {
@@ -505,7 +598,6 @@ function toggleCart() {
   const willOpen = !cartPopup.classList.contains('open');
   cartPopup.classList.toggle('open');
   if (willOpen) {
-    syncCartCount({ force: true });
     loadCartPopup();
   }
 }
@@ -535,7 +627,7 @@ document.addEventListener('click', e => {
   }
 });
 
-async function loadCartPopup() {
+async function loadCartPopup(options = {}) {
   const itemsWrap = document.getElementById('cartPopupItems');
   const countEl   = document.getElementById('cartPopupCount');
   const subtotalEl = document.getElementById('cartPopupSubtotal');
@@ -544,9 +636,9 @@ async function loadCartPopup() {
   itemsWrap.innerHTML = '<div style="padding:10px;color:#888;font-size:.9rem;">Loading...</div>';
 
   try {
-    const res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
+    const payload = await fetchCartPayload({ force: !!options.force });
 
-    if (isAuthRedirectResponse(res)) {
+    if (payload?.guest) {
       /* ── Guest / pending cart ── */
       const pendingItems = getPendingCartItems();
       const pendingCount = getPendingCartCount();
@@ -562,12 +654,14 @@ async function loadCartPopup() {
       itemsWrap.innerHTML = '';
       pendingItems.forEach(it => {
         const qty = Number(it.quantity || 1);
+        const variantLabel = cartVariantLabel(it);
         const row = document.createElement('div');
         row.className = 'single-cart-box';
         row.innerHTML = `
-          <div class="image-box"><img src="${normalizeCartImage(it.image)}" alt=""></div>
+          <div class="image-box"><img src="${escapeCartText(normalizeCartImage(it.image))}" alt=""></div>
           <div class="cart-popup-content">
-            <h5>${it.product_name || 'Product'}</h5>
+            <h5>${escapeCartText(it.product_name || 'Product')}</h5>
+            ${variantLabel ? `<div class="cart-popup-variant">${escapeCartText(variantLabel)}</div>` : ''}
             <h4>${formatCartMoney(it.unit_price)}</h4>
           </div>
           <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
@@ -575,24 +669,24 @@ async function loadCartPopup() {
         const content = row.querySelector('.cart-popup-content');
         content.appendChild(createPopupQuantityField(qty, async value => {
           updatePendingCartItemQuantity(it.product_id, it.product_variant_id, value);
+          invalidateCartPayloadCache();
           if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
-          loadCartPopup();
+          loadCartPopup({ force: true });
         }));
         row.querySelector('.cart-remove-btn').addEventListener('click', e => {
           e.stopPropagation();
           removePendingCartItem(it.product_id, it.product_variant_id);
+          invalidateCartPayloadCache();
           if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
-          loadCartPopup();
+          loadCartPopup({ force: true });
         });
         itemsWrap.appendChild(row);
       });
       return;
     }
 
-    if (!res.ok || !isJsonResponse(res)) throw new Error('cart');
 
     /* ── Authenticated cart ── */
-    const payload  = await res.json().catch(() => ({}));
     const items    = payload.cart?.items || [];
     const subtotal = payload.pricing?.display_subtotal || 0;
     const count    = getCartCount(items);
@@ -612,13 +706,15 @@ async function loadCartPopup() {
       const qty   = Number(it.quantity || 1);
       const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
       const img = getServerCartItemImage(it);
+      const variantLabel = cartVariantLabel(it);
 
       const row = document.createElement('div');
       row.className = 'single-cart-box';
       row.innerHTML = `
-        <div class="image-box"><img src="${img}" alt=""></div>
+        <div class="image-box"><img src="${escapeCartText(img)}" alt=""></div>
         <div class="cart-popup-content">
-          <h5>${name}</h5>
+          <h5>${escapeCartText(name)}</h5>
+          ${variantLabel ? `<div class="cart-popup-variant">${escapeCartText(variantLabel)}</div>` : ''}
           <h4>${formatCartMoney(price)}</h4>
         </div>
         <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
@@ -628,7 +724,7 @@ async function loadCartPopup() {
         row.classList.add('is-updating');
         try {
           const ok = await updateServerCartItemQuantity(it.id, value);
-          if (ok) loadCartPopup();
+          if (ok) loadCartPopup({ force: true });
         } finally {
           row.classList.remove('is-updating');
         }
@@ -641,7 +737,8 @@ async function loadCartPopup() {
           method: 'DELETE',
           headers: { 'Accept': 'application/json', ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}) }
         });
-        loadCartPopup();
+        invalidateCartPayloadCache();
+        loadCartPopup({ force: true });
         syncCartCount({ force: true });
       });
       itemsWrap.appendChild(row);
@@ -1529,9 +1626,10 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
 
     if (isGuestFallback) {
       addPendingCartItem(productId, quantity, productVariantId, itemMeta);
+      invalidateCartPayloadCache();
       const pendingCount = getPendingCartCount();
       if (cartCountEl) cartCountEl.textContent = String(pendingCount);
-      loadCartPopup();
+      if (cartPopup?.classList.contains('open')) loadCartPopup({ force: true });
       _flashCartBtn(sourceEl);
       return true;
     }
@@ -1544,6 +1642,8 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
     requestSucceeded = true;
 
     const payload   = await res.json().catch(() => ({}));
+    cartPayloadCache = payload;
+    cartPayloadCacheAt = Date.now();
     const items     = payload.cart?.items || [];
     const countNow  = Number(payload.cart_count || 0) || items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
     if (cartCountEl) cartCountEl.textContent = String(countNow);

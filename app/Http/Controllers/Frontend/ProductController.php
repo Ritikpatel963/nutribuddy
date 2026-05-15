@@ -13,10 +13,15 @@ class ProductController extends Controller
     {
         $perPage = min(max((int) $request->integer('per_page', 24), 12), 48);
 
-        $catalogMeta = Cache::remember('storefront.product_catalog_meta.v1', now()->addMinutes(10), function () {
+        $catalogMeta = Cache::remember('storefront.product_catalog_meta.v2', now()->addMinutes(10), function () {
             $products = Product::query()
                 ->where('is_active', true)
-                ->with(['category:id,name,slug,deleted_at', 'taxRate:id,rate,show_in_checkout'])
+                ->with([
+                    'category:id,name,slug,deleted_at',
+                    'taxRate:id,rate,show_in_checkout',
+                    'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id'),
+                    'variants.product.taxRate',
+                ])
                 ->select(['id', 'category_id', 'base_price', 'tax_rate_id'])
                 ->get();
 
@@ -30,7 +35,10 @@ class ProductController extends Controller
                 ->sortBy('name')
                 ->values();
 
-            $prices = $products->map(fn ($item) => (float) $item->display_price);
+            $prices = $products->map(function ($item) {
+                $variant = $item->variants->firstWhere('is_default', true) ?: $item->variants->first();
+                return (float) ($variant?->display_price ?? $item->display_price);
+            });
 
             return [
                 'categoryCounts' => $categoryCounts,
@@ -67,6 +75,7 @@ class ProductController extends Controller
                 'images:id,product_id,image_path,is_primary,sort_order',
                 'taxRate:id,rate,show_in_checkout',
                 'variants.inventory',
+                'variants.product.taxRate',
                 'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id'),
             ])
             ->withCount(['reviews' => fn ($query) => $query->where('is_active', true)])
@@ -97,7 +106,7 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
-            ->with(['primaryImage', 'category', 'images', 'reviews'])
+            ->with(['primaryImage', 'category', 'images', 'reviews', 'taxRate', 'variants.inventory', 'variants.product.taxRate'])
             ->limit(8)
             ->get();
 
@@ -105,7 +114,7 @@ class ProductController extends Controller
             $fallbackProducts = Product::where('id', '!=', $product->id)
                 ->where('is_active', true)
                 ->whereNotIn('id', $relatedProducts->pluck('id'))
-                ->with(['primaryImage', 'category', 'images', 'reviews'])
+                ->with(['primaryImage', 'category', 'images', 'reviews', 'taxRate', 'variants.inventory', 'variants.product.taxRate'])
                 ->limit(8 - $relatedProducts->count())
                 ->get();
 

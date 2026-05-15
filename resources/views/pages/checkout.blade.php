@@ -2880,7 +2880,14 @@
 
             function checkoutVariantLabel(item) {
                 const variant = item?.product_variant || item?.productVariant || null;
-                const attributes = variant?.attributes || {};
+                let attributes = variant?.attributes || {};
+                if (typeof attributes === 'string') {
+                    try {
+                        attributes = JSON.parse(attributes);
+                    } catch (_) {
+                        attributes = attributes.trim() ? { Option: attributes } : {};
+                    }
+                }
                 const attributeParts = Array.isArray(attributes)
                     ? attributes.filter(Boolean).map(value => String(value))
                     : Object.entries(attributes)
@@ -2888,11 +2895,13 @@
                         .map(([name, value]) => `${name}: ${value}`);
 
                 if (attributeParts.length) {
-                    return attributeParts.join(' · ');
+                    return attributeParts.join(' / ');
                 }
 
-                const variantName = String(variant?.name || '').trim();
+                const variantName = String(variant?.name || item?.variant_name || '').trim();
                 if (variantName) return variantName;
+
+                if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
 
                 return [
                     item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',

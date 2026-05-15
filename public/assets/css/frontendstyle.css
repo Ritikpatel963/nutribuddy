@@ -63,6 +63,9 @@
 
 html {
     scroll-behavior: smooth;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -70,7 +73,16 @@ body {
     /* background: var(--cr); */
     background: linear-gradient(145deg, #FFF0FA, #F0E5FF, #FFDCF0);
     color: var(--dk);
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
+}
+
+main,
+section,
+footer,
+nav {
+    max-width: 100%;
 }
 
 /* Hero visual side */
@@ -637,6 +649,17 @@ nav.scrolled {
     font-size: .82rem;
     color: var(--dk);
     margin-bottom: 4px;
+}
+
+.cart-popup-variant {
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 5px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .single-cart-box h4 {
@@ -11772,6 +11795,7 @@ testi-section {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     margin: 58px auto 0;
     max-width: 1180px;
+    width: 100%;
     position: relative;
 }
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontend;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class UserSupportTicketController extends Controller
@@ -11,6 +12,7 @@ class UserSupportTicketController extends Controller
     public function index()
     {
         $tickets = SupportTicket::where('user_id', auth()->id())->latest()->get();
+
         return view('pages.user-panel.support-tickets', compact('tickets'));
     }
 

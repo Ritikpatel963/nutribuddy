@@ -103,6 +103,16 @@
             font-size: 1rem;
         }
 
+        .cart-page-variant {
+            margin: 0 0 6px;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .78rem;
+            font-weight: 800;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
         /* ── Quantity Row ── */
         .cart-page-qty-row {
             display: inline-flex;
@@ -210,6 +220,8 @@
             .cart-page {
                 padding: 24px 4% 60px;
                 margin-top: 80px;
+                width: 100%;
+                overflow-x: hidden;
             }
 
             .cart-page-head .nav-cta {
@@ -220,6 +232,16 @@
             .cart-panel {
                 padding: 14px;
                 border-radius: 18px;
+                min-width: 0;
+                width: 100%;
+            }
+
+            .cart-panel .nav-cta {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                min-height: 48px;
+                width: 100%;
             }
 
             .cart-page-item {
@@ -329,6 +351,16 @@
                 return `/storage/${value.replace(/^\/+/, '')}`;
             }
 
+            function escapeHtml(value) {
+                return String(value ?? '').replace(/[&<>"']/g, char => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[char]));
+            }
+
             function cartItemImage(item) {
                 return normalizeImage(
                     storageImageUrl(item?.product_variant?.image_path) ||
@@ -336,6 +368,38 @@
                     storageImageUrl(item?.product?.images?.[0]?.image_path) ||
                     '/img/product2.png'
                 );
+            }
+
+            function cartVariantLabel(item) {
+                const variant = item?.product_variant || item?.productVariant || null;
+                let attributes = variant?.attributes || {};
+                if (typeof attributes === 'string') {
+                    try {
+                        attributes = JSON.parse(attributes);
+                    } catch (_) {
+                        attributes = attributes.trim() ? { Option: attributes } : {};
+                    }
+                }
+
+                const attributeParts = Array.isArray(attributes)
+                    ? attributes.filter(Boolean).map(value => String(value))
+                    : Object.entries(attributes)
+                        .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+                        .map(([name, value]) => `${name}: ${value}`);
+
+                if (attributeParts.length) return attributeParts.join(' / ');
+
+                const variantName = String(variant?.name || item?.variant_name || '').trim();
+                if (variantName) return variantName;
+
+                if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
+
+                return [
+                    item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
+                    item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
+                    item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
+                    item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
+                ].filter(Boolean).join(' / ');
             }
 
             /* ── pending (guest) cart helpers ── */
@@ -384,15 +448,16 @@
             }
 
             /* ── build a cart row DOM element ── */
-            function createCartRow(image, name, price, qty) {
+            function createCartRow(image, name, price, qty, variantLabel = '') {
                 const row = document.createElement('div');
                 row.className = 'cart-page-item';
                 row.innerHTML = `
                     <div class="cart-page-item-image">
-                        <img src="${image}" alt="${name}" loading="lazy">
+                        <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy">
                     </div>
                     <div class="cart-page-item-content">
-                        <h5>${name}</h5>
+                        <h5>${escapeHtml(name)}</h5>
+                        ${variantLabel ? `<div class="cart-page-variant">${escapeHtml(variantLabel)}</div>` : ''}
                         <p class="cart-page-item-price">${money(price)}</p>
                         <div class="cart-page-qty-row">
                             <button type="button" class="cart-page-qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">-</button>
@@ -479,11 +544,13 @@
 
                 items.forEach(it => {
                     const qty = Number(it.quantity || 1);
+                    const variantLabel = cartVariantLabel(it);
                     const row = createCartRow(
                         it.image || '/img/product2.png',
                         it.product_name || 'Product',
                         it.unit_price,
-                        qty
+                        qty,
+                        variantLabel
                     );
 
                     bindQtyControls(row, qty, async value => {
@@ -559,8 +626,9 @@
                     const qty   = Number(it.quantity || 1);
                     const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
                     const image = cartItemImage(it);
+                    const variantLabel = cartVariantLabel(it);
 
-                    const row = createCartRow(image, it.product?.name || 'Product', price, qty);
+                    const row = createCartRow(image, it.product?.name || 'Product', price, qty, variantLabel);
 
                     bindQtyControls(row, qty, async value => {
                         row.classList.add('is-updating');

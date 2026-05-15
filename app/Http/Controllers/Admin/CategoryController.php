@@ -40,6 +40,7 @@ class CategoryController extends Controller
 
         Category::create($validated);
         Cache::forget('storefront.product_catalog_meta.v1');
+        Cache::forget('storefront.product_catalog_meta.v2');
 
         return back()->with('success', 'Category created successfully.');
     }
@@ -64,6 +65,7 @@ class CategoryController extends Controller
 
         $category->update($validated);
         Cache::forget('storefront.product_catalog_meta.v1');
+        Cache::forget('storefront.product_catalog_meta.v2');
 
         return back()->with('success', 'Category updated successfully.');
     }
@@ -76,6 +78,7 @@ class CategoryController extends Controller
 
         $category->delete();
         Cache::forget('storefront.product_catalog_meta.v1');
+        Cache::forget('storefront.product_catalog_meta.v2');
 
         return back()->with('success', 'Category deleted successfully.');
     }

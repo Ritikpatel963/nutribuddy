@@ -213,12 +213,14 @@
 
     .otp-inputs {
         display: flex;
-        gap: 5px;
+        gap: 8px;
         justify-content: space-between;
     }
 
     .otp-field {
-        width: 45px;
+        flex: 1;
+        min-width: 0;
+        max-width: 50px;
         height: 55px;
         border: 2px solid #eee;
         border-radius: 12px;
@@ -451,12 +453,37 @@
     }
 
     // OTP Field handling
-    document.querySelectorAll('.otp-field').forEach((field, index) => {
-        field.addEventListener('keyup', (e) => {
-            if (e.key >= 0 && e.key <= 9) {
-                if (index < 5) field.nextElementSibling.focus();
-            } else if (e.key === 'Backspace') {
-                if (index > 0) field.previousElementSibling.focus();
+    const otpInputs = document.querySelectorAll('.otp-field');
+    otpInputs.forEach((field, index) => {
+        field.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value !== '') {
+                if (index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            }
+        });
+
+        field.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value === '') {
+                if (index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            }
+        });
+
+        field.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, otpInputs.length);
+            for (let i = 0; i < pastedData.length; i++) {
+                if (index + i < otpInputs.length) {
+                    otpInputs[index + i].value = pastedData[i];
+                    if (index + i < otpInputs.length - 1) {
+                        otpInputs[index + i + 1].focus();
+                    } else {
+                        otpInputs[index + i].focus();
+                    }
+                }
             }
         });
     });

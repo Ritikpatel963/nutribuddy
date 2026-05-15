@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\Controller;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductReview;
-;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,7 +30,7 @@ class ProductReviewController extends Controller
             'rating' => $request->rating,
             'comment' => $request->comment,
             'image_path' => $imagePath,
-            'is_active' => true, // Assuming auto-approve for now or keep false if needed
+            'is_active' => true,
         ]);
 
         return back()->with('success', 'Your review has been submitted and is awaiting approval.');
@@ -38,23 +39,20 @@ class ProductReviewController extends Controller
     public function userIndex(Request $request)
     {
         $userId = Auth::id();
-        
-        // Get all products purchased by the user
-        // An item is considered purchased if the order is delivered or completed
-        $purchasedProducts = \App\Models\OrderItem::whereHas('order', function($query) use ($userId) {
-                $query->where('user_id', $userId)
-                      ->whereIn('status', ['delivered', 'completed']);
-            })
-            ->with(['product' => function($q) {
-                $q->with(['primaryImage', 'reviews' => function($rq) {
-                    $rq->where('user_id', Auth::id());
+
+        $purchasedProducts = OrderItem::whereHas('order', function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                ->whereIn('status', ['delivered', 'completed']);
+        })
+            ->with(['product' => function ($query) {
+                $query->with(['primaryImage', 'reviews' => function ($reviewQuery) {
+                    $reviewQuery->where('user_id', Auth::id());
                 }]);
             }])
             ->get()
             ->unique('product_id')
             ->pluck('product');
 
-        // Get reviews already written by the user
         $userReviews = ProductReview::where('user_id', $userId)
             ->with('product.primaryImage')
             ->latest()

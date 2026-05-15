@@ -29,6 +29,10 @@
             }
         }
         $initialSelectedAttributes = $defVariant?->attributes ?? [];
+        $initialSelectedLabel = collect($initialSelectedAttributes)
+            ->filter(fn($value) => trim((string) $value) !== '')
+            ->map(fn($value, $key) => $key . ': ' . $value)
+            ->implode(' / ');
         $frontendVariants = $variantProducts
             ->map(function ($variant) use ($product) {
                 $price = (float) $variant->display_price;
@@ -204,6 +208,14 @@
         .btn-buy:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        .feature-slider-shell {
+            display: block;
+        }
+
+        .feature-slider-btn {
+            display: none;
         }
 
         .review-img-thumb {
@@ -594,6 +606,441 @@
                 font-size: 0.9rem;
             }
         }
+
+        @media (max-width: 768px) {
+            .pdp-hero {
+                grid-template-columns: minmax(0, 1fr) !important;
+                gap: 24px;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            .pdp-info,
+            .pdp-gallery,
+            .price-box,
+            .pdp-variant-panel,
+            .variant-block,
+            .highlights {
+                min-width: 0;
+                width: 100% !important;
+            }
+
+            .pdp-info {
+                padding-top: 0;
+            }
+
+            .pdp-cat {
+                font-size: 0.72rem;
+                line-height: 1.45;
+                overflow-wrap: anywhere;
+            }
+
+            .pdp-name {
+                font-size: clamp(1.75rem, 8vw, 2.25rem);
+                overflow-wrap: anywhere;
+            }
+
+            .pdp-rating {
+                gap: 8px;
+            }
+
+            .pdp-rating .stars {
+                letter-spacing: 1px;
+                line-height: 1;
+            }
+
+            .pdp-rating .rating-count {
+                flex-basis: 100%;
+                line-height: 1.4;
+            }
+
+            .pdp-rating .rating-divider {
+                display: none;
+            }
+
+            .price-box,
+            .pdp-variant-panel,
+            .highlights {
+                border-radius: 18px;
+                padding: 18px;
+            }
+
+            .pdp-variant-panel {
+                background: #fff;
+                border: 1px solid rgba(20, 126, 89, 0.12);
+                box-shadow: 0 12px 28px rgba(40, 89, 64, 0.06);
+            }
+
+            .price-row {
+                align-items: flex-start;
+                gap: 8px 10px;
+            }
+
+            .price-now {
+                font-size: 1.85rem;
+                line-height: 1;
+            }
+
+            .price-old,
+            .price-save {
+                line-height: 1.25;
+            }
+
+            .cashback-row {
+                align-items: flex-start;
+                line-height: 1.45;
+            }
+
+            .pdp-variant-head {
+                display: block;
+            }
+
+            .pdp-variant-sub {
+                line-height: 1.5;
+            }
+
+            .pdp-option-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .variant-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .pdp-option-btn,
+            .qty-opt,
+            .vopt {
+                min-width: 0;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .pdp-option-btn {
+                flex: 0 1 auto;
+                min-height: 36px;
+                border: 1px solid rgba(53, 158, 111, 0.18);
+                border-radius: 999px;
+                padding: 0 13px;
+                font-size: 0.78rem;
+                width: auto !important;
+            }
+
+            .pdp-option-btn:hover:not(:disabled) {
+                transform: none;
+            }
+
+            .pdp-option-btn.active {
+                background: var(--pkl);
+                border-color: var(--pk);
+                color: var(--pk);
+                box-shadow: none;
+            }
+
+            .feature-slider-shell {
+                align-items: center;
+                display: grid;
+                gap: 8px;
+                grid-template-columns: 34px minmax(0, 1fr) 34px;
+                margin-left: -4px;
+                margin-right: -4px;
+            }
+
+            .feature-slider-btn {
+                align-items: center;
+                background: #fff;
+                border: 1.5px solid var(--pkl);
+                border-radius: 999px;
+                color: var(--pk);
+                display: inline-flex;
+                font-family: 'Nunito', sans-serif;
+                font-size: 1.2rem;
+                font-weight: 900;
+                height: 34px;
+                justify-content: center;
+                line-height: 1;
+                padding: 0;
+                width: 34px;
+            }
+
+            #flavorRow {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 10px;
+                margin-left: 0;
+                margin-right: 0;
+                overflow-x: auto;
+                padding: 0 0 10px;
+                scroll-snap-type: x proximity;
+                scrollbar-width: none;
+                width: 100%;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #flavorRow::-webkit-scrollbar {
+                display: none;
+            }
+
+            .flavor-opt {
+                flex: 0 0 132px;
+                justify-content: flex-start;
+                min-height: 104px;
+                min-width: 132px;
+                padding: 12px 8px;
+                scroll-snap-align: start;
+                text-align: center;
+                width: 132px !important;
+            }
+
+            .flavor-emoji img {
+                max-height: 34px;
+                object-fit: contain;
+            }
+
+            .flavor-name {
+                line-height: 1.25;
+            }
+
+            .pdp-variant-meta {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .pdp-stock-pill,
+            .pdp-selected-pill {
+                justify-content: center;
+                min-width: 0;
+                text-align: center;
+                white-space: normal;
+                width: 100%;
+            }
+
+            .cta-row {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .btn-cart,
+            .btn-buy {
+                width: 100%;
+            }
+
+            .guarantees {
+                grid-template-columns: 1fr;
+                padding: 14px;
+            }
+
+            .guarantee {
+                align-items: center;
+                display: grid;
+                gap: 2px 12px;
+                grid-template-columns: 38px minmax(0, 1fr);
+                padding: 10px;
+                text-align: left;
+            }
+
+            .g-icon {
+                grid-row: span 2;
+                margin: 0;
+                text-align: center;
+            }
+
+            .highlight-list li {
+                overflow-wrap: anywhere;
+            }
+
+            .ps-problems-section {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .ps-problems-section .ps-inner,
+            .ps-problems-section .ps-header,
+            .ps-problems-section .problem-grid {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .ps-problems-section .ps-title {
+                font-size: clamp(1.85rem, 8vw, 2.45rem);
+                line-height: 1.18;
+            }
+
+            .ps-problems-section .ps-sub {
+                font-size: 0.95rem;
+                line-height: 1.7;
+            }
+
+            .ps-problems-section .problem-grid {
+                grid-template-columns: minmax(0, 1fr) !important;
+            }
+
+            .ps-problems-section .prob-card {
+                display: block;
+                min-height: 0;
+                overflow: visible;
+            }
+
+            .ps-problems-section .prob-icon {
+                height: 176px;
+                width: 100%;
+            }
+
+            .ps-problems-section .prob-name,
+            .ps-problems-section .prob-text {
+                display: block;
+                overflow: visible;
+                overflow-wrap: anywhere;
+            }
+
+            .comparison-box {
+                overflow: visible;
+                padding: 20px 16px;
+            }
+
+            .comparison-box .comp-table,
+            .comparison-box .comp-table thead,
+            .comparison-box .comp-table tbody,
+            .comparison-box .comp-table tr,
+            .comparison-box .comp-table th,
+            .comparison-box .comp-table td {
+                display: block;
+                min-width: 0;
+                width: 100%;
+            }
+
+            .comparison-box .comp-table thead {
+                border: 0;
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
+            }
+
+            .comparison-box .comp-table tbody {
+                display: grid;
+                gap: 12px;
+            }
+
+            .comparison-box .comp-table tr {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+
+            .comparison-box .comp-table td {
+                align-items: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                display: grid;
+                gap: 10px;
+                grid-template-columns: minmax(92px, 0.9fr) minmax(0, 1fr);
+                padding: 10px 12px;
+                text-align: right;
+            }
+
+            .comparison-box .comp-table td:first-child {
+                background: rgba(255, 77, 143, 0.12);
+                color: #fff;
+                display: block;
+                font-size: 0.86rem;
+                text-align: left;
+            }
+
+            .comparison-box .comp-table td:not(:first-child)::before {
+                color: rgba(255, 255, 255, 0.68);
+                font-size: 0.72rem;
+                font-weight: 900;
+                text-align: left;
+                text-transform: uppercase;
+            }
+
+            .comparison-box .comp-table td:nth-child(2)::before {
+                content: 'NutriBuddy';
+                color: var(--pk);
+            }
+
+            .comparison-box .comp-table td:nth-child(3)::before {
+                content: 'Brand 1';
+            }
+
+            .comparison-box .comp-table td:nth-child(4)::before {
+                content: 'Brand 2';
+            }
+
+            .comparison-box .comp-table td:nth-child(5)::before {
+                content: 'Others';
+            }
+
+            .eq-card {
+                padding: 22px 16px;
+            }
+
+            .eq-wrap {
+                display: grid;
+                gap: 10px;
+                grid-template-columns: 1fr;
+            }
+
+            .eq-item,
+            .eq-result {
+                background: #fff;
+                border: 1px solid rgba(30, 24, 64, 0.08);
+                border-radius: 18px;
+                display: grid;
+                gap: 12px;
+                grid-template-columns: 58px minmax(0, 1fr);
+                padding: 12px;
+                text-align: left;
+                width: 100%;
+            }
+
+            .eq-icon,
+            .eq-res-icon {
+                height: 54px;
+                width: 54px;
+            }
+
+            .eq-icon img,
+            .eq-res-icon img {
+                max-height: 38px;
+            }
+
+            .eq-nm,
+            .eq-res-nm {
+                align-self: center;
+                max-width: none;
+                text-align: left;
+            }
+
+            .eq-op,
+            .eq-eq {
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .pdp-option-row {
+                align-items: stretch;
+                flex-direction: row;
+            }
+
+            .pdp-option-btn {
+                width: auto !important;
+            }
+        }
     </style>
 
     <div class="pdp-hero">
@@ -711,7 +1158,7 @@
 
                     <div class="pdp-variant-meta">
                         <span class="pdp-stock-pill" id="pdpVariantStock">Checking stock</span>
-                        <span class="pdp-selected-pill" id="pdpVariantSelected">{{ $defVariant?->name }}</span>
+                        <span class="pdp-selected-pill" id="pdpVariantSelected">{{ $initialSelectedLabel ?: $defVariant?->name }}</span>
                     </div>
                 </div>
             @else
@@ -756,7 +1203,9 @@
 
             <div class="variant-block">
                 <div class="variant-label">{{ $product->name }} Features </div>
-                <div class="variant-row" id="flavorRow">
+                <div class="feature-slider-shell">
+                    <button type="button" class="feature-slider-btn feature-slider-prev" aria-label="Previous feature">‹</button>
+                    <div class="variant-row" id="flavorRow">
                     @php
                         $tags = $product->tags ?? [];
                         // Backward compatibility for old string tags
@@ -820,6 +1269,8 @@
                             <div class="flavor-name">No Gelatin <br> Plant Based Pectin</div>
                         </div>
                     @endif
+                    </div>
+                    <button type="button" class="feature-slider-btn feature-slider-next" aria-label="Next feature">›</button>
                 </div>
             </div>
 
@@ -837,7 +1288,7 @@
                         </div> -->
 
 
-            <!-- Pincode Check -->
+            <!-- Pincode Check hidden for now
             <div class="pincode-row">
                 <div class="pincode-label">📍</div>
                 <input type="text" maxlength="6" placeholder="Enter pincode to check delivery date"
@@ -848,6 +1299,7 @@
                 style="font-size:.82rem;color:var(--mn);font-weight:700;margin-bottom:14px;display:none;padding: 0 4px;">✅
                 Delivery by Tomorrow!</div>
 
+            -->
             <!-- CTAs -->
             <div class="cta-row">
                 <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add
@@ -1657,6 +2109,17 @@
             });
         }
 
+        function pdpVariantLabel(variant) {
+            const attributes = variant?.attributes || {};
+            const parts = Array.isArray(attributes)
+                ? attributes.filter(Boolean).map(value => String(value))
+                : Object.entries(attributes)
+                    .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+                    .map(([name, value]) => `${name}: ${value}`);
+
+            return parts.join(' / ') || variant?.name || '';
+        }
+
         function sameAttributes(variant, selected) {
             const keys = Object.keys(selected);
             if (!keys.length) return false;
@@ -1699,7 +2162,7 @@
                 selectedVariantId = '';
                 if (!pdpVariants.length) {
                     if (stockEl) {
-                        stockEl.textContent = 'In stock';
+                        stockEl.textContent = 'Available';
                         stockEl.classList.remove('out');
                     }
                     if (addBtn) addBtn.disabled = false;
@@ -1733,11 +2196,11 @@
             }
             if (cashback) cashback.textContent = `Get ${variant.coins} NB Coins on this purchase!`;
             if (skuEl) skuEl.textContent = `SKU: ${variant.sku}`;
-            if (selectedEl) selectedEl.textContent = variant.name;
+            if (selectedEl) selectedEl.textContent = pdpVariantLabel(variant);
             if (stockEl) {
                 stockEl.classList.toggle('out', !variant.available);
                 if (variant.available) {
-                    stockEl.textContent = variant.track_stock ? `${variant.stock_qty} in stock` : 'In stock';
+                    stockEl.textContent = variant.track_stock ? `${variant.stock_qty} unit piece` : 'Available';
                 } else {
                     stockEl.textContent = 'Out of stock';
                 }
@@ -1761,10 +2224,14 @@
             const activeVariant = pdpVariants.find(variant => String(variant.id) === String(variantId));
             const meta = {
                 ...pdpFallbackCartMeta,
-                variant_name: activeVariant?.name || '',
+                variant_name: pdpVariantLabel(activeVariant),
                 unit_price: Number(activeVariant?.price || pdpFallbackCartMeta.unit_price || 0),
             };
-            const found = items.find(item => String(Number(item.product_id || 0)) === itemKey);
+            const variantKey = String(Number(variantId || 0));
+            const found = items.find(item =>
+                String(Number(item.product_id || 0)) === itemKey &&
+                String(Number(item.product_variant_id || 0)) === variantKey
+            );
 
             if (found) {
                 found.quantity = Number(found.quantity || 0) + Number(quantity || 1);
@@ -1911,6 +2378,21 @@
                 }
             });
 
+            const featureSlider = document.getElementById('flavorRow');
+            const sliderShell = featureSlider?.closest('.feature-slider-shell');
+            if (featureSlider && sliderShell) {
+                const scrollByCard = direction => {
+                    const firstCard = featureSlider.querySelector('.flavor-opt');
+                    const distance = firstCard ? firstCard.getBoundingClientRect().width + 10 : 142;
+                    featureSlider.scrollBy({
+                        left: direction * distance,
+                        behavior: 'smooth',
+                    });
+                };
+
+                sliderShell.querySelector('.feature-slider-prev')?.addEventListener('click', () => scrollByCard(-1));
+                sliderShell.querySelector('.feature-slider-next')?.addEventListener('click', () => scrollByCard(1));
+            }
         });
     </script>
 @endpush

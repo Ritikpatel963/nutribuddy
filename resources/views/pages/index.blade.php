@@ -333,8 +333,31 @@ if ($catSlug == 'multivitamins') {
                     $trackStock = (bool) ($selectedVariant?->inventory?->track_stock ?? false);
                     $isAvailable = ! $trackStock || (($selectedVariant?->inventory?->is_in_stock ?? true) && $stockQty > 0);
                     $hasVariantOptions = !empty($variantGroups) || !empty($variationLabels);
+                    $frontendVariants = $activeVariants
+                        ->map(function ($variant) {
+                            $stockQty = (int) ($variant->inventory?->stock_qty ?? 0);
+                            $trackStock = (bool) ($variant->inventory?->track_stock ?? false);
+
+                            return [
+                                'id' => $variant->id,
+                                'name' => $variant->name,
+                                'attributes' => $variant->attributes ?? [],
+                                'price' => (float) $variant->display_price,
+                                'compare_price' => (float) ($variant->display_compare_price ?? 0),
+                                'stock_qty' => $stockQty,
+                                'track_stock' => $trackStock,
+                                'available' => ! $trackStock || (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
+                            ];
+                        })
+                        ->values()
+                        ->all();
+                    $cardPrice = (float) ($selectedVariant?->display_price ?? $product->display_price);
+                    $cardComparePrice = (float) ($selectedVariant?->display_compare_price ?? $product->display_compare_price ?? 0);
                 @endphp
-                <div class="pc pc-{{ $catSlug }}">
+                <div class="pc pc-{{ $catSlug }} {{ $selectedVariant ? 'has-variants' : 'no-variants' }}"
+                    data-selected-variant-id="{{ $selectedVariant?->id }}"
+                    data-selected-variant-label="{{ $selectedLabel }}"
+                    data-variants='{{ json_encode($frontendVariants, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}'>
                     <div class="pc-head pc-head-{{ $catSlug }}">
                         <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
                             @if ($product->primaryImage)
@@ -404,7 +427,7 @@ if ($catSlug == 'multivitamins') {
                                 <div class="pc-variant-meta">
                                     <span class="pc-stock-pill {{ $isAvailable ? '' : 'out' }}">
                                         @if($isAvailable)
-                                            {{ $trackStock ? $stockQty . ' unit in stock' : 'In stock' }}
+                                            {{ $trackStock ? $stockQty . ' unit piece' : 'Available' }}
                                         @else
                                             Out of stock
                                         @endif
@@ -466,13 +489,13 @@ if ($catSlug == 'multivitamins') {
                             @endif
                         </div>
                         <div class="pc-foot">
-                            <div class="pc-price">
-                                ₹{{ number_format($product->display_price, 0) }}
-                                @if ($product->display_compare_price > $product->display_price)
-                                    <s>₹{{ number_format($product->display_compare_price, 0) }}</s>
+                            <div class="pc-price" data-price-label>
+                                ₹{{ number_format($cardPrice, 0) }}
+                                @if ($cardComparePrice > $cardPrice)
+                                    <s>₹{{ number_format($cardComparePrice, 0) }}</s>
                                 @endif
                             </div>
-                            <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}">Add to Cart
+                            <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}" data-variant-id="{{ $selectedVariant?->id }}">Add to Cart
                                 +</button>
                         </div>
                     </div>
@@ -1091,6 +1114,69 @@ if ($catSlug == 'multivitamins') {
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.pc-variant-panel').forEach(panel => {
+                const card = panel.closest('.pc');
+                const addButton = card?.querySelector('.btn-add');
+                const variants = (() => {
+                    try {
+                        return JSON.parse(card?.dataset.variants || '[]');
+                    } catch (_) {
+                        return [];
+                    }
+                })();
+
+                function findSelectedVariant() {
+                    const selected = Object.fromEntries(
+                        Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
+                            .map(item => [item.dataset.attribute, item.dataset.value])
+                    );
+
+                    return variants.find(variant => {
+                        return Object.entries(selected).every(([name, value]) => {
+                            return String(variant.attributes?.[name] ?? '') === String(value ?? '');
+                        });
+                    }) || null;
+                }
+
+                function applySelectedVariant() {
+                    const selected = Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
+                        .map(item => `${item.dataset.attribute}: ${item.dataset.value}`)
+                        .join(' / ');
+                    const selectedPill = panel.querySelector('.pc-selected-pill');
+                    const stockPill = panel.querySelector('.pc-stock-pill');
+                    const variant = findSelectedVariant();
+
+                    if (selectedPill && selected) {
+                        selectedPill.textContent = selected;
+                        selectedPill.title = selected;
+                    }
+
+                    if (card) card.dataset.selectedVariantId = variant?.id || '';
+                    if (card) card.dataset.selectedVariantLabel = selected || variant?.name || '';
+                    if (addButton) addButton.dataset.variantId = variant?.id || '';
+
+                    if (card && variant) {
+                        const priceLabel = card.querySelector('[data-price-label]');
+                        const price = Number(variant.price || 0);
+                        const comparePrice = Number(variant.compare_price || 0);
+
+                        if (priceLabel) {
+                            priceLabel.innerHTML = `₹${price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                            if (comparePrice > price) {
+                                priceLabel.insertAdjacentHTML('beforeend', ` <s>₹${comparePrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</s>`);
+                            }
+                        }
+                    }
+
+                    if (stockPill && variant) {
+                        stockPill.classList.toggle('out', !variant.available);
+                        stockPill.textContent = variant.available
+                            ? (variant.track_stock ? `${variant.stock_qty} unit piece` : 'Available')
+                            : 'Out of stock';
+                    }
+                }
+
+                applySelectedVariant();
+
                 panel.querySelectorAll('.pc-option-btn[data-attribute]').forEach(button => {
                     button.addEventListener('click', event => {
                         event.preventDefault();
@@ -1101,14 +1187,7 @@ if ($catSlug == 'multivitamins') {
                             item.classList.toggle('active', item === button);
                         });
 
-                        const selected = Array.from(panel.querySelectorAll('.pc-option-btn.active[data-attribute]'))
-                            .map(item => `${item.dataset.attribute}: ${item.dataset.value}`)
-                            .join(' / ');
-                        const selectedPill = panel.querySelector('.pc-selected-pill');
-                        if (selectedPill && selected) {
-                            selectedPill.textContent = selected;
-                            selectedPill.title = selected;
-                        }
+                        applySelectedVariant();
                     });
                 });
             });

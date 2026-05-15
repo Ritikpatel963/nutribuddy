@@ -571,6 +571,7 @@
                         'name' => $variant->name,
                         'attributes' => $variant->attributes ?? [],
                         'price' => (float) $variant->display_price,
+                        'compare_price' => (float) ($variant->display_compare_price ?? 0),
                         'stock_qty' => $stockQty,
                         'track_stock' => $trackStock,
                         'available' => ! $trackStock || (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
@@ -584,7 +585,8 @@
                 'categorySlug' => $categorySlug,
                 'cardClass' => $catClass,
                 'search' => strtolower(trim(($product->name ?? '') . ' ' . ($product->category->name ?? '') . ' ' . ($product->short_description ?? '') . ' ' . $tagText)),
-                'price' => (float) $product->display_price,
+                'price' => (float) ($selectedVariant?->display_price ?? $product->display_price),
+                'comparePrice' => (float) ($selectedVariant?->display_compare_price ?? $product->display_compare_price ?? 0),
                 'rating' => $rating,
                 'variations' => $variationLabels,
                 'variantGroups' => $variantGroups,
@@ -695,7 +697,9 @@
                             $selectedAttributes = $preparedProduct['selectedAttributes'];
                             $secondImage = $product->images->where('is_primary', false)->first();
                             $primaryImage = $product->primaryImage;
-                            $hasDiscount = $product->display_compare_price > $product->display_price;
+                            $cardPrice = $preparedProduct['price'];
+                            $cardComparePrice = $preparedProduct['comparePrice'];
+                            $hasDiscount = $cardComparePrice > $cardPrice;
                             $hasVariantOptions = !empty($variantGroups) || !empty($variations);
                         @endphp
                         <div class="pc pc-{{ $catSlug }} product-filter-card {{ $hasVariantOptions ? 'has-variants' : 'no-variants' }}"
@@ -706,6 +710,7 @@
                             data-featured="{{ $product->is_featured ? 1 : 0 }}"
                             data-discount="{{ $hasDiscount ? 1 : 0 }}"
                             data-selected-variant-id="{{ $preparedProduct['selectedVariant']?->id }}"
+                            data-selected-variant-label="{{ $preparedProduct['selectedLabel'] }}"
                             data-variants='{{ $preparedProduct['variantsJson'] }}'
                             data-name="{{ e(strtolower($product->name)) }}">
                             <div class="pc-head pc-head-{{ $catSlug }}">
@@ -765,7 +770,7 @@
                                         <div class="pc-variant-meta">
                                             <span class="pc-stock-pill {{ $preparedProduct['isAvailable'] ? '' : 'out' }}">
                                                 @if($preparedProduct['isAvailable'])
-                                                    {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' unit in stock' : 'In stock' }}
+                                                    {{ $preparedProduct['trackStock'] ? $preparedProduct['stockQty'] . ' unit piece' : 'Available' }}
                                                 @else
                                                     Out of stock
                                                 @endif
@@ -778,10 +783,10 @@
                                 @endif
 
                                 <div class="pc-foot">
-                                    <div class="pc-price">
-                                        Rs. {{ number_format($product->display_price, 0) }}
+                                    <div class="pc-price" data-price-label>
+                                        Rs. {{ number_format($cardPrice, 0) }}
                                         @if($hasDiscount)
-                                            <s>Rs. {{ number_format($product->display_compare_price, 0) }}</s>
+                                            <s>Rs. {{ number_format($cardComparePrice, 0) }}</s>
                                         @endif
                                     </div>
                                     <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}" data-variant-id="{{ $preparedProduct['selectedVariant']?->id }}">Add to Cart +</button>
@@ -958,12 +963,27 @@
                     }
 
                     if (card) card.dataset.selectedVariantId = variant?.id || '';
+                    if (card) card.dataset.selectedVariantLabel = selected || variant?.name || '';
                     if (addButton) addButton.dataset.variantId = variant?.id || '';
+
+                    if (card && variant) {
+                        const priceLabel = card.querySelector('[data-price-label]');
+                        const price = Number(variant.price || 0);
+                        const comparePrice = Number(variant.compare_price || 0);
+                        card.dataset.price = price;
+
+                        if (priceLabel) {
+                            priceLabel.innerHTML = `Rs. ${price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                            if (comparePrice > price) {
+                                priceLabel.insertAdjacentHTML('beforeend', ` <s>Rs. ${comparePrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</s>`);
+                            }
+                        }
+                    }
 
                     if (stockPill && variant) {
                         stockPill.classList.toggle('out', !variant.available);
                         stockPill.textContent = variant.available
-                            ? (variant.track_stock ? `${variant.stock_qty} unit in stock` : 'In stock')
+                            ? (variant.track_stock ? `${variant.stock_qty} unit piece` : 'Available')
                             : 'Out of stock';
                     }
                 }

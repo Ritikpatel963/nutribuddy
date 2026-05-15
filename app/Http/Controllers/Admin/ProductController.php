@@ -764,5 +764,6 @@ class ProductController extends Controller
     private function forgetStorefrontCatalogCache(): void
     {
         Cache::forget('storefront.product_catalog_meta.v1');
+        Cache::forget('storefront.product_catalog_meta.v2');
     }
 }
