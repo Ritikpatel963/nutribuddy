@@ -65,7 +65,7 @@ class ProductVariant extends Model
             $price += ($price * $rate) / 100;
         }
         
-        return (float) round($price, 2);
+        return (float) round($price, 0);
     }
 
     /**
@@ -84,6 +84,6 @@ class ProductVariant extends Model
             $price += ($price * $rate) / 100;
         }
         
-        return (float) round($price, 2);
+        return (float) round($price, 0);
     }
 }

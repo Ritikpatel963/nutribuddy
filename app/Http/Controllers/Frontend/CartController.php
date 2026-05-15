@@ -22,8 +22,27 @@ class CartController extends Controller
         $this->assignDefaultVariantsToLegacyRows($cart);
         $this->consolidateCartProductRows($cart);
 
-        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
+        $cart->load([
+            'items.product.taxRate',
+            'items.product.primaryImage',
+            'items.product.images',
+            'items.product.inventory',
+            'items.productVariant.inventory',
+        ]);
         $pricing = $pricingService->calculate($cart->items);
+
+        // Append available_stock to each cart item
+        $cart->items->each(function ($item) {
+            $inventory = $item->product_variant_id
+                ? ($item->productVariant?->inventory ?? $item->product?->inventory)
+                : $item->product?->inventory;
+
+            if ($inventory && $inventory->track_stock) {
+                $item->available_stock = max(0, (int) $inventory->stock_qty - (int) $inventory->reserved_qty);
+            } else {
+                $item->available_stock = null; // null = unlimited
+            }
+        });
 
         return response()->json([
             'cart' => $cart,

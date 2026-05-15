@@ -13,11 +13,13 @@
                 @if($product->is_featured)
                     <div class="badge-bestseller">Best Seller</div>
                 @endif
-                @if($product->compare_at_price > $product->base_price)
+                @if($product->display_compare_price > $product->display_price)
                     @php 
-                        $discount = round((($product->compare_at_price - $product->base_price) / $product->compare_at_price) * 100);
+                        $discount = round((($product->display_compare_price - $product->display_price) / $product->display_compare_price) * 100);
                     @endphp
-                    <div class="badge-discount">{{ $discount }}% OFF</div>
+                    <div class="badge-discount" id="discountBadge">{{ $discount }}% OFF</div>
+                @else
+                    <div class="badge-discount" id="discountBadge" style="display:none;"></div>
                 @endif
                 
                 <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
@@ -55,17 +57,17 @@
 
             <!-- Price -->
             <div class="price-box">
-                <div class="price-row">
-                    <div class="price-now">₹{{ number_format($product->base_price, 0) }}</div>
-                    @if($product->compare_at_price > $product->base_price)
-                        <div class="price-old">₹{{ number_format($product->compare_at_price, 0) }}</div>
-                        <div class="price-save">Save ₹{{ number_format($product->compare_at_price - $product->base_price, 0) }}</div>
+                <div class="price-row" id="priceRow">
+                    <div class="price-now">₹{{ number_format($product->display_price, 0) }}</div>
+                    @if($product->display_compare_price > $product->display_price)
+                        <div class="price-old">₹{{ number_format($product->display_compare_price, 0) }}</div>
+                        <div class="price-save">Save ₹{{ number_format($product->display_compare_price - $product->display_price, 0) }}</div>
                     @endif
                 </div>
                 <div class="price-note">Inclusive of all taxes · Free shipping on this order</div>
-                <div class="cashback-row">
+                <div class="cashback-row" id="cashbackRow">
                     <span>🪙</span>
-                    <span>Get {{ round($product->base_price * 0.05) }} NB Coins on this purchase!</span>
+                    <span>Get {{ round($product->display_price * 0.05) }} NB Coins on this purchase!</span>
                 </div>
             </div>
 
@@ -77,7 +79,7 @@
                     <div class="variant-row">
                         @foreach($product->variants as $variant)
                             <div class="vopt {{ $loop->first ? 'active' : '' }}" 
-                                 onclick="selectVariant(this, '{{ $variant->id }}', '{{ $variant->price }}', '{{ $variant->compare_at_price }}')">
+                                 onclick="selectVariant(this, '{{ $variant->id }}', '{{ $variant->display_price }}', '{{ $variant->display_compare_price }}')">
                                 {{ $variant->name }}
                             </div>
                         @endforeach
@@ -118,10 +120,20 @@
             <div id="pincode-result" style="font-size:.82rem;color:var(--mn);font-weight:700;margin-bottom:14px;display:none;padding: 0 4px;">✅ Delivery by Tomorrow!</div>
 
             -->
+            <!-- Quantity Selector -->
+            <div class="pdp-qty-wrap" style="margin-bottom: 25px;">
+                <div class="variant-label">Quantity:</div>
+                <div class="pdp-qty-row" style="display: flex; align-items: center; gap: 12px; background: #f8f8f8; border: 2px solid rgba(53, 158, 111, 0.12); border-radius: 14px; padding: 6px 12px; width: fit-content;">
+                    <button type="button" class="qty-btn" id="pdpQtyMinus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">−</button>
+                    <input type="number" id="pdpQtyVal" value="1" min="1" readonly style="width: 45px; text-align: center; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; color: var(--dk); -moz-appearance: textfield;">
+                    <button type="button" class="qty-btn" id="pdpQtyPlus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">+</button>
+                </div>
+            </div>
+
             <!-- CTAs -->
             <div class="cta-row">
-                <button class="btn-cart" onclick="addToCart('{{ $product->id }}')">Add to Cart</button>
-                <button class="btn-buy" onclick="buyNow('{{ $product->id }}')">Buy Now</button>
+                <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
+                <button class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
             </div>
 
             <!-- Guarantees -->
@@ -199,12 +211,39 @@
         el.classList.add('active');
     }
 
+    let selectedVariantId = null;
+
     function selectVariant(el, id, price, comparePrice) {
+        selectedVariantId = id;
         document.querySelectorAll('.vopt').forEach(v => v.classList.remove('active'));
         el.classList.add('active');
         
-        // Update price display if needed
-        // For now, let's just highlight the selection
+        price = Number(price);
+        comparePrice = Number(comparePrice);
+
+        let priceRowHtml = '<div class="price-now">₹' + price.toLocaleString('en-IN') + '</div>';
+        let discountBadge = document.getElementById('discountBadge');
+
+        if (comparePrice > price) {
+            let diff = comparePrice - price;
+            priceRowHtml += '<div class="price-old">₹' + comparePrice.toLocaleString('en-IN') + '</div>';
+            priceRowHtml += '<div class="price-save">Save ₹' + diff.toLocaleString('en-IN') + '</div>';
+            
+            if (discountBadge) {
+                let discountPercent = Math.round((diff / comparePrice) * 100);
+                discountBadge.innerText = discountPercent + '% OFF';
+                discountBadge.style.display = 'flex';
+            }
+        } else {
+            if (discountBadge) {
+                discountBadge.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('priceRow').innerHTML = priceRowHtml;
+        
+        let coins = Math.round(price * 0.05);
+        document.querySelector('#cashbackRow span:nth-child(2)').innerText = 'Get ' + coins + ' NB Coins on this purchase!';
     }
 
     function checkPincode() {
@@ -214,14 +253,50 @@
         }
     }
 
-    function addToCart(productId) {
-        // Implement AJAX add to cart
-        alert('Product added to cart!');
+    async function handleAddToCart(productId, btn) {
+        const qtyInput = document.getElementById('pdpQtyVal');
+        const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+        const variantId = selectedVariantId || null;
+
+        if (typeof window.addToCart === 'function') {
+            await window.addToCart(productId, qty, variantId, btn);
+        }
     }
 
-    function buyNow(productId) {
-        // Redirect to checkout with this product
-        window.location.href = "{{ route('checkout') }}?product_id=" + productId;
+    async function handleBuyNow(productId, btn) {
+        const qtyInput = document.getElementById('pdpQtyVal');
+        const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+        const variantId = selectedVariantId || null;
+
+        if (typeof window.addToCart === 'function') {
+            const added = await window.addToCart(productId, qty, variantId, btn);
+            if (added) window.location.href = "{{ route('checkout') }}";
+        }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const qtyVal = document.getElementById('pdpQtyVal');
+        const qtyPlus = document.getElementById('pdpQtyPlus');
+        const qtyMinus = document.getElementById('pdpQtyMinus');
+
+        if (qtyVal && qtyPlus && qtyMinus) {
+            qtyPlus.addEventListener('click', () => {
+                const max = parseInt(qtyVal.max) || 99;
+                const current = parseInt(qtyVal.value) || 1;
+                if (current < max) {
+                    qtyVal.value = current + 1;
+                } else if (typeof nbToast === 'function') {
+                    nbToast(`Only ${max} units available in stock.`, 'warning');
+                }
+            });
+
+            qtyMinus.addEventListener('click', () => {
+                const current = parseInt(qtyVal.value) || 1;
+                if (current > 1) {
+                    qtyVal.value = current - 1;
+                }
+            });
+        }
+    });
 </script>
 @endpush

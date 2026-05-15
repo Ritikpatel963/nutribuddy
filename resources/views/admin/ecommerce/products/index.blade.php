@@ -82,9 +82,9 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-primary-600">INR {{ number_format((float) $product->base_price, 2) }}</div>
-                                    @if($product->compare_at_price > $product->base_price)
-                                        <small class="text-decoration-line-through text-secondary-light">INR {{ number_format($product->compare_at_price, 2) }}</small>
+                                    <div class="fw-bold text-primary-600">INR {{ number_format((float) $product->display_price, 0) }}</div>
+                                    @if($product->display_compare_price > $product->display_price)
+                                        <small class="text-decoration-line-through text-secondary-light">INR {{ number_format((float) $product->display_compare_price, 0) }}</small>
                                     @endif
                                 </td>
                                 <td>

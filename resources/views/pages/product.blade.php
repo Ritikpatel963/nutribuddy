@@ -1050,10 +1050,10 @@
                 @if ($product->is_featured)
                     <div class="badge-bestseller">Best Seller</div>
                 @endif
-                @if ($product->compare_at_price > $product->base_price)
+                @if ($initialComparePrice > $initialPrice)
                     @php
                         $discount = round(
-                            (($product->compare_at_price - $product->base_price) / $product->compare_at_price) * 100,
+                            (($initialComparePrice - $initialPrice) / $initialComparePrice) * 100,
                         );
                     @endphp
                     <div class="badge-discount" id="pdpDiscountBadge">{{ $discount }}% OFF</div>
@@ -1288,18 +1288,16 @@
                         </div> -->
 
 
-            <!-- Pincode Check hidden for now
-            <div class="pincode-row">
-                <div class="pincode-label">📍</div>
-                <input type="text" maxlength="6" placeholder="Enter pincode to check delivery date"
-                    id="pincodeInput">
-                <button onclick="checkPincode()">Check</button>
+            <!-- Quantity Selector -->
+            <div class="pdp-qty-wrap" style="margin-bottom: 25px;">
+                <div class="variant-label">Quantity:</div>
+                <div class="pdp-qty-row" style="display: flex; align-items: center; gap: 12px; background: #f8f8f8; border: 2px solid rgba(53, 158, 111, 0.12); border-radius: 14px; padding: 6px 12px; width: fit-content;">
+                    <button type="button" class="qty-btn" id="pdpQtyMinus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">−</button>
+                    <input type="number" id="pdpQtyVal" value="1" min="1" readonly style="width: 45px; text-align: center; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; color: var(--dk); -moz-appearance: textfield;">
+                    <button type="button" class="qty-btn" id="pdpQtyPlus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">+</button>
+                </div>
             </div>
-            <div id="pincode-result"
-                style="font-size:.82rem;color:var(--mn);font-weight:700;margin-bottom:14px;display:none;padding: 0 4px;">✅
-                Delivery by Tomorrow!</div>
 
-            -->
             <!-- CTAs -->
             <div class="cta-row">
                 <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add
@@ -2201,6 +2199,16 @@
                 stockEl.classList.toggle('out', !variant.available);
                 if (variant.available) {
                     stockEl.textContent = variant.track_stock ? `${variant.stock_qty} unit piece` : 'Available';
+                    
+                    // Update Quantity Input Max
+                    const qtyInput = document.getElementById('pdpQtyVal');
+                    if (qtyInput) {
+                        const maxStock = variant.track_stock ? variant.stock_qty : 99;
+                        qtyInput.max = maxStock;
+                        if (parseInt(qtyInput.value) > maxStock) {
+                            qtyInput.value = maxStock;
+                        }
+                    }
                 } else {
                     stockEl.textContent = 'Out of stock';
                 }
@@ -2277,18 +2285,22 @@
                 if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
                 return;
             }
+
+            const qtyInput = document.getElementById('pdpQtyVal');
+            const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+
             if (typeof window.addToCart === 'function') {
                 if (btn) btn.disabled = true;
-                const added = await window.addToCart(productId, 1, variantId, btn);
+                const added = await window.addToCart(productId, qty, variantId, btn);
                 if (btn) btn.disabled = false;
                 if (added && typeof nbToast === 'function') {
                     nbToast('Product added to cart.', 'success');
-                } else if (!added && !pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                } else if (!added && !pdpIsLoggedIn && addPdpGuestCartFallback(productId, qty, variantId)) {
                     if (typeof nbToast === 'function') nbToast('Product added to cart.', 'success');
                 }
             } else {
                 console.warn('Global addToCart not found, using fallback');
-                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, qty, variantId)) {
                     if (typeof nbToast === 'function') nbToast('Product added to cart.', 'success');
                 } else if (typeof nbToast === 'function') {
                     nbToast('Cart is still loading. Please try again.', 'warning');
@@ -2302,17 +2314,21 @@
                 if (typeof nbToast === 'function') nbToast('Please choose a product option first.', 'error');
                 return;
             }
+
+            const qtyInput = document.getElementById('pdpQtyVal');
+            const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+
             if (typeof window.addToCart === 'function') {
                 if (btn) btn.disabled = true;
-                const added = await window.addToCart(productId, 1, variantId, btn);
+                const added = await window.addToCart(productId, qty, variantId, btn);
                 if (btn) btn.disabled = false;
                 if (added) {
                     window.location.href = "{{ route('checkout') }}";
-                } else if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                } else if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, qty, variantId)) {
                     window.location.href = "{{ route('checkout') }}";
                 }
             } else {
-                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, 1, variantId)) {
+                if (!pdpIsLoggedIn && addPdpGuestCartFallback(productId, qty, variantId)) {
                     window.location.href = "{{ route('checkout') }}";
                 } else if (typeof nbToast === 'function') {
                     nbToast('Cart is still loading. Please try again.', 'warning');
@@ -2377,6 +2393,30 @@
                     s.style.color = '#FFD700';
                 }
             });
+
+            // PDP Quantity Logic
+            const qtyVal = document.getElementById('pdpQtyVal');
+            const qtyPlus = document.getElementById('pdpQtyPlus');
+            const qtyMinus = document.getElementById('pdpQtyMinus');
+
+            if (qtyVal && qtyPlus && qtyMinus) {
+                qtyPlus.addEventListener('click', () => {
+                    const max = parseInt(qtyVal.max) || 99;
+                    const current = parseInt(qtyVal.value) || 1;
+                    if (current < max) {
+                        qtyVal.value = current + 1;
+                    } else if (typeof nbToast === 'function') {
+                        nbToast(`Only ${max} units available in stock.`, 'warning');
+                    }
+                });
+
+                qtyMinus.addEventListener('click', () => {
+                    const current = parseInt(qtyVal.value) || 1;
+                    if (current > 1) {
+                        qtyVal.value = current - 1;
+                    }
+                });
+            }
 
             const featureSlider = document.getElementById('flavorRow');
             const sliderShell = featureSlider?.closest('.feature-slider-shell');

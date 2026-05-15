@@ -2847,8 +2847,12 @@
                 localStorage.setItem(pendingCartKey, JSON.stringify(items || []));
             }
 
-            function normalizeCheckoutQuantity(quantity) {
-                return Math.max(1, Math.min(10, Number(quantity || 1)));
+            function normalizeCheckoutQuantity(quantity, maxStock) {
+                let qty = Math.max(1, Number(quantity || 1));
+                if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
+                    qty = Math.min(qty, maxStock);
+                }
+                return qty;
             }
 
             function checkoutStorageImageUrl(path) {
@@ -2926,20 +2930,22 @@
                 savePendingCartItems(nextItems);
             }
 
-            function createCheckoutQtyControls(quantity) {
-                const qty = normalizeCheckoutQuantity(quantity);
+            function createCheckoutQtyControls(quantity, maxStock) {
+                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
+                const qty = normalizeCheckoutQuantity(quantity, effectiveMax);
                 return `
                                     <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">−</button>
-                                    <input type="number" min="1" max="10" class="qty-val" value="${qty}" aria-label="Quantity">
+                                    <input type="number" min="1" max="${effectiveMax}" class="qty-val" value="${qty}" aria-label="Quantity">
                                     <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
                                 `;
             }
 
-            function bindCheckoutQtyControls(row, quantity, onChange) {
+            function bindCheckoutQtyControls(row, quantity, onChange, maxStock) {
+                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
                 const qtyRow = row.querySelector('.ci-qty-row');
                 if (!qtyRow) return;
                 const input = qtyRow.querySelector('.qty-val');
-                let currentQty = normalizeCheckoutQuantity(quantity);
+                let currentQty = normalizeCheckoutQuantity(quantity, effectiveMax);
                 let pendingQty = currentQty;
                 let saveTimer = null;
 
@@ -2951,7 +2957,7 @@
                 }
 
                 async function submitQuantity(nextQty, options = {}) {
-                    const normalizedQty = normalizeCheckoutQuantity(nextQty);
+                    const normalizedQty = normalizeCheckoutQuantity(nextQty, effectiveMax);
                     pendingQty = normalizedQty;
                     if (input) input.value = String(normalizedQty);
 
@@ -2987,8 +2993,8 @@
                     btn.addEventListener('click', event => {
                         event.preventDefault();
                         const delta = Number(btn.dataset.qtyDelta || 0);
-                        const baseQty = input ? normalizeCheckoutQuantity(input.value) :
-                            normalizeCheckoutQuantity(quantity);
+                        const baseQty = input ? normalizeCheckoutQuantity(input.value, effectiveMax) :
+                            normalizeCheckoutQuantity(quantity, effectiveMax);
                         submitQuantity(baseQty + delta);
                     });
                 });
@@ -2998,7 +3004,7 @@
                         submitQuantity(input.value);
                     });
                     input.addEventListener('blur', () => {
-                        input.value = String(normalizeCheckoutQuantity(input.value));
+                        input.value = String(normalizeCheckoutQuantity(input.value, effectiveMax));
                         submitQuantity(input.value, { immediate: true });
                     });
                     input.addEventListener('keydown', event => {
@@ -3119,14 +3125,14 @@
                 const loyaltyEl = document.getElementById('loyaltyPoints');
 
                 if (mrpLabel) mrpLabel.textContent = `Price (${itemsCount} items)`;
-                if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
                 if (productDiscount) {
                     const pdRow = productDiscount.closest('.pb-row');
                     if (pdRow) pdRow.style.display = genericDiscount > 0 ? 'flex' : 'none';
-                    productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                    productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
                 }
                 if (delivery) delivery.textContent = shipping > 0 ?
-                    `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : 'FREE 🎉';
+                    `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : 'FREE 🎉';
                 
                 // Coupon Discount Display
                 const cRow2 = document.getElementById('couponRow2');
@@ -3158,14 +3164,14 @@
                     if (gstRow) {
                         if (gst > 0) {
                             gstRow.style.display = 'flex';
-                            gstEl.textContent = `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                            gstEl.textContent = `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
                         } else {
                             gstRow.style.display = 'none';
                         }
                     }
                 }
-                if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
-                if (savingsEl) savingsEl.textContent = `₹${totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+                if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                if (savingsEl) savingsEl.textContent = `₹${totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
                 
                 // Earned Coins Display
                 if (loyaltyEl) {
@@ -3274,7 +3280,7 @@
                                         </div>
                                       </div>
                                       <div>
-                                        <div class="ci-price">₹${linePrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
+                                      <div class="ci-price">₹${Math.round(linePrice).toLocaleString('en-IN')}</div>
                                       </div>
                                     `;
                     cartWrap.appendChild(row);
@@ -3468,7 +3474,6 @@
                 const valEl = btn.parentElement.querySelector('.qty-val');
                 let v = parseInt(valEl.textContent) + delta;
                 if (v < 1) v = 1;
-                if (v > 10) v = 10;
                 valEl.textContent = v;
             }
 
@@ -3517,6 +3522,10 @@
                 document.getElementById('phoneInput').value = '{{ auth()->user()->phone ?? '' }}'.replace(/\D/g, '').slice(0, 10);
                 document.getElementById('phoneError').style.display = 'none';
             }
+
+            document.getElementById('phoneInput')?.addEventListener('input', function(e) {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+            });
 
             async function sendOtp() {
                 const phoneInput = document.getElementById('phoneInput');
@@ -3591,7 +3600,9 @@
                 el.value = digits;
                 if (digits) {
                     el.classList.add('filled');
-                    if (nextId) document.getElementById(nextId).focus();
+                    if (nextId) {
+                        setTimeout(() => document.getElementById(nextId).focus(), 10);
+                    }
                 } else {
                     el.classList.remove('filled');
                 }
@@ -3607,7 +3618,7 @@
                     return;
                 }
                 if (e.key === 'Backspace' && !el.value && prevId) {
-                    document.getElementById(prevId).focus();
+                    setTimeout(() => document.getElementById(prevId).focus(), 10);
                 }
                 if (e.key === 'Enter') verifyOtp();
             }
@@ -3624,7 +3635,7 @@
                 });
 
                 const nextIndex = Math.min(startIndex + digits.length, otpFieldIds.length - 1);
-                document.getElementById(otpFieldIds[nextIndex])?.focus();
+                setTimeout(() => document.getElementById(otpFieldIds[nextIndex])?.focus(), 10);
                 document.getElementById('otpError').classList.remove('show');
             }
 

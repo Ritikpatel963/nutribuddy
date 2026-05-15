@@ -229,6 +229,19 @@
         font-weight: 800;
         color: var(--pk);
         transition: all 0.2s;
+        padding: 0;
+    }
+
+    @media (max-width: 480px) {
+        .otp-field {
+            max-width: 40px;
+            height: 48px;
+            font-size: 1.2rem;
+        }
+        .nb-modal-content {
+            padding: 30px 20px;
+            width: 95%;
+        }
     }
 
     .otp-field:focus {
@@ -459,7 +472,7 @@
             this.value = this.value.replace(/[^0-9]/g, '');
             if (this.value !== '') {
                 if (index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
+                    setTimeout(() => otpInputs[index + 1].focus(), 10);
                 }
             }
         });
@@ -467,7 +480,7 @@
         field.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace' && this.value === '') {
                 if (index > 0) {
-                    otpInputs[index - 1].focus();
+                    setTimeout(() => otpInputs[index - 1].focus(), 10);
                 }
             }
         });

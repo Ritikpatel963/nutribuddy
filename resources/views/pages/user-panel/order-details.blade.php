@@ -204,8 +204,9 @@
                                         }
 
                                         // 2. Add other variant attributes ONLY if they are not the above
-                                        if ($variant && $variant->attributes) {
-                                            foreach($variant->attributes as $k => $v) {
+                                        $vAttributes = $variant?->attributes ?? $item->item_snapshot['variant_attributes'] ?? null;
+                                        if ($vAttributes) {
+                                            foreach($vAttributes as $k => $v) {
                                                 $key = strtolower(str_replace(['_', '-'], ' ', $k));
                                                 // If it's a common key we already handled, skip it to avoid duplicates
                                                 if (str_contains($key, 'flav') || str_contains($key, 'pack') || str_contains($key, 'age')) {

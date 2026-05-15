@@ -110,6 +110,18 @@ class Product extends Model
     public function getDisplayPriceAttribute(): float
     {
         $price = (float) $this->base_price;
+        
+        if ($this->is_variant_enabled) {
+            $activeVariants = $this->relationLoaded('variants')
+                ? $this->variants->filter(fn($v) => $v->is_active)
+                : $this->variants()->where('is_active', true)->get();
+            
+            if ($activeVariants->isNotEmpty()) {
+                $defaultVariant = $activeVariants->firstWhere('is_default', true) ?? $activeVariants->first();
+                $price = (float) $defaultVariant->price;
+            }
+        }
+
         $taxRate = $this->taxRate;
         
         if ($taxRate && ! (bool) $taxRate->show_in_checkout) {
@@ -117,7 +129,7 @@ class Product extends Model
             $price += ($price * $rate) / 100;
         }
         
-        return (float) round($price, 2);
+        return (float) round($price, 0);
     }
 
     /**
@@ -127,6 +139,14 @@ class Product extends Model
     public function getDisplayComparePriceAttribute(): float
     {
         $price = (float) ($this->compare_at_price ?? 0);
+        
+        if ($this->is_variant_enabled && $this->variants()->exists()) {
+            $defaultVariant = $this->variants()->where('is_default', true)->first() ?? $this->variants()->first();
+            if ($defaultVariant) {
+                $price = (float) ($defaultVariant->compare_at_price ?? 0);
+            }
+        }
+
         if ($price <= 0) return 0.0;
 
         $taxRate = $this->taxRate;
@@ -136,6 +156,6 @@ class Product extends Model
             $price += ($price * $rate) / 100;
         }
         
-        return (float) round($price, 2);
+        return (float) round($price, 0);
     }
 }

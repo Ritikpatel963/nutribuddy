@@ -334,8 +334,12 @@
                 return `Rs. ${Number(v || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
             }
 
-            function clampQty(v) {
-                return Math.max(1, Math.min(10, parseInt(v, 10) || 1));
+            function clampQty(v, maxStock) {
+                let qty = Math.max(1, parseInt(v, 10) || 1);
+                if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
+                    qty = Math.min(qty, maxStock);
+                }
+                return qty;
             }
 
             function normalizeImage(src) {
@@ -448,7 +452,8 @@
             }
 
             /* ── build a cart row DOM element ── */
-            function createCartRow(image, name, price, qty, variantLabel = '') {
+            function createCartRow(image, name, price, qty, variantLabel = '', maxStock) {
+                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
                 const row = document.createElement('div');
                 row.className = 'cart-page-item';
                 row.innerHTML = `
@@ -461,7 +466,7 @@
                         <p class="cart-page-item-price">${money(price)}</p>
                         <div class="cart-page-qty-row">
                             <button type="button" class="cart-page-qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">-</button>
-                            <input type="number" min="1" max="10" class="cart-page-qty-val" value="${clampQty(qty)}" aria-label="Quantity">
+                            <input type="number" min="1" max="${effectiveMax}" class="cart-page-qty-val" value="${clampQty(qty, effectiveMax)}" aria-label="Quantity">
                             <button type="button" class="cart-page-qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
                         </div>
                     </div>
@@ -471,10 +476,11 @@
             }
 
             /* ── bind +/- controls on a row ── */
-            function bindQtyControls(row, initialQty, onCommit) {
+            function bindQtyControls(row, initialQty, onCommit, maxStock) {
+                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
                 const qtyRow = row.querySelector('.cart-page-qty-row');
                 const input  = qtyRow.querySelector('.cart-page-qty-val');
-                let   currentQty = clampQty(initialQty);
+                let   currentQty = clampQty(initialQty, effectiveMax);
                 let pendingQty = currentQty;
                 let saveTimer = null;
 
@@ -484,7 +490,7 @@
                 }
 
                 async function submit(nextVal, options = {}) {
-                    const next = clampQty(nextVal);
+                    const next = clampQty(nextVal, effectiveMax);
                     pendingQty = next;
                     input.value = next;
 
@@ -518,7 +524,7 @@
                 qtyRow.querySelectorAll('.cart-page-qty-btn').forEach(btn => {
                     btn.addEventListener('click', e => {
                         e.preventDefault();
-                        submit(clampQty(input.value) + Number(btn.dataset.qtyDelta || 0));
+                        submit(clampQty(input.value, effectiveMax) + Number(btn.dataset.qtyDelta || 0));
                     });
                 });
 
@@ -553,10 +559,11 @@
                         variantLabel
                     );
 
+                    const maxStock = it.max_stock !== undefined ? it.max_stock : 999;
                     bindQtyControls(row, qty, async value => {
                         updatePendingQty(it.product_id, it.product_variant_id, value);
                         renderPendingCart();
-                    });
+                    }, maxStock);
 
                     row.querySelector('.cart-page-remove-btn').addEventListener('click', () => {
                         removePendingItem(it.product_id, it.product_variant_id);
@@ -627,8 +634,9 @@
                     const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
                     const image = cartItemImage(it);
                     const variantLabel = cartVariantLabel(it);
+                    const itemMaxStock = it.available_stock != null ? Number(it.available_stock) : null;
 
-                    const row = createCartRow(image, it.product?.name || 'Product', price, qty, variantLabel);
+                    const row = createCartRow(image, it.product?.name || 'Product', price, qty, variantLabel, itemMaxStock);
 
                     bindQtyControls(row, qty, async value => {
                         row.classList.add('is-updating');
@@ -638,7 +646,7 @@
                         } finally {
                             row.classList.remove('is-updating');
                         }
-                    });
+                    }, itemMaxStock);
 
                     row.querySelector('.cart-page-remove-btn').addEventListener('click', async () => {
                         row.classList.add('is-updating');

@@ -14,7 +14,7 @@ class CartUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => ['required', 'integer', 'min:1', 'max:10'],
+            'quantity' => ['required', 'integer', 'min:1', 'max:999'],
         ];
     }
 }

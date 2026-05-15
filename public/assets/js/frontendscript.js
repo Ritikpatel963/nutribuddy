@@ -229,7 +229,7 @@ function updatePendingCartItemQuantity(productId, productVariantId = null, quant
   );
 }
 
-function formatCartMoney(value, maximumFractionDigits = 2) {
+function formatCartMoney(value, maximumFractionDigits = 0) {
   return `Rs. ${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits })}`;
 }
 
@@ -335,17 +335,22 @@ function getServerCartItemImage(item) {
   );
 }
 
-function clampQty(v) {
-  return Math.max(1, Math.min(10, parseInt(v, 10) || 1));
+function clampQty(v, maxStock) {
+  let qty = Math.max(1, parseInt(v, 10) || 1);
+  if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
+    qty = Math.min(qty, maxStock);
+  }
+  return qty;
 }
 
-function createPopupQuantityField(quantity, onCommit) {
-  const qty = clampQty(quantity);
+function createPopupQuantityField(quantity, onCommit, maxStock) {
+  const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
+  const qty = clampQty(quantity, effectiveMax);
   const wrap = document.createElement('div');
   wrap.className = 'ci-qty-row';
   wrap.innerHTML = `
     <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">&minus;</button>
-    <input type="number" min="1" max="10" class="qty-val" value="${qty}" aria-label="Quantity">
+    <input type="number" min="1" max="${effectiveMax}" class="qty-val" value="${qty}" aria-label="Quantity">
     <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
   `;
 
@@ -360,7 +365,7 @@ function createPopupQuantityField(quantity, onCommit) {
   }
 
   async function submit(nextVal, options = {}) {
-    const next = clampQty(nextVal);
+    const next = clampQty(nextVal, effectiveMax);
     pendingQty = next;
     input.value = next;
 
@@ -393,7 +398,7 @@ function createPopupQuantityField(quantity, onCommit) {
   wrap.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      submit(clampQty(input.value) + Number(btn.dataset.qtyDelta || 0));
+      submit(clampQty(input.value, effectiveMax) + Number(btn.dataset.qtyDelta || 0));
     });
   });
 
@@ -666,13 +671,14 @@ async function loadCartPopup(options = {}) {
           </div>
           <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
         `;
+        const maxStock = it.max_stock !== undefined ? it.max_stock : 999;
         const content = row.querySelector('.cart-popup-content');
         content.appendChild(createPopupQuantityField(qty, async value => {
           updatePendingCartItemQuantity(it.product_id, it.product_variant_id, value);
           invalidateCartPayloadCache();
           if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
           loadCartPopup({ force: true });
-        }));
+        }, maxStock));
         row.querySelector('.cart-remove-btn').addEventListener('click', e => {
           e.stopPropagation();
           removePendingCartItem(it.product_id, it.product_variant_id);
@@ -720,6 +726,7 @@ async function loadCartPopup(options = {}) {
         <button type="button" class="cart-remove-btn" aria-label="Remove">&times;</button>
       `;
       const content = row.querySelector('.cart-popup-content');
+      const itemMaxStock = it.available_stock != null ? Number(it.available_stock) : null;
       content.appendChild(createPopupQuantityField(qty, async value => {
         row.classList.add('is-updating');
         try {
@@ -728,7 +735,7 @@ async function loadCartPopup(options = {}) {
         } finally {
           row.classList.remove('is-updating');
         }
-      }));
+      }, itemMaxStock));
       row.querySelector('.cart-remove-btn').addEventListener('click', async e => {
         e.stopPropagation();
         row.classList.add('is-updating');

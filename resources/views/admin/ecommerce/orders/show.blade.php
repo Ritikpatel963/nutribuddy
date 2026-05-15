@@ -307,8 +307,9 @@
                                                                 ]);
                                                             }
                                                         }
-                                                        if ($variant && $variant->attributes) {
-                                                            foreach ($variant->attributes as $k => $v) {
+                                                        $vAttributes = $variant?->attributes ?? $item->item_snapshot['variant_attributes'] ?? null;
+                                                        if ($vAttributes) {
+                                                            foreach ($vAttributes as $k => $v) {
                                                                 $key = strtolower(str_replace(['_', '-'], ' ', $k));
                                                                 if (
                                                                     str_contains($key, 'flav') ||

@@ -222,6 +222,7 @@ class OrderPlacementService
                 'item_snapshot' => [
                     'product_slug' => $product->slug,
                     'variant_name' => $variant?->name,
+                    'variant_attributes' => $variant?->attributes,
                 ],
             ]);
         }
