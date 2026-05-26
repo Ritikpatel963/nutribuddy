@@ -19,7 +19,7 @@
                     tasty, and totally cool for your little ones aged 2–14.</p>
                 <div class="hero-btns">
                     <a href="#products" class="hbtn hbtn-main">Shop Now — ₹599</a>
-                    <a href="#quiz" class="hbtn hbtn-ghost">Find My Plan →</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More &rarr;</a>
                 </div>
                 <div class="hero-trust">
                     <div class="htrust"> Ayurveda-Backed</div>
@@ -30,17 +30,32 @@
             </div>
             <div class="slide-visual">
                 <div class="gummy-showcase">
-                    <div class="bb bb1">⚡ Boosts Energy</div>
-                    <div class="bb bb2">🛡️ Builds Immunity</div>
-                    <div class="bb bb3">💪 Stronger Bones</div>
-                    <div class="bb bb4">😊 Uplifts Mood</div>
-                    <div class="bb bb5">🌙 Better Sleep</div>
-                    <span class="fg fg1"></span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                        class="fg fg4">🍊</span><span class="fg fg5">✨</span><span class="fg fg6">💊</span>
+                    <div class="bb bb1 bb-visual" style="border-color:var(--pkl)">
+                        <span class="bb-icon"><img src="/img/b-1.png" alt=""></span>
+                        <span>Improves Memory</span>
+                    </div>
+                    <div class="bb bb2 bb-visual in-res-sat" style="border-color:var(--pkl)">
+                        <span class="bb-icon"><img src="/img/b-2.png" alt=""></span>
+                        <span>Better Focus</span>
+                    </div>
+                    <div class="bb bb3 bb-visual" style="border-color:var(--yel)">
+                        <span class="bb-icon"><img src="/img/b-3.png" alt=""></span>
+                        <span>Creative Thinking</span>
+                    </div>
+                    <div class="bb bb4 bb-visual" style="border-color:var(--mnl)">
+                        <span class="bb-icon"><img src="/img/b-4.png" alt=""></span>
+                        <span>Brain Health</span>
+                    </div>
+                    <div class="bb bb5 bb-visual test-res" style="border-color:var(--pul)">
+                        <span class="bb-icon"><img src="/img/b-6.png" alt=""></span>
+                        <span>Calm Mood</span>
+                    </div>
+                    <span class="fg fg1">🌙</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
+                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌸</span>
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="/img/boii.png" alt="">
+                            <img src="/img/02.png" alt="">
                         </div>
                     </div>
                 </div>
@@ -59,7 +74,7 @@
                     focus, memory & learning by up to 38%.</p>
                 <div class="hero-btns">
                     <a href="#products" class="hbtn hbtn-sky">Shop BrainBoost — ₹649</a>
-                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More →</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More &rarr;</a>
                 </div>
                 <div class="hero-trust">
                     <div class="htrust"> Brahmi Extract</div>
@@ -70,13 +85,28 @@
             </div>
             <div class="slide-visual">
                 <div class="gummy-showcase">
-                    <div class="bb bb1" style="border-color:var(--skl)">🎯 Laser Focus</div>
-                    <div class="bb bb2" style="border-color:var(--skl)">📚 Better Grades</div>
-                    <div class="bb bb3" style="border-color:var(--mnl)">💡 Creativity+</div>
-                    <div class="bb bb4" style="border-color:var(--skl)">🧠 Memory Up 38%</div>
-                    <div class="bb bb5" style="border-color:var(--pul)">😌 Calm Focus</div>
-                    <span class="fg fg1">🐟</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span>
+                    <div class="bb bb1 bb-visual" style="border-color:var(--skl)">
+                        <span class="bb-icon"><img src="/img/bb1.png" alt=""></span>
+                        <span>Laser Focus</span>
+                    </div>
+                    <div class="bb bb2 bb-visual" style="border-color:var(--skl)">
+                        <span class="bb-icon"><img src="/img/bb2.png" alt=""></span>
+                        <span>Better Grades</span>
+                    </div>
+                    <div class="bb bb3 bb-visual sat-bb3" style="border-color:var(--mnl)">
+                        <span class="bb-icon"><img src="/img/bb3.png" alt=""></span>
+                        <span>Creativity+</span>
+                    </div>
+                    <div class="bb bb4 bb-visual tryping-res" style="border-color:var(--skl)">
+                        <span class="bb-icon"><img src="/img/bb4.png" alt=""></span>
+                        <span>Memory Up 38%</span>
+                    </div>
+                    <div class="bb bb5 bb-visual test-res" style="border-color:var(--pul)">
+                        <span class="bb-icon"><img src="/img/c4.png" alt=""></span>
+                        <span>Calm Focus</span>
+                    </div>
+                    <span class="fg fg1">🌙</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
+                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌸</span>
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
@@ -101,7 +131,7 @@
                     peacefully and wake up refreshed, energized & happy every morning.</p>
                 <div class="hero-btns">
                     <a href="#products" class="hbtn hbtn-or">Shop DreamCalm — ₹549</a>
-                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More →</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More &rarr;</a>
                 </div>
                 <div class="hero-trust">
                     <div class="htrust">Chamomile</div>
@@ -112,17 +142,88 @@
             </div>
             <div class="slide-visual">
                 <div class="gummy-showcase">
-                    <div class="bb bb1" style="border-color:var(--yel)">😴 Deep Sleep</div>
-                    <div class="bb bb2" style="border-color:var(--orl)">😌 Calm Mood</div>
-                    <div class="bb bb3" style="border-color:var(--yel)">🌙 Better Nights</div>
-                    <div class="bb bb4" style="border-color:var(--mnl)">🌞 Wake Up Fresh</div>
-                    <div class="bb bb5" style="border-color:var(--orl)">🦋 Less Anxiety</div>
+                    <div class="bb bb1 bb-visual" style="border-color:var(--yel)">
+                        <span class="bb-icon"><img src="/img/c1.png" alt=""></span>
+                        <span>Deep Sleep</span>
+                    </div>
+                    <div class="bb bb2 bb-visual" style="border-color:var(--orl)">
+                        <span class="bb-icon"><img src="/img/c2.png" alt=""></span>
+                        <span>Calm Mood</span>
+                    </div>
+                    <div class="bb bb3 bb-visual" style="border-color:var(--yel)">
+                        <span class="bb-icon"><img src="/img/c3.png" alt=""></span>
+                        <span>Better Nights</span>
+                    </div>
+                    <div class="bb bb4 bb-visual respon-bb4 " style="border-color:var(--mnl)">
+                        <span class="bb-icon"><img src="/img/c4.png" alt=""></span>
+                        <span>Wake Up Fresh</span>
+                    </div>
+                    <div class="bb bb5 bb-visual test-res" style="border-color:var(--orl)">
+                        <span class="bb-icon"><img src="/img/c5.png" alt=""></span>
+                        <span>Less Anxiety</span>
+                    </div>
                     <span class="fg fg1">🌙</span><span class="fg fg2">🌸</span><span class="fg fg3">⭐</span><span
                         class="fg fg4">🍯</span><span class="fg fg5">✨</span><span class="fg fg6">💫</span>
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="/img/yello-g.png" alt="">
+                            <img src="/img/01.png" alt="">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide slide-4" data-slide="3">
+            <div class="blob b1" style="background:var(--pk)"></div>
+            <div class="blob b2" style="background:var(--mn)"></div>
+            <div class="slide-text">
+                <div class="slide-badge badge-pk">Complete Kids Wellness Combo</div>
+                <h1 class="htitle">All Three<br>NutriBuddy <span class="pop">Favorites</span><br>In One Place!</h1>
+                <p class="slide-desc">Bring home the complete wellness stack for immunity, brainpower, and calm nights.
+                    Three tasty gummies made to support your child's everyday growth.</p>
+                <div class="hero-btns">
+                    <a href="#products" class="hbtn hbtn-main">Shop All Products</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More &rarr;</a>
+                </div>
+                <div class="hero-trust">
+                    <div class="htrust">Immunity</div>
+                    <div class="htrust">Focus</div>
+                    <div class="htrust">Sleep</div>
+                    <div class="htrust">Daily Wellness</div>
+                </div>
+            </div>
+            <div class="slide-visual">
+                <div class="gummy-showcase">
+                    <div class="bb bb1 bb-visual" style="border-color:var(--pkl)">
+                        <span class="bb-icon"><img src="/img/04.png" alt=""></span>
+                        <span>All Products</span>
+                    </div>
+                    <div class="bb bb2 bb-visual" style="border-color:var(--skl)">
+                        <span class="bb-icon"><img src="/img/health.png" alt=""></span>
+                        <span>Daily Wellness</span>
+                    </div>
+                    <div class="bb bb3 bb-visual" style="border-color:var(--mnl)">
+                        <span class="bb-icon"><img src="/img/height.png" alt=""></span>
+                        <span>Growth Support</span>
+                    </div>
+                    <div class="bb bb4 bb-visual res-sat-bb4" style="border-color:var(--yel)">
+                        <span class="bb-icon"><img src="/img/brain.png" alt=""></span>
+                        <span>Better Focus</span>
+                    </div>
+                    <div class="bb bb5 bb-visual add-some " style="border-color:var(--orl)">
+                        <span class="bb-icon"><img src="/img/sleep.png" alt=""></span>
+                        <span>Calm Sleep</span>
+                    </div>
+                     <span class="fg fg1">🐟</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
+                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span>
+                    <div class="jar-wrap">
+
+                        <div class="jar-body1">
+                            <img src="/img/04.png" alt="NutriBuddy Products">
 
 
                         </div>
@@ -137,8 +238,9 @@
             <button class="dot active" data-dot="0"></button>
             <button class="dot" data-dot="1"></button>
             <button class="dot" data-dot="2"></button>
+            <button class="dot" data-dot="3"></button>
         </div>
-        <div class="slide-counter"><span id="curSlide">1</span>/3</div>
+        <div class="slide-counter"><span id="curSlide">1</span>/4</div>
     </section>
 
 
@@ -353,6 +455,10 @@ if ($catSlug == 'multivitamins') {
                         ->all();
                     $cardPrice = (float) ($selectedVariant?->display_price ?? $product->display_price);
                     $cardComparePrice = (float) ($selectedVariant?->display_compare_price ?? $product->display_compare_price ?? 0);
+                    $defaultImage = $product->primaryImage ?: $product->images->first();
+                    $hoverImage = $product->images
+                        ->where('id', '!=', $defaultImage?->id)
+                        ->first() ?: $defaultImage;
                 @endphp
                 <div class="pc pc-{{ $catSlug }} {{ $selectedVariant ? 'has-variants' : 'no-variants' }}"
                     data-selected-variant-id="{{ $selectedVariant?->id }}"
@@ -360,17 +466,11 @@ if ($catSlug == 'multivitamins') {
                     data-variants='{{ json_encode($frontendVariants, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}'>
                     <div class="pc-head pc-head-{{ $catSlug }}">
                         <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
-                            @if ($product->primaryImage)
-                                <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
+                            @if ($defaultImage)
+                                <img src="{{ asset('storage/' . $defaultImage->image_path) }}"
                                     alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
-                                @php $secondImage = $product->images->where('is_primary', false)->first(); @endphp
-                                @if ($secondImage)
-                                    <img src="{{ asset('storage/' . $secondImage->image_path) }}"
-                                        alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
-                                @else
-                                    <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}"
-                                        alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
-                                @endif
+                                <img src="{{ asset('storage/' . $hoverImage->image_path) }}"
+                                    alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                             @else
                                 <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
                                     class="default-img" loading="lazy" decoding="async">
@@ -505,27 +605,279 @@ if ($catSlug == 'multivitamins') {
     </section>
 
 
+   <!-- ══════════════════════════════════════════
+                   INGREDIENTS HIGHLIGHT
+              ══════════════════════════════════════════ -->
+    <section class="ing-section" id="ingredients">
+        <div class="stars-bg" id="starsBg"></div>
 
-    <!-- ══════════════════════════════════════════
-                       QUIZ CTA
-                  ══════════════════════════════════════════ -->
-    <div class="quiz-cta reveal" id="quiz">
-        <div>
-            <span class="quiz-label"> Personalized Nutrition</span>
-            <h2 class="quiz-h">Not Sure Which Gummy<br>Is Right for Your Child?</h2>
-            <p class="quiz-p">Take our 2-minute wellness quiz and get a FREE personalized diet chart crafted by certified
-                Ayurvedic nutritionists. No signup needed.</p>
+        <div class="ing-header reveal">
+            <span class="sec-eye">Ingredient Transparency</span>
+            <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
+            <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's gummy
+                —
+                an honest, magical story of every ingredient we use.</p>
         </div>
-        <button class="quiz-btn">Start Free Quiz →</button>
-    </div>
+
+        <div class="ing-tabs reveal">
+            <button class="itab active" data-ing="0"><img src="img/gradient1.webp" alt="">
+                Ashwagandha</button>
+            <button class="itab" data-ing="1"> <img src="img/bb.png" alt="">Brahmi</button>
+            <button class="itab" data-ing="2"> <img src="img/haldi.webp" alt=""> Turmeric</button>
+            <button class="itab" data-ing="3"> <img src="img/Amla.WEBP" alt=""> Amla</button>
+            <button class="itab" data-ing="4"> <img src="img/vitamins.webp" alt=""> Algal Dha</button>
+            <button class="itab" data-ing="5"> <img src="img/vitamins.jpg" alt=""> Vitamins</button>
+            <button class="itab" data-ing="6"> <img src="img/minerals.png" alt=""> Minerals</button>
+        </div>
+
+        <div class="ing-panels">
+
+            <!-- Ashwagandha -->
+            <div class="ing-panel active" id="ing-panel-0">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">01</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Ayurvedic
+                        Powerhouse</div>
+                    <h3 class="ing-name">Ashwagandha</h3>
+                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
+                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
+                        3,000+
+                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
+                        child's
+                        secret superpower for resilience, calm, and growth.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Builds Immunity</div>
+                        <div class="ptag">Reduces Stress</div>
+                        <div class="ptag">Muscle Growth</div>
+                        <div class="ptag">Better Sleep</div>
+                        <div class="ptag">More Energy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-1">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">02</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
+                        Tonic</div>
+                    <h3 class="ing-name">Brahmi</h3>
+                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
+                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
+                        before
+                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
+                        brain
+                        sharper with every single chew.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Laser Focus</div>
+                        <div class="ptag">Memory Boost</div>
+                        <div class="ptag">Problem Solving</div>
+                        <div class="ptag">Calm Alertness</div>
+                        <div class="ptag">Better Grades</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turmeric -->
+            <div class="ing-panel" id="ing-panel-2">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
+                        <img class="image-big" src="img/haldi.webp" alt="Turmeric">
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:9s">⭐</div>
+                        <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">03</div>
+                    <div class="ing-pill"
+                        style="background:rgba(255,214,0,.1);color:var(--ye);border:1px solid rgba(255,214,0,.2)">Golden
+                        Healer
+                    </div>
+                    <h3 class="ing-name">Turmeric Curcumin</h3>
+                    <p class="ing-sci">Curcuma longa · 95% Curcuminoids</p>
+                    <p class="ing-story">India's golden spice — used in every kitchen and every healing ritual for 5,000
+                        years.
+                        Curcumin's anti-inflammatory magic protects your child's developing cells, soothes tummies, and
+                        builds a
+                        fortress of immunity around them.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Anti-Inflammatory</div>
+                        <div class="ptag">Antioxidant Shield</div>
+                        <div class="ptag">Gut Health</div>
+                        <div class="ptag">Joint Support</div>
+                        <div class="ptag">Cell Protection</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amla -->
+            <div class="ing-panel" id="ing-panel-3">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
+                        <img class="image-big" src="img/amla.webp" alt="Amla">
+                        <div class="orbit-i" style="--orr:8.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">04</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Superfruit</div>
+                    <h3 class="ing-name">Amla</h3>
+                    <p class="ing-sci">Phyllanthus emblica · Indian Gooseberry</p>
+                    <p class="ing-story">The holy fruit of Ayurveda — revered as the "mother" of all medicines. One tiny
+                        Amla
+                        holds 20× the Vitamin C of an orange. Our grandmothers were right all along, and now science has
+                        proven it
+                        beyond any doubt.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">20× Vitamin C</div>
+                        <div class="ptag">Iron Absorption</div>
+                        <div class="ptag">Gut Healing</div>
+                        <div class="ptag">Skin Health</div>
+                        <div class="ptag">Super Immunity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- algal dha -->
+            <div class="ing-panel" id="ing-panel-4">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
+                        <img class="image-big" src="img/vitamins.jpg" alt="Omega-3 DHA">
+                        <div class="orbit-i" style="--orr:7.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">05</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.1);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Modern
+                        Science
+                    </div>
+                    <h3 class="ing-name">Omega-3 DHA</h3>
+                    <p class="ing-sci">Docosahexaenoic Acid · Marine-sourced, Triple-Purified</p>
+                    <p class="ing-story">60% of your child's brain is made of fat — and DHA is the most critical building
+                        block.
+                        From deep, pristine ocean sources, our Omega-3 is triple-purified, certified for kids, and tastes
+                        absolutely
+                        nothing like fish. Promise!</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Brain Building</div>
+                        <div class="ptag">Vision Development</div>
+                        <div class="ptag">Heart Health</div>
+                        <div class="ptag">Focus & Attention</div>
+                        <div class="ptag">Reading Skills</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- vitamins -->
+            <div class="ing-panel " id="ing-panel-5">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/vitamins.webp" alt="Vitamins">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">06</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Ayurvedic
+                        Powerhouse</div>
+                    <h3 class="ing-name">Ashwagandha</h3>
+                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
+                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
+                        3,000+
+                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
+                        child's
+                        secret superpower for resilience, calm, and growth.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Builds Immunity</div>
+                        <div class="ptag">Reduces Stress</div>
+                        <div class="ptag">Muscle Growth</div>
+                        <div class="ptag">Better Sleep</div>
+                        <div class="ptag">More Energy</div>
+                    </div>
+                </div>
+            </div>
 
 
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-6">
+                <div style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/minerals.png" alt="Minerals">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">07</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
+                        Tonic</div>
+                    <h3 class="ing-name">Minerals</h3>
+                    <p class="ing-sci">Bacopa monnieri · Standardized Bacosides</p>
+                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
+                        before
+                        studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your child's
+                        brain
+                        sharper with every single chew.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Laser Focus</div>
+                        <div class="ptag">Memory Boost</div>
+                        <div class="ptag">Problem Solving</div>
+                        <div class="ptag">Calm Alertness</div>
+                        <div class="ptag">Better Grades</div>
+                    </div>
+                </div>
+            </div>
 
+        </div><!-- /ing-panels -->
+    </section>
 
 
     <!-- ══════════════════════════════════════════
                        INGREDIENTS HIGHLIGHT
                   ══════════════════════════════════════════ -->
+    {{--
     @if ($featuredIngredients->isNotEmpty())
         <section class="ing-section" id="ingredients">
             <div class="stars-bg" id="starsBg"></div>
@@ -597,6 +949,7 @@ if ($catSlug == 'multivitamins') {
             </div><!-- /ing-panels -->
         </section>
     @endif
+    --}}
 
 
 
@@ -1044,42 +1397,6 @@ if ($catSlug == 'multivitamins') {
 
 
 
-
-    <!-- ══════════════════════════════════════════
-                       CERTIFICATIONS CAROUSEL
-                  ══════════════════════════════════════════ -->
-    <!-- <section class="imgcar-section reveal" id="certificates">
-                    <div class="imgcar-header">
-                      <span class="sec-eye">Our Certifications</span>
-                      <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
-                      <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
-                        recognised certifications.</p>
-                    </div>
-
-                    <div class="imgcar-wrapper">
-                      <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
-                      <div class="imgcar-viewport" id="imgcarViewport">
-                        <div class="imgcar-pbar" id="imgcarPbar"></div>
-                        <div class="imgcar-track" id="imgcarTrack">
-                          <div class="imgcar-item"><img src="/img/cert-fssai.png" alt="FSSAI Certified"
-                              onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-nabl.png" alt="NABL Lab Tested"
-                              onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-nongmo.png" alt="Non-GMO Verified"
-                              onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-iap.png" alt="Pediatrician Approved"
-                              onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-cruelty.png" alt="Cruelty Free"
-                              onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-iso.png" alt="ISO 22000 GMP"
-                              onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
-                        </div>
-                      </div>
-                      <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
-                    </div>
-
-                    <div class="imgcar-dots" id="imgcarDots"></div>
-                  </section> -->
 
     <!-- ══════════════════════════════════════════
                        TESTIMONIALS

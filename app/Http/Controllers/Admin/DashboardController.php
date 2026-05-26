@@ -694,6 +694,8 @@ class DashboardController extends Controller
 
         $paidRevenue = (float) $orders->sum('grand_total');
         $allOrderCount = $allOrders->count();
+        $pendingOrderCount = $allOrders->where('status', 'pending')->count();
+        $cancelledOrderCount = $allOrders->where('status', 'cancelled')->count();
         $paidOrderCount = $orders->count();
         $uniqueCustomerCount = $allOrders->pluck('user_id')->filter()->unique()->count();
         $guestOrderCount = $allOrders->whereNull('user_id')->count();
@@ -807,6 +809,8 @@ class DashboardController extends Controller
             'cohorts' => $this->cohortRetention($startDate, $endDate, $productId),
             'summary' => [
                 'orders' => $allOrderCount,
+                'pending_orders' => $pendingOrderCount,
+                'cancelled_orders' => $cancelledOrderCount,
                 'paid_orders' => $paidOrderCount,
                 'revenue' => $paidRevenue,
                 'average_order_value' => $averageOrderValue,

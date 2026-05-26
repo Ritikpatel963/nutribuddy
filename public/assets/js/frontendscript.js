@@ -120,6 +120,7 @@ const closeCartBtn = document.getElementById('closeCart');
 const cartIconBtn  = document.getElementById('cartIconBtn');
 const cartCountEl  = document.getElementById('cartCount');
 const PENDING_CART_KEY = 'nb_pending_cart';
+const NB_IS_AUTHENTICATED = !!globalThis.NB_IS_AUTHENTICATED;
 
 function getCartCount(items) {
   return (items || []).reduce((sum, it) => sum + Number(it.quantity || 0), 0);
@@ -467,6 +468,12 @@ function invalidateCartPayloadCache() {
 }
 
 async function fetchCartPayload(options = {}) {
+  if (!NB_IS_AUTHENTICATED) {
+    cartPayloadCache = { guest: true };
+    cartPayloadCacheAt = Date.now();
+    return cartPayloadCache;
+  }
+
   const force = !!options.force;
   const now = Date.now();
 
@@ -554,6 +561,8 @@ async function syncCartCount(options = {}) {
 }
 
 async function syncPendingCartToServer() {
+  if (!NB_IS_AUTHENTICATED) return false;
+
   const pendingItems = getPendingCartItems();
   if (!pendingItems.length) return false;
 
@@ -582,6 +591,8 @@ async function syncPendingCartToServer() {
 }
 
 async function updateServerCartItemQuantity(itemId, quantity) {
+  if (!NB_IS_AUTHENTICATED) return false;
+
   const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
   const res = await fetch(`/user/cart/items/${itemId}`, {
     method: 'PATCH',
@@ -782,6 +793,7 @@ let currentSlide = 0;
 let sliderTimer;
 const slides = document.querySelectorAll('.slide');
 const dots   = document.querySelectorAll('.dot');
+const curSlide = document.getElementById('curSlide');
 
 function goTo(n) {
   if (!slides.length) return;
@@ -790,6 +802,7 @@ function goTo(n) {
   currentSlide = (n + slides.length) % slides.length;
   slides[currentSlide].classList.add('active');
   if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+  if (curSlide) curSlide.textContent = currentSlide + 1;
   spawnSparks();
 }
 function startTimer() {
@@ -1616,6 +1629,17 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
       : () => ({ product_name: 'Product', variant_name: '', image: '/img/product2.png', unit_price: 0, product_url: '/product' });
 
     const itemMeta = resolveMeta(productId, productVariantId, sourceEl);
+
+    if (!NB_IS_AUTHENTICATED) {
+      addPendingCartItem(productId, quantity, productVariantId, itemMeta);
+      invalidateCartPayloadCache();
+      const pendingCount = getPendingCartCount();
+      if (cartCountEl) cartCountEl.textContent = String(pendingCount);
+      if (cartPopup?.classList.contains('open')) loadCartPopup({ force: true });
+      _flashCartBtn(sourceEl);
+      return true;
+    }
+
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     const res = await fetch('/user/cart', {

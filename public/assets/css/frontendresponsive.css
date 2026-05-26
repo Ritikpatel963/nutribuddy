@@ -12,6 +12,13 @@
     nav {
         max-width: 100%;
     }
+
+    .hero .hero-trust,
+    .hero-trust {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
 }
 
 @media (max-width: 860px) {
@@ -440,6 +447,15 @@
         padding: 72px 5%;
     }
 
+    .product-listing-layout {
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 22px;
+    }
+
+    .product-listing-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
     .products-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 22px !important;
@@ -447,7 +463,7 @@
 
     .pc-head {
         height: 230px !important;
-        padding: 18px !important;
+        padding: 0 !important;
     }
 
     .pc-body {
@@ -473,6 +489,23 @@
 }
 
 @media (max-width: 992px) {
+    .product-listing-page {
+        padding: 48px 4% 64px;
+    }
+
+    .product-listing-layout {
+        display: block;
+    }
+
+    .product-filter-sidebar {
+        margin-bottom: 24px;
+        position: static;
+    }
+
+    .product-result-toolbar {
+        margin-bottom: 24px;
+    }
+
     .products-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 20px !important;
@@ -484,6 +517,30 @@
 }
 
 @media (max-width: 640px) {
+    .product-listing-page {
+        padding: 42px 4% 54px;
+    }
+
+    .product-filter-sidebar {
+        border-radius: 24px;
+        padding: 20px 18px;
+    }
+
+    .product-result-toolbar {
+        align-items: stretch;
+        border-radius: 18px;
+        flex-direction: column;
+        padding: 18px;
+    }
+
+    .product-result-toolbar select {
+        width: 100%;
+    }
+
+    .price-filter-inputs {
+        gap: 8px;
+    }
+
     .products-section {
         padding: 56px 4%;
     }
@@ -496,7 +553,7 @@
 
     .pc-head {
         height: 250px !important;
-        padding: 16px !important;
+        padding: 0 !important;
     }
 
     .pc-body {
@@ -678,7 +735,13 @@
     }
 
     .pdp-gallery {
-        position: static;
+        position: relative !important;
+        top: auto !important;
+    }
+
+    .pdp-gallery-sticky {
+        position: static !important;
+        top: auto !important;
     }
 
     .main-img-wrap {
@@ -689,6 +752,18 @@
     .main-img-wrap .p-image img {
         max-width: 220px;
         max-height: 400px;
+    }
+
+    .pdp-gallery .main-img-wrap {
+        min-height: 520px;
+        padding: 16px;
+    }
+
+    .pdp-gallery .main-img-wrap .p-image img#mainPdpImage {
+        height: 100%;
+        max-height: none;
+        max-width: none;
+        width: 100%;
     }
 
     .transform-grid {
@@ -762,6 +837,18 @@
     .main-img-wrap .p-image img {
         max-width: 250px;
         max-height: 400px;
+    }
+
+    .pdp-gallery .main-img-wrap {
+        min-height: 360px;
+        padding: 12px;
+    }
+
+    .pdp-gallery .main-img-wrap .p-image img#mainPdpImage {
+        height: 100%;
+        max-height: none;
+        max-width: none;
+        width: 100%;
     }
 
     .float-badge {
@@ -1109,6 +1196,78 @@
 @media (max-width: 640px) {
     .slide-visual img {
         width: 260px !important;
+    }
+
+    .bb-image {
+        min-height: 52px;
+        padding: 6px 11px 6px 6px;
+        gap: 6px;
+        font-size: .64rem;
+    }
+
+    .bb-image .bb-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .slide-visual .bb-icon img {
+        width: 27px !important;
+        height: 27px;
+    }
+
+    .bb-image.bb1 {
+        top: -12px;
+        right: 2px;
+    }
+
+    .bb-image.bb2 {
+        top: 18%;
+        right: -4px;
+    }
+
+    .bb-image.bb3 {.hero .bb5
+        top: -12px;
+        left: 2px;
+    }
+
+    .bb-image.bb4 {
+        top: 18%;
+        left: -4px;
+    }
+
+    .bb-image.bb5 {
+        bottom: 9%;
+        left: 2px;
+    }
+
+    .bb-image.bb6 {
+        bottom: 9%;
+        right: 2px;
+    }
+
+    .slide-1 .slide-one-benefits .bb-image {
+        min-width: 96px;
+        min-height: 38px;
+        gap: 4px;
+        padding: 4px 7px 4px 5px;
+        border-radius: 13px;
+    }
+
+    .slide-1 .slide-one-benefits .bb-icon {
+        width: 26px;
+        height: 26px;
+        flex-basis: 26px;
+    }
+
+    .slide-1 .slide-one-benefits .bb-icon img {
+        width: 21px !important;
+        height: 21px;
+    }
+
+    .slide-1 .slide-one-benefits .bb-image span:last-child {
+        max-width: 58px;
+        font-size: .57rem;
     }
 
     .nav-links {
@@ -1894,5 +2053,270 @@
 @media (max-width: 360px) {
     .how-section .how-stats {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Final hero slider responsive overrides */
+@media (min-width: 861px) and (max-width: 1100px) {
+    .hero {
+        height: 760px !important;
+        min-height: 760px !important;
+    }
+
+    .hero .slide {
+        grid-template-columns: .95fr 1.05fr !important;
+        gap: 18px !important;
+        padding: 105px 5% 70px !important;
+    }
+
+    .hero .slide-text {
+        padding-top: 0 !important;
+    }
+
+    .hero .gummy-showcase {
+        height: 410px !important;
+        width: 340px !important;
+    }
+
+    .hero .jar-wrap {
+        height: 500px !important;
+        margin: 58px auto 0 !important;
+        width: 500px !important;
+    }
+
+    .hero .jar-body1 img {
+        padding-right: 58px !important;
+        width: 500px !important;
+    }
+}
+
+@media (max-width: 860px) {
+    .hero {
+        height: 980px !important;
+        min-height: 980px !important;
+    }
+
+    .hero .slide {
+        align-content: start !important;
+        display: grid !important;
+        gap: 66px !important;
+        grid-template-columns: 1fr !important;
+        justify-items: center !important;
+        padding: 104px 5% 92px !important;
+        text-align: center !important;
+    }
+
+    .hero .slide-text {
+        padding-top: 0 !important;
+        width: min(100%, 620px) !important;
+    }
+
+    .hero h1.htitle {
+        font-size: clamp(2rem, 6vw, 3rem) !important;
+        margin-bottom: 14px !important;
+    }
+
+    .hero .slide-desc {
+        font-size: .92rem !important;
+        line-height: 1.58 !important;
+        margin: 0 auto 20px !important;
+        max-width: 560px !important;
+    }
+
+    .hero .hero-btns,
+    .hero .hero-trust {
+        justify-content: center !important;
+    }
+
+    .hero .slide-visual {
+        height: 390px !important;
+        width: 100% !important;
+    }
+
+    .hero .gummy-showcase {
+        height: 370px !important;
+        margin: 0 auto !important;
+        width: min(92vw, 340px) !important;
+    }
+
+    .hero .jar-wrap {
+        height: 390px !important;
+        margin: 46px auto 0 !important;
+        width: 390px !important;
+    }
+
+    .hero .jar-body1 img {
+        padding-right: 46px !important;
+        width: 390px !important;
+    }
+
+    .hero .bb {
+        font-size: .66rem !important;
+        padding: 7px 12px !important;
+    }
+
+    .hero .bb-visual {
+        min-height: 40px !important;
+        padding: 3px 8px 3px 5px !important;
+    }
+
+    .hero .bb-visual .bb-icon {
+        flex-basis: 25px !important;
+        height: 25px !important;
+        width: 25px !important;
+    }
+
+    .hero .bb-visual .bb-icon img {
+        height: 20px !important;
+        width: 20px !important;
+    }
+
+    .hero .bb1 {
+               right: 12px !important;
+        top: -28px !important;
+    }
+
+    .hero .bb2 {
+        right: -35px !important;
+        top: 6% !important;
+    }
+    .hero .in-res-sat{
+                right: -31px !important;
+        top: 20% !important;
+    }
+
+    .hero .bb3 {
+        bottom: auto !important;
+        left: 43px !important;
+        right: auto !important;
+        top: 4px !important;
+    }
+    .hero .sat-bb3 {
+                bottom: auto !important;
+        left: 78px !important;
+        right: auto !important;
+        top: 70px !important;
+    }
+
+    .hero .bb4 {
+        left: -10px !important;
+        top: 22% !important;
+    }
+    .hero .respon-bb4 {
+                left: -39px !important;
+        top: 23% !important
+    }
+   .hero .tryping-res{
+    right: -35px !important;
+        top: 6% !important;
+   }
+   .hero .res-sat-bb4 {
+            left: -39px !important;
+        top: 15% !important;
+   }
+
+    .hero .bb5 {
+        bottom: 18% !important;
+        left: 0 !important;
+    }
+    .hero .test-res {
+        bottom: 27% !important;
+        left: -26px !important;
+    }
+
+    .hero .fg {
+        display: none !important;
+    }
+
+    .hero .slide-counter {
+        bottom: 54px !important;
+        top: auto !important;
+    }
+
+    .hero .slide-dots {
+        bottom: 24px !important;
+    }
+
+    .hero .sarrow {
+        bottom: 24px !important;
+        height: 42px !important;
+        top: auto !important;
+        width: 42px !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .hero {
+        height: 1020px !important;
+        min-height: 1020px !important;
+    }
+
+    .hero .slide {
+        padding: 133px 4% 147px !important;
+    }
+
+    .hero h1.htitle {
+        font-size: clamp(1.85rem, 9vw, 2.45rem) !important;
+    }
+
+    .hero .hero-btns {
+        align-items: center !important;
+        flex-direction: row !important;
+        gap: 10px !important;
+    }
+
+    .hero .hbtn {
+        width: auto !important;
+    }
+
+    .hero .slide-visual {
+        height: 350px !important;
+    }
+
+    .hero .gummy-showcase {
+        height: 335px !important;
+        width: min(92vw, 310px) !important;
+    }
+
+    .hero .jar-wrap {
+        height: 340px !important;
+        margin-top: 48px !important;
+        width: 370px !important;
+    }
+
+    .hero .jar-body1 img {
+                padding-right: 55px !important;
+        width: 398px !important;
+    }
+
+    .hero .bb {
+        font-size: .6rem !important;
+        padding: 6px 9px !important;
+    }
+
+    .hero .bb-visual {
+        max-width: 128px !important;
+    }
+
+    .hero .bb-visual span:last-child {
+        font-size: .6rem !important;
+        white-space: normal !important;
+    }
+
+}
+
+@media (max-width: 390px) {
+    .hero {
+        height: 1060px !important;
+        min-height: 1060px !important;
+    }
+
+    .hero .slide {
+        padding-left: 3% !important;
+        padding-right: 3% !important;
+    }
+
+    .hero .jar-wrap {
+        margin-left: -8px !important;
     }
 }

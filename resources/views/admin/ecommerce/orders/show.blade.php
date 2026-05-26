@@ -258,6 +258,7 @@
                                 <tr>
                                     <th>Product</th>
                                     <th>SKU</th>
+                                    <th>HSN</th>
                                     <th>Qty</th>
                                     <th>Unit Price</th>
                                     <th>Tax</th>
@@ -335,6 +336,7 @@
                                             </div>
                                         </td>
                                         <td>{{ $item->sku }}</td>
+                                        <td>{{ $item->hsn_code ?? $item->item_snapshot['hsn_code'] ?? $item->product?->hsn_code ?? '-' }}</td>
                                         <td>{{ $item->quantity }}</td>
                                         <td>INR {{ number_format((float) $item->unit_price, 2) }}</td>
                                         <td>INR {{ number_format((float) $item->tax_amount, 2) }}</td>

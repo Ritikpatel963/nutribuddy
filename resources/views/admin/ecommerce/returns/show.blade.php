@@ -5,52 +5,104 @@
 @endphp
 
 @section('content')
+    <style>
+        .return-detail-field {
+            background: #fff;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            height: 100%;
+            padding: 14px 16px;
+        }
+
+        .return-detail-label {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .return-detail-value {
+            color: #111827;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        .return-detail-copy {
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            border-radius: 8px;
+            color: #475569;
+            line-height: 1.55;
+            padding: 14px 16px;
+        }
+
+        .return-detail-media img,
+        .return-detail-media video {
+            border-radius: 8px;
+            height: 150px;
+            object-fit: cover;
+            width: 200px;
+        }
+    </style>
+
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="card mb-24">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Return Request Information</h5>
+                    <h5 class="card-title mb-0">Return Summary</h5>
                     <span class="badge {{ $orderReturn->status == 'pending' ? 'bg-warning-focus text-warning-main' : ($orderReturn->status == 'completed' ? 'bg-success-focus text-success-main' : 'bg-info-focus text-info-main') }} px-16 py-4 radius-4">
-                        {{ strtoupper($orderReturn->status) }}
+                        {{ ucfirst($orderReturn->status) }}
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="row g-4 mb-32">
+                    <div class="row g-3 mb-32">
                         <div class="col-md-6">
-                            <h6 class="text-secondary-light fw-medium mb-8">Return Number:</h6>
-                            <p class="mb-0 text-primary-600 fw-bold">#{{ $orderReturn->return_number }}</p>
+                            <div class="return-detail-field">
+                                <div class="return-detail-label">Return Number</div>
+                                <div class="return-detail-value text-primary-600">#{{ $orderReturn->return_number }}</div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-secondary-light fw-medium mb-8">Order Associated:</h6>
-                            <a href="{{ route('admin.ecommerce.orders.show', $orderReturn->order_id) }}" class="mb-0 fw-bold text-dark">#{{ $orderReturn->order->order_number }}</a>
+                            <div class="return-detail-field">
+                                <div class="return-detail-label">Original Order</div>
+                                <a href="{{ route('admin.ecommerce.orders.show', $orderReturn->order_id) }}" class="return-detail-value text-primary-600">
+                                    #{{ $orderReturn->order->order_number }}
+                                </a>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="text-secondary-light fw-medium mb-8">Refund Amount:</h6>
-                            <p class="mb-0 fw-bold">INR {{ number_format($orderReturn->refund_amount, 2) }}</p>
+                            <div class="return-detail-field">
+                                <div class="return-detail-label">Refund Amount</div>
+                                <div class="return-detail-value">INR {{ number_format($orderReturn->refund_amount, 2) }}</div>
+                            </div>
                         </div>
                         <div class="col-12">
-                            <h6 class="text-secondary-light fw-medium mb-8">Reason for Return:</h6>
-                            <div class="p-16 radius-8 bg-light border">
+                            <div class="return-detail-label">Return Reason</div>
+                            <div class="return-detail-copy">
                                 {{ $orderReturn->reason }}
                             </div>
                         </div>
                         @if(!empty($orderReturn->media_paths) && count($orderReturn->media_paths) > 0)
                         <div class="col-12">
-                            <h6 class="text-secondary-light fw-medium mb-8">Uploaded Media (Evidence):</h6>
-                            <div class="d-flex flex-wrap gap-16 p-16 radius-8 bg-light border">
+                            <div class="return-detail-label">Evidence</div>
+                            <div class="return-detail-copy return-detail-media d-flex flex-wrap gap-16">
                                 @foreach($orderReturn->media_paths as $media)
                                     @php
                                         $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
                                     @endphp
                                     <div class="position-relative">
                                         @if(in_array($ext, ['mp4', 'mov', 'avi']))
-                                            <video width="200" height="150" controls class="radius-8 border" style="object-fit: cover;">
+                                            <video controls class="border">
                                                 <source src="{{ asset('storage/' . $media) }}" type="video/{{ $ext == 'mov' ? 'quicktime' : $ext }}">
                                                 Your browser does not support the video tag.
                                             </video>
                                         @else
                                             <a href="{{ asset('storage/' . $media) }}" target="_blank">
-                                                <img src="{{ asset('storage/' . $media) }}" alt="Return Media" class="radius-8 border" style="width: 200px; height: 150px; object-fit: cover;">
+                                                <img src="{{ asset('storage/' . $media) }}" alt="Return evidence" class="border">
                                             </a>
                                         @endif
                                     </div>
@@ -60,8 +112,8 @@
                         @endif
                         @if ($orderReturn->admin_note)
                             <div class="col-12">
-                                <h6 class="text-secondary-light fw-medium mb-8">Admin Note:</h6>
-                                <div class="p-16 radius-8 bg-light border">
+                                <div class="return-detail-label">Admin Note</div>
+                                <div class="return-detail-copy">
                                     {{ $orderReturn->admin_note }}
                                 </div>
                             </div>
@@ -122,7 +174,7 @@
         <div class="col-lg-4">
             <div class="card mb-24 sticky-top" style="top: 24px; z-index: 10;">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Moderation / Refund</h5>
+                    <h5 class="card-title mb-0">Review Return</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.ecommerce.order-returns.update', $orderReturn) }}" method="POST">
@@ -148,8 +200,8 @@
                         </div>
 
                         <div class="mb-24">
-                            <label class="form-label">Admin Internal Note</label>
-                            <textarea name="admin_note" class="form-control" rows="4" placeholder="Enter notes about the refund or rejection reason...">{{ $orderReturn->admin_note }}</textarea>
+                            <label class="form-label">Admin Note</label>
+                            <textarea name="admin_note" class="form-control" rows="4" placeholder="Add a note for this refund or rejection.">{{ $orderReturn->admin_note }}</textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary-600 w-100">Update Return Status</button>

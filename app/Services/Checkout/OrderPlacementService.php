@@ -211,6 +211,7 @@ class OrderPlacementService
                 'product_variant_id' => $variant?->id,
                 'product_name' => $variant ? "{$product->name} - {$variant->name}" : $product->name,
                 'sku' => $variant?->sku ?? $product->sku,
+                'hsn_code' => $product->hsn_code,
                 'quantity' => $lineItem['quantity'],
                 'unit_price' => $lineItem['unit_price'],
                 'tax_percent' => $lineItem['tax_percent'],
@@ -221,6 +222,7 @@ class OrderPlacementService
                 'line_total' => $lineItem['unit_price'] * $lineItem['quantity'],
                 'item_snapshot' => [
                     'product_slug' => $product->slug,
+                    'hsn_code' => $product->hsn_code,
                     'variant_name' => $variant?->name,
                     'variant_attributes' => $variant?->attributes,
                 ],

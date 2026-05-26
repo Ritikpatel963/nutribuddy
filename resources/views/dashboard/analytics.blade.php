@@ -202,9 +202,27 @@ SCRIPT;
             <div class="col-xxl-3 col-sm-6">
                 <div class="card nb-kpi h-100">
                     <div class="card-body p-20">
-                        <div class="nb-kpi-label">Orders</div>
+                        <div class="nb-kpi-label">All Orders</div>
                         <div class="nb-kpi-value">{{ number_format($summary['orders'] ?? 0) }}</div>
-                        <div class="nb-kpi-note">All payment statuses in selected range</div>
+                        <div class="nb-kpi-note">All order statuses in selected range</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-sm-6">
+                <div class="card nb-kpi h-100">
+                    <div class="card-body p-20">
+                        <div class="nb-kpi-label">Pending Orders</div>
+                        <div class="nb-kpi-value">{{ number_format($summary['pending_orders'] ?? 0) }}</div>
+                        <div class="nb-kpi-note">Orders waiting for confirmation</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-3 col-sm-6">
+                <div class="card nb-kpi h-100">
+                    <div class="card-body p-20">
+                        <div class="nb-kpi-label">Cancelled Orders</div>
+                        <div class="nb-kpi-value">{{ number_format($summary['cancelled_orders'] ?? 0) }}</div>
+                        <div class="nb-kpi-note">Orders marked as cancelled</div>
                     </div>
                 </div>
             </div>

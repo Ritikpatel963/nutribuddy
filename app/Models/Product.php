@@ -140,9 +140,13 @@ class Product extends Model
     {
         $price = (float) ($this->compare_at_price ?? 0);
         
-        if ($this->is_variant_enabled && $this->variants()->exists()) {
-            $defaultVariant = $this->variants()->where('is_default', true)->first() ?? $this->variants()->first();
-            if ($defaultVariant) {
+        if ($this->is_variant_enabled) {
+            $activeVariants = $this->relationLoaded('variants')
+                ? $this->variants->filter(fn($v) => $v->is_active)
+                : $this->variants()->where('is_active', true)->get();
+            
+            if ($activeVariants->isNotEmpty()) {
+                $defaultVariant = $activeVariants->firstWhere('is_default', true) ?? $activeVariants->first();
                 $price = (float) ($defaultVariant->compare_at_price ?? 0);
             }
         }

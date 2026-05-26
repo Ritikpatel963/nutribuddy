@@ -291,6 +291,8 @@
         }
     </style>
     <script>
+        window.NB_IS_AUTHENTICATED = @json(auth()->check());
+
         function nbToast(msg, type = 'success', title = '') {
             const icons = {
                 success: '✓',

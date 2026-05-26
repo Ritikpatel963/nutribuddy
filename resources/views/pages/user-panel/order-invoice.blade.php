@@ -336,7 +336,8 @@
                         <table class="inv-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 45%;">Product Description</th>
+                                    <th style="width: 35%;">Product Description</th>
+                                    <th style="text-align: center; width: 10%;">HSN</th>
                                     <th style="text-align: center; width: 10%;">Qty</th>
                                     <th style="text-align: right; width: 15%;">Price</th>
                                     <th style="text-align: right; width: 15%;">GST</th>
@@ -348,6 +349,7 @@
                                 @php
                                     $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
                                     $product = $item->product;
+                                    $hsnCode = $item->hsn_code ?? $item->item_snapshot['hsn_code'] ?? $product?->hsn_code ?? '-';
                                     
                                     // Rule: Always show GST on the original unit price
                                     $taxRate = $item->tax_percent ?? ($product?->taxRate?->rate ?? 0);
@@ -371,6 +373,7 @@
                                             <span class="inv-spec-pill">{{ $spec }}</span>
                                         @endforeach
                                     </td>
+                                    <td style="text-align: center; font-weight: 700;">{{ $hsnCode ?: '-' }}</td>
                                     <td style="text-align: center; font-weight: 700;">{{ $item->quantity }}</td>
                                     <td style="text-align: right;">₹{{ number_format($item->unit_price, 2) }}</td>
                                     <td style="text-align: right;">

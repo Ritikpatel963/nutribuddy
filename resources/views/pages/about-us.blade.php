@@ -1,4 +1,4 @@
-﻿@extends('layouts.main')
+﻿﻿@extends('layouts.main')
 @section('title', 'About Us — NutriBuddy Kids')
 
 @push('styles')
@@ -881,8 +881,8 @@
 
     .ns-story-hero .ns-promise {
       position: absolute;
-      bottom: 22px;
-      right: 8px;
+   bottom: -8px !important;
+    right: 137px !important;
       background: #fffde7;
       border-radius: 3px;
       padding: 14px 16px;
@@ -1079,7 +1079,7 @@
 
       .ns-story-hero .ns-polar--worry {
         width: 240px;
-        left: 10px;
+        left: -34px;
       }
 
       .ns-story-hero .ns-polar--worry img {
@@ -1087,8 +1087,8 @@
       }
 
       .ns-story-hero .ns-polar--happy {
-        width: 362px;
-        right: 18px;
+               width: 480px;
+        right: -65px;
       }
 
       .ns-story-hero .ns-polar--happy img {
@@ -1196,8 +1196,8 @@
       }
 
       .ns-story-hero .ns-polar--worry {
-        width: 132px;
-        left: 6px;
+              width: 266px;
+        left: -66px;
       }
 
       .ns-story-hero .ns-polar--worry img {
@@ -2620,13 +2620,13 @@
 
             <div class="ns-polar ns-polar--worry">
               <div class="ns-tape"></div>
-              <img src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=320&q=80" alt="Worried child" />
+             <img src="/img/aboutb2.jpeg" alt="Worried child" />
               <div class="ns-polar-caption">The worry we felt</div>
             </div>
 
             <div class="ns-polar ns-polar--happy">
               <div class="ns-tape"></div>
-              <img src="/img/mommi.jpeg" alt="Happy mother and child" />
+              <img src="/img/aboutb1.jpeg" alt="Happy mother and child" />
               <div class="ns-polar-caption">The reason we started</div>
             </div>
 
