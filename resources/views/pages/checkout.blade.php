@@ -2082,11 +2082,7 @@
                                 </div>
                                 <div class="form-grid" style="margin-top:14px">
                                     <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6" placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
-                                    <div class="form-group">
-                                        <label>City *</label>
-                                        <input type="text" placeholder="Select city" id="cityField" list="cityOptions" autocomplete="off">
-                                        <datalist id="cityOptions"></datalist>
-                                    </div>
+                                    <div class="form-group"><label>City *</label><input type="text" placeholder="City" id="cityField"></div>
                                 </div>
                                 <div class="form-grid" style="margin-top:14px">
                                     <div class="form-group">
@@ -2234,8 +2230,8 @@
                         <span class="pb-val green" id="pbProductDiscount">− ₹0</span>
                     </div>
                     <div class="pb-row">
-                        <span class="pb-label">Delivery</span>
-                        <span class="pb-val green" id="pbDelivery">FREE</span>
+                        <span class="pb-label">Delivery Charges</span>
+                        <span class="pb-val green" id="pbDelivery">FREE 🎉</span>
                     </div>
                     <div class="pb-row">
                         <span class="pb-label">GST (Applied on top)</span>
@@ -2739,70 +2735,18 @@
                 el.classList.add('active');
             }
 
-            const checkoutCitiesByState = {
-                'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Nellore', 'Kurnool', 'Tirupati', 'Rajahmundry', 'Kakinada', 'Anantapur', 'Kadapa'],
-                'Assam': ['Guwahati', 'Silchar', 'Dibrugarh', 'Jorhat', 'Tezpur', 'Nagaon', 'Tinsukia', 'Bongaigaon', 'Dhubri', 'Sivasagar'],
-                'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Darbhanga', 'Purnia', 'Begusarai', 'Ara', 'Katihar', 'Munger'],
-                'Delhi': ['New Delhi', 'Delhi', 'Dwarka', 'Rohini', 'Saket', 'Karol Bagh', 'Lajpat Nagar', 'Janakpuri', 'Vasant Kunj', 'Pitampura'],
-                'Goa': ['Panaji', 'Margao', 'Vasco da Gama', 'Mapusa', 'Ponda', 'Bicholim', 'Curchorem', 'Valpoi'],
-                'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Gandhinagar', 'Bhavnagar', 'Jamnagar', 'Junagadh', 'Anand', 'Nadiad'],
-                'Haryana': ['Gurugram', 'Faridabad', 'Panipat', 'Ambala', 'Hisar', 'Karnal', 'Sonipat', 'Rohtak', 'Panchkula', 'Yamunanagar'],
-                'Himachal Pradesh': ['Shimla', 'Dharamshala', 'Mandi', 'Solan', 'Kullu', 'Hamirpur', 'Una', 'Bilaspur', 'Chamba', 'Nahan'],
-                'Jharkhand': ['Ranchi', 'Jamshedpur', 'Dhanbad', 'Bokaro', 'Deoghar', 'Hazaribagh', 'Giridih', 'Ramgarh', 'Medininagar'],
-                'Karnataka': ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubballi', 'Dharwad', 'Belagavi', 'Kalaburagi', 'Davangere', 'Ballari', 'Shivamogga', 'Tumakuru', 'Udupi'],
-                'Kerala': ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur', 'Kollam', 'Alappuzha', 'Palakkad', 'Kannur', 'Kottayam', 'Malappuram'],
-                'Madhya Pradesh': ['Bhopal', 'Indore', 'Jabalpur', 'Gwalior', 'Ujjain', 'Sagar', 'Dewas', 'Satna', 'Ratlam', 'Rewa'],
-                'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Thane', 'Aurangabad', 'Solapur', 'Kolhapur', 'Amravati', 'Navi Mumbai'],
-                'Odisha': ['Bhubaneswar', 'Cuttack', 'Rourkela', 'Puri', 'Sambalpur', 'Balasore', 'Berhampur', 'Jharsuguda', 'Baripada'],
-                'Punjab': ['Ludhiana', 'Amritsar', 'Jalandhar', 'Patiala', 'Bathinda', 'Mohali', 'Pathankot', 'Hoshiarpur', 'Moga', 'Firozpur'],
-                'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer', 'Bikaner', 'Alwar', 'Bhilwara', 'Sikar', 'Pali'],
-                'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Erode', 'Vellore', 'Thoothukudi', 'Dindigul'],
-                'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad', 'Karimnagar', 'Khammam', 'Ramagundam', 'Mahbubnagar', 'Nalgonda', 'Suryapet'],
-                'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Noida', 'Ghaziabad', 'Agra', 'Varanasi', 'Prayagraj', 'Meerut', 'Bareilly', 'Aligarh', 'Gorakhpur'],
-                'Uttarakhand': ['Dehradun', 'Haridwar', 'Roorkee', 'Haldwani', 'Rudrapur', 'Rishikesh', 'Nainital', 'Kashipur', 'Pithoragarh'],
-                'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol', 'Siliguri', 'Kharagpur', 'Bardhaman', 'Malda', 'Haldia', 'Darjeeling']
-            };
-
-            function refreshCityDropdown({ keepCity = false } = {}) {
-                const stateEl = document.getElementById('stateField');
-                const cityEl = document.getElementById('cityField');
-                const cityList = document.getElementById('cityOptions');
-                if (!stateEl || !cityEl || !cityList) return;
-
-                const cities = checkoutCitiesByState[stateEl.value] || [];
-                cityList.innerHTML = cities.map(city => `<option value="${city}"></option>`).join('');
-
-                if (!keepCity && cityEl.value && !cities.includes(cityEl.value)) {
-                    cityEl.value = '';
-                }
-
-                cityEl.placeholder = cities.length ? 'Type to search city' : 'Select state first';
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const stateEl = document.getElementById('stateField');
-                if (stateEl) {
-                    refreshCityDropdown({ keepCity: true });
-                    stateEl.addEventListener('change', () => refreshCityDropdown());
-                }
-            });
-
             function autoFillCity() {
                 const pin = document.getElementById('newPincode').value;
                 if (pin.length === 6) {
-                    const pinMap = {
-                        '560102': { city: 'Bengaluru', state: 'Karnataka' },
-                        '400001': { city: 'Mumbai', state: 'Maharashtra' },
-                        '110001': { city: 'New Delhi', state: 'Delhi' },
-                        '600001': { city: 'Chennai', state: 'Tamil Nadu' },
-                        '500001': { city: 'Hyderabad', state: 'Telangana' }
+                    const cities = {
+                        '560102': 'Bengaluru',
+                        '400001': 'Mumbai',
+                        '110001': 'Delhi',
+                        '600001': 'Chennai',
+                        '500001': 'Hyderabad'
                     };
-                    if (pinMap[pin]) {
-                        const stateEl = document.getElementById('stateField');
-                        const cityEl = document.getElementById('cityField');
-                        if (stateEl) stateEl.value = pinMap[pin].state;
-                        refreshCityDropdown({ keepCity: true });
-                        if (cityEl) cityEl.value = pinMap[pin].city;
+                    if (cities[pin]) {
+                        document.getElementById('cityField').value = cities[pin];
                     }
                 }
             }
@@ -3187,7 +3131,8 @@
                     if (pdRow) pdRow.style.display = genericDiscount > 0 ? 'flex' : 'none';
                     productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
                 }
-                if (delivery) delivery.textContent = 'FREE';
+                if (delivery) delivery.textContent = shipping > 0 ?
+                    `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : 'FREE 🎉';
                 
                 // Coupon Discount Display
                 const cRow2 = document.getElementById('couponRow2');
@@ -3944,9 +3889,8 @@
                 if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
                 if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
                 if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-                if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
-                refreshCityDropdown({ keepCity: true });
                 if (document.getElementById('cityField')) document.getElementById('cityField').value = a.city || '';
+                if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
                 
                 if (a.label) {
                     const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
@@ -4060,9 +4004,8 @@
                         if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
                         if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
                         if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-                        if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
-                        refreshCityDropdown({ keepCity: true });
                         if (document.getElementById('cityField')) document.getElementById('cityField').value = a.city || '';
+                        if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
                         if (a.label) {
                             const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
                             if (btn) toggleAddrType(btn);

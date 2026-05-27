@@ -20,7 +20,6 @@ Route::get('/checkout', [FrontendCheckoutController::class, 'page'])->name('chec
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/cookies', 'pages.cookies')->name('cookies');
 Route::view('/return-policy', 'pages.return-policy')->name('return-policy');
-Route::view('/shipping-policy', 'pages.shipping-policy')->name('shipping-policy');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/cart', 'pages.cart')->name('cart.page');
 

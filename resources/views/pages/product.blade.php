@@ -60,48 +60,11 @@
                 ];
             })
             ->values();
-        $defaultImage = $product->primaryImage ?: $product->images->first();
-        $defaultImageUrl = $defaultImage
-            ? asset('storage/' . $defaultImage->image_path)
-            : asset('img/product2.png');
     @endphp
 
     <style>
         .variant-group-row.d-none {
             display: none !important;
-        }
-
-        @media (min-width: 901px) {
-            html,
-            body {
-                overflow-x: clip;
-            }
-
-            main {
-                overflow: visible;
-            }
-
-            .pdp-hero {
-                align-items: stretch !important;
-                overflow: visible !important;
-            }
-
-            .pdp-gallery {
-                align-self: stretch !important;
-                height: auto !important;
-                min-height: 100% !important;
-                overflow: visible !important;
-                position: relative !important;
-            }
-
-            .pdp-gallery-sticky {
-                max-height: calc(100vh - 130px);
-                overflow: visible;
-                position: -webkit-sticky !important;
-                position: sticky !important;
-                top: 115px !important;
-                z-index: 2;
-            }
         }
 
         .variant-container {
@@ -1083,38 +1046,41 @@
     <div class="pdp-hero">
         <!-- LEFT: Gallery -->
         <div class="pdp-gallery">
-            <div class="pdp-gallery-sticky">
-                <div class="main-img-wrap">
-                    @if ($product->is_featured)
-                        <div class="badge-bestseller">Best Seller</div>
-                    @endif
-                    @if ($initialComparePrice > $initialPrice)
-                        @php
-                            $discount = round(
-                                (($initialComparePrice - $initialPrice) / $initialComparePrice) * 100,
-                            );
-                        @endphp
-                        <div class="badge-discount" id="pdpDiscountBadge">{{ $discount }}% OFF</div>
-                    @else
-                        <div class="badge-discount d-none" id="pdpDiscountBadge"></div>
-                    @endif
+            <div class="main-img-wrap">
+                @if ($product->is_featured)
+                    <div class="badge-bestseller">Best Seller</div>
+                @endif
+                @if ($initialComparePrice > $initialPrice)
+                    @php
+                        $discount = round(
+                            (($initialComparePrice - $initialPrice) / $initialComparePrice) * 100,
+                        );
+                    @endphp
+                    <div class="badge-discount" id="pdpDiscountBadge">{{ $discount }}% OFF</div>
+                @else
+                    <div class="badge-discount d-none" id="pdpDiscountBadge"></div>
+                @endif
 
-                    <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
-                        <img src="{{ $defaultImageUrl }}" alt="{{ $product->name }}" id="mainPdpImage">
-                    </div>
-                </div>
-                <div class="thumb-row">
-                    @foreach ($product->images as $image)
-                        <div class="thumb {{ $defaultImage && $image->id === $defaultImage->id ? 'active' : '' }}"
-                            onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
-                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}">
-                        </div>
-                    @endforeach
-                    @if ($product->images->count() == 0)
-                        <div class="thumb active"> <img src="{{ asset('img/product2.png') }}" alt=""></div>
-                        <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
+                <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
+                    @if ($product->primaryImage)
+                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}"
+                            id="mainPdpImage">
+                    @else
+                        <img src="{{ asset('img/product2.png') }}" alt="{{ $product->name }}" id="mainPdpImage">
                     @endif
                 </div>
+            </div>
+            <div class="thumb-row">
+                @foreach ($product->images as $image)
+                    <div class="thumb {{ $image->is_primary ? 'active' : '' }}"
+                        onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}">
+                    </div>
+                @endforeach
+                @if ($product->images->count() == 0)
+                    <div class="thumb active"> <img src="{{ asset('img/product2.png') }}" alt=""></div>
+                    <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
+                @endif
             </div>
         </div>
 
@@ -2124,7 +2090,7 @@
         const pdpFallbackCartMeta = {
             product_name: @json($product->name),
             variant_name: '',
-            image: @json($defaultImageUrl),
+            image: @json($product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('img/product2.png')),
             unit_price: Number(@json((float) $initialPrice)),
             product_url: @json(request()->path()),
         };

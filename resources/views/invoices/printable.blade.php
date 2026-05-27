@@ -271,7 +271,6 @@
             <thead>
                 <tr>
                     <th>Product Description</th>
-                    <th class="text-center">HSN</th>
                     <th class="text-center">Qty</th>
                     <th class="text-right">Unit Price</th>
                     <th class="text-right">GST</th>
@@ -284,7 +283,6 @@
                         $vName   = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
                         $variant = $item->productVariant;
                         $product = $item->product;
-                        $hsnCode = $item->hsn_code ?? $item->item_snapshot['hsn_code'] ?? $product?->hsn_code ?? '-';
 
                         // Use stored tax values
                         $taxRate = $item->tax_percent;
@@ -325,7 +323,6 @@
                                 </div>
                             @endif
                         </td>
-                        <td class="text-center fw-bold">{{ $hsnCode ?: '-' }}</td>
                         <td class="text-center fw-bold">{{ $item->quantity }}</td>
                         <td class="text-right">₹{{ number_format($item->unit_price, 2) }}</td>
                         <td class="text-right">

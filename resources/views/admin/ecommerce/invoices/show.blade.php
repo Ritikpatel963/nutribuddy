@@ -667,8 +667,7 @@
                     <table class="inv-table">
                         <thead>
                             <tr>
-                                <th style="width:35%">Product Description</th>
-                                <th class="c" style="width:10%">HSN</th>
+                                <th style="width:45%">Product Description</th>
                                 <th class="c" style="width:10%">Qty</th>
                                 <th class="r" style="width:15%">Unit Price</th>
                                 <th class="r" style="width:15%">GST</th>
@@ -681,7 +680,6 @@
                                     $vName = $item->item_snapshot['variant_name'] ?? ($item->productVariant?->name ?? null);
                                     $variant = $item->productVariant;
                                     $product = $item->product;
-                                    $hsnCode = $item->hsn_code ?? $item->item_snapshot['hsn_code'] ?? $product?->hsn_code ?? '-';
                                     $taxRate = $item->tax_percent;
                                     $gstAmt = $item->tax_amount;
                                     $lineTotal = $item->line_total;
@@ -717,7 +715,6 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="c inv-qty">{{ $hsnCode ?: '-' }}</td>
                                     <td class="c inv-qty">{{ $item->quantity }}</td>
                                     <td class="r">₹{{ number_format($item->unit_price, 2) }}</td>
                                     <td class="r">

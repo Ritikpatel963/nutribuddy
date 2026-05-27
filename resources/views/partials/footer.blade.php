@@ -114,10 +114,9 @@
             <ul>
                 <li><a href="#">Track My Order</a></li>
                 <li><a href="{{ route('return-policy') }}">Returns & Refunds</a></li>
-                <li><a href="{{ route('shipping-policy') }}">Shipping Policy</a></li>
                 <li><a href="{{ route('privacy') }}">Privacy Policy</a></li>
                 <li><a href="{{ route('cookies') }}">Cookie Policy</a></li>
-                <li><a href="{{ route('terms') }}">Term & Condition</a></li>
+                <li><a href="{{ route('terms') }}">Terms of Service</a></li>
             </ul>
         </div>
 
@@ -156,8 +155,7 @@
         </div>
         <ul class="foot-links">
             <li><a href="{{ route('privacy') }}">Privacy Policy</a></li>
-            <li><a href="{{ route('terms') }}">Term & Condition</a></li>
-            <li><a href="{{ route('shipping-policy') }}">Shipping Policy</a></li>
+            <li><a href="{{ route('terms') }}">Terms of Service</a></li>
             <li><a href="{{ route('cookies') }}">Cookie Policy</a></li>
         </ul>
     </div>

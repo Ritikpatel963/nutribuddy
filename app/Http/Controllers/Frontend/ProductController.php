@@ -80,6 +80,7 @@ class ProductController extends Controller
             ])
             ->withCount(['reviews' => fn ($query) => $query->where('is_active', true)])
             ->withAvg(['reviews' => fn ($query) => $query->where('is_active', true)], 'rating')
+            ->orderByDesc('is_featured')
             ->latest('id')
             ->paginate($perPage)
             ->withQueryString();
