@@ -14,7 +14,9 @@ Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
 Route::prefix('/checkout')->name('checkout.')->group(function () {
     Route::get('/', [FrontendCheckoutController::class, 'index'])->name('index');
     Route::post('/', [FrontendCheckoutController::class, 'store'])->name('store');
-    Route::get('/cities/{stateCode}', [FrontendCheckoutController::class, 'getCities'])->name('cities');
+    Route::get('/cities/{stateCode}', [FrontendCheckoutController::class, 'getCities'])
+        ->where('stateCode', '[A-Za-z0-9\-]+')
+        ->name('cities');
 });
 
 require __DIR__ . '/auth.php';

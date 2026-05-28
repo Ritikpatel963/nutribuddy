@@ -86,8 +86,8 @@ class PricingService
         $discountTotal = 0.0;
         if ($coupon) {
             if ($coupon->discount_type === 'percentage') {
-                // Apply percentage on the tax-inclusive subtotal to match user expectations
-                $discountTotal = (($subtotal + $taxTotal) * (float) $coupon->discount_value) / 100;
+                // Apply percentage on the displayed subtotal (matches user expectations whether tax is hidden or not)
+                $discountTotal = ($displaySubtotal * (float) $coupon->discount_value) / 100;
             } else {
                 // Fixed amount: user wants the full value to be deducted
                 $discountTotal = (float) $coupon->discount_value;
@@ -134,16 +134,23 @@ class PricingService
         $displayCoinDiscount = $coinDiscount;
         $displayDiscountTotal = $discountTotal + $coinDiscount;
 
-        // Calculations for DB / Logic
-        $grandTotal = ($subtotal + $taxTotal + $shippingTotal) - $discountTotal - $coinDiscount;
+        // Round components first to ensure no amount mismatch
+        $roundedSubtotal = round($subtotal, 0);
+        $roundedTaxTotal = round($taxTotal, 0);
+        $roundedShippingTotal = round($shippingTotal, 0);
+        $roundedDiscountTotal = round($discountTotal, 0);
+        $roundedCoinDiscount = round($coinDiscount, 0);
+
+        // Calculations for DB / Logic based on rounded values
+        $grandTotal = ($roundedSubtotal + $roundedTaxTotal + $roundedShippingTotal) - $roundedDiscountTotal - $roundedCoinDiscount;
         $grandTotal = max(0, $grandTotal);
 
         return [
             'line_items' => $lineItems,
-            'subtotal' => round($subtotal, 0),
-            'tax_total' => round($taxTotal, 0),
-            'discount_total' => round($discountTotal, 0),
-            'coin_discount' => round($coinDiscount, 0),
+            'subtotal' => $roundedSubtotal,
+            'tax_total' => $roundedTaxTotal,
+            'discount_total' => $roundedDiscountTotal,
+            'coin_discount' => $roundedCoinDiscount,
             'coins_redeemed' => $coinsRedeemed,
             'max_redeemable_coins' => $maxRedeemableCoins,
             'total_coins_earned' => $totalCoinsEarned,
@@ -152,12 +159,12 @@ class PricingService
             'display_discount_total' => round($displayDiscountTotal, 0),
             'display_coupon_discount' => round($displayCouponDiscount, 0),
             'display_coin_discount' => round($displayCoinDiscount, 0),
-            'gst_total' => round($taxTotal, 0),
+            'gst_total' => $roundedTaxTotal,
             'cgst_total' => round($taxTotal / 2, 0),
             'sgst_total' => round($taxTotal / 2, 0),
             'igst_total' => 0.0,
-            'shipping_total' => round($shippingTotal, 0),
-            'grand_total' => round($grandTotal, 0),
+            'shipping_total' => $roundedShippingTotal,
+            'grand_total' => $grandTotal,
         ];
     }
 }
