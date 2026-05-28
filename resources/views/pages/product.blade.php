@@ -1,6 +1,10 @@
 @extends('layouts.main')
 @section('title', "NutriBuddy – India's #1 Kids Wellness Gummy")
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}?v={{ filemtime(public_path('assets/css/product.css')) }}">
+@endpush
+
 @section('content')
     @php
         $variantProducts = $product->variants

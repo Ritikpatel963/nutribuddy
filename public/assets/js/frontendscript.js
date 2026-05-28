@@ -367,31 +367,27 @@ function createPopupQuantityField(quantity, onCommit, maxStock) {
   async function submit(nextVal, options = {}) {
     const next = clampQty(nextVal, effectiveMax);
     pendingQty = next;
+
+    // Optimistic UI update
+    const prev = currentQty;
     input.value = next;
+    currentQty = next;
 
-    if (saveTimer) {
-      clearTimeout(saveTimer);
-      saveTimer = null;
-    }
-
-    if (next === currentQty) return;
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+    if (next === prev) return;
 
     if (!options.immediate) {
       saveTimer = setTimeout(() => submit(pendingQty, { immediate: true }), 550);
       return;
     }
 
-    setBusy(true);
-
     try {
       await onCommit(next);
-      currentQty = next;
-      input.value = next;
     } catch (err) {
-      input.value = currentQty;
-      pendingQty = currentQty;
-    } finally {
-      setBusy(false);
+      // Rollback on failure
+      currentQty = prev;
+      pendingQty = prev;
+      input.value = prev;
     }
   }
 
@@ -474,38 +470,29 @@ async function fetchCartPayload(options = {}) {
     return cartPayloadCache;
   }
 
-  if (cartFetchPromise) {
-    return cartFetchPromise;
-  }
+  if (cartFetchPromise) return cartFetchPromise;
 
   cartFetchPromise = (async () => {
-    let res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
-
+    let res = await fetch('/user/cart?t=' + Date.now(), { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
     if (isAuthRedirectResponse(res)) {
       cartPayloadCache = { guest: true };
       cartPayloadCacheAt = Date.now();
       return cartPayloadCache;
     }
-
-    if (!res.ok || !isJsonResponse(res)) {
-      throw new Error('cart');
-    }
+    if (!res.ok || !isJsonResponse(res)) throw new Error('cart');
 
     if (getPendingCartItems().length) {
       const synced = await syncPendingCartToServer();
       if (synced) {
-        res = await fetch('/user/cart', { headers: { 'Accept': 'application/json' } });
+        res = await fetch('/user/cart?t=' + Date.now(), { headers: { 'Accept': 'application/json' }, cache: 'no-store' });
         if (isAuthRedirectResponse(res)) {
           cartPayloadCache = { guest: true };
           cartPayloadCacheAt = Date.now();
           return cartPayloadCache;
         }
-        if (!res.ok || !isJsonResponse(res)) {
-          throw new Error('cart');
-        }
+        if (!res.ok || !isJsonResponse(res)) throw new Error('cart');
       }
     }
-
     cartPayloadCache = await res.json().catch(() => ({}));
     cartPayloadCacheAt = Date.now();
     return cartPayloadCache;
@@ -633,6 +620,7 @@ document.addEventListener('click', e => {
 });
 
 async function loadCartPopup(options = {}) {
+  if (!cartPopup || !cartPopup.classList.contains('open')) return;
   const itemsWrap = document.getElementById('cartPopupItems');
   const countEl   = document.getElementById('cartPopupCount');
   const subtotalEl = document.getElementById('cartPopupSubtotal');
@@ -657,6 +645,7 @@ async function loadCartPopup(options = {}) {
       }
 
       itemsWrap.innerHTML = '';
+      const guestFrag = document.createDocumentFragment();
       pendingItems.forEach(it => {
         const qty = Number(it.quantity || 1);
         const variantLabel = cartVariantLabel(it);
@@ -681,13 +670,15 @@ async function loadCartPopup(options = {}) {
         }, maxStock));
         row.querySelector('.cart-remove-btn').addEventListener('click', e => {
           e.stopPropagation();
+          row.remove(); // Optimistic remove
           removePendingCartItem(it.product_id, it.product_variant_id);
           invalidateCartPayloadCache();
           if (cartCountEl) cartCountEl.textContent = String(getPendingCartCount());
           loadCartPopup({ force: true });
         });
-        itemsWrap.appendChild(row);
+        guestFrag.appendChild(row);
       });
+      itemsWrap.appendChild(guestFrag);
       return;
     }
 
@@ -707,6 +698,7 @@ async function loadCartPopup(options = {}) {
     }
 
     itemsWrap.innerHTML = '';
+    const authFrag = document.createDocumentFragment();
     items.forEach(it => {
       const name  = it.product?.name || 'Product';
       const qty   = Number(it.quantity || 1);
@@ -738,18 +730,19 @@ async function loadCartPopup(options = {}) {
       }, itemMaxStock));
       row.querySelector('.cart-remove-btn').addEventListener('click', async e => {
         e.stopPropagation();
-        row.classList.add('is-updating');
+        row.remove(); // Optimistic remove
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         await fetch(`/user/cart/items/${it.id}`, {
           method: 'DELETE',
           headers: { 'Accept': 'application/json', ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}) }
-        });
+        }).catch(() => null);
         invalidateCartPayloadCache();
-        loadCartPopup({ force: true });
         syncCartCount({ force: true });
+        loadCartPopup({ force: true });
       });
-      itemsWrap.appendChild(row);
+      authFrag.appendChild(row);
     });
+    itemsWrap.appendChild(authFrag);
 
   } catch (_) {
     itemsWrap.innerHTML = '<div style="padding:10px;color:#888;font-size:.9rem;">Unable to load cart.</div>';
@@ -1612,6 +1605,7 @@ if (pincodeInput) pincodeInput.addEventListener('keydown', e => { if (e.key === 
 
 async function addToCart(productId, quantity = 1, productVariantId = null, sourceEl = null) {
   let requestSucceeded = false;
+  let previousCount = null;
   try {
     const resolveMeta = typeof globalThis.resolveCartItemMeta === 'function'
       ? globalThis.resolveCartItemMeta
@@ -1619,6 +1613,12 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
 
     const itemMeta = resolveMeta(productId, productVariantId, sourceEl);
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    if (cartCountEl) {
+      previousCount = Number(cartCountEl.textContent) || 0;
+      cartCountEl.textContent = String(previousCount + Number(quantity));
+    }
+    _flashCartBtn(sourceEl);
 
     const res = await fetch('/user/cart', {
       method: 'POST',
@@ -1639,11 +1639,11 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
       const pendingCount = getPendingCartCount();
       if (cartCountEl) cartCountEl.textContent = String(pendingCount);
       if (cartPopup?.classList.contains('open')) loadCartPopup({ force: true });
-      _flashCartBtn(sourceEl);
       return true;
     }
 
     if (!res.ok || !responseIsJson) {
+      if (cartCountEl && previousCount !== null) cartCountEl.textContent = String(previousCount);
       const payload = await res.json().catch(() => ({}));
       if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to add item to cart.', 'error');
       return false;
@@ -1657,10 +1657,10 @@ async function addToCart(productId, quantity = 1, productVariantId = null, sourc
     const countNow  = Number(payload.cart_count || 0) || items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
     if (cartCountEl) cartCountEl.textContent = String(countNow);
     if (cartPopup?.classList.contains('open')) loadCartPopup();
-    _flashCartBtn(sourceEl);
     return true;
 
   } catch (_) {
+    if (cartCountEl && previousCount !== null) cartCountEl.textContent = String(previousCount);
     if (!requestSucceeded && typeof nbToast === 'function') nbToast('Unable to add item to cart.', 'error');
     return false;
   }
