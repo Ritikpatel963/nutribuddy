@@ -601,11 +601,6 @@ if ($catSlug == 'multivitamins') {
                                     alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
                                 <img src="{{ asset('storage/' . $hoverImage->image_path) }}"
                                     alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
-                            @else
-                                <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
-                                    class="default-img" loading="lazy" decoding="async">
-                                <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}"
-                                    class="hover-img" loading="lazy" decoding="async">
                             @endif
                         </a>
                         @if ($product->is_featured)
@@ -614,12 +609,15 @@ if ($catSlug == 'multivitamins') {
                     </div>
                     <div class="pc-body">
                         <div class="pc-stars">
-                            @php $rating = $product->reviews->avg('rating') ?? 5; @endphp
+                            @php
+                                $reviewCount = $product->reviews->count();
+                                $rating = $reviewCount > 0 ? $product->reviews->avg('rating') : 0;
+                            @endphp
                             @for ($i = 0; $i < 5; $i++)
                                 {{ $i < $rating ? '★' : '☆' }}
                             @endfor
                             <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
-                                ({{ $product->reviews->count() > 0 ? $product->reviews->count() : '2,841' }} reviews)
+                                ({{ $reviewCount }} reviews)
                             </span>
                         </div>
                         <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}
@@ -707,15 +705,6 @@ if ($catSlug == 'multivitamins') {
                                         @endforeach
                                     </div>
                                 @endforeach
-                            @else
-                                <div class="newcarda">
-                                    <span><i>🛡️</i> Boosts Immunity</span>
-                                    <span><i>📈</i> Supports Growth</span>
-                                </div>
-                                <div class="newcarda">
-                                    <span><i>⚡</i> Increases Energy</span>
-                                    <span><i>😊</i> Improves Mood</span>
-                                </div>
                             @endif
                         </div>
                         <div class="pc-foot">

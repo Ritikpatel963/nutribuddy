@@ -286,7 +286,7 @@
 
             <div class="btn-box">
                 <a href="{{ route('cart.page') }}">View Cart</a>
-                <a href="{{ route('checkout') }}">Checkout &rarr;</a>
+                <a href="{{ route('checkout.index') }}">Checkout &rarr;</a>
             </div>
         </div>
     </div>

@@ -264,8 +264,10 @@
                 document.getElementById('pendingOrdersCount').textContent = counts.pending;
                 document.getElementById('deliveredOrdersCount').textContent = counts.delivered;
                 document.getElementById('cancelledOrdersCount').textContent = counts.cancelled;
-                document.getElementById('bannerOrdersCount').textContent = counts.total;
-                document.getElementById('bannerPendingCount').textContent = counts.pending;
+                const bannerOrdersCount = document.getElementById('bannerOrdersCount');
+                const bannerPendingCount = document.getElementById('bannerPendingCount');
+                if (bannerOrdersCount) bannerOrdersCount.textContent = counts.total;
+                if (bannerPendingCount) bannerPendingCount.textContent = counts.pending;
 
                 document.getElementById('tab-all').textContent = `All (${counts.total})`;
                 document.getElementById('tab-pending').textContent = `Pending (${counts.pending})`;
@@ -280,6 +282,7 @@
                     }
                 });
                 if (!response.ok) {
+                    checkEmpty();
                     return;
                 }
 

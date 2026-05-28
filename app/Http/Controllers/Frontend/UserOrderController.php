@@ -26,7 +26,14 @@ class UserOrderController extends Controller
     public function detailPage(Request $request, Order $order): View
     {
         abort_unless((int) $order->user_id === (int) $request->user()->id || $request->user()->role === 'admin', 403);
-        $order->load(['items.product', 'items.productVariant', 'payments', 'statusHistories.updatedBy', 'returns']);
+        $order->load([
+            'items.product',
+            'items.productVariant',
+            'items.returnItems.returnRequest',
+            'payments',
+            'statusHistories.updatedBy',
+            'returns',
+        ]);
 
         return view('pages.user-panel.order-details', [
             'order' => $order,
@@ -62,10 +69,24 @@ class UserOrderController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $orders = Order::withCount('items')
+        $orders = Order::with(['items.returnItems.returnRequest'])
+            ->withCount('items')
             ->where('user_id', $request->user()->id)
             ->latest()
             ->paginate(10);
+
+        $orders->getCollection()->transform(function (Order $order) {
+            $order->items->each(function ($item) {
+                $alreadyRequested = $item->returnItems
+                    ->filter(fn ($returnItem) => in_array($returnItem->returnRequest?->status, ['pending', 'approved', 'completed'], true))
+                    ->sum('quantity');
+
+                $item->setAttribute('returnable_quantity', max(0, (int) $item->quantity - (int) $alreadyRequested));
+                $item->setAttribute('returned_quantity', (int) $alreadyRequested);
+            });
+
+            return $order;
+        });
 
         return response()->json($orders);
     }

@@ -31,12 +31,13 @@
                                     <div class="d-flex flex-column">
                                         <a href="{{ route('admin.ecommerce.order-returns.show', $return) }}" class="text-md fw-bold text-primary-600 hover-text-primary-700">#{{ $return->return_number }}</a>
                                         <small class="text-secondary-light">{{ optional($return->created_at)->format('d M Y, H:i') }}</small>
+                                        <small class="text-secondary-light">Return Qty: {{ $return->items->sum('quantity') }}</small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
                                         <a href="{{ route('admin.ecommerce.orders.show', $return->order_id) }}" class="text-md fw-bold text-primary-600 hover-text-primary-700">#{{ $return->order->order_number }}</a>
-                                        <small class="text-secondary-light">Items: {{ $return->order->items_count }}</small>
+                                        <small class="text-secondary-light">Order Items: {{ $return->order->items_count }}</small>
                                     </div>
                                 </td>
                                 <td>

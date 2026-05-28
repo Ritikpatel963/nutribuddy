@@ -312,7 +312,7 @@
                     <span id="cartPageSubtotal">Rs. 0</span>
                 </div>
                 <div style="margin-top:14px;display:flex;gap:10px;flex-direction:column;">
-                    <a href="{{ route('checkout') }}" class="nav-cta" id="cartCheckoutBtn"
+                    <a href="{{ route('checkout.index') }}" class="nav-cta" id="cartCheckoutBtn"
                         style="text-align:center;text-decoration:none;">Checkout</a>
                     <a href="{{ route('product') }}" class="nav-cta"
                         style="border:2px solid var(--pkl);text-align:center;text-decoration:none;">Continue Shopping</a>

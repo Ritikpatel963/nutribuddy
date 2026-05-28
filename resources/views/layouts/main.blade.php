@@ -362,6 +362,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="{{ asset('assets/js/frontendscript.js') }}?v={{ filemtime(public_path('assets/js/frontendscript.js')) }}"
         defer></script>
+    <script src="{{ asset('assets/js/pages/allfile.js') }}?v={{ filemtime(public_path('assets/js/pages/allfile.js')) }}"
+        defer></script>
     @stack('scripts')
 
     <script>

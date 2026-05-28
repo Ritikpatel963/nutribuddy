@@ -270,7 +270,7 @@
 
         if (typeof window.addToCart === 'function') {
             const added = await window.addToCart(productId, qty, variantId, btn);
-            if (added) window.location.href = "{{ route('checkout') }}";
+            if (added) window.location.href = "{{ route('checkout.index') }}";
         }
     }
 

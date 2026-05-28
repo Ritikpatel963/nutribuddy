@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
@@ -25,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Block destructive database commands (migrate:fresh, db:wipe, etc.)
+        // unless explicitly allowed via ALLOW_DB_RESET=true in .env
+        if (! app()->environment('testing') && ! filter_var(env('ALLOW_DB_RESET', false), FILTER_VALIDATE_BOOLEAN)) {
+            DB::prohibitDestructiveCommands();
+        }
+
         \App\Models\Order::observe(\App\Observers\OrderObserver::class);
         \App\Models\OrderItem::observe(\App\Observers\OrderItemObserver::class);
 
@@ -111,4 +118,5 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
     }
+
 }

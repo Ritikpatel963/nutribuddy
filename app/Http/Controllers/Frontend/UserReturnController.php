@@ -7,8 +7,10 @@ use App\Http\Requests\Frontend\ReturnStoreRequest;
 use App\Mail\ReturnRequestCustomerMail;
 use App\Models\Order;
 use App\Models\OrderReturn;
+use App\Models\OrderReturnItem;
 use App\Models\User;
 use App\Notifications\NewReturnNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -18,7 +20,7 @@ class UserReturnController extends Controller
 {
     public function index(Request $request)
     {
-        $returns = OrderReturn::with('order')
+        $returns = OrderReturn::with(['order', 'items.orderItem'])
             ->whereHas('order', fn ($query) => $query->where('user_id', $request->user()->id))
             ->latest()
             ->paginate(10);
@@ -46,14 +48,43 @@ class UserReturnController extends Controller
 
         $validated = $request->validated();
 
-        if ($order->returns()->whereIn('status', ['pending', 'approved', 'completed'])->exists()) {
+        $order->load(['items.returnItems.returnRequest']);
+        $returnLines = collect($validated['items'])
+            ->mapWithKeys(fn ($line) => [(int) $line['order_item_id'] => (int) $line['quantity']]);
+
+        $orderItemsById = $order->items->keyBy('id');
+        $invalidLines = [];
+        $lineModels = [];
+
+        foreach ($returnLines as $orderItemId => $quantity) {
+            $item = $orderItemsById->get($orderItemId);
+            if (! $item) {
+                $invalidLines[] = 'Invalid item selected.';
+                continue;
+            }
+
+            $alreadyRequested = $item->returnItems
+                ->filter(fn ($returnItem) => in_array($returnItem->returnRequest?->status, ['pending', 'approved', 'completed'], true))
+                ->sum('quantity');
+
+            $available = max(0, (int) $item->quantity - (int) $alreadyRequested);
+            if ($quantity > $available) {
+                $invalidLines[] = "{$item->product_name} has only {$available} returnable quantity left.";
+                continue;
+            }
+
+            $lineModels[] = [$item, $quantity];
+        }
+
+        if ($invalidLines || empty($lineModels)) {
             if ($request->wantsJson()) {
                 return response()->json([
-                    'message' => 'Return request is already raised for this order.',
+                    'message' => $invalidLines[0] ?? 'Please select at least one return item.',
+                    'errors' => ['items' => $invalidLines ?: ['Please select at least one return item.']],
                 ], 422);
             }
 
-            return back()->with('error', 'Return request is already raised for this order.');
+            return back()->with('error', $invalidLines[0] ?? 'Please select at least one return item.');
         }
 
         $mediaPaths = [];
@@ -64,14 +95,33 @@ class UserReturnController extends Controller
             }
         }
 
-        $orderReturn = OrderReturn::create([
-            'order_id' => $order->id,
-            'return_number' => 'RET-' . now()->format('Ymd') . strtoupper(Str::random(5)),
-            'reason' => $validated['reason'] . (!empty($validated['comments']) ? ': ' . $validated['comments'] : ''),
-            'status' => 'pending',
-            'refund_amount' => 0,
-            'media_paths' => count($mediaPaths) > 0 ? $mediaPaths : null,
-        ]);
+        $orderReturn = DB::transaction(function () use ($order, $validated, $mediaPaths, $lineModels) {
+            $orderReturn = OrderReturn::create([
+                'order_id' => $order->id,
+                'return_number' => 'RET-' . now()->format('Ymd') . strtoupper(Str::random(5)),
+                'reason' => $validated['reason'] . (!empty($validated['comments']) ? ': ' . $validated['comments'] : ''),
+                'status' => 'pending',
+                'refund_amount' => collect($lineModels)->sum(
+                    fn ($line) => round(((float) $line[0]->line_total / max(1, (int) $line[0]->quantity)) * (int) $line[1], 2)
+                ),
+                'media_paths' => count($mediaPaths) > 0 ? $mediaPaths : null,
+            ]);
+
+            foreach ($lineModels as [$item, $quantity]) {
+                $unitRefund = (float) $item->line_total / max(1, (int) $item->quantity);
+                OrderReturnItem::create([
+                    'order_return_id' => $orderReturn->id,
+                    'order_item_id' => $item->id,
+                    'product_name' => $item->product_name,
+                    'sku' => $item->sku,
+                    'quantity' => $quantity,
+                    'unit_price' => $item->unit_price,
+                    'line_total' => round($unitRefund * $quantity, 2),
+                ]);
+            }
+
+            return $orderReturn->load('items.orderItem');
+        });
 
         // Email to customer
         if ($request->user()->email) {

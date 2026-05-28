@@ -1951,6 +1951,17 @@
         </script>
     @endguest
 
+    @if ($errors->any())
+        <div class="checkout-validation-errors">
+            <strong>Please fix the following:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- HERO -->
     <section class="product-listing-hero reveal">
         <div class="product-listing-hero-inner">
@@ -2081,37 +2092,25 @@
                                     <div class="form-group"><label>Street / Area / Colony *</label><input type="text" id="addressLine2" placeholder="e.g. HSR Layout, Sector 3"></div>
                                 </div>
                                 <div class="form-grid" style="margin-top:14px">
-                                    <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6" placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
-                                    <div class="form-group"><label>City *</label><input type="text" placeholder="City" id="cityField"></div>
-                                </div>
-                                <div class="form-grid" style="margin-top:14px">
                                     <div class="form-group">
                                         <label>State *</label>
-                                        <select id="stateField">
-                                            <option value="">Select State</option>
-                                            <option>Andhra Pradesh</option>
-                                            <option>Assam</option>
-                                            <option>Bihar</option>
-                                            <option>Delhi</option>
-                                            <option>Goa</option>
-                                            <option>Gujarat</option>
-                                            <option>Haryana</option>
-                                            <option>Himachal Pradesh</option>
-                                            <option>Jharkhand</option>
-                                            <option selected>Karnataka</option>
-                                            <option>Kerala</option>
-                                            <option>Madhya Pradesh</option>
-                                            <option>Maharashtra</option>
-                                            <option>Odisha</option>
-                                            <option>Punjab</option>
-                                            <option>Rajasthan</option>
-                                            <option>Tamil Nadu</option>
-                                            <option>Telangana</option>
-                                            <option>Uttar Pradesh</option>
-                                            <option>Uttarakhand</option>
-                                            <option>West Bengal</option>
-                                        </select>
+                                        <div class="checkout-combobox">
+                                            <input type="text" id="stateField" placeholder="Type or select state" autocomplete="off" data-old-state="{{ old('state') }}">
+                                            <input type="hidden" id="stateCodeField">
+                                            <div class="checkout-combobox-menu" id="stateDropdown" hidden></div>
+                                        </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label>City *</label>
+                                        <div class="checkout-combobox checkout-city-select-wrap">
+                                            <input type="text" id="cityField" placeholder="Select state first" autocomplete="off" data-old-city="{{ old('city') }}" disabled>
+                                            <div class="checkout-combobox-menu" id="cityDropdown" hidden></div>
+                                            <span class="checkout-city-spinner" id="citySpinner" aria-hidden="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-grid" style="margin-top:14px">
+                                    <div class="form-group"><label>Pincode *</label><input type="text" maxlength="6" placeholder="6-digit pincode" id="newPincode" oninput="autoFillCity()"></div>
                                     <div class="form-group">
                                         <label>Address Type</label>
                                         <div class="addr-type-row">
@@ -2432,6 +2431,102 @@
             }
 
             /* ══ ADDRESS ══ */
+            const checkoutCitiesUrlTemplate = @json(route('checkout.cities', ['stateCode' => '__STATE__']));
+            const checkoutStateOptions = @json($states);
+            const checkoutCitiesByState = @json($stateCityMap);
+            const checkoutAllCities = @json($allCities);
+            let checkoutCityOptions = [];
+
+            function normalizeLookup(value = '') {
+                return String(value || '').trim().toLowerCase();
+            }
+
+            function closeCheckoutDropdown(id) {
+                const menu = document.getElementById(id);
+                if (menu) menu.hidden = true;
+            }
+
+            function renderCheckoutDropdown(menuId, options = [], onSelect) {
+                const menu = document.getElementById(menuId);
+                if (!menu) return;
+
+                menu.innerHTML = '';
+
+                if (!options.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'checkout-combobox-empty';
+                    empty.textContent = 'No matches found';
+                    menu.appendChild(empty);
+                    menu.hidden = false;
+                    return;
+                }
+
+                options.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `checkout-combobox-option${index === 0 ? ' active' : ''}`;
+                    btn.textContent = option.name || option;
+                    btn.addEventListener('mousedown', event => {
+                        event.preventDefault();
+                        onSelect(option);
+                    });
+                    menu.appendChild(btn);
+                });
+
+                menu.hidden = false;
+            }
+
+            function matchingStates(query = '') {
+                const target = normalizeLookup(query);
+                const states = checkoutStateOptions || [];
+
+                if (!target) return states;
+
+                return states.filter(state => normalizeLookup(state.name).includes(target));
+            }
+
+            function matchingCities(query = '') {
+                const target = normalizeLookup(query);
+                const localCities = checkoutCityOptions || [];
+                const fallbackCities = checkoutAllCities || [];
+                const citySet = new Map();
+
+                localCities.forEach(city => citySet.set(normalizeLookup(city), city));
+                fallbackCities.forEach(city => {
+                    const key = normalizeLookup(city);
+                    if (!citySet.has(key)) citySet.set(key, city);
+                });
+
+                const cities = Array.from(citySet.values());
+
+                if (!target) return cities;
+
+                return cities.filter(city => normalizeLookup(city).includes(target));
+            }
+
+            async function selectStateOption(state) {
+                const stateEl = document.getElementById('stateField');
+                const stateCodeEl = document.getElementById('stateCodeField');
+                const cityEl = document.getElementById('cityField');
+
+                if (stateEl) stateEl.value = state.name || '';
+                if (stateCodeEl) stateCodeEl.value = state.code || '';
+                closeCheckoutDropdown('stateDropdown');
+                await loadCitiesForState(state.code || '');
+
+                if (cityEl && !cityEl.disabled) {
+                    cityEl.focus();
+                    renderCheckoutDropdown('cityDropdown', matchingCities(cityEl.value), selectCityOption);
+                }
+            }
+
+            function selectCityOption(city) {
+                const cityEl = document.getElementById('cityField');
+
+                if (cityEl) cityEl.value = city || '';
+                closeCheckoutDropdown('cityDropdown');
+            }
+
             function getNewAddressPayload() {
                 const firstName = document.getElementById('firstName')?.value?.trim() || '';
                 const lastName = document.getElementById('lastName')?.value?.trim() || '';
@@ -2627,12 +2722,16 @@
             }
 
             function clearNewAddressForm() {
-                ['firstName','lastName','addressPhone','addressLine1','addressLine2','newPincode','cityField'].forEach(id => {
+                ['firstName','lastName','addressPhone','addressLine1','addressLine2','newPincode'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.value = '';
                 });
                 const stateEl = document.getElementById('stateField');
                 if (stateEl) stateEl.selectedIndex = 0;
+                if (stateEl) stateEl.value = '';
+                const stateCodeEl = document.getElementById('stateCodeField');
+                if (stateCodeEl) stateCodeEl.value = '';
+                resetCityDropdown();
                 const activeType = document.querySelector('.addr-type-btn.active');
                 if (activeType) activeType.classList.remove('active');
                 const homeBtn = document.querySelector('.addr-type-btn[data-type="Home"]');
@@ -2650,6 +2749,14 @@
                 const payload = getNewAddressPayload();
                 if (!hasRequiredNewAddressFields(payload)) {
                     nbToast('Please fill all required address fields.', 'warning');
+                    return;
+                }
+                if (!findStateOption(payload.state)) {
+                    nbToast('Please select a valid state from the list.', 'warning');
+                    return;
+                }
+                if (!cityExistsInOptions(payload.city)) {
+                    nbToast('Please select a valid city from the list.', 'warning');
                     return;
                 }
 
@@ -2735,6 +2842,112 @@
                 el.classList.add('active');
             }
 
+            function resetCityDropdown(message = 'Select State First') {
+                const cityEl = document.getElementById('cityField');
+                if (!cityEl) return;
+
+                checkoutCityOptions = [];
+                cityEl.value = '';
+                cityEl.placeholder = message;
+                cityEl.disabled = true;
+                closeCheckoutDropdown('cityDropdown');
+            }
+
+            function setCityDropdownOptions(cities = [], selectedCity = '') {
+                const cityEl = document.getElementById('cityField');
+                if (!cityEl) return;
+
+                checkoutCityOptions = cities;
+                cityEl.value = selectedCity || '';
+                cityEl.placeholder = cities.length ? 'Type or select city' : 'No cities found';
+                cityEl.disabled = cities.length === 0;
+                closeCheckoutDropdown('cityDropdown');
+            }
+
+            function findStateOption(value = '') {
+                const target = normalizeLookup(value);
+                if (!target) return null;
+
+                return (checkoutStateOptions || []).find(state => {
+                    return normalizeLookup(state.name) === target ||
+                        normalizeLookup(state.code) === target;
+                }) || null;
+            }
+
+            function cityExistsInOptions(city = '') {
+                const target = normalizeLookup(city);
+                if (!target) return false;
+
+                return (checkoutCityOptions || []).some(option => normalizeLookup(option) === target) ||
+                    (checkoutAllCities || []).some(option => normalizeLookup(option) === target);
+            }
+
+            async function loadCitiesForState(stateCode, selectedCity = '') {
+                const spinner = document.getElementById('citySpinner');
+
+                if (!stateCode) {
+                    resetCityDropdown();
+                    return;
+                }
+
+                resetCityDropdown('Loading cities...');
+                spinner?.classList.add('show');
+
+                try {
+                    if (Object.prototype.hasOwnProperty.call(checkoutCitiesByState, stateCode)) {
+                        setCityDropdownOptions(checkoutCitiesByState[stateCode] || [], selectedCity);
+                        return;
+                    }
+
+                    const res = await fetch(checkoutCitiesUrlTemplate.replace('__STATE__', encodeURIComponent(stateCode)), {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const payload = await res.json().catch(() => ({}));
+                    setCityDropdownOptions(payload.cities || [], selectedCity);
+                } catch (error) {
+                    resetCityDropdown('Unable to load cities');
+                } finally {
+                    spinner?.classList.remove('show');
+                }
+            }
+
+            function hydrateLocationFields(stateValue = '', cityValue = '') {
+                const stateOption = findStateOption(stateValue);
+                const stateEl = document.getElementById('stateField');
+                const stateCodeEl = document.getElementById('stateCodeField');
+
+                if (stateEl && stateOption) {
+                    stateEl.value = stateOption.name || '';
+                    if (stateCodeEl) stateCodeEl.value = stateOption.code || '';
+                    loadCitiesForState(stateOption.code || '', cityValue || '');
+                } else {
+                    if (stateCodeEl) stateCodeEl.value = '';
+                    resetCityDropdown();
+                }
+            }
+
+            function handleStateTyping() {
+                const stateEl = document.getElementById('stateField');
+                const stateCodeEl = document.getElementById('stateCodeField');
+                const option = findStateOption(stateEl?.value || '');
+
+                renderCheckoutDropdown('stateDropdown', matchingStates(stateEl?.value || ''), selectStateOption);
+
+                if (!option) {
+                    if (stateCodeEl) stateCodeEl.value = '';
+                    resetCityDropdown('Type and select a valid state');
+                    return;
+                }
+
+                const code = option.code || '';
+                if (stateCodeEl?.value === code) return;
+
+                if (stateCodeEl) stateCodeEl.value = code;
+                loadCitiesForState(code);
+            }
+
             function autoFillCity() {
                 const pin = document.getElementById('newPincode').value;
                 if (pin.length === 6) {
@@ -2746,7 +2959,10 @@
                         '500001': 'Hyderabad'
                     };
                     if (cities[pin]) {
-                        document.getElementById('cityField').value = cities[pin];
+                        const cityEl = document.getElementById('cityField');
+                        if (cityEl && !cityEl.disabled) {
+                            cityEl.value = cities[pin];
+                        }
                     }
                 }
             }
@@ -3889,8 +4105,7 @@
                 if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
                 if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
                 if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-                if (document.getElementById('cityField')) document.getElementById('cityField').value = a.city || '';
-                if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
+                hydrateLocationFields(a.state || '', a.city || '');
                 
                 if (a.label) {
                     const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
@@ -3985,6 +4200,36 @@
             }
 
             document.addEventListener('DOMContentLoaded', function () {
+                const stateEl = document.getElementById('stateField');
+                const cityEl = document.getElementById('cityField');
+                if (stateEl) {
+                    stateEl.addEventListener('input', handleStateTyping);
+                    stateEl.addEventListener('change', handleStateTyping);
+                    stateEl.addEventListener('focus', function() {
+                        renderCheckoutDropdown('stateDropdown', matchingStates(this.value), selectStateOption);
+                    });
+
+                    if (stateEl.value) {
+                        hydrateLocationFields(stateEl.value, cityEl?.dataset.oldCity || '');
+                    }
+                }
+                if (cityEl) {
+                    cityEl.addEventListener('input', function() {
+                        renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
+                    });
+                    cityEl.addEventListener('focus', function() {
+                        if (!this.disabled) {
+                            renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
+                        }
+                    });
+                }
+                document.addEventListener('mousedown', function(event) {
+                    if (!event.target.closest('.checkout-combobox')) {
+                        closeCheckoutDropdown('stateDropdown');
+                        closeCheckoutDropdown('cityDropdown');
+                    }
+                });
+
                 // Only call loadAddresses() if no saved addresses were rendered server-side
                 const hasSavedCards = document.querySelectorAll('#savedAddressList .addr-item').length > 0;
                 if (!hasSavedCards) {
@@ -4004,8 +4249,7 @@
                         if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
                         if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
                         if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-                        if (document.getElementById('cityField')) document.getElementById('cityField').value = a.city || '';
-                        if (document.getElementById('stateField')) document.getElementById('stateField').value = a.state || '';
+                        hydrateLocationFields(a.state || '', a.city || '');
                         if (a.label) {
                             const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
                             if (btn) toggleAddrType(btn);

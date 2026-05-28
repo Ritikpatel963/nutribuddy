@@ -1,5 +1,5 @@
-@extends('layouts.main')
-@section('title', 'Blog & Tips — NutriBuddy Kids')
+﻿@extends('layouts.main')
+@section('title', 'Blog & Tips â€” NutriBuddy Kids')
 
 @push('styles')
     <style>
@@ -346,7 +346,7 @@
                 <h2 class="blog-section-title">Practical Wellness Reads</h2>
                 <p class="blog-section-sub">Helpful, parent-friendly articles on nutrition, habits, recipes and everyday child wellness.</p>
             </div>
-            <div class="blog-count-pill"><span id="blogVisibleCount">{{ isset($blogPosts) ? count($blogPosts) : 6 }}</span>&nbsp;articles</div>
+            <div class="blog-count-pill"><span id="blogVisibleCount">{{ isset($blogPosts) ? count($blogPosts) : 0 }}</span>&nbsp;articles</div>
         </div>
 
         <!-- Filters -->
@@ -362,63 +362,6 @@
         <div class="blog-grid">
             @php
                 $backendBlogPosts = isset($blogPosts) ? collect($blogPosts) : collect();
-                $fallbackBlogPosts = [
-                    [
-                        'id' => 1,
-                        'title' => '5 Essential Vitamins Every Child Needs',
-                        'excerpt' => 'Discover the five most important vitamins for children\'s growth, immunity, and cognitive development.',
-                        'category' => 'Nutrition',
-                        'date' => 'May 3, 2026',
-                        'readTime' => '5 min read',
-                        'emoji' => '🧬'
-                    ],
-                    [
-                        'id' => 2,
-                        'title' => 'How to Make Nutrition Fun for Picky Eaters',
-                        'excerpt' => 'Turn supplement time into an exciting ritual your kids actually look forward to with these proven strategies.',
-                        'category' => 'Parenting',
-                        'date' => 'May 1, 2026',
-                        'readTime' => '4 min read',
-                        'emoji' => '🎨'
-                    ],
-                    [
-                        'id' => 3,
-                        'title' => 'Ayurvedic Approaches to Child Wellness',
-                        'excerpt' => 'Explore ancient Ayurvedic wisdom for maintaining balance and vitality in children\'s health.',
-                        'category' => 'Wellness',
-                        'date' => 'Apr 28, 2026',
-                        'readTime' => '6 min read',
-                        'emoji' => '🌿'
-                    ],
-                    [
-                        'id' => 4,
-                        'title' => 'Healthy Recipes Kids Will Actually Eat',
-                        'excerpt' => 'Delicious, nutrient-packed recipes that combine Ayurvedic principles with modern flavors.',
-                        'category' => 'Recipes',
-                        'date' => 'Apr 25, 2026',
-                        'readTime' => '7 min read',
-                        'emoji' => '🥘'
-                    ],
-                    [
-                        'id' => 5,
-                        'title' => 'Boosting Immunity Naturally: The Science Behind Ashwagandha',
-                        'excerpt' => 'Learn why Ashwagandha is the perfect addition to your child\'s wellness routine.',
-                        'category' => 'Nutrition',
-                        'date' => 'Apr 22, 2026',
-                        'readTime' => '5 min read',
-                        'emoji' => '🛡️'
-                    ],
-                    [
-                        'id' => 6,
-                        'title' => 'Building Healthy Eating Habits From Early Childhood',
-                        'excerpt' => 'Establish lifelong patterns of nutrition awareness with expert parenting techniques.',
-                        'category' => 'Parenting',
-                        'date' => 'Apr 19, 2026',
-                        'readTime' => '6 min read',
-                        'emoji' => '👶'
-                    ],
-                ];
-
                 $blogPosts = $backendBlogPosts->count()
                     ? $backendBlogPosts->map(function ($post) {
                         $words = str_word_count(strip_tags($post->content ?? ''));
@@ -438,11 +381,11 @@
                             'category' => $post->category?->name ?? 'Wellness',
                             'date' => optional($post->published_at ?? $post->created_at)->format('M j, Y'),
                             'readTime' => max(1, (int) ceil($words / 200)) . ' min read',
-                            'emoji' => '📚',
+                            'emoji' => 'ðŸ“š',
                             'image' => $imageUrl,
                         ];
                     })->values()->all()
-                    : $fallbackBlogPosts;
+                    : [];
             @endphp
 
             @foreach($blogPosts as $post)
@@ -462,11 +405,11 @@
                         </h3>
                         <p class="blog-card-excerpt">{{ $post['excerpt'] }}</p>
                         <div class="blog-card-meta">
-                            <span class="blog-card-date">📅 {{ $post['date'] }}</span>
-                            <span class="blog-card-read-time">⏱️ {{ $post['readTime'] }}</span>
+                            <span class="blog-card-date">ðŸ“… {{ $post['date'] }}</span>
+                            <span class="blog-card-read-time">â±ï¸ {{ $post['readTime'] }}</span>
                         </div>
                         <a href="{{ route('blog.show', $post['id']) }}" class="blog-card-link">
-                            Read Article →
+                            Read Article â†’
                         </a>
                     </div>
                 </div>
@@ -474,12 +417,6 @@
             <div class="blog-empty" id="blogEmptyState">No articles found in this category.</div>
         </div>
 
-        <!-- Pagination -->
-        <div class="blog-pagination">
-            <button class="pagination-btn active">1</button>
-            <button class="pagination-btn">2</button>
-            <button class="pagination-btn">3</button>
-        </div>
     </section>
 
     <!-- Parent Reviews & FAQ -->

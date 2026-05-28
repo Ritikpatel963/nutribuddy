@@ -263,34 +263,11 @@
               <a href="mailto:support@nutribuddy.in" class="contact-btn">💬 Contact Support</a>
             </div>
 
-            <div class="side-card" style="margin-top:16px;">
-              <div class="sc-head">
-                <div
-                  style="width:28px;height:28px;border-radius:9px;background:var(--pkl);display:flex;align-items:center;justify-content:center;font-size:.9rem">
-                  ↩️</div>
-                <h3>Raise Return Request</h3>
-              </div>
-              <div class="sc-body">
-                <form id="returnRequestForm" enctype="multipart/form-data">
-                  <select id="returnOrderSelect" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;" required>
-                    <option value="">Select Delivered Order</option>
-                  </select>
-                  <select id="returnReasonSelect" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;" required>
-                    <option value="">Select Return Reason</option>
-                    @foreach(\App\Support\OrderFlow::RETURN_REASONS as $reason)
-                        <option value="{{ $reason }}">{{ $reason }}</option>
-                    @endforeach
-                  </select>
-                  <textarea id="returnCommentsInput" class="contact-btn" style="width:100%;min-height:90px;border:none;text-align:left;margin-bottom:10px;"
-                    placeholder="Additional comments (optional)"></textarea>
-                  
-                  <label for="returnAttachmentsInput" style="display:block;margin-bottom:5px;font-size:0.85rem;font-weight:700;color:var(--dk);">Upload Images/Videos (Optional, Max 10MB)</label>
-                  <input type="file" id="returnAttachmentsInput" name="attachments[]" class="contact-btn" style="width:100%;margin-bottom:10px;border:none;padding-top:10px;padding-bottom:10px;" accept="image/*,video/*" multiple>
-
-                  <button type="submit" class="contact-btn" style="margin-top:10px;border:none;cursor:pointer;">Submit Return Request</button>
-                </form>
-                <p id="returnFormMessage" style="margin-top:10px;font-size:.85rem;"></p>
-              </div>
+            <div class="side-card" style="margin-top:16px; text-align:center; padding: 30px;">
+              <div style="font-size: 3rem; margin-bottom: 10px;">↩️</div>
+              <h3 style="margin-bottom: 15px; font-family: 'Fredoka One', cursive; color: var(--dk);">Want to return an item?</h3>
+              <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">If your item meets our return policy conditions, you can easily raise a request here.</p>
+              <button type="button" class="contact-btn" id="nbRetModalOpenBtn" style="border:none;cursor:pointer;width:100%;font-size:1.05rem;padding:12px;background:linear-gradient(135deg, var(--pk), var(--pkd));color:#fff;border-radius:12px;font-weight:900;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 20px rgba(255, 77, 143, 0.3)';" onmouseout="this.style.transform='none';this.style.boxShadow='none';">Raise Return Request</button>
             </div>
 
             <div class="side-card" style="margin-top:16px;">
@@ -311,9 +288,38 @@
       </div>
     </div>
 
-@push('scripts')
-    
+    <!-- Return Request Modal -->
+    <div id="nbRetModalOverlay" class="nb-ret-overlay" style="display:none;">
+        <div id="nbRetModalBox" class="nb-ret-modal">
+            <div class="nb-ret-modal-header">
+                <h3>Raise Return Request ↩️</h3>
+                <button type="button" id="nbRetModalCloseBtn" class="nb-ret-close">&times;</button>
+            </div>
+            <div class="nb-ret-modal-body">
+                <form id="returnRequestForm" enctype="multipart/form-data">
+                    <select id="returnOrderSelect" class="nb-ret-input" required>
+                        <option value="">Select Delivered Order</option>
+                    </select>
+                    <div id="returnItemsContainer" class="nb-ret-items-wrap"></div>
+                    <select id="returnReasonSelect" class="nb-ret-input" required>
+                        <option value="">Select Return Reason</option>
+                        @foreach(\App\Support\OrderFlow::RETURN_REASONS as $reason)
+                            <option value="{{ $reason }}">{{ $reason }}</option>
+                        @endforeach
+                    </select>
+                    <textarea id="returnCommentsInput" class="nb-ret-input nb-ret-textarea" placeholder="Additional comments (optional)"></textarea>
+                    
+                    <label class="nb-ret-file-label">Upload Images/Videos (Optional, Max 10MB)</label>
+                    <input type="file" id="returnAttachmentsInput" name="attachments[]" class="nb-ret-input nb-ret-file" accept="image/*,video/*" multiple>
 
+                    <button type="submit" class="nb-ret-submit-btn">Submit Return Request</button>
+                </form>
+                <p id="returnFormMessage" class="nb-ret-msg"></p>
+            </div>
+        </div>
+    </div>
+
+@push('scripts')
     <script>
     const returnApiConfig = {
       ordersUrl: @json(route('user.orders.index')),
@@ -321,96 +327,6 @@
       createReturnUrlTemplate: @json(route('user.orders.returns.store', ['order' => '__ORDER_ID__'])),
       csrfToken: @json(csrf_token())
     };
-
-    function renderReturns(returns) {
-      const container = document.getElementById('myReturnsContainer');
-      if (!returns.length) {
-        container.innerHTML = '<p>No return requests found.</p>';
-        return;
-      }
-
-      container.innerHTML = returns.map(function(item) {
-        const orderNumber = item.order ? item.order.order_number : '-';
-        return `<div style="padding:10px 0;border-bottom:1px solid var(--line,#eee);">
-          <p><strong>${item.return_number}</strong> - ${String(item.status || '').toUpperCase()}</p>
-          <p style="font-size:.82rem;color:var(--mu,#666)">Order: ${orderNumber}</p>
-        </div>`;
-      }).join('');
-    }
-
-    function renderDeliveredOrders(orders) {
-      const select = document.getElementById('returnOrderSelect');
-      const delivered = orders.filter(function(order) { return order.status === 'delivered'; });
-      select.innerHTML = '<option value="">Select Delivered Order</option>';
-      delivered.forEach(function(order) {
-        const option = document.createElement('option');
-        option.value = order.id;
-        option.textContent = `${order.order_number} - ₹${Number(order.grand_total || 0).toFixed(2)}`;
-        select.appendChild(option);
-      });
-    }
-
-    async function loadReturnData() {
-      const [ordersResponse, returnsResponse] = await Promise.all([
-        fetch(returnApiConfig.ordersUrl, { headers: { 'Accept': 'application/json' } }),
-        fetch(returnApiConfig.returnsUrl, { headers: { 'Accept': 'application/json' } })
-      ]);
-
-      if (ordersResponse.ok) {
-        const ordersPayload = await ordersResponse.json();
-        renderDeliveredOrders(ordersPayload.data || []);
-      }
-
-      if (returnsResponse.ok) {
-        const returnsPayload = await returnsResponse.json();
-        renderReturns(returnsPayload.data || []);
-      }
-    }
-
-    async function submitReturnRequest(event) {
-      event.preventDefault();
-      const orderId = document.getElementById('returnOrderSelect').value;
-      const reason = document.getElementById('returnReasonSelect').value;
-      const comments = document.getElementById('returnCommentsInput').value.trim();
-      const attachments = document.getElementById('returnAttachmentsInput').files;
-      const message = document.getElementById('returnFormMessage');
-
-      if (!orderId || !reason) {
-        message.textContent = 'Please select an order and a return reason.';
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('reason', reason);
-      if (comments) formData.append('comments', comments);
-      
-      for (let i = 0; i < attachments.length; i++) {
-        formData.append('attachments[]', attachments[i]);
-      }
-
-      message.textContent = 'Submitting...';
-
-      const response = await fetch(returnApiConfig.createReturnUrlTemplate.replace('__ORDER_ID__', orderId), {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': returnApiConfig.csrfToken
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        const payload = await response.json().catch(function() { return {}; });
-        message.textContent = payload.message || 'Unable to submit return request.';
-        return;
-      }
-
-      message.textContent = 'Return request submitted successfully.';
-      document.getElementById('returnReasonSelect').value = '';
-      document.getElementById('returnCommentsInput').value = '';
-      document.getElementById('returnAttachmentsInput').value = '';
-      await loadReturnData();
-    }
 
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
@@ -426,11 +342,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      const form = document.getElementById('returnRequestForm');
-      if (form) {
-        form.addEventListener('submit', submitReturnRequest);
-      }
-      loadReturnData();
+        if (typeof window.initNbReturnModal === 'function') {
+            window.initNbReturnModal(returnApiConfig);
+        } else {
+            console.warn('initNbReturnModal function not found in allfile.js');
+        }
     });
   </script>
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CsrfTokenController;
+use App\Http\Controllers\Frontend\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +10,12 @@ Route::get('/csrf-token', [CsrfTokenController::class, 'show'])->name('csrf.toke
 Route::get('/storage/{path}', [StorageController::class, 'showPublic'])
     ->where('path', '.*')
     ->name('storage.public');
+
+Route::prefix('/checkout')->name('checkout.')->group(function () {
+    Route::get('/', [FrontendCheckoutController::class, 'index'])->name('index');
+    Route::post('/', [FrontendCheckoutController::class, 'store'])->name('store');
+    Route::get('/cities/{stateCode}', [FrontendCheckoutController::class, 'getCities'])->name('cities');
+});
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

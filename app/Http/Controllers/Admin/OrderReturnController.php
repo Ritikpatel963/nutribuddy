@@ -16,7 +16,7 @@ class OrderReturnController extends Controller
      */
     public function index()
     {
-        $returns = OrderReturn::with('order.user')
+        $returns = OrderReturn::with(['order.user', 'items'])
             ->orderBy('created_at', 'desc')
             ->get();
             
@@ -28,7 +28,7 @@ class OrderReturnController extends Controller
      */
     public function show(OrderReturn $orderReturn)
     {
-        $orderReturn->load('order.items.product', 'order.user');
+        $orderReturn->load('items.orderItem.product', 'order.items.returnItems.returnRequest', 'order.items.product', 'order.user');
         return view('admin.ecommerce.returns.show', compact('orderReturn'));
     }
 
@@ -54,27 +54,41 @@ class OrderReturnController extends Controller
             }
 
             if ($orderReturn->status === 'completed') {
-                $order->update([
-                    'status' => 'returned',
-                    'payment_status' => $order->payment_method === 'cod' ? 'refunded' : $order->payment_status,
-                ]);
+                $order->load('items.returnItems.returnRequest');
+                $orderedQty = (int) $order->items->sum('quantity');
+                $returnedQty = (int) $order->items->sum(function ($item) {
+                    return $item->returnItems
+                        ->filter(fn ($returnItem) => in_array($returnItem->returnRequest?->status, ['completed'], true))
+                        ->sum('quantity');
+                });
+
+                $isFullyReturned = $returnedQty >= $orderedQty;
+
+                if ($isFullyReturned) {
+                    $order->update([
+                        'status' => 'returned',
+                        'payment_status' => $order->payment_method === 'cod' ? 'refunded' : $order->payment_status,
+                    ]);
+                }
 
                 $latestPayment = $order->payments()->latest()->first();
-                if ($latestPayment && $order->payment_method === 'cod') {
+                if ($isFullyReturned && $latestPayment && $order->payment_method === 'cod') {
                     $latestPayment->update([
                         'status' => 'refunded',
                         'notes' => trim(($latestPayment->notes ?? '') . ' | Return completed and refund processed'),
                     ]);
                 }
 
-                $order->statusHistories()->create([
-                    'from_status' => 'delivered',
-                    'to_status' => 'returned',
-                    'from_fulfillment_status' => $order->fulfillment_status,
-                    'to_fulfillment_status' => $order->fulfillment_status,
-                    'updated_by' => $request->user()?->id,
-                    'note' => 'Order marked returned after return request completion.',
-                ]);
+                if ($isFullyReturned) {
+                    $order->statusHistories()->create([
+                        'from_status' => 'delivered',
+                        'to_status' => 'returned',
+                        'from_fulfillment_status' => $order->fulfillment_status,
+                        'to_fulfillment_status' => $order->fulfillment_status,
+                        'updated_by' => $request->user()?->id,
+                        'note' => 'Order marked returned after all quantities were returned.',
+                    ]);
+                }
             }
         }
 

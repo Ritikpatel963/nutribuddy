@@ -31,6 +31,17 @@
                 $step3 = in_array($order->status, ['shipped', 'delivered', 'returned']);
                 $step4 = in_array($order->status, ['delivered', 'returned']);
                 $isCancelled = $order->status === 'cancelled';
+                $activeReturnStatuses = ['pending', 'approved', 'completed'];
+                $returnableItems = $order->items->map(function ($item) use ($activeReturnStatuses) {
+                    $alreadyRequested = $item->returnItems
+                        ->filter(fn ($returnItem) => in_array($returnItem->returnRequest?->status, $activeReturnStatuses, true))
+                        ->sum('quantity');
+
+                    $item->setAttribute('returned_quantity', (int) $alreadyRequested);
+                    $item->setAttribute('returnable_quantity', max(0, (int) $item->quantity - (int) $alreadyRequested));
+
+                    return $item;
+                })->filter(fn ($item) => (int) $item->returnable_quantity > 0);
             @endphp
 
             @if(!$isCancelled)
@@ -83,10 +94,10 @@
                 </span>
                 <span class="order-pill">{{ strtoupper($order->payment_method ?? 'cod') }}</span>
                 
-                @if($order->status === 'delivered' && !$order->returns()->whereIn('status', ['pending', 'approved', 'completed'])->exists())
-                    <button style="background: var(--or); color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;" onmouseover="this.style.background='#ea580c'" onmouseout="this.style.background='var(--or)'" onclick="openReturnModal()">
+                @if($order->status === 'delivered' && $returnableItems->isNotEmpty())
+                    <button style="background: var(--or); color: white; padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;" onmouseover="this.style.background='#ea580c'" onmouseout="this.style.background='var(--or)'" onclick="openOrderDetailReturnModal()">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-                        Return Order
+                        Return Items
                     </button>
                 @elseif($order->returns()->exists())
                     <span style="background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center;">
@@ -281,77 +292,62 @@
         </div>
     </div>
 
-    <div id="returnModal" class="modal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
-        <div class="modal-content" style="background: white; margin: 10% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px;">
-            <h3 style="margin-top:0;">Request Return ↩️</h3>
-            <form action="{{ route('user.orders.returns.store', $order) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Reason for Return</label>
-                    <select name="reason" required style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;">
-                        <option value="">Select a reason</option>
-                        @foreach(\App\Support\OrderFlow::RETURN_REASONS as $reason)
-                            <option value="{{ $reason }}">{{ $reason }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-weight:bold;">Additional Comments</label>
-                    <textarea name="comments" rows="3" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;" placeholder="Tell us more about the issue..."></textarea>
-                </div>
-                <style>
-                    .return-file-input {
-                        width: 100%;
-                        padding: 12px;
-                        border-radius: 12px;
-                        border: 2px dashed #cbd5e1;
-                        background: #f8fafc;
-                        cursor: pointer;
-                        font-size: 0.9rem;
-                        color: #64748b;
-                        transition: all 0.2s;
-                    }
-                    .return-file-input:hover {
-                        border-color: var(--mn);
-                        background: #f0f9ff;
-                    }
-                    .return-file-input::file-selector-button {
-                        background: white;
-                        color: var(--dk);
-                        padding: 8px 16px;
-                        border: 1px solid #cbd5e1;
-                        border-radius: 8px;
-                        margin-right: 15px;
-                        cursor: pointer;
-                        font-weight: 600;
-                        transition: all 0.2s;
-                        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-                    }
-                    .return-file-input::file-selector-button:hover {
-                        background: #f1f5f9;
-                        border-color: #94a3b8;
-                    }
-                </style>
-                <div style="margin-bottom:20px;">
-                    <label style="display:block; margin-bottom:8px; font-weight:600; color:var(--dk);">Upload Images/Videos (Optional, Max 10MB)</label>
-                    <input type="file" name="attachments[]" accept="image/*,video/*" multiple class="return-file-input">
-                </div>
-                <div style="display:flex; gap:10px;">
-                    <button type="submit" class="status-badge s-delivered" style="border:none; cursor:pointer; flex:1; padding:12px;">Submit Request</button>
-                    <button type="button" class="status-badge s-cancelled" style="border:none; cursor:pointer; flex:1; padding:12px;" onclick="closeReturnModal()">Cancel</button>
-                </div>
-            </form>
+    <div id="orderDetailReturnModalOverlay" class="nb-ret-overlay" style="display:none;">
+        <div class="nb-ret-modal">
+            <div class="nb-ret-modal-header">
+                <h3>Request Return ↩️</h3>
+                <button type="button" class="nb-ret-close" onclick="closeOrderDetailReturnModal()">&times;</button>
+            </div>
+            <div class="nb-ret-modal-body">
+                <form id="orderDetailReturnForm" action="{{ route('user.orders.returns.store', $order) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div style="margin-bottom:15px;">
+                        <label class="nb-ret-file-label" style="font-size:1rem; color:var(--dk);">Select Items & Quantity</label>
+                        <div class="nb-ret-items-wrap" style="margin-top: 10px;">
+                            @foreach($returnableItems as $item)
+                                <div data-return-line class="nb-ret-item-row">
+                                    <div class="nb-ret-item-details">
+                                        <div class="nb-ret-item-title">{{ $item->product_name }}</div>
+                                        <div class="nb-ret-item-meta">
+                                            Ordered: {{ $item->quantity }} | Already requested: {{ $item->returned_quantity }} | Available: {{ $item->returnable_quantity }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <input data-return-hidden type="hidden" name="items[{{ $loop->index }}][order_item_id]" value="{{ $item->id }}">
+                                        <input data-return-qty type="number" class="nb-ret-qty-input" name="items[{{ $loop->index }}][quantity]" min="0" max="{{ $item->returnable_quantity }}" value="{{ old('items.' . $loop->index . '.quantity', 0) }}" aria-label="Return quantity for {{ $item->product_name }}">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div id="returnQuantityError" style="display:none; margin-top:8px; color:#dc2626; font-size:0.85rem; font-weight:600;">Please enter quantity for at least one item.</div>
+                    </div>
+                    
+                    <div style="margin-bottom:15px;">
+                        <label class="nb-ret-file-label">Reason for Return</label>
+                        <select name="reason" class="nb-ret-input" required>
+                            <option value="">Select a reason</option>
+                            @foreach(\App\Support\OrderFlow::RETURN_REASONS as $reason)
+                                <option value="{{ $reason }}">{{ $reason }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom:15px;">
+                        <label class="nb-ret-file-label">Additional Comments</label>
+                        <textarea name="comments" rows="3" class="nb-ret-input nb-ret-textarea" placeholder="Tell us more about the issue..."></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom:20px;">
+                        <label class="nb-ret-file-label">Upload Images/Videos (Optional, Max 10MB)</label>
+                        <input type="file" name="attachments[]" accept="image/*,video/*" multiple class="nb-ret-input nb-ret-file">
+                    </div>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button type="submit" class="nb-ret-submit-btn" style="flex:1; margin-top:0;">Submit Request</button>
+                        <button type="button" class="nb-ret-cancel-btn" style="flex:1; margin-top:0;" onclick="closeOrderDetailReturnModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            function openReturnModal() {
-                document.getElementById('returnModal').style.display = 'block';
-            }
-            function closeReturnModal() {
-                document.getElementById('returnModal').style.display = 'none';
-            }
-        </script>
-    @endpush
 @endsection

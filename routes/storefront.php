@@ -16,7 +16,6 @@ Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
-Route::get('/checkout', [FrontendCheckoutController::class, 'page'])->name('checkout');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::view('/cookies', 'pages.cookies')->name('cookies');
 Route::view('/return-policy', 'pages.return-policy')->name('return-policy');

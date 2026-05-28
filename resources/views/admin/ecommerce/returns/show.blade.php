@@ -28,6 +28,10 @@
                             <h6 class="text-secondary-light fw-medium mb-8">Refund Amount:</h6>
                             <p class="mb-0 fw-bold">INR {{ number_format($orderReturn->refund_amount, 2) }}</p>
                         </div>
+                        <div class="col-md-6">
+                            <h6 class="text-secondary-light fw-medium mb-8">Return Quantity:</h6>
+                            <p class="mb-0 fw-bold">{{ $orderReturn->items->sum('quantity') }}</p>
+                        </div>
                         <div class="col-12">
                             <h6 class="text-secondary-light fw-medium mb-8">Reason for Return:</h6>
                             <div class="p-16 radius-8 bg-light border">
@@ -79,6 +83,37 @@
                         </div>
                     </div>
 
+                    <h6 class="text-md fw-bold mb-16">Requested Return Items</h6>
+                    <div class="table-responsive mb-24">
+                        <table class="table bordered-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Unit Price</th>
+                                    <th>Return Qty</th>
+                                    <th class="text-end">Suggested Refund</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($orderReturn->items as $returnItem)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-medium text-dark">{{ $returnItem->product_name }}</span>
+                                                @if($returnItem->sku)
+                                                    <small class="text-secondary-light">{{ $returnItem->sku }}</small>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td>INR {{ number_format($returnItem->unit_price, 2) }}</td>
+                                        <td>{{ $returnItem->quantity }}</td>
+                                        <td class="text-end fw-bold text-dark">INR {{ number_format($returnItem->line_total, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
                     <h6 class="text-md fw-bold mb-16">Items in Original Order</h6>
                     <div class="table-responsive">
                         <table class="table bordered-table">
@@ -86,7 +121,8 @@
                                 <tr>
                                     <th>Product</th>
                                     <th>Price</th>
-                                    <th>Qty</th>
+                                    <th>Ordered Qty</th>
+                                    <th>Returned/Requested Qty</th>
                                     <th class="text-end">Total</th>
                                 </tr>
                             </thead>
@@ -109,6 +145,9 @@
                                         </td>
                                         <td>INR {{ number_format($item->unit_price, 2) }}</td>
                                         <td>{{ $item->quantity }}</td>
+                                        <td>
+                                            {{ $item->returnItems->filter(fn ($returnItem) => in_array($returnItem->returnRequest?->status, ['pending', 'approved', 'completed'], true))->sum('quantity') }}
+                                        </td>
                                         <td class="text-end fw-bold text-dark">INR {{ number_format($item->line_total, 2) }}</td>
                                     </tr>
                                 @endforeach
