@@ -98,11 +98,20 @@
                                 @foreach($orderReturn->items as $returnItem)
                                     <tr>
                                         <td>
-                                            <div class="d-flex flex-column">
-                                                <span class="fw-medium text-dark">{{ $returnItem->product_name }}</span>
-                                                @if($returnItem->sku)
-                                                    <small class="text-secondary-light">{{ $returnItem->sku }}</small>
-                                                @endif
+                                            <div class="d-flex align-items-center gap-2">
+                                                @php
+                                                    $productImage = asset('assets/images/logo-icon.png');
+                                                    if ($returnItem->orderItem && $returnItem->orderItem->product && $returnItem->orderItem->product->images->first()) {
+                                                        $productImage = asset('storage/' . $returnItem->orderItem->product->images->first()->image_path);
+                                                    }
+                                                @endphp
+                                                <img src="{{ $productImage }}" class="w-40-px h-40-px radius-8" alt="Product Image">
+                                                <div class="d-flex flex-column">
+                                                    <span class="fw-medium text-dark">{{ $returnItem->product_name }}</span>
+                                                    @if($returnItem->sku)
+                                                        <small class="text-secondary-light">{{ $returnItem->sku }}</small>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
                                         <td>INR {{ number_format($returnItem->unit_price, 2) }}</td>

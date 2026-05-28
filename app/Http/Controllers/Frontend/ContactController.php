@@ -24,7 +24,7 @@ class ContactController extends Controller
             'message'    => 'required|string|max:5000',
         ]);
 
-        ContactLead::create([
+        $lead = ContactLead::create([
             'name'    => trim($validated['first_name'] . ' ' . ($validated['last_name'] ?? '')),
             'email'   => $validated['email'],
             'phone'   => $validated['phone'] ?? null,
@@ -32,6 +32,11 @@ class ContactController extends Controller
             'message' => $validated['message'],
             'status'  => 'new',
         ]);
+
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\NewContactLeadNotification($lead));
+        }
 
         return back()->with('contact_success', 'Your message has been sent! We\'ll get back to you within 24 hours. 🎉');
     }

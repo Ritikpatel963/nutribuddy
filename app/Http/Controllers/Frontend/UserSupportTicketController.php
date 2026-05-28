@@ -39,6 +39,11 @@ class UserSupportTicketController extends Controller
             'message' => $request->message,
         ]);
 
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\NewSupportTicketNotification($ticket));
+        }
+
         return redirect()->back()->with('success', 'Support ticket created successfully!');
     }
 
