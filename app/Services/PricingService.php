@@ -86,8 +86,8 @@ class PricingService
         $discountTotal = 0.0;
         if ($coupon) {
             if ($coupon->discount_type === 'percentage') {
-                // Apply percentage on the base subtotal
-                $discountTotal = ($subtotal * (float) $coupon->discount_value) / 100;
+                // Apply percentage on the tax-inclusive subtotal to match user expectations
+                $discountTotal = (($subtotal + $taxTotal) * (float) $coupon->discount_value) / 100;
             } else {
                 // Fixed amount: user wants the full value to be deducted
                 $discountTotal = (float) $coupon->discount_value;
