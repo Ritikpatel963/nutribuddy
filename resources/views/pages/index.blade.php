@@ -3,29 +3,29 @@
 
 @section('content')
     <!-- ══════════════════════════════════════════
-                       HERO SLIDER
-                  ══════════════════════════════════════════ -->
+                                                                                                                           HERO SLIDER
+                                                                                                                      ══════════════════════════════════════════ -->
     <!-- ── HERO ── -->
     <section class="hero">
         <!-- Slide 1 -->
         <div class="slide slide-1 active" data-slide="0">
-            <!-- <img src="/img/img1.jpeg" alt=""> -->
+            <!-- <img src="{{ asset('img/img1.jpeg') }}" alt=""> -->
             <div class="blob b1"></div>
             <div class="blob b2"></div>
             <div class="slide-text">
                 <div class="slide-badge badge-pk">India's #1 Kids Wellness Gummy</div>
-                <h1 class="htitle">Gummies That Turn<br>Kids Into <span class="pop">Superheroes!</span></h1>
-                <p class="slide-desc">Packed with Ashwagandha + Vitamin D3 + Zinc, our GrowStrong Gummies make immunity fun,
-                    tasty, and totally cool for your little ones aged 2–14.</p>
+                <h1 class="htitle">Big Dreams Begin <br>With <span class="pop">Healthy Mind</span></h1>
+                <p class="slide-desc">With Brahmi, Ashwagandha, Flaxseed oil, Vitamin D3 and essential nutrients, these
+                    delicious gummies help support focus, memory and healthy brain development.</p>
                 <div class="hero-btns">
-                    <a href="#products" class="hbtn hbtn-main">Shop Now — ₹599</a>
-                    <a href="#quiz" class="hbtn hbtn-ghost">Find My Plan →</a>
+                    <a href="#products" class="hbtn hbtn-main">Shop Brain Gummies →</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Explore Benefits →</a>
                 </div>
                 <div class="hero-trust">
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt=""> Ayurveda-Backed</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">Lab Tested</div>
-                    <div class="htrust"> <img src="/img/banner/b-1.png" alt="">0 Additives</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">Age 2–14</div>
+                    <div class="htrust"><img src="{{ asset('img/act1.png') }}" alt=""> Supports Focus</div>
+                    <div class="htrust"><img src="{{ asset('img/act2.png') }}" alt="">No Refined Sugar</div>
+                    <div class="htrust"> <img src="{{ asset('img/act3.png') }}" alt="">Brain Development</div>
+                    <div class="htrust"><img src="{{ asset('img/act4.png') }}" alt="">Fruits and Vegetable Extract</div>
                 </div>
             </div>
             <div class="slide-visual">
@@ -33,76 +33,76 @@
                     <!-- <div class="bb bb1">Boosts Energy</div> -->
                     <div class="benefit-card bb1">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-1.png" alt="">
+                            <img src="{{ asset('img/b-2.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label">Improves<br>Memory</div>
+                            <div class="label">Improves<br>Memory</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb2">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                         <img src="/img/banner/b-3.png" alt="">
+                            <img src="{{ asset('img/b-3.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Builds<br>Immunity</div>
+                            <div class="label"> Builds<br>Immunity</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb3">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-4.png" alt="">
+                            <img src="{{ asset('img/b-4.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Stronger<br>Bones</div>
+                            <div class="label"> Stronger<br>Bones</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb4">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-1.png" alt="">
+                            <img src="{{ asset('img/b-1.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Uplifts<br>Mood</div>
+                            <div class="label"> Uplifts<br>Mood</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb5">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/b-6.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Better<br>Sleep</div>
+                            <div class="label"> Better<br>Sleep</div>
                         </div>
 
                     </div>
-                 
+
                     <!-- <span class="fg fg1"></span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                        class="fg fg4">🍊</span><span class="fg fg5">✨</span><span class="fg fg6">💊</span> -->
+                                                                                                                            class="fg fg4">🍊</span><span class="fg fg5">✨</span><span class="fg fg6">💊</span> -->
                     <div class="jar-wrap">
 
-                        <div class="jar-body1">
-                            <img src="/img/02.png" alt="">
+                        <div class="jar-body1 for-sat">
+                            <img src="{{ asset('img/02.png') }}" alt="">
                         </div>
                     </div>
                 </div>
@@ -114,100 +114,102 @@
             <div class="blob b1" style="background:rgb(82, 162, 82)"></div>
             <div class="blob b2" style="background:var(--mn)"></div>
             <div class="slide-text">
-                <div class="slide-badge badge-sk">Neuroscientist-Designed</div>
-                <h1 class="htitle">Unlock Your Child's<br><span class="blue">Brainpower</span><br>With Every Chew!</h1>
-                <p class="slide-desc">Brahmi + Omega-3 DHA + Shankhpushpi in every delicious chew. Clinically studied to
-                    improve
-                    focus, memory & learning by up to 38%.</p>
+                <div class="slide-badge badge-sk">Original Kadha, Reinvented!</div>
+
+                <h1 class="htitle">Grandma Kadha <br><span class="blue">Made Delicious</span> For Kids</h1>
+                <!-- <h1 class="htitle">Unlock Your Child's<br><span class="blue">Brainpower</span><br>With Every Chew!</h1> -->
+                <p class="slide-desc">Made with 11 Ayurvedic herbs like tulsi, mulethi, long pepper, etc. NutriBuddy Tasty
+                    Kadha turns traditional age old granny’s kadha formula into a refreshing Ginger Lemon effervescent drink
+                    that kids actually enjoy.</p>
                 <div class="hero-btns">
-                    <a href="#products" class="hbtn hbtn-sky">Shop BrainBoost — ₹649</a>
+                    <a href="#products" class="hbtn hbtn-sky">Shop Tasty Kadha →</a>
                     <a href="#quiz" class="hbtn hbtn-ghost">Learn More →</a>
                 </div>
                 <div class="hero-trust">
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">  Brahmi Extract</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">  Omega-3 DHA</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">  Improves Focus</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt="">  Exam Ready</div>
+                    <div class="htrust"><img src="{{ asset('img/b-5.png') }}" alt=""> Contains Long Pepper</div>
+                    <div class="htrust"><img src="{{ asset('img/btn-3.png') }}" alt=""> Effervescent Formula</div>
+                    <div class="htrust"><img src="{{ asset('img/bread1.png') }}" alt=""> Ginger Lemon Flavour</div>
+                    <div class="htrust"><img src="{{ asset('img/sec-2.png') }}" alt=""> For Kids 5+</div>
                 </div>
             </div>
             <div class="slide-visual">
                 <div class="gummy-showcase">
                     <div class="benefit-card bb1">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/c4.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label">Laser<br> Focus</div>
+                            <div class="label">Calm<br> Focus</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb2">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/c3.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Better<br> Grades</div>
+                            <div class="label"> Better<br> Grades</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb3">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/c5.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Creativity <br>+</div>
+                            <div class="label"> Creativity <br>+</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb4">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/c2.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Memory<br>Up 30%</div>
+                            <div class="label"> Memory<br>Up 30%</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb5">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/c1.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Calm<br>Focus</div>
+                            <div class="label"> Calm<br>Focus</div>
                         </div>
 
                     </div>
                     <!-- <div class="bb bb1" style="border-color:var(--skl)">🎯 Laser Focus</div>
-                    <div class="bb bb2" style="border-color:var(--skl)">📚 Better Grades</div>
-                    <div class="bb bb3" style="border-color:var(--mnl)">💡 Creativity+</div>
-                    <div class="bb bb4" style="border-color:var(--skl)">🧠 Memory Up 38%</div>
-                    <div class="bb bb5" style="border-color:var(--pul)">😌 Calm Focus</div> -->
-                     <!-- <span class="fg fg1">🐟</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span> -->
+                                                                                                                        <div class="bb bb2" style="border-color:var(--skl)">📚 Better Grades</div>
+                                                                                                                        <div class="bb bb3" style="border-color:var(--mnl)">💡 Creativity+</div>
+                                                                                                                        <div class="bb bb4" style="border-color:var(--skl)">🧠 Memory Up 38%</div>
+                                                                                                                        <div class="bb bb5" style="border-color:var(--pul)">😌 Calm Focus</div> -->
+                    <!-- <span class="fg fg1">🐟</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
+                                                                                                                            class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span> -->
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="/img/kadda.png" alt="">
+                            <img src="{{ asset('img/kadda.png') }}" alt="">
 
 
                         </div>
@@ -222,99 +224,100 @@
             <div class="blob b1" style="background:var(--ye)"></div>
             <div class="blob b2" style="background:var(--or)"></div>
             <div class="slide-text">
-                <div class="slide-badge badge-ye">Bedtime Transformed</div>
-                <h1 class="htitle">Sweet Dreams &<br><span class="green">Calm Nights</span><br>Guaranteed!</h1>
-                <p class="slide-desc">Chamomile + L-Theanine + Jatamansi. Helps even the most hyperactive kids wind down
-                    peacefully and wake up refreshed, energized & happy every morning.</p>
+                <div class="slide-badge badge-ye">DAILY WELLNESS, </div>
+                <h1 class="htitle">Daily Multivitamin And<br><span class="green">Immunity For
+                        Stronger, </span>Healthier Kids</h1>
+                <p class="slide-desc">Packed with 12+ essential vitamins & minerals plus Turmeric, Amla and Ginger to
+                    support your child’s healthy growth and immune system.</p>
                 <div class="hero-btns">
-                    <a href="#products" class="hbtn hbtn-or">Shop DreamCalm — ₹549</a>
-                    <a href="#quiz" class="hbtn hbtn-ghost">Learn More →</a>
+                    <a href="#products" class="hbtn hbtn-or">Shop Immunity Gummies →</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Discover More →</a>
                 </div>
                 <div class="hero-trust">
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt=""> Chamomile</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt=""> Deep Sleep</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt=""> Less Anxiety</div>
-                    <div class="htrust"><img src="/img/banner/b-1.png" alt=""> All-Natural</div>
+                    <div class="htrust"><img src="{{ asset('img/vegan.png') }}" alt=""> Supports Immunity</div>
+                    <div class="htrust"><img src="{{ asset('img/b-2.png') }}" alt=""> 12+ Essential Nutrients</div>
+                    <div class="htrust"><img src="{{ asset('img/new-btn-4.png') }}" alt=""> No Refined Sugar</div>
+                    <div class="htrust"><img src="{{ asset('img/new-btn-2.png') }}" alt=""> Mango Flavour</div>
                 </div>
             </div>
             <div class="slide-visual">
                 <div class="gummy-showcase">
                     <div class="benefit-card bb1">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/b-4.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label">Deep<br> Sleep</div>
+                            <div class="label">Deep<br> Sleep</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb2">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/bb2.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Calm<br> Mood</div>
+                            <div class="label"> Calm<br> Mood</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb3">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/bb3.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label">Better<br> Nights</div>
+                            <div class="label">Better<br> Nights</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb4">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                       <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/bb4.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label">  Wake Up<br> Fresh</div>
+                            <div class="label"> Wake Up<br> Fresh</div>
                         </div>
 
                     </div>
                     <div class="benefit-card bb5">
 
-    <!-- Left Icon Circle -->
+                        <!-- Left Icon Circle -->
                         <div class="icon-circle">
-                        <img src="/img/banner/b-6.png" alt="">
+                            <img src="{{ asset('img/b-6.png') }}" alt="">
                         </div>
 
                         <!-- Right Text Card -->
                         <div class="text-card">
-                        <div class="label"> Less<br>Anxiety</div>
+                            <div class="label"> Less<br>Anxiety</div>
                         </div>
 
                     </div>
                     <!-- <div class="bb bb1" style="border-color:var(--yel)">😴 Deep Sleep</div>
-                    <div class="bb bb2" style="border-color:var(--orl)">😌 Calm Mood</div>
-                    <div class="bb bb3" style="border-color:var(--yel)">🌙 Better Nights</div>
-                    <div class="bb bb4" style="border-color:var(--mnl)">🌞 Wake Up Fresh</div>
-                    <div class="bb bb5" style="border-color:var(--orl)">🦋 Less Anxiety</div> -->
+                                                                                                                        <div class="bb bb2" style="border-color:var(--orl)">😌 Calm Mood</div>
+                                                                                                                        <div class="bb bb3" style="border-color:var(--yel)">🌙 Better Nights</div>
+                                                                                                                        <div class="bb bb4" style="border-color:var(--mnl)">🌞 Wake Up Fresh</div>
+                                                                                                                        <div class="bb bb5" style="border-color:var(--orl)">🦋 Less Anxiety</div> -->
                     <!-- <span class="fg fg1">🌙</span><span class="fg fg2">🌸</span><span class="fg fg3">⭐</span><span
-                        class="fg fg4">🍯</span><span class="fg fg5">✨</span><span class="fg fg6">💫</span> -->
+                                                                                                                            class="fg fg4">🍯</span><span class="fg fg5">✨</span><span class="fg fg6">💫</span> -->
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
-                            <img src="/img/01.png" alt="">
+                            <img src="{{ asset('img/01.png') }}" alt="">
 
 
                         </div>
@@ -323,20 +326,86 @@
             </div>
         </div>
 
+        <!-- Slide 4 -->
+        <div class="slide slide-4" data-slide="3">
+            <div class="blob b1" style="background:var(--pk)"></div>
+            <div class="blob b2" style="background:var(--pu)"></div>
+            <div class="slide-text">
+                <div class="slide-badge badge-pk">NUTRITION , TAILORED FOR YOUR CHILD</div>
+                <h1 class="htitle">
+                    Every Child Is Different. So Is
+                    <span class="pops">Their Nutrition.</span>
+                </h1>
+                <p class="slide-desc">Start your child's wellness journey with an expert-designed nutrition plan tailored to
+                    their unique growth, lifestyle, and nutritional needs.</p>
+                <div class="hero-btns">
+                    <a href="#products" class="hbtn hbtn-main">Get My Nutrition Plan &rarr;</a>
+                    <a href="#quiz" class="hbtn hbtn-ghost">Shop Nutri Buddy &rarr;</a>
+                </div>
+                <div class="hero-trust">
+                    <div class="htrust"><img src="{{ asset('img/act1.png') }}" alt=""> Balanced Nutrition</div>
+                    <div class="htrust"><img src="{{ asset('img/act2.png') }}" alt=""> Growth Tracking</div>
+                    <div class="htrust"><img src="{{ asset('img/act3.png') }}" alt=""> Daily Wellness Routine</div>
+                    <div class="htrust"><img src="{{ asset('img/act4.png') }}" alt=""> Expert Nutritionist</div>
+                </div>
+            </div>
+            <div class="slide-visual">
+                <div class="gummy-showcase fourth-showcase">
+                    <div class="benefit-card bb1">
+                        <div class="icon-circle"><img src="{{ asset('img/btn-1.png') }}" alt=""></div>
+                        <div class="text-card">
+                            <div class="label">Balanced<br>Meals</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card bb2">
+                        <div class="icon-circle"><img src="{{ asset('img/bread2.png') }}" alt=""></div>
+                        <div class="text-card">
+                            <div class="label">Healthy<br>Growth</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card bb3">
+                        <div class="icon-circle"><img src="{{ asset('img/bb1.png') }}" alt=""></div>
+                        <div class="text-card">
+                            <div class="label">Active<br>Every Day</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card bb4">
+                        <div class="icon-circle"><img src="{{ asset('img/bb4.png') }}" alt=""></div>
+                        <div class="text-card">
+                            <div class="label">Right<br>Portions</div>
+                        </div>
+                    </div>
+                    <div class="benefit-card bb5">
+                        <div class="icon-circle"><img src="{{ asset('img/bread1.png') }}" alt=""></div>
+                        <div class="text-card">
+                            <div class="label">Better<br>Habits</div>
+                        </div>
+                    </div>
+                    <div class="jar-wrap fourth-jar-wrap">
+                        <div class="jar-body1 fourth-jar-body">
+                            <img src="{{ asset('img/bann04.png') }}"
+                                alt="NutriBuddy products with a personalised kids diet plan" loading="lazy"
+                                decoding="async">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <button class="sarrow sp" id="prevBtn">‹</button>
         <button class="sarrow sn" id="nextBtn">›</button>
         <div class="slide-dots">
             <button class="dot active" data-dot="0"></button>
             <button class="dot" data-dot="1"></button>
             <button class="dot" data-dot="2"></button>
+            <button class="dot" data-dot="3"></button>
         </div>
-        <div class="slide-counter"><span id="curSlide">1</span>/3</div>
-        
+        <div class="slide-counter"><span id="curSlide">1</span>/4</div>
+
         <!-- Trust Features Bar -->
         <div class="hero-trust-bar">
             <div class="trust-feature">
                 <div class="trust-icon">
-                <img src="/img/banner/b-1.png" alt="">
+                    <img src="{{ asset('img/act2.png') }}" alt="">
                 </div>
                 <div class="trust-content">
                     <h4>Ayurveda + Science</h4>
@@ -345,7 +414,7 @@
             </div>
             <div class="trust-feature">
                 <div class="trust-icon">
-                      <img src="/img/banner/b-1.png" alt="">
+                    <img src="{{ asset('img/bread1.png') }}" alt="">
                 </div>
                 <div class="trust-content">
                     <h4>Safe & Clean</h4>
@@ -354,7 +423,7 @@
             </div>
             <div class="trust-feature">
                 <div class="trust-icon">
-                      <img src="/img/banner/b-1.png" alt="">
+                    <img src="{{ asset('img/bread2.png') }}" alt="">
                 </div>
                 <div class="trust-content">
                     <h4>Loved by Kids</h4>
@@ -363,7 +432,7 @@
             </div>
             <div class="trust-feature">
                 <div class="trust-icon">
-                      <img src="/img/banner/b-1.png" alt="">
+                    <img src="{{ asset('img/bread3.png') }}" alt="">
                 </div>
                 <div class="trust-content">
                     <h4>Made with Care</h4>
@@ -375,8 +444,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                       TRUST BAR (Scrolling Ticker)
-                  ══════════════════════════════════════════ -->
+                                                                                                                           TRUST BAR (Scrolling Ticker)
+                                                                                                                      ══════════════════════════════════════════ -->
     <!-- ── TRUST BAR ── -->
     <div class="tbar">
         <div class="tscroll">
@@ -400,43 +469,50 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-                       TRUST INDICATORS
-                  ══════════════════════════════════════════ -->
+                                                                                                                           TRUST INDICATORS
+                                                                                                                      ══════════════════════════════════════════ -->
     <!-- ── TRUST INDICATORS ── -->
     <section class="trust-section reveal" id="trust">
         <span class="sec-eye">Why Parents Trust Us</span>
         <h2 class="sec-title">Numbers That <span class="acc">Speak</span></h2>
         <p class="sec-sub">Backed by science, loved by parents, and trusted by pediatricians across India.</p>
         <div class="trust-grid">
-            <div class="tc"><span class="tc-icon"><img src="/img/family.png" alt=""></span>
-                <div class="tc-n" data-count="10000">0+</div>
-                <div class="tc-l">Happy Families</div>
-                <div class="tc-d">Serving kids from Jammu to Kanyakumari, every single month.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/family.png') }}" alt=""></span>
+                <div class="tc-n" data-count="5000">0+</div>
+                <div class="tc-l"> Happy Families</div>
+                <div class="tc-d">Thousands of parents across India trust Nutri Buddy as a part of their child's everyday
+                    wellness journey. </div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="/img/smart-city.png" alt=""></span>
-                <div class="tc-n" data-count="500">0+</div>
-                <div class="tc-l">Cities Across India</div>
-                <div class="tc-d">From metros to Tier-2 cities — NutriBuddy ships everywhere.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/smart-city.png') }}" alt=""></span>
+                <div class="tc-n" data-count="100">0+</div>
+                <div class="tc-l">Cities Across India </div>
+                <div class="tc-d">From metro cities to growing towns, Nutri Buddy is helping families make healthier choices
+                    everyday. </div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="/img/cycle.png" alt=""></span>
-                <div class="tc-n" data-count="98">0%</div>
-                <div class="tc-l">Reorder Rate</div>
-                <div class="tc-d">When kids love it and parents see results, they keep coming back.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/cycle.png') }}" alt=""></span>
+                <div class="tc-n" data-count="98"> 96%</div>
+                <div class="tc-l"> Repeat Purchase</div>
+                <div class="tc-d"> Parents come back because kids love the taste, and families trust the quality. </div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="/img/rat.png" alt=""></span>
-                <div class="tc-n">4.9</div>
-                <div class="tc-l">Average Rating</div>
-                <div class="tc-d">Across 6,000+ verified parent reviews on our platform.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/rat.png') }}" alt=""></span>
+                <div class="tc-n">4.8 </div>
+                <div class="tc-l"> Average Customer Rating
+                </div>
+                <div class="tc-d"> Highly rated by parents for clean ingredients, great taste and everyday nutrition. </div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="/img/labo.png" alt=""></span>
-                <div class="tc-n">3</div>
-                <div class="tc-l">Yrs R&D Per Product</div>
-                <div class="tc-d">We don't rush to market. Every formula is rigorously tested first.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/labo.png') }}" alt=""></span>
+                <div class="tc-n">4</div>
+                <div class="tc-l">Years R&D</div>
+                <div class="tc-d"> Thoughtfully developed to support immunity, brain health and seasonal wellness for
+                    growing children.
+                </div>
             </div>
-            <div class="tc"><span class="tc-icon"><img src="/img/pediatrician.png" alt=""></span>
-                <div class="tc-n" data-count="50">0+</div>
-                <div class="tc-l">Pediatricians Approved</div>
-                <div class="tc-d">Recommended by certified pediatricians and nutritionists nationwide.</div>
+            <div class="tc"><span class="tc-icon"><img src="{{ asset('img/pediatrician.png') }}" alt=""></span>
+                <div class="tc-n" data-count="100">100%</div>
+                <div class="tc-l"> Made in India
+                </div>
+                <div class="tc-d"> Proudly formulated and manufactured in India using carefully selected ingredients and
+                    trusted quality standards. </div>
             </div>
         </div>
 
@@ -446,55 +522,73 @@
     <!-- ── WHY CHOOSE US ── -->
     <section class="why-section reveal" id="why">
         <span class="sec-eye">Why Parents Choose Us</span>
-        <h2 class="sec-title" style="color:white">The NutriBuddy <span class="acc"
-                style="color:var(--ye)">Difference</span>
+        <h2 class="sec-title" style="color:white">The NutriBuddy <span class="acc" style="color:var(--ye)">Difference</span>
         </h2>
-        <div class="why-grid">
-            <div class="wc wc1">
-                <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="/img/natural.png" alt="">
+        <div class="why-slider-wrap">
+            <button type="button" class="why-slider-btn why-slider-prev" id="whySliderPrev" aria-label="Previous reason">
+                &#8249;
+            </button>
+            <div class="why-slider-viewport" id="whySliderViewport">
+                <div class="why-grid" id="whySliderTrack">
+                    <div class="wc wc1">
+                        <div class="wc-icon" style="background:rgba(0,214,143,.1)"><img src="{{ asset('img/natural.png') }}"
+                                alt="">
+                        </div>
+                        <h3>Ayurveda Meets Science</h3>
+                        <p>Time-tested herbs from Ayurveda, validated by modern clinical research. The best of 5,000 years
+                            and 21st
+                            century together.</p>
+                    </div>
+                    <div class="wc wc2">
+                        <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img
+                                src="{{ asset('img/observation.png') }}" alt=""></div>
+                        <h3> Every Batch is Lab Tested</h3>
+                        <p> Each batch is independently tested for heavy metals, safety, and ingredient quality. We don’t
+                            hide reports; we believe parents deserve full transparency. India’s first kids ayurveedic and
+                            nutraceutical wellnes brand - Nutri Buddy .
+                        </p>
+                    </div>
+                    <div class="wc wc3">
+                        <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="{{ asset('img/girl.png') }}"
+                                alt="">
+                        </div>
+                        <h3> Made Specifically for Kids </h3>
+                        <p>Not a smaller version of adult supplements. These are carefully developed for growing children
+                            with age-appropriate nutrition and zero artificial additives.</p>
+                    </div>
+                    <div class="wc wc4">
+                        <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="{{ asset('img/tongue.png') }}"
+                                alt="">
+                        </div>
+                        <h3> "NO Preservatives"</h3>
+                        <p>
+                            No shortcuts, no chemical preservatives, no compromises. Real nutrition doesn't need chemicals
+                            to survive on a shelf. We have not added anything in any of our products, that we would not be
+                            comfortable to give our own child. </p>
+                    </div>
+                    <div class="wc wc6">
+                        <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="{{ asset('img/value.png') }}"
+                                alt="">
+                        </div>
+                        <h3>No Artificial Colours Added</h3>
+                        <p>Our gummies might not attract kids with bright candy-like colours, but they're made with
+                            naturally derived colours instead of artificial dyes.</p>
+                    </div>
                 </div>
-                <h3>Ayurveda Meets Science</h3>
-                <p>Time-tested herbs from Ayurveda, validated by modern clinical research. The best of 5,000 years and 21st
-                    century together.</p>
             </div>
-            <div class="wc wc2">
-                <div class="wc-icon" style="background:rgba(255,77,143,.1)"><img src="/img/observation.png"
-                        alt=""></div>
-                <h3>Lab-Tested Purity</h3>
-                <p>Every batch is third-party tested for heavy metals, microbials, and potency. We publish every single
-                    result —
-                    transparency is non-negotiable.</p>
-            </div>
-            <div class="wc wc3">
-                <div class="wc-icon" style="background:rgba(0,191,255,.1)"><img src="/img/girl.png" alt="">
-                </div>
-                <h3>Kid-Safe Formulas</h3>
-                <p>Age-appropriate dosing for 2–14 years. Zero artificial preservatives, colors or fillers.
-                    Pediatrician-reviewed at every step.</p>
-            </div>
-            <div class="wc wc4">
-                <div class="wc-icon" style="background:rgba(255,214,0,.1)"><img src="/img/tongue.png" alt="">
-                </div>
-                <h3>Kids Actually Love It</h3>
-                <p>98% of kids proactively ask for their NutriBuddy gummy. No battles at supplement time — ever again.
-                    Seriously.</p>
-            </div>
-            <div class="wc wc6">
-                <div class="wc-icon" style="background:rgba(255,107,53,.1)"><img src="/img/value.png" alt="">
-                </div>
-                <h3>Real Value</h3>
-                <p>Premium Ayurvedic nutrition at prices every Indian family can afford. Subscribe & Save up to 20% — cancel
-                    anytime.</p>
-            </div>
+            <button type="button" class="why-slider-btn why-slider-next" id="whySliderNext" aria-label="Next reason">
+                &#8250;
+            </button>
+            <div class="why-slider-dots" id="whySliderDots" aria-label="Why parents choose us slider pagination"></div>
         </div>
     </section>
 
 
 
 
-     <!-- ══════════════════════════════════════════
-                       PRODUCTS
-                  ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════
+                                                                                                                           PRODUCTS
+                                                                                                                      ══════════════════════════════════════════ -->
     <section class="products-section reveal" id="products">
         <span class="sec-eye">Our Products</span>
         <h2 class="sec-title">Nutrition Kids <span class="acc">Actually Love</span></h2>
@@ -505,23 +599,23 @@
                 @php
                     $catSlug = $product->category->slug ?? 'pk';
                     // Map database slugs to CSS classes if they don't match
-if ($catSlug == 'multivitamins') {
-    $catSlug = 'pk';
-} elseif ($catSlug == 'whey-protein') {
-    $catSlug = 'sk';
-} elseif ($catSlug == 'pre-workout') {
-    $catSlug = 'pu';
-} else {
-    $catSlug = 'pk';
+                    if ($catSlug == 'multivitamins') {
+                        $catSlug = 'pk';
+                    } elseif ($catSlug == 'whey-protein') {
+                        $catSlug = 'sk';
+                    } elseif ($catSlug == 'pre-workout') {
+                        $catSlug = 'pu';
+                    } else {
+                        $catSlug = 'pk';
                     }
                     $activeVariants = $product->variants
-                        ->filter(fn ($variant) => $variant->is_active && !empty($variant->attributes))
+                        ->filter(fn($variant) => $variant->is_active && !empty($variant->attributes))
                         ->values();
                     $variationLabels = $activeVariants
                         ->map(function ($variant) {
                             $label = collect($variant->attributes ?? [])
-                                ->filter(fn ($value) => trim((string) $value) !== '')
-                                ->map(fn ($value, $key) => $key . ': ' . $value)
+                                ->filter(fn($value) => trim((string) $value) !== '')
+                                ->map(fn($value, $key) => $key . ': ' . $value)
                                 ->implode(' / ');
 
                             return $label ?: $variant->name;
@@ -558,13 +652,14 @@ if ($catSlug == 'multivitamins') {
                     $selectedVariant = $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first();
                     $selectedAttributes = $selectedVariant?->attributes ?? [];
                     $selectedLabel = collect($selectedAttributes)
-                        ->filter(fn ($value) => trim((string) $value) !== '')
-                        ->map(fn ($value, $key) => $key . ': ' . $value)
+                        ->filter(fn($value) => trim((string) $value) !== '')
+                        ->map(fn($value, $key) => $key . ': ' . $value)
                         ->implode(' / ');
                     $stockQty = (int) ($selectedVariant?->inventory?->stock_qty ?? 0);
                     $trackStock = (bool) ($selectedVariant?->inventory?->track_stock ?? false);
-                    $isAvailable = ! $trackStock || (($selectedVariant?->inventory?->is_in_stock ?? true) && $stockQty > 0);
+                    $isAvailable = !$trackStock || (($selectedVariant?->inventory?->is_in_stock ?? true) && $stockQty > 0);
                     $hasVariantOptions = !empty($variantGroups) || !empty($variationLabels);
+                    $showInlineVariants = false;
                     $frontendVariants = $activeVariants
                         ->map(function ($variant) {
                             $stockQty = (int) ($variant->inventory?->stock_qty ?? 0);
@@ -578,29 +673,30 @@ if ($catSlug == 'multivitamins') {
                                 'compare_price' => (float) ($variant->display_compare_price ?? 0),
                                 'stock_qty' => $stockQty,
                                 'track_stock' => $trackStock,
-                                'available' => ! $trackStock || (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
+                                'available' => !$trackStock || (($variant->inventory?->is_in_stock ?? true) && $stockQty > 0),
                             ];
                         })
                         ->values()
                         ->all();
                     $cardPrice = (float) ($selectedVariant?->display_price ?? $product->display_price);
                     $cardComparePrice = (float) ($selectedVariant?->display_compare_price ?? $product->display_compare_price ?? 0);
-                    $defaultImage = $product->primaryImage ?: $product->images->first();
-                    $hoverImage = $product->images
-                        ->where('id', '!=', $defaultImage?->id)
-                        ->first() ?: $defaultImage;
+                    $fallbackDefaultImage = $product->primaryImage ?: $product->images->first();
+                    $fallbackHoverImage = $product->images
+                        ->where('id', '!=', $fallbackDefaultImage?->id)
+                        ->first() ?: $fallbackDefaultImage;
+                    $defaultImagePath = $product->card_image_path ?: $fallbackDefaultImage?->image_path;
+                    $hoverImagePath = $product->card_hover_image_path ?: ($fallbackHoverImage?->image_path ?: $defaultImagePath);
                 @endphp
                 <div class="pc pc-{{ $catSlug }} {{ $selectedVariant ? 'has-variants' : 'no-variants' }}"
-                    data-selected-variant-id="{{ $selectedVariant?->id }}"
-                    data-selected-variant-label="{{ $selectedLabel }}"
+                    data-selected-variant-id="{{ $selectedVariant?->id }}" data-selected-variant-label="{{ $selectedLabel }}"
                     data-variants='{{ json_encode($frontendVariants, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}'>
                     <div class="pc-head pc-head-{{ $catSlug }}">
                         <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
-                            @if ($defaultImage)
-                                <img src="{{ asset('storage/' . $defaultImage->image_path) }}"
-                                    alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
-                                <img src="{{ asset('storage/' . $hoverImage->image_path) }}"
-                                    alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
+                            @if ($defaultImagePath)
+                                <img src="{{ asset('storage/' . $defaultImagePath) }}" alt="{{ $product->name }}"
+                                    class="default-img" loading="lazy" decoding="async">
+                                <img src="{{ asset('storage/' . $hoverImagePath) }}" alt="{{ $product->name }}" class="hover-img"
+                                    loading="lazy" decoding="async">
                             @endif
                         </a>
                         @if ($product->is_featured)
@@ -608,7 +704,7 @@ if ($catSlug == 'multivitamins') {
                         @endif
                     </div>
                     <div class="pc-body">
-                        <div class="pc-stars">
+                        <a href="{{ route('product.show', $product->slug) }}#reviews" class="pc-stars" style="text-decoration: none;">
                             @php
                                 $reviewCount = $product->reviews->count();
                                 $rating = $reviewCount > 0 ? $product->reviews->avg('rating') : 0;
@@ -619,29 +715,30 @@ if ($catSlug == 'multivitamins') {
                             <span style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">
                                 ({{ $reviewCount }} reviews)
                             </span>
-                        </div>
+                        </a>
                         <div class="pc-cat cat-{{ $catSlug }}">{{ $product->category->name ?? 'Uncategorized' }}
                         </div>
                         <div class="pc-name"><a href="{{ route('product.show', $product->slug) }}"
                                 style="color: inherit; text-decoration: none;">{{ $product->name }}</a></div>
-                        @if($hasVariantOptions)
+                        @if($showInlineVariants && $hasVariantOptions)
                             <div class="pc-variant-panel">
                                 @if(!empty($variantGroups))
                                     <div class="pc-variant-groups">
                                         @foreach($variantGroups as $attributeName => $values)
-                                            <div class="pc-variant-block">
-                                                <div class="pc-variant-label">{{ $attributeName }}</div>
-                                                <div class="pc-option-row" data-attribute-group="{{ $attributeName }}">
-                                                    @foreach($values as $value)
-                                                        <button type="button"
-                                                            class="pc-option-btn {{ ($selectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
-                                                            data-attribute="{{ $attributeName }}"
-                                                            data-value="{{ $value }}">
-                                                            {{ $value }}
-                                                        </button>
-                                                    @endforeach
+                                            @if(count($values) > 1)
+                                                <div class="pc-variant-block">
+                                                    <div class="pc-variant-label">{{ $attributeName }}</div>
+                                                    <div class="pc-option-row" data-attribute-group="{{ $attributeName }}">
+                                                        @foreach($values as $value)
+                                                            <button type="button"
+                                                                class="pc-option-btn {{ ($selectedAttributes[$attributeName] ?? null) === $value ? 'active' : '' }}"
+                                                                data-attribute="{{ $attributeName }}" data-value="{{ $value }}">
+                                                                {{ $value }}
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 @else
@@ -655,7 +752,7 @@ if ($catSlug == 'multivitamins') {
                                 <div class="pc-variant-meta">
                                     <span class="pc-stock-pill {{ $isAvailable ? '' : 'out' }}">
                                         @if($isAvailable)
-                                            {{ $trackStock ? $stockQty . ' unit piece' : 'Available' }}
+                                            Available
                                         @else
                                             Out of stock
                                         @endif
@@ -666,47 +763,7 @@ if ($catSlug == 'multivitamins') {
                                 </div>
                             </div>
                         @endif
-                        <div class="pc-features">
-                            @php
-                                $tags = $product->tags ?? [];
-                                // Backward compatibility for old string tags
-                                if (is_string($tags)) {
-                                    $tags = array_map(function ($t) {
-                                        preg_match(
-                                            '/^([\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}])?\s*(.*)$/u',
-                                            $t,
-                                            $m,
-                                        );
-                                        return ['icon' => $m[1] ?? '', 'text' => $m[2] ?? $t];
-                                    }, array_filter(array_map('trim', explode(',', $tags))));
-                                }
-                                $tags = array_slice($tags, 0, 4);
-                            @endphp
-                            @if (count($tags) > 0)
-                                @foreach (array_chunk($tags, 2) as $chunk)
-                                    <div class="newcarda">
-                                        @foreach ($chunk as $tag)
-                                            <span>
-                                                @if (!empty($tag['icon']))
-                                                    @php
-                                                        $isFilePath = str_contains($tag['icon'], 'tags/');
-                                                    @endphp
-                                                    <i>
-                                                        @if ($isFilePath)
-                                                            <img src="{{ asset('storage/' . $tag['icon']) }}"
-                                                                style="width:16px; height:16px; object-fit:contain; vertical-align: middle;" loading="lazy" decoding="async">
-                                                        @else
-                                                            {{ $tag['icon'] }}
-                                                        @endif
-                                                    </i>
-                                                @endif
-                                                {{ \Illuminate\Support\Str::limit($tag['text'] ?? '', 15) }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
+
                         <div class="pc-foot">
                             <div class="pc-price" data-price-label>
                                 ₹{{ number_format($cardPrice, 0) }}
@@ -714,7 +771,8 @@ if ($catSlug == 'multivitamins') {
                                     <s>₹{{ number_format($cardComparePrice, 0) }}</s>
                                 @endif
                             </div>
-                            <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}" data-variant-id="{{ $selectedVariant?->id }}">Add to Cart
+                            <button class="btn-add badd-{{ $catSlug }}" data-id="{{ $product->id }}"
+                                data-variant-id="{{ $selectedVariant?->id }}">Add to Cart
                                 +</button>
                         </div>
                     </div>
@@ -723,12 +781,275 @@ if ($catSlug == 'multivitamins') {
         </div>
     </section>
 
+    <!-- ══════════════════════════════════════════
+                                                                                                                       INGREDIENTS HIGHLIGHT
+                                                                                                                  ══════════════════════════════════════════ -->
+    <section class="ing-section" id="ingredients">
+        <div class="stars-bg" id="starsBg"></div>
+
+        <div class="ing-header reveal">
+            <span class="sec-eye">Ingredient Transparency</span>
+            <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
+            <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto"> From ancient forests to your child's gummy,
+                a completely honest story of every ingredient we carefully choose and why.</p>
+        </div>
+
+        <div class="ing-tabs reveal">
+            <button class="itab active" data-ing="0"><img src="img/gradient1.webp" alt="">
+                Ashwagandha</button>
+            <button class="itab" data-ing="1"> <img src="img/bb.png" alt="">Brahmi</button>
+            <button class="itab" data-ing="2"> <img src="img/haldi.webp" alt=""> Turmeric</button>
+            <button class="itab" data-ing="3"> <img src="img/Amla.WEBP" alt=""> Amla</button>
+            <button class="itab" data-ing="4"> <img src="img/flex.png" alt=""> Flaxseed Oil</button>
+            <button class="itab" data-ing="5"> <img src="img/vitamins.jpg" alt=""> Vitamins</button>
+            <button class="itab" data-ing="6"> <img src="img/minerals.png" alt=""> Minerals</button>
+        </div>
+
+        <div class="ing-panels">
+
+            <!-- Ashwagandha -->
+            <div class="ing-panel active" id="ing-panel-0">
+                <div class="for-large-img" style="display:flex;justify-content:center ">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/gradient1.webp" alt="Ashwagandha">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">01</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Ayurvedic
+                        Powerhouse</div>
+                    <h3 class="ing-name">Ashwagandha</h3>
+                    <p class="ing-sci">Withania somnifera · KSM-66® Premium Grade</p>
+                    <p class="ing-story">Deep in the Rajasthan desert, the "strength of a horse" has been growing for
+                        3,000+
+                        years. Ancient Ayurvedic healers called it <em>Balya</em> — giver of strength. Today, it's your
+                        child's
+                        secret superpower for resilience, calm, and growth.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">Builds Immunity</div>
+                        <div class="ptag">Reduces Stress</div>
+                        <div class="ptag">Muscle Growth</div>
+                        <div class="ptag">Better Sleep</div>
+                        <div class="ptag">More Energy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-1">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/bb.png" alt="Brahmi">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">02</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">Brain
+                        Tonic</div>
+                    <h3 class="ing-name">Brahmi</h3>
+                    <p class="ing-sci">Bacopa monnieri, Standardised Bacosides </p>
+                    <p class="ing-story">Growing along riverbanks across India, Brahmi was the herb ancient scholars used
+                        before studying sacred texts. Its active Bacosides literally rebuild neural pathways — making your
+                        child's brain sharper, one gummy at a time.
+                    </p>
+                    <div class="ing-powers">
+                        <div class="ptag"> Laser Focus</div>
+                        <div class="ptag">Memory Boost</div>
+                        <div class="ptag">Problem Solving</div>
+                        <div class="ptag">Calm Alertness</div>
+                        <div class="ptag">Better Grades</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turmeric -->
+            <div class="ing-panel" id="ing-panel-2">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#3A2A00,#2A1800);--pglow:rgba(255,214,0,.4)">
+                        <img class="image-big" src="img/haldi.webp" alt="Turmeric">
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:9s">⭐</div>
+                        <div class="orbit-i" style="--orr:14s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">03</div>
+                    <div class="ing-pill"
+                        style="background:rgba(255,214,0,.1);color:var(--ye);border:1px solid rgba(255,214,0,.2)">Golden
+                        Healer
+                    </div>
+                    <h3 class="ing-name">Turmeric Curcumin</h3>
+                    <p class="ing-sci">Curcuma longa, 95% Curcuminoids </p>
+                    <p class="ing-story">India's golden spice - used in every kitchen and every healing ritual for 5,000
+                        years. Curcumin's anti-inflammatory magic protects your child's developing cells, soothes tummies,
+                        and builds a fortress of immunity around them.We use the most potent 95% Curcuminoid form so your
+                        child gets the full benefit of this golden gift from nature. </p>
+                    <div class="ing-powers">
+                        <div class="ptag">Natural Anti-Inflammatory for Kids</div>
+                        <div class="ptag">Antioxidant Shield, Gut Health Support</div>
+                        <div class="ptag">Joint and Bone development</div>
+                        <div class="ptag">Cell Protection for Growing Kids</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amla -->
+            <div class="ing-panel" id="ing-panel-3">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
+                        <img class="image-big" src="img/amla.webp" alt="Amla">
+                        <div class="orbit-i" style="--orr:8.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">04</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        Superfruit</div>
+                    <h3 class="ing-name">Amla</h3>
+                    <p class="ing-sci">Phyllanthus emblica · Indian Gooseberry</p>
+                    <p class="ing-story">The holy fruit of Ayurveda — revered as the "mother" of all medicines. One tiny
+                        Amla
+                        holds 20× the Vitamin C of an orange. Our grandmothers were right all along, and now science has
+                        proven it
+                        beyond any doubt.</p>
+                    <div class="ing-powers">
+                        <div class="ptag">20× Vitamin C</div>
+                        <div class="ptag">Iron Absorption</div>
+                        <div class="ptag">Gut Healing</div>
+                        <div class="ptag">Skin Health</div>
+                        <div class="ptag">Super Immunity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- algal dha -->
+            <div class="ing-panel" id="ing-panel-4">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A2A,#051020);--pglow:rgba(0,191,255,.25)">
+                        <img class="image-big" src="img/flex.png" alt="Omega-3 DHA">
+                        <div class="orbit-i" style="--orr:7.5s">⭐</div>
+                        <div class="orbit-i" style="--orr:10s;font-size:.9rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">05</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.1);color:var(--sk);border:1px solid rgba(0,191,255,.2)">
+                        PLANT-BASED POWER
+                    </div>
+                    <h3 class="ing-name">Flaxseed Oil</h3>
+                    <p class="ing-sci">Alpha-Linolenic Acid (ALA) · Cold-Pressed, 100% Plant-Sourced</p>
+                    <p class="ing-story">A natural plant-based source of Omega-3 (ALA) that provides essential nutritional
+                        support for healthy brain development, cognitive function, and growing minds.
+                    </p>
+                    <div class="ing-powers">
+                        <div class="ptag">BENEFIT TAGS- Brain Development</div>
+                        <div class="ptag"> Heart Health</div>
+                        <div class="ptag">Immunity Boost</div>
+                        <div class="ptag">100% Vegetarian</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- vitamins -->
+            <div class="ing-panel " id="ing-panel-5">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
+                        <img class="image-big" src="img/vitamins.webp" alt="Vitamins">
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:8s">⭐</div>
+                        <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>
+                        <div class="orbit-i" style="--orr:18s;font-size:.9rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">06</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
+                        COMPLETE NUTRITION</div>
+                    <h3 class="ing-name">Vitamins</h3>
+                    <p class="ing-sci">Vitamin A, B-Complex, C, D3 & E — Complete Daily Nutrition</p>
+                    <p class="ing-story"> Your child's body is growing every single day — and it needs the right vitamins to
+                        keep up. No single vitamin does it all — that's why children need a complete, balanced mix. Vitamin
+                        D3 builds strong bones, Vitamin C fights off seasonal illness, the B-Complex vitamins power focus
+                        and energy, and Vitamin A keeps eyesight sharp — all working together behind the scenes, so your
+                        child can run, learn, and play without missing a beat.</p>
+                    <div class="ing-powers">
+                        <div class="ptag"> Immunity Boost</div>
+                        <div class="ptag"> Bone Strength</div>
+                        <div class="ptag"> Energy & Focus</div>
+                        <div class="ptag">Cell Protection</div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Brahmi -->
+            <div class="ing-panel" id="ing-panel-6">
+                <div class="for-large-img" style="display:flex;justify-content:center">
+                    <div class="ing-planet"
+                        style="background:radial-gradient(circle at 35% 35%,#0A1A3A,#0A0A2A);--pglow:rgba(0,191,255,.35)">
+                        <img class="image-big" src="img/minerals.png" alt="Minerals">
+                        <div class="orbit-i" style="--orr:6s">⭐</div>
+                        <div class="orbit-i" style="--orr:7s">⭐</div>
+                        <div class="orbit-i" style="--orr:11s;font-size:1rem">⭐</div>
+                    </div>
+                </div>
+                <div class="ing-text">
+                    <div class="ing-num">07</div>
+                    <div class="ing-pill"
+                        style="background:rgba(0,191,255,.12);color:var(--sk);border:1px solid rgba(0,191,255,.2)">ESSENTIAL
+                        MINERALS
+                    </div>
+                    <h3 class="ing-name">Minerals</h3>
+                    <p class="ing-sci">Zinc · Magnesium · Iodine · Selenium — Vital Trace Minerals</p>
+                    <p class="ing-story"> Growth doesn't happen by chance — it happens through the right minerals, every
+                        single day. From Zinc that fuels immunity, to Magnesium that supports calm and restful sleep, to
+                        Iodine and Selenium that protect your child's developing body from within, these trace minerals
+                        quietly power some of the most important processes in childhood.
+                    </p>
+                    <div class="ing-powers">
+                        <div class="ptag">Immune Defense</div>
+                        <div class="ptag"> Better Sleep</div>
+                        <div class="ptag">Thyroid Health Cell Protection</div>
+                        <div class="ptag">Stronger Growth
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /ing-panels -->
+    </section>
 
 
 
     <!-- ══════════════════════════════════════════
-                       QUIZ CTA
-                  ══════════════════════════════════════════ -->
+                                                                                                                           QUIZ CTA
+                                                                                                                      ══════════════════════════════════════════ -->
     <div class="quiz-cta reveal" id="quiz">
         <div>
             <span class="quiz-label"> Personalized Nutrition</span>
@@ -743,87 +1064,10 @@ if ($catSlug == 'multivitamins') {
 
 
 
-    <!-- ══════════════════════════════════════════
-                       INGREDIENTS HIGHLIGHT
-                  ══════════════════════════════════════════ -->
-    @if ($featuredIngredients->isNotEmpty())
-        <section class="ing-section" id="ingredients">
-            <div class="stars-bg" id="starsBg"></div>
-
-            <div class="ing-header reveal">
-                <span class="sec-eye">Ingredient Transparency</span>
-                <h2 class="sec-title">Journey of Every <span class="acc">Ingredient</span></h2>
-                <p class="sec-sub" style="color:rgba(255,255,255,.5);margin:0 auto">From ancient forests to your child's
-                    gummy
-                    — an honest, magical story of every ingredient we use.</p>
-            </div>
-
-            <div class="ing-tabs reveal">
-                @foreach ($featuredIngredients as $i => $ing)
-                    <button class="itab {{ $i === 0 ? 'active' : '' }}" data-ing="{{ $i }}">
-                        {{ $ing->main_heading }}
-                    </button>
-                @endforeach
-            </div>
-
-            <div class="ing-panels">
-                @foreach ($featuredIngredients as $i => $ing)
-                    @php
-                        $orbSpeeds = ['8s', '6s', '7s', '8.5s', '7.5s', '8s', '6s'];
-                        $orb2 = ['8s', '7s', '9s', '15s', '10s', '8s', '7s'];
-                        $orb3 = ['13s', '11s', '14s', '18s', '18s', '13s', '11s'];
-                        $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
-                    @endphp
-                    <div class="ing-panel {{ $i === 0 ? 'active' : '' }}" id="ing-panel-{{ $i }}">
-                        <div style="display:flex;justify-content:center">
-                            <div class="ing-planet"
-                                style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                                @if ($ing->icon_path)
-                                    <img class="image-big" src="{{ asset('storage/' . $ing->icon_path) }}"
-                                        alt="{{ $ing->main_heading }}">
-                                @else
-                                    <img class="image-big" src="{{ asset('img/gradient1.webp') }}"
-                                        alt="{{ $ing->main_heading }}">
-                                @endif
-                                <div class="orbit-i" style="--orr:{{ $orbSpeeds[$i] ?? '8s' }}">⭐</div>
-                                <div class="orbit-i" style="--orr:{{ $orb2[$i] ?? '8s' }}">⭐</div>
-                                <div class="orbit-i" style="--orr:{{ $orb3[$i] ?? '13s' }};font-size:1.1rem">⭐</div>
-                            </div>
-                        </div>
-                        <div class="ing-text">
-                            <div class="ing-num">{{ $num }}</div>
-                            <div class="ing-pill"
-                                style="background:rgba(0,214,143,.12);color:var(--mn);border:1px solid rgba(0,214,143,.2)">
-                                {{ $ing->short_heading }}
-                            </div>
-                            <h3 class="ing-name">{{ $ing->main_heading }}</h3>
-                            @if ($ing->dosage_heading_one)
-                                <p class="ing-sci">{{ $ing->dosage_heading_one }}</p>
-                            @endif
-                            @if ($ing->description)
-                                <p class="ing-story">{{ $ing->description }}</p>
-                            @endif
-                            @if ($ing->benefits->isNotEmpty())
-                                <div class="ing-powers">
-                                    @foreach ($ing->benefits as $benefit)
-                                        <div class="ptag">{{ $benefit->heading }}</div>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endforeach
-
-            </div><!-- /ing-panels -->
-        </section>
-    @endif
-
-
-
 
     <!-- ══════════════════════════════════════════
-                     DIET CHART SECTION
-                ══════════════════════════════════════════ -->
+                                                                                                                         DIET CHART SECTION
+                                                                                                                    ══════════════════════════════════════════ -->
     <section class="diet-section" id="diet-chart">
 
         <div class="diet-header">
@@ -881,27 +1125,27 @@ if ($catSlug == 'multivitamins') {
                         </div>
                         <div class="age-grid" id="ageGrid">
                             <div class="age-card" data-age="2-3" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="/img/girl.png" alt=""></span>
+                                <span class="age-emoji"><img src="{{ asset('img/girl.png') }}" alt=""></span>
                                 <span class="age-range">2–3 yrs</span>
                                 <span class="age-label">Toddler</span>
                             </div>
                             <div class="age-card" data-age="4-6" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="/img/b1.png" alt=""></span>
+                                <span class="age-emoji"><img src="{{ asset('img/b1.png') }}" alt=""></span>
                                 <span class="age-range">4–6 yrs</span>
                                 <span class="age-label">Pre-School</span>
                             </div>
                             <div class="age-card" data-age="7-9" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="/img/b2.png" alt=""></span>
+                                <span class="age-emoji"><img src="{{ asset('img/b2.png') }}" alt=""></span>
                                 <span class="age-range">7–9 yrs</span>
                                 <span class="age-label">Primary School</span>
                             </div>
                             <div class="age-card" data-age="10-12" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="/img/g1.png" alt=""></span>
+                                <span class="age-emoji"><img src="{{ asset('img/g1.png') }}" alt=""></span>
                                 <span class="age-range">10–12 yrs</span>
                                 <span class="age-label">Middle School</span>
                             </div>
                             <div class="age-card" data-age="13-14" onclick="dcSelectAge(this)">
-                                <span class="age-emoji"><img src="/img/b4.png" alt=""></span>
+                                <span class="age-emoji"><img src="{{ asset('img/b4.png') }}" alt=""></span>
                                 <span class="age-range">13–14 yrs</span>
                                 <span class="age-label">Teen</span>
                             </div>
@@ -915,17 +1159,17 @@ if ($catSlug == 'multivitamins') {
                         </div>
                         <div class="gender-row" id="genderRow">
                             <div class="gender-card" data-gender="boy" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="/img/boy.png" alt=""></span>
+                                <span class="gender-emoji"><img src="{{ asset('img/boy.png') }}" alt=""></span>
                                 <div class="gender-name">Boy</div>
                             </div>
                             <div class="gender-card" data-gender="girl" onclick="dcSelectGender(this)">
-                                <span class="gender-emoji"><img src="/img/girl.png" alt=""></span>
+                                <span class="gender-emoji"><img src="{{ asset('img/girl.png') }}" alt=""></span>
                                 <div class="gender-name">Girl</div>
                             </div>
                             <!-- <div class="gender-card" data-gender="other" onclick="dcSelectGender(this)">
-                                    <span class="gender-emoji"><img src="/img/boyn.png" alt=""></span>
-                                    <div class="gender-name">Prefer not to say</div>
-                                </div> -->
+                                                                                                                                        <span class="gender-emoji"><img src="{{ asset('img/boyn.png') }}" alt=""></span>
+                                                                                                                                        <div class="gender-name">Prefer not to say</div>
+                                                                                                                                    </div> -->
                         </div>
                         <div class="selection-error" id="genderError">⚠️ Please select a gender to continue.</div>
                     </div>
@@ -941,13 +1185,11 @@ if ($catSlug == 'multivitamins') {
                         <div class="hw-row">
                             <div class="hw-group">
                                 <label>Height (cm)</label>
-                                <input type="number" id="heightInput" placeholder="e.g. 115" min="50"
-                                    max="200">
+                                <input type="number" id="heightInput" placeholder="e.g. 115" min="50" max="200">
                             </div>
                             <div class="hw-group">
                                 <label>Weight (kg)</label>
-                                <input type="number" id="weightInput" placeholder="e.g. 22" min="5"
-                                    max="100">
+                                <input type="number" id="weightInput" placeholder="e.g. 22" min="5" max="100">
                             </div>
                         </div>
                     </div>
@@ -993,8 +1235,8 @@ if ($catSlug == 'multivitamins') {
                         <div class="prob-tag" data-prob="mood" onclick="dcToggleProb(this)"><span
                                 class="prob-icon">😊</span> Mood &
                             Calm</div>
-                        <div class="prob-tag" data-prob="skin" onclick="dcToggleProb(this)"><span
-                                class="prob-icon">✨</span> Skin &
+                        <div class="prob-tag" data-prob="skin" onclick="dcToggleProb(this)"><span class="prob-icon">✨</span>
+                            Skin &
                             Hair</div>
                         <div class="prob-tag" data-prob="appetite" onclick="dcToggleProb(this)"><span
                                 class="prob-icon">🍽️</span>
@@ -1162,8 +1404,8 @@ if ($catSlug == 'multivitamins') {
         </div><!-- /stepper-wrap -->
     </section>
     <!-- ══════════════════════════════════════════
-                     SUBSCRIPTION MODAL
-                ══════════════════════════════════════════ -->
+                                                                                                                         SUBSCRIPTION MODAL
+                                                                                                                    ══════════════════════════════════════════ -->
     <div class="modal-overlay" id="dcModalOverlay" onclick="dcCloseModalOutside(event)">
         <div class="modal-box">
             <button class="modal-close-btn" onclick="dcCloseModal()">✕</button>
@@ -1208,111 +1450,111 @@ if ($catSlug == 'multivitamins') {
 
 
     <!-- ══════════════════════════════════════════
-                       HOW IT WORKS
-                  ══════════════════════════════════════════ -->
+                                                                                                                           HOW IT WORKS
+                                                                                                                      ══════════════════════════════════════════ -->
     <!-- <section class="how-section reveal">
-        <div class="how-layout">
-        <div class="how-head">
-            <span class="sec-eye">Simple Process</span>
-            <h2 class="sec-title">How It <span class="acc">Works</span></h2>
-            <p>From a quick parent quiz to a plan you can actually follow, NutriBuddy keeps each step simple.</p>
-            <div class="how-stats">
-                <div><strong>2 min</strong><span>quick quiz</span></div>
-                <div><strong>Free</strong><span>diet plan</span></div>
-            </div>
-        </div>
-        <div class="steps">
-            <div class="step-new">
-                <div class="step-top">
-                    <div class="sball s1"><img src="/img/quiz.png" alt=""></div>
-                    <div class="snum">Step 01</div>
-                </div>
-                <div class="stitle">Take the Quiz</div>
-                <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
-            </div>
-            <div class="step-new">
-                <div class="step-top">
-                    <div class="sball s2"><img src="/img/plan.png" alt=""></div>
-                    <div class="snum">Step 02</div>
-                </div>
-                <div class="stitle">Get Your Plan</div>
-                <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
-            </div>
-            <div class="step-new">
-                <div class="step-top">
-                    <div class="sball s3"><img src="/img/order.png" alt=""></div>
-                    <div class="snum">Step 03</div>
-                </div>
-                <div class="stitle">Order & Save</div>
-                <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
-            </div>
-            <div class="step-new">
-                <div class="step-top">
-                    <div class="sball s4"><img src="/img/rising.png" alt=""></div>
-                    <div class="snum">Step 04</div>
-                </div>
-                <div class="stitle">Track Progress</div>
-                <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
-            </div>
-        </div>
-        <div class="how-cta-row">
-            <a href="#diet-chart" class="hbtn hbtn-main">Start Free Quiz</a>
-            <span>No sign-up required to begin</span>
-        </div>
-        </div>
-    </section> -->
+                                                                                                            <div class="how-layout">
+                                                                                                            <div class="how-head">
+                                                                                                                <span class="sec-eye">Simple Process</span>
+                                                                                                                <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+                                                                                                                <p>From a quick parent quiz to a plan you can actually follow, NutriBuddy keeps each step simple.</p>
+                                                                                                                <div class="how-stats">
+                                                                                                                    <div><strong>2 min</strong><span>quick quiz</span></div>
+                                                                                                                    <div><strong>Free</strong><span>diet plan</span></div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="steps">
+                                                                                                                <div class="step-new">
+                                                                                                                    <div class="step-top">
+                                                                                                                        <div class="sball s1"><img src="{{ asset('img/quiz.png') }}" alt=""></div>
+                                                                                                                        <div class="snum">Step 01</div>
+                                                                                                                    </div>
+                                                                                                                    <div class="stitle">Take the Quiz</div>
+                                                                                                                    <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
+                                                                                                                </div>
+                                                                                                                <div class="step-new">
+                                                                                                                    <div class="step-top">
+                                                                                                                        <div class="sball s2"><img src="{{ asset('img/plan.png') }}" alt=""></div>
+                                                                                                                        <div class="snum">Step 02</div>
+                                                                                                                    </div>
+                                                                                                                    <div class="stitle">Get Your Plan</div>
+                                                                                                                    <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
+                                                                                                                </div>
+                                                                                                                <div class="step-new">
+                                                                                                                    <div class="step-top">
+                                                                                                                        <div class="sball s3"><img src="{{ asset('img/order.png') }}" alt=""></div>
+                                                                                                                        <div class="snum">Step 03</div>
+                                                                                                                    </div>
+                                                                                                                    <div class="stitle">Order & Save</div>
+                                                                                                                    <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
+                                                                                                                </div>
+                                                                                                                <div class="step-new">
+                                                                                                                    <div class="step-top">
+                                                                                                                        <div class="sball s4"><img src="{{ asset('img/rising.png') }}" alt=""></div>
+                                                                                                                        <div class="snum">Step 04</div>
+                                                                                                                    </div>
+                                                                                                                    <div class="stitle">Track Progress</div>
+                                                                                                                    <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="how-cta-row">
+                                                                                                                <a href="#diet-chart" class="hbtn hbtn-main">Start Free Quiz</a>
+                                                                                                                <span>No sign-up required to begin</span>
+                                                                                                            </div>
+                                                                                                            </div>
+                                                                                                        </section> -->
 
 
 
 
     <!-- ══════════════════════════════════════════
-                       CERTIFICATIONS CAROUSEL
-                  ══════════════════════════════════════════ -->
+                                                                                                                           CERTIFICATIONS CAROUSEL
+                                                                                                                      ══════════════════════════════════════════ -->
     <!-- <section class="imgcar-section reveal" id="certificates">
-                    <div class="imgcar-header">
-                      <span class="sec-eye">Our Certifications</span>
-                      <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
-                      <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
-                        recognised certifications.</p>
-                    </div>
+                                                                                                                        <div class="imgcar-header">
+                                                                                                                          <span class="sec-eye">Our Certifications</span>
+                                                                                                                          <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
+                                                                                                                          <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
+                                                                                                                            recognised certifications.</p>
+                                                                                                                        </div>
 
-                    <div class="imgcar-wrapper">
-                      <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
-                      <div class="imgcar-viewport" id="imgcarViewport">
-                        <div class="imgcar-pbar" id="imgcarPbar"></div>
-                        <div class="imgcar-track" id="imgcarTrack">
-                          <div class="imgcar-item"><img src="/img/cert-fssai.png" alt="FSSAI Certified"
-                              onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-nabl.png" alt="NABL Lab Tested"
-                              onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-nongmo.png" alt="Non-GMO Verified"
-                              onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-iap.png" alt="Pediatrician Approved"
-                              onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-cruelty.png" alt="Cruelty Free"
-                              onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
-                          <div class="imgcar-item"><img src="/img/cert-iso.png" alt="ISO 22000 GMP"
-                              onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
-                        </div>
-                      </div>
-                      <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
-                    </div>
+                                                                                                                        <div class="imgcar-wrapper">
+                                                                                                                          <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
+                                                                                                                          <div class="imgcar-viewport" id="imgcarViewport">
+                                                                                                                            <div class="imgcar-pbar" id="imgcarPbar"></div>
+                                                                                                                            <div class="imgcar-track" id="imgcarTrack">
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-fssai.png') }}" alt="FSSAI Certified"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-nabl.png') }}" alt="NABL Lab Tested"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-nongmo.png') }}" alt="Non-GMO Verified"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-iap.png') }}" alt="Pediatrician Approved"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-cruelty.png') }}" alt="Cruelty Free"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
+                                                                                                                              <div class="imgcar-item"><img src="{{ asset('img/cert-iso.png') }}" alt="ISO 22000 GMP"
+                                                                                                                                  onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
+                                                                                                                            </div>
+                                                                                                                          </div>
+                                                                                                                          <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
+                                                                                                                        </div>
 
-                    <div class="imgcar-dots" id="imgcarDots"></div>
-                  </section> -->
-
-    <!-- ══════════════════════════════════════════
-                       TESTIMONIALS
-                  ══════════════════════════════════════════ -->
-    @include('partials.parent-reviews')
+                                                                                                                        <div class="imgcar-dots" id="imgcarDots"></div>
+                                                                                                                      </section> -->
 
     <!-- ══════════════════════════════════════════
-                       FAQ
-                  ══════════════════════════════════════════ -->
+                                                                                                                           TESTIMONIALS
+                                                                                                                      ══════════════════════════════════════════ -->
+    @include('partials.parent-reviews', ['product' => null])
+
+    <!-- ══════════════════════════════════════════
+                                                                                                                           FAQ
+                                                                                                                      ══════════════════════════════════════════ -->
     @include('partials.faq-section')
     <!-- ══════════════════════════════════════════
-                       NEWSLETTER
-                  ══════════════════════════════════════════ -->
+                                                                                                                           NEWSLETTER
+                                                                                                                      ══════════════════════════════════════════ -->
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>
@@ -1322,9 +1564,11 @@ if ($catSlug == 'multivitamins') {
         <form class="nl-form newsletterSubscribeForm" action="{{ route('newsletter.subscribe') }}" method="POST">
             @csrf
             <input type="hidden" name="source" value="newsletter_block">
-            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address" required>
+            <input class="nl-input" type="email" name="email" maxlength="50" placeholder="Enter your email address"
+                required>
             <button class="hbtn hbtn-main" type="submit" style="padding:13px 28px;font-size:.9rem">Subscribe</button>
-            <div class="newsletterSubscribeMessage" style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
+            <div class="newsletterSubscribeMessage"
+                style="display:none;width:100%;margin-top:8px;font-size:.82rem;font-weight:800;text-align:center;"></div>
         </form>
     </div>
 
@@ -1390,7 +1634,7 @@ if ($catSlug == 'multivitamins') {
                     if (stockPill && variant) {
                         stockPill.classList.toggle('out', !variant.available);
                         stockPill.textContent = variant.available
-                            ? (variant.track_stock ? `${variant.stock_qty} unit piece` : 'Available')
+                            ? 'Available'
                             : 'Out of stock';
                     }
                 }

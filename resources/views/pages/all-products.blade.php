@@ -4,10 +4,14 @@
 @section('content')
     @php
         $productsList = $products->values();
-        $categoryCounts = $productsList
-            ->groupBy(fn($p) => $p->category->name ?? 'Uncategorized')
-            ->map(fn($items) => $items->count())
-            ->sortKeys();
+        $catalogCategoryCounts = collect($categoryCounts ?? [])
+            ->map(fn($category) => [
+                'slug' => $category['slug'] ?? \Illuminate\Support\Str::slug($category['name'] ?? 'Uncategorized'),
+                'name' => $category['name'] ?? 'Uncategorized',
+                'count' => $category['count'] ?? 0,
+            ])
+            ->sortBy('name')
+            ->values();
         $prices = $productsList->map(fn($p) => (float) $p->display_price);
         $minPrice = (int) floor($prices->min() ?? 0);
         $maxPrice = (int) ceil($prices->max() ?? 0);
@@ -31,7 +35,16 @@
         <div class="plp-layout">
 
             {{-- ── SIDEBAR ── --}}
-            <aside class="plp-sidebar">
+            <div class="plp-filter-backdrop" id="plpFilterBackdrop" hidden></div>
+            <aside class="plp-sidebar" id="plpFilterDrawer" aria-label="Product filters">
+                <div class="plp-mobile-drawer-head">
+                    <div>
+                        <span>Filters</span>
+                        <strong>Refine products</strong>
+                    </div>
+                    <button type="button" id="plpFilterClose" aria-label="Close filters">&times;</button>
+                </div>
+
                 <div class="plp-sidebar-head">
                     <h2>Filters</h2>
                     <button type="button" id="plpClear">Clear</button>
@@ -45,11 +58,11 @@
                 <div class="plp-filter-block">
                     <h3>Categories</h3>
                     <button type="button" class="plp-cat-btn active" data-cat="all">
-                        <span>All Products</span><strong>{{ $productsList->count() }}</strong>
+                        <span>All Products</span><strong>{{ $totalProducts ?? $products->total() }}</strong>
                     </button>
-                    @foreach ($categoryCounts as $catName => $catCount)
-                        <button type="button" class="plp-cat-btn" data-cat="{{ \Illuminate\Support\Str::slug($catName) }}">
-                            <span>{{ $catName }}</span><strong>{{ $catCount }}</strong>
+                    @foreach ($catalogCategoryCounts as $category)
+                        <button type="button" class="plp-cat-btn" data-cat="{{ $category['slug'] }}">
+                            <span>{{ $category['name'] }}</span><strong>{{ $category['count'] }}</strong>
                         </button>
                     @endforeach
                 </div>
@@ -67,6 +80,8 @@
                         value="{{ $maxPrice }}">
                     <p>Up to Rs. <span id="plpPriceLabel">{{ number_format($maxPrice) }}</span></p>
                 </div>
+
+                <button type="button" class="plp-mobile-apply" id="plpFilterApply">Apply Filters</button>
             </aside>
 
             {{-- ── RESULTS AREA ── --}}
@@ -80,13 +95,19 @@
                                 id="plpRange">{{ $productsList->isNotEmpty() ? '1-' . $productsList->count() : '0-0' }}</span>
                             of {{ $productsList->count() }}</p>
                     </div>
-                    <select id="plpSort" aria-label="Sort products">
-                        <option value="default">Default</option>
-                        <option value="featured">Featured first</option>
-                        <option value="price-low">Price low to high</option>
-                        <option value="price-high">Price high to low</option>
-                        <option value="name">Name A to Z</option>
-                    </select>
+                    <div class="plp-toolbar-actions">
+                        <select id="plpSort" aria-label="Sort products">
+                            <option value="default">Default</option>
+                            <option value="featured">Featured first</option>
+                            <option value="price-low">Price low to high</option>
+                            <option value="price-high">Price high to low</option>
+                            <option value="name">Name A to Z</option>
+                        </select>
+                        <button type="button" class="plp-mobile-filter-btn" id="plpFilterOpen"
+                            aria-controls="plpFilterDrawer" aria-expanded="false">
+                            <span></span> Filters
+                        </button>
+                    </div>
                 </div>
 
                 {{-- 3-column product grid --}}
@@ -105,7 +126,7 @@
                             }
 
                             $categoryName = $product->category->name ?? 'Uncategorized';
-                            $categoryKey = \Illuminate\Support\Str::slug($categoryName);
+                            $categoryKey = $product->category->slug ?? \Illuminate\Support\Str::slug($categoryName);
 
                             $activeVariants = $product->variants
                                 ->filter(fn($v) => $v->is_active && !empty($v->attributes))
@@ -124,6 +145,7 @@
                                     }
                                 }
                             }
+                            $showInlineVariants = false;
 
                             $selectedVariant =
                                 $activeVariants->firstWhere('is_default', true) ?: $activeVariants->first();
@@ -162,9 +184,11 @@
                                     ($product->display_compare_price ?? 0));
                             $reviewCount = $product->reviews->count();
                             $rating = $reviewCount > 0 ? $product->reviews->avg('rating') : 0;
-                            $defaultImage = $product->primaryImage ?: $product->images->first();
-                            $hoverImage =
-                                $product->images->where('id', '!=', $defaultImage?->id)->first() ?: $defaultImage;
+                            $fallbackDefaultImage = $product->primaryImage ?: $product->images->first();
+                            $fallbackHoverImage =
+                                $product->images->where('id', '!=', $fallbackDefaultImage?->id)->first() ?: $fallbackDefaultImage;
+                            $defaultImagePath = $product->card_image_path ?: $fallbackDefaultImage?->image_path;
+                            $hoverImagePath = $product->card_hover_image_path ?: ($fallbackHoverImage?->image_path ?: $defaultImagePath);
                         @endphp
 
                         <div class="pc pc-{{ $catSlug }} plp-card {{ $selectedVariant ? 'has-variants' : 'no-variants' }}"
@@ -178,10 +202,10 @@
 
                             <div class="pc-head pc-head-{{ $catSlug }}">
                                 <a href="{{ route('product.show', $product->slug) }}" class="pc-emoji p-image">
-                                    @if ($defaultImage)
-                                        <img src="{{ asset('storage/' . $defaultImage->image_path) }}"
+                                    @if ($defaultImagePath)
+                                        <img src="{{ asset('storage/' . $defaultImagePath) }}"
                                             alt="{{ $product->name }}" class="default-img" loading="lazy" decoding="async">
-                                        <img src="{{ asset('storage/' . $hoverImage->image_path) }}"
+                                        <img src="{{ asset('storage/' . $hoverImagePath) }}"
                                             alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                     @endif
                                 </a>
@@ -192,21 +216,21 @@
                             </div>
 
                             <div class="pc-body">
-                                <div class="pc-stars">
+                                <a href="{{ route('product.show', $product->slug) }}#reviews" class="pc-stars" style="text-decoration: none;">
                                     @for ($i = 0; $i < 5; $i++)
                                         {!! $i < $rating ? '&#9733;' : '&#9734;' !!}
                                     @endfor
                                     <span
                                         style="color:#aaa;font-size:.75rem;font-family:'DM Sans',sans-serif">({{ $reviewCount }}
                                         reviews)</span>
-                                </div>
+                                </a>
                                 <div class="pc-cat cat-{{ $catSlug }}">{{ $categoryName }}</div>
                                 <div class="pc-name">
                                     <a href="{{ route('product.show', $product->slug) }}"
                                         style="color:inherit;text-decoration:none">{{ $product->name }}</a>
                                 </div>
 
-                                @if (!empty($variantGroups))
+                                @if ($showInlineVariants && !empty($variantGroups))
                                     <div class="pc-variant-panel">
                                         <div class="pc-variant-groups">
                                             @foreach ($variantGroups as $attributeName => $values)
@@ -285,6 +309,13 @@
             padding: 24px 22px;
             position: sticky;
             top: 110px;
+        }
+
+        .plp-filter-backdrop,
+        .plp-mobile-drawer-head,
+        .plp-mobile-apply,
+        .plp-mobile-filter-btn {
+            display: none;
         }
 
         .plp-sidebar-head {
@@ -476,6 +507,12 @@
             padding: 9px 12px;
         }
 
+        .plp-toolbar-actions {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+        }
+
         /* ── 3-column grid ── */
         .plp-grid {
             display: grid;
@@ -486,7 +523,8 @@
 
         /* Image fills card head — same as homepage */
         .plp-grid .pc-head {
-            height: 250px;
+            aspect-ratio: 3 / 2;
+            height: 360px;
             padding: 0;
             overflow: hidden;
             position: relative;
@@ -504,8 +542,7 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            object-position: center;
+            
             padding: 0;
         }
 
@@ -567,12 +604,223 @@
         }
 
         @media (max-width: 700px) {
+            .plp-page {
+                padding-top: 28px;
+            }
+
             .plp-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .plp-grid .pc-head {
-                height: 200px;
+                aspect-ratio: 3 / 2;
+                height: 360px;
+            }
+
+            .plp-filter-backdrop {
+                background: rgba(13, 0, 32, .48);
+                display: block;
+                inset: 0;
+                opacity: 0;
+                pointer-events: none;
+                position: fixed;
+                transition: opacity .24s ease;
+                z-index: 9990;
+            }
+
+            .plp-filter-backdrop.is-open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .plp-sidebar {
+                border: 0;
+                border-radius: 24px 24px 0 0;
+                bottom: 0;
+                box-shadow: 0 -18px 46px rgba(13, 0, 32, .18);
+                left: 0;
+                margin: 0;
+                max-height: 86vh;
+                overflow-y: auto;
+                padding: 18px 16px 16px;
+                position: fixed;
+                right: 0;
+                top: auto;
+                transform: translateY(105%);
+                transition: transform .28s ease;
+                z-index: 9991;
+            }
+
+            .plp-sidebar.is-open {
+                transform: translateY(0);
+            }
+
+            .plp-mobile-drawer-head {
+                align-items: center;
+                border-bottom: 1px solid rgba(13, 0, 32, .08);
+                display: flex;
+                justify-content: space-between;
+                margin: -2px 0 14px;
+                padding-bottom: 14px;
+            }
+
+            .plp-mobile-drawer-head span {
+                color: var(--pk);
+                display: block;
+                font-family: 'Nunito', sans-serif;
+                font-size: .76rem;
+                font-weight: 900;
+                letter-spacing: 1.6px;
+                text-transform: uppercase;
+            }
+
+            .plp-mobile-drawer-head strong {
+                color: var(--dk);
+                display: block;
+                font-family: 'Nunito', sans-serif;
+                font-size: 1.12rem;
+                font-weight: 900;
+                margin-top: 2px;
+            }
+
+            #plpFilterClose {
+                align-items: center;
+                background: #f7f3f7;
+                border: 0;
+                border-radius: 50%;
+                color: var(--dk);
+                cursor: pointer;
+                display: inline-flex;
+                font-size: 1.35rem;
+                font-weight: 800;
+                height: 38px;
+                justify-content: center;
+                line-height: 1;
+                width: 38px;
+            }
+
+            .plp-sidebar-head {
+                padding-bottom: 12px;
+            }
+
+            .plp-sidebar-head h2 {
+                display: none;
+            }
+
+            .plp-sidebar-head button {
+                background: transparent;
+                color: var(--pk);
+                margin-left: auto;
+                padding: 6px 2px;
+            }
+
+            .plp-filter-block {
+                padding: 16px 0;
+            }
+
+            .plp-filter-block h3 {
+                color: #1f1638;
+                font-size: .78rem;
+                letter-spacing: 1.4px;
+                margin-bottom: 10px;
+            }
+
+            #plpSearch,
+            .plp-price-row input {
+                border: 1.5px solid #eee4ee;
+                border-radius: 12px;
+                height: 44px;
+            }
+
+            .plp-cat-btn {
+                border: 0;
+                border-radius: 12px;
+                margin-bottom: 6px;
+                min-height: 42px;
+                padding: 7px 10px;
+            }
+
+            .plp-cat-btn.active,
+            .plp-cat-btn:hover {
+                background: #fff1f7;
+                color: var(--pk);
+            }
+
+            .plp-cat-btn strong {
+                height: 26px;
+                width: 26px;
+            }
+
+            .plp-mobile-apply {
+                background: var(--pk);
+                border: 0;
+                border-radius: 14px;
+                box-shadow: 0 12px 24px rgba(255, 77, 143, .24);
+                color: #fff;
+                cursor: pointer;
+                display: block;
+                font-family: 'Nunito', sans-serif;
+                font-size: .98rem;
+                font-weight: 900;
+                min-height: 48px;
+                position: sticky;
+                bottom: 0;
+                width: 100%;
+            }
+
+            .plp-toolbar {
+                align-items: stretch;
+                border-radius: 16px;
+                gap: 12px;
+                padding: 14px;
+            }
+
+            .plp-toolbar-actions {
+                display: grid;
+                gap: 10px;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            #plpSort {
+                min-width: 0;
+                width: 100%;
+            }
+
+            .plp-mobile-filter-btn {
+                align-items: center;
+                background: var(--dk);
+                border: 0;
+                border-radius: 14px;
+                color: #fff;
+                cursor: pointer;
+                display: inline-flex;
+                font-family: 'Nunito', sans-serif;
+                font-size: .9rem;
+                font-weight: 900;
+                justify-content: center;
+                min-height: 43px;
+                padding: 0 12px;
+            }
+
+            .plp-mobile-filter-btn span {
+                border: 2px solid currentColor;
+                border-left: 0;
+                border-right: 0;
+                display: inline-block;
+                height: 12px;
+                margin-right: 8px;
+                position: relative;
+                width: 15px;
+            }
+
+            .plp-mobile-filter-btn span::before {
+                background: currentColor;
+                content: '';
+                height: 2px;
+                left: 3px;
+                position: absolute;
+                right: 3px;
+                top: 3px;
             }
         }
 
@@ -586,7 +834,8 @@
             }
 
             .plp-grid .pc-head {
-                height: 220px;
+                aspect-ratio: 3 / 2;
+                height: auto;
             }
 
             .plp-toolbar {
@@ -613,9 +862,30 @@
             const visible = document.getElementById('plpVisible');
             const rangeEl = document.getElementById('plpRange');
             const empty = document.getElementById('plpEmpty');
+            const filterDrawer = document.getElementById('plpFilterDrawer');
+            const filterBackdrop = document.getElementById('plpFilterBackdrop');
+            const filterOpen = document.getElementById('plpFilterOpen');
+            const filterClose = document.getElementById('plpFilterClose');
+            const filterApply = document.getElementById('plpFilterApply');
             const initMax = range ? Number(range.max) : 0;
             const initMin = range ? Number(range.min) : 0;
             let activeCat = 'all';
+
+            const setFilterDrawer = open => {
+                if (!filterDrawer || !filterBackdrop) return;
+                filterBackdrop.hidden = false;
+                requestAnimationFrame(() => {
+                    filterDrawer.classList.toggle('is-open', open);
+                    filterBackdrop.classList.toggle('is-open', open);
+                });
+                filterOpen?.setAttribute('aria-expanded', open ? 'true' : 'false');
+                document.body.style.overflow = open ? 'hidden' : '';
+                if (!open) {
+                    setTimeout(() => {
+                        if (!filterBackdrop.classList.contains('is-open')) filterBackdrop.hidden = true;
+                    }, 260);
+                }
+            };
 
             const sortCards = () => {
                 if (!grid || !sort) return;
@@ -666,6 +936,15 @@
             range?.addEventListener('input', () => {
                 if (maxInput) maxInput.value = range.value;
                 filter();
+            });
+            filterOpen?.addEventListener('click', () => setFilterDrawer(true));
+            filterClose?.addEventListener('click', () => setFilterDrawer(false));
+            filterBackdrop?.addEventListener('click', () => setFilterDrawer(false));
+            filterApply?.addEventListener('click', () => setFilterDrawer(false));
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && filterDrawer?.classList.contains('is-open')) {
+                    setFilterDrawer(false);
+                }
             });
 
             clearBtn?.addEventListener('click', () => {

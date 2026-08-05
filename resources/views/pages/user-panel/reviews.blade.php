@@ -2,59 +2,7 @@
 @section('title', 'My Reviews — NutriBuddy Kids')
 @section('panel-page-class', 'panel-reviews')
 @section('panel-content')
-    <style>
-        .compact-list-item {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 15px;
-            padding: 15px 20px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
-        }
-        .compact-list-item:hover {
-            border-color: var(--pk);
-            background: #fffcfd;
-        }
-        .star-opt { 
-            transition: all 0.2s ease; 
-            display: inline-block; 
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #eee;
-        }
-        .review-img-upload {
-            position: relative; 
-            width: 100%; 
-            height: 80px; 
-            border: 2px dashed #eee; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #fafafa; 
-            cursor: pointer; 
-        }
-        .review-status-badge {
-            padding: 3px 10px; 
-            border-radius: 50px; 
-            font-size: 0.7rem; 
-            font-weight: 700; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 4px;
-        }
-        .p-img-compact {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-    </style>
-
-    <div class="panel-header" style="margin-bottom: 30px;">
-        <h2 style="font-family: 'Fredoka One', cursive; color: var(--dk); font-size: 1.8rem; margin: 0;">Product <span style="color: var(--pk)">Reviews</span></h2>
-        <p style="color: #888; font-size: 0.95rem;">Manage and track your product feedback</p>
-    </div>
+   
 
     <div class="row">
         <div class="col-12">
@@ -102,9 +50,15 @@
                                     <textarea name="comment" rows="2" style="width:100%; padding:10px 15px; border-radius:12px; border:1px solid #eee; font-size: 0.9rem; background: #fafafa;" placeholder="Tell us what you think..." required></textarea>
                                 </div>
                                 <div class="col-md-3">
-                                    <div class="review-img-upload" onclick="this.querySelector('input').click()" style="margin-bottom: 10px;">
-                                        <span style="font-size: 0.75rem; color: #999; font-weight: 600;">+ Add Photo</span>
-                                        <input type="file" name="review_image" accept="image/*" style="display: none;">
+                                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                                        <div class="review-img-upload" onclick="this.querySelector('input').click()" style="flex: 1; height: 50px; text-align: center;">
+                                            <span style="font-size: 0.7rem; color: #999; font-weight: 600; white-space: nowrap;">+ Photo</span>
+                                            <input type="file" name="review_image" accept="image/*" style="display: none;" onchange="if(this.files[0]) this.previousElementSibling.innerText = '✓ Photo'">
+                                        </div>
+                                        <div class="review-img-upload" onclick="this.querySelector('input').click()" style="flex: 1; height: 50px; text-align: center;">
+                                            <span style="font-size: 0.7rem; color: #999; font-weight: 600; white-space: nowrap;">+ Video</span>
+                                            <input type="file" name="review_video" accept="video/*" style="display: none;" onchange="if(this.files[0]) this.previousElementSibling.innerText = '✓ Video'">
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn-main w-100" style="padding: 10px; border-radius: 12px; font-size: 0.85rem;">Post 🚀</button>
                                 </div>
@@ -164,14 +118,6 @@
                         </div>
                     @endforeach
                 </div>
-                
-                <style>
-                    .history-card:hover {
-                        transform: translateY(-4px);
-                        border-color: var(--pk);
-                        box-shadow: 0 10px 25px rgba(255, 77, 143, 0.08) !important;
-                    }
-                </style>
                 <div style="margin-top: 20px;">
                     {{ $userReviews->links() }}
                 </div>

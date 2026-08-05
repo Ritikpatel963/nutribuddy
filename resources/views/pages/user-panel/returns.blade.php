@@ -2,29 +2,6 @@
 @section('title', 'My Returns — NutriBuddy Kids')
 @section('panel-page-class', 'panel-returns')
 @section('panel-content')
-    <style>
-        .media-preview {
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-        .media-preview:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            border-color: var(--pk) !important;
-        }
-        .return-item-card {
-            background: #fff;
-            border: 2px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            transition: box-shadow 0.3s;
-        }
-        .return-item-card:hover {
-            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-        }
-    </style>
-
     <div class="inner-topbar">
         <button class="sidebar-toggle" onclick="toggleSidebar()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">

@@ -32,6 +32,11 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckUserIsActive::class,
             \App\Http\Middleware\SecurityHeaders::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'payment/cashfree/webhook',
+            'webhooks/aisensy',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

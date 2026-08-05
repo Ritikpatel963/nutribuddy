@@ -1,6 +1,6 @@
 @extends('layouts.user-panel')
 @section('title', 'Invoices — NutriBuddy Kids')
-@section('panel-page-class', 'panel-order')
+@section('panel-page-class', 'panel-order panel-invoices')
 
 @section('panel-content')
     <div class="inner-topbar">
@@ -16,13 +16,7 @@
     </div>
 
     <div class="page">
-        <div class="welcome-banner fade-in">
-            <div class="welcome-text">
-                <h2>Invoice <span>History</span></h2>
-                <p>View and download your official purchase records and billing statements.</p>
-            </div>
-            <div class="banner-emoji">📑</div>
-        </div>
+       
 
         <div class="orders-card fade-in d1" style="margin-top: 24px;">
             <div style="overflow-x:auto">
@@ -116,51 +110,6 @@
             @endif
         </div>
 
-        <style>
-            .panel-order .pagination {
-                margin-top: 14px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 8px;
-                flex-wrap: wrap;
-                padding: 14px 20px;
-                border-top: 1.5px solid var(--border);
-            }
-            .panel-order .pag-info {
-                color: var(--muted);
-                font-size: .78rem;
-            }
-            .panel-order .pag-btns {
-                display: inline-flex;
-                gap: 8px;
-            }
-            .panel-order .pag-btn {
-                border: 1.5px solid var(--border);
-                background: #fff;
-                width: 34px;
-                height: 34px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 10px;
-                font-weight: 800;
-                color: var(--muted);
-                text-decoration: none;
-                font-size: 0.85rem;
-                transition: 0.2s;
-            }
-            .panel-order .pag-btn.active {
-                background: var(--pkl);
-                border-color: var(--pk);
-                color: var(--pkd);
-            }
-            .panel-order .pag-btn:not(.active):hover {
-                border-color: var(--pk);
-                color: var(--pk);
-                background: var(--cr);
-            }
-        </style>
     </div>
 
     @push('scripts')

@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice #{{ $order->order_number }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: DejaVu Sans, sans-serif;
             color: #1a1a1a;
             background: #fff;
             padding: 40px;
@@ -211,6 +209,7 @@
     </style>
 </head>
 <body>
+
     <div class="invoice-box" id="printableInvoice">
 
         {{-- ── HEADER ── --}}

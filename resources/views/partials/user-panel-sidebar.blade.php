@@ -158,14 +158,10 @@
             </svg>
             My Coupons
             @php
-                $couponCount = \App\Models\Coupon::where('is_active', true)
-                    ->where(function($query) {
-                        $query->whereNull('user_id')
-                              ->orWhere('user_id', auth()->id());
-                    })->count();
+                $usedCouponCount = \App\Models\CouponUsage::where('user_id', auth()->id())->count();
             @endphp
-            @if($couponCount > 0)
-                <span class="nbadge">{{ $couponCount }}</span>
+            @if($usedCouponCount > 0)
+                <span class="nbadge">{{ $usedCouponCount }}</span>
             @endif
         </a>
     </div>

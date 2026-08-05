@@ -27,7 +27,7 @@ class OrderPlacementService
     ) {
     }
 
-    public function place(User $user, array $validated): array
+    public function place(User $user, array $validated, ?callable $paymentCallback = null): array
     {
         $address = CustomerAddress::where('user_id', $user->id)->findOrFail($validated['address_id']);
         $coupon = $this->checkoutSummaryService->resolveCoupon($validated['coupon_code'] ?? null, $user->id);
@@ -44,7 +44,7 @@ class OrderPlacementService
             ];
         }
 
-        $order = DB::transaction(function () use ($user, $address, $coupon, $validated, $checkoutToken) {
+        $order = DB::transaction(function () use ($user, $address, $coupon, $validated, $checkoutToken, $paymentCallback) {
             $cart = $this->resolveUserCart($user)
                 ->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
 
@@ -63,6 +63,10 @@ class OrderPlacementService
             $this->createPayment($order);
             $this->recordCouponUsage($order, $coupon, $user);
             $this->recordStatusHistory($order, $user);
+
+            if ($paymentCallback) {
+                $paymentCallback($order);
+            }
 
             $cart->items()->delete();
 
@@ -138,7 +142,7 @@ class OrderPlacementService
             'status' => 'pending',
             'fulfillment_status' => 'unfulfilled',
             'payment_status' => 'pending',
-            'payment_method' => 'cod',
+            'payment_method' => $validated['payment_method'],
             'currency' => 'INR',
             'customer_name' => $address->full_name,
             'customer_email' => $address->email ?: $user->email,
@@ -230,14 +234,16 @@ class OrderPlacementService
 
     private function createPayment(Order $order): void
     {
+        $provider = in_array($order->payment_method, ['cashfree', 'razorpay'], true) ? $order->payment_method : 'cod';
+
         Payment::create([
             'order_id' => $order->id,
-            'provider' => 'cod',
+            'provider' => $provider,
             'transaction_type' => 'capture',
-            'status' => 'pending',
+            'status' => in_array($provider, ['cashfree', 'razorpay'], true) ? 'initiated' : 'pending',
             'currency' => 'INR',
             'amount' => $order->grand_total,
-            'notes' => 'Cash on Delivery',
+            'notes' => $provider === 'cod' ? 'Cash on Delivery' : ucfirst($provider) . ' payment initiated',
         ]);
     }
 

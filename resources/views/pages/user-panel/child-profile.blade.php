@@ -26,7 +26,7 @@ input,select{font-family:var(--fb);}
 
 /* SHELL */
 .nav{display:none;}
-.shell{max-width:var(--max);margin:0 auto;padding:32px 24px 80px;}
+.shell{max-width:var(--max);margin:0 auto;}
 
 /* VIEWS */
 .view{display:none;}

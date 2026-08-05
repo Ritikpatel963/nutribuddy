@@ -25,15 +25,15 @@ class SecurityHeaders
         if (! $response->headers->has('Content-Security-Policy')) {
             $response->headers->set('Content-Security-Policy', implode('; ', [
                 "default-src 'self'",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net https://cdn.ckeditor.com",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.jsdelivr.net https://cdn.ckeditor.com https://sdk.cashfree.com https://*.razorpay.com",
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
                 "img-src 'self' data: blob: https:",
                 "font-src 'self' data: https://fonts.gstatic.com",
-                "connect-src 'self'",
-                "frame-src 'self' https://www.youtube.com",
+                "connect-src 'self' https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com https://*.razorpay.com",
+                "frame-src 'self' https://www.youtube.com https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com https://*.razorpay.com",
                 "object-src 'none'",
                 "base-uri 'self'",
-                "form-action 'self'",
+                "form-action 'self' https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com https://*.razorpay.com",
             ]));
         }
 

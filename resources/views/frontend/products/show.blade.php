@@ -18,11 +18,9 @@
                         $discount = round((($product->display_compare_price - $product->display_price) / $product->display_compare_price) * 100);
                     @endphp
                     <div class="badge-discount" id="discountBadge">{{ $discount }}% OFF</div>
-                @else
-                    <div class="badge-discount" id="discountBadge" style="display:none;"></div>
                 @endif
                 
-                <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
+                <div class="p-image" style="display:block;line-height:1">
                     @if($product->primaryImage)
                         <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" id="mainPdpImage">
                     @else
@@ -41,19 +39,23 @@
 
         <!-- RIGHT: Info -->
         <div class="pdp-info">
-            <div class="pdp-cat">{{ $product->category->name ?? 'Uncategorized' }} · Kids 2–14 yrs</div>
+            @if($product->category)
+            <div class="pdp-cat">{{ $product->category->name }} · Kids 2–14 yrs</div>
+            @endif
             <h1 class="pdp-name">{{ $product->name }}</h1>
+            @if($product->reviews->count() > 0)
             <div class="pdp-rating">
                 <div class="stars">
-                    @php $rating = $product->reviews->avg('rating') ?? 5; @endphp
+                    @php $rating = (float) $product->reviews->avg('rating'); @endphp
                     @for($i=0; $i<5; $i++)
-                        {{ $i < $rating ? '★' : '☆' }}
+                        {{ $i < round($rating) ? '★' : '☆' }}
                     @endfor
                 </div>
                 <div class="rating-val">{{ number_format($rating, 1) }}</div>
                 <div class="rating-divider"></div>
                 <div class="rating-count">{{ $product->reviews->count() }} Verified Reviews</div>
             </div>
+            @endif
 
             <!-- Price -->
             <div class="price-box">
@@ -144,18 +146,19 @@
             </div>
 
             <!-- Product Highlights -->
+            @php 
+                $features = $product->description ? array_filter(array_map('trim', explode("\n", $product->description))) : [];
+            @endphp
+            @if(count($features) > 0)
             <div class="highlights">
                 <h4>Why Parents Love {{ $product->name }}</h4>
                 <ul class="highlight-list">
-                    @php 
-                        $features = explode("\n", $product->description);
-                        $features = array_filter(array_map('trim', $features));
-                    @endphp
                     @foreach(array_slice($features, 0, 6) as $feature)
                         <li><div class="hl-dot"></div>{{ preg_replace('/^[•\-\*]\s*/', '', $feature) }}</li>
                     @endforeach
                 </ul>
             </div>
+            @endif
         </div>
     </div>
 
@@ -166,6 +169,83 @@
             <div class="pdp-description">
                 {!! nl2br(e($product->description)) !!}
             </div>
+        </div>
+    </section>
+
+    <!-- ══ PARENT REVIEWS ══ -->
+    <section class="section-wrap reveal" id="reviews-section">
+        <div style="max-width:1200px;margin:0 auto;padding:0 20px;">
+            <div style="text-align: center; position: relative; margin-bottom: 30px;">
+                <!-- Abstract floating circles for title -->
+                <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-150px);">
+                    <div style="width: 10px; height: 10px; background: #ff4d6d; border-radius: 50%; position: absolute; top: 0; left: -10px;"></div>
+                    <div style="width: 20px; height: 20px; border: 2px solid #8b5cf6; border-radius: 50%; position: absolute; top: -5px; left: 0;"></div>
+                </div>
+                
+                <div style="color: #ff4d6d; font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Parent Reviews</div>
+                <h2 style="font-size: 2.5rem; font-weight: 800; color: #111; margin-top: 10px; margin-bottom: 0;">10,000+ Happy Families</h2>
+            </div>
+            
+            @php 
+                $totalReviews = $product->reviews->count();
+            @endphp
+            
+            @if($totalReviews > 0)
+                @php 
+                    $displayAvg = number_format($product->reviews->avg('rating'), 1);
+                @endphp
+                
+                <!-- Summary Card -->
+                <div style="background:#fff;border-radius:16px;padding:30px;display:flex;flex-wrap:wrap;align-items:center;gap:40px;margin-bottom:30px;box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="text-align:center; position: relative;">
+                        <!-- Abstract floating circles for rating -->
+                        <div style="position: absolute; top: 10px; left: -15px; z-index: 1;">
+                            <div style="width: 14px; height: 14px; background: #ff4d6d; border-radius: 50%; position: absolute; top: -5px; left: -10px;"></div>
+                            <div style="width: 45px; height: 45px; border: 3px solid #8b5cf6; border-radius: 50%; position: absolute; top: 0; left: 0;"></div>
+                        </div>
+                        
+                        <div style="font-size:3.5rem;font-weight:900;color:#111;line-height:1; position: relative; z-index: 2;">{{ $displayAvg }}</div>
+                        <div style="color:#fbbf24;font-size:1.2rem;margin:5px 0; position: relative; z-index: 2;">
+                            @for($i=0; $i<5; $i++)
+                                {{ $i < round((float)$displayAvg) ? '★' : '☆' }}
+                            @endfor
+                        </div>
+                        <div style="color:#94a3b8;font-size:0.85rem;font-weight:600; position: relative; z-index: 2;">Based on {{ number_format($totalReviews) }} reviews</div>
+                    </div>
+                    
+                    <div style="flex:1;min-width:250px;">
+                        @foreach([5, 4, 3, 2, 1] as $star)
+                            @php
+                                $starCount = $product->reviews->where('rating', $star)->count();
+                                $pct = $totalReviews > 0 ? round(($starCount / $totalReviews) * 100, 1) : 0;
+                            @endphp
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:0.85rem;color:#64748b;font-weight:600;">
+                                <span style="width:25px;">{{$star}}★</span>
+                                <div style="flex:1;background:#f1f5f9;height:6px;border-radius:4px;overflow:hidden;">
+                                    <div style="width:{{$pct}}%;background:{{$star>=4?'linear-gradient(90deg, #fbbf24, #f97316)':'#fbbf24'}};height:100%;border-radius:4px;"></div>
+                                </div>
+                                <span style="width:35px;text-align:right">{{$pct}}%</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Reviews Grid -->
+                <div id="reviewsGrid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:24px;">
+                    <!-- Review cards generated by JS -->
+                </div>
+                
+                <div style="text-align:center;margin-top:30px;">
+                    <button id="loadMoreReviewsBtn" onclick="loadMoreReviews()" style="background:var(--mn, #359e6f);color:#fff;border:none;padding:12px 30px;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;margin:0 5px;transition:0.2s;box-shadow:0 4px 10px rgba(53,158,111,0.2);">Load More</button>
+                    <button id="readLessReviewsBtn" onclick="readLessReviews()" style="background:#f1f5f9;color:#475569;border:none;padding:12px 30px;border-radius:30px;font-size:1rem;font-weight:700;cursor:pointer;margin:0 5px;display:none;transition:0.2s;">Read Less</button>
+                </div>
+            @else
+                <div style="text-align:center; padding: 60px 20px; background: #fff; border-radius: 16px; border: 1px dashed #cbd5e1; margin-bottom: 30px;">
+                    <div style="font-size: 3rem; margin-bottom: 15px; line-height: 1;">⭐</div>
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 8px;">No customer reviews yet.</div>
+                    <div style="color: #64748b; font-size: 0.95rem;">Be the first to review this product.</div>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -297,6 +377,66 @@
                 }
             });
         }
+        
+        // Parent Reviews logic
+        renderReviews();
     });
+
+    const reviewsData = @json($product->reviews->map(function($r) {
+        $colors = ['#fce7f3', '#e0f2fe', '#f3e8ff', '#fef3c7', '#e0e7ff', '#ffedd5'];
+        return [
+            'name' => $r->user ? $r->user->name : 'Customer',
+            'role' => 'Verified Customer',
+            'tag' => 'Verified Purchase',
+            'tagColor' => '#dcfce7',
+            'tagText' => '#15803d',
+            'text' => $r->comment,
+            'rating' => $r->rating,
+            'avatar' => $colors[array_rand($colors)]
+        ];
+    }));
+
+    let currentReviewCount = 3;
+
+    function renderReviews() {
+        const grid = document.getElementById('reviewsGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const visibleReviews = reviewsData.slice(0, currentReviewCount);
+        
+        visibleReviews.forEach(r => {
+            const card = document.createElement('div');
+            card.style.cssText = 'background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,0.03);display:flex;flex-direction:column;border:1px solid #f1f5f9;';
+            card.innerHTML = `
+                <div style="color:#fbbf24;font-size:1.1rem;margin-bottom:12px;letter-spacing:1px;">★★★★★</div>
+                <div style="font-style:italic;color:#475569;font-size:0.95rem;line-height:1.6;margin-bottom:20px;flex:1;">
+                    <span style="color:#fbcfe8;font-size:2.5rem;font-family:Georgia, serif;line-height:0;vertical-align:bottom;margin-right:5px;">"</span>
+                    ${r.text}
+                </div>
+                <div style="display:flex;align-items:center;gap:15px;margin-top:auto;">
+                    <div style="width:46px;height:46px;border-radius:50%;background:${r.avatar};"></div>
+                    <div>
+                        <div style="font-weight:800;font-size:0.95rem;color:#0f172a;margin-bottom:2px;">${r.name}</div>
+                        <div style="font-size:0.75rem;color:#64748b;margin-bottom:6px;">${r.role}</div>
+                        <div style="display:inline-block;background:${r.tagColor};color:${r.tagText};font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:12px;">✓ ${r.tag}</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        document.getElementById('loadMoreReviewsBtn').style.display = currentReviewCount >= reviewsData.length ? 'none' : 'inline-block';
+        document.getElementById('readLessReviewsBtn').style.display = currentReviewCount > 3 ? 'inline-block' : 'none';
+    }
+
+    function loadMoreReviews() {
+        currentReviewCount = Math.min(currentReviewCount + 3, reviewsData.length);
+        renderReviews();
+    }
+
+    function readLessReviews() {
+        currentReviewCount = 3;
+        renderReviews();
+    }
 </script>
 @endpush

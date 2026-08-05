@@ -22,7 +22,7 @@ class ProductController extends Controller
                     'variants' => fn ($query) => $query->where('is_active', true)->orderBy('position')->orderBy('id'),
                     'variants.product.taxRate',
                 ])
-                ->select(['id', 'category_id', 'base_price', 'tax_rate_id'])
+                ->select(['id', 'category_id', 'base_price', 'tax_rate_id', 'is_variant_enabled'])
                 ->get();
 
             $categoryCounts = $products
@@ -66,8 +66,11 @@ class ProductController extends Controller
                 'pack_size',
                 'age_group',
                 'dosage',
+                'card_image_path',
+                'card_hover_image_path',
                 'tags',
                 'deleted_at',
+                'is_variant_enabled',
             ])
             ->with([
                 'primaryImage:id,product_id,image_path,is_primary',
@@ -92,13 +95,25 @@ class ProductController extends Controller
                 'totalProducts' => $catalogMeta['totalProducts'],
                 'minPrice' => $catalogMeta['minPrice'],
                 'maxPrice' => max($catalogMeta['minPrice'], $catalogMeta['maxPrice']),
-            ])
-            ->header('Cache-Control', 'private, max-age=120');
+            ]);
     }
 
     public function show($slug)
     {
-        $product = Product::with(['category', 'taxRate', 'images', 'variants.inventory', 'variants.product.taxRate', 'reviews.user', 'ingredients.benefits', 'ingredients.category'])
+        $product = Product::with([
+            'category',
+            'taxRate',
+            'images',
+            'variants.inventory',
+            'variants.product.taxRate',
+            'reviews.user',
+            'ingredients' => fn ($query) => $query
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('id'),
+            'ingredients.benefits',
+            'ingredients.category',
+        ])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
@@ -122,7 +137,6 @@ class ProductController extends Controller
         }
 
         return response()
-            ->view('pages.product', compact('product', 'relatedProducts'))
-            ->header('Cache-Control', 'private, max-age=120');
+            ->view('pages.product', compact('product', 'relatedProducts'));
     }
 }

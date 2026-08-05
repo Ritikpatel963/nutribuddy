@@ -1,261 +1,13 @@
 @extends('layouts.main')
 @section('title', 'Contact Us – NutriBuddy')
 
-@push('styles')
-    <style>
-        /* Contact Page Specific Styles */
-        .contact-hero {
-            padding: 130px 5% 80px;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--dk) 0%, #260050 50%, #0d0030 100%);
-        }
 
-        .contact-hero .blob {
-            position: absolute;
-            z-index: 0;
-            opacity: 0.6;
-            filter: blur(100px);
-        }
-
-        .contact-hero .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: var(--pk);
-            top: -100px;
-            left: -100px;
-        }
-
-        .contact-hero .blob-2 {
-            width: 300px;
-            height: 300px;
-            background: #0000ff;
-            bottom: -100px;
-            right: -100px;
-        }
-
-        .contact-content-wrapper {
-            margin: 0 auto;
-            max-width: 900px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .contact-title {
-            font-family: 'Fredoka One', cursive;
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            color: #fff;
-            margin-bottom: 20px;
-            line-height: 1.1;
-        }
-
-        .contact-subtitle {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: rgba(255, 255, 255, .68);
-            max-width: 600px;
-            margin: 0;
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 40px;
-            max-width: 1200px;
-            margin: -40px auto 80px;
-            padding: 0 5%;
-            position: relative;
-            z-index: 10;
-        }
-
-        @media (max-width: 800px) {
-            .contact-grid {
-                grid-template-columns: 1fr;
-                margin-top: 20px;
-            }
-        }
-
-        /* Contact Info Cards */
-        .contact-info-col {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-            border: 2px solid transparent;
-            transition: 0.3s ease;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .info-card.card-email:hover {
-            border-color: var(--pk);
-            box-shadow: 0 10px 40px rgba(255, 107, 138, 0.15);
-        }
-
-        .info-card.card-phone:hover {
-            border-color: var(--ye);
-            box-shadow: 0 10px 40px rgba(255, 214, 0, 0.15);
-        }
-
-        .info-card.card-location:hover {
-            border-color: var(--sk);
-            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.15);
-        }
-
-        .info-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            flex-shrink: 0;
-        }
-
-        .card-email .info-icon {
-            background: rgba(255, 107, 138, 0.1);
-            color: var(--pk);
-        }
-
-        .card-phone .info-icon {
-            background: rgba(255, 214, 0, 0.15);
-        }
-
-        .card-location .info-icon {
-            background: rgba(0, 191, 255, 0.1);
-            color: var(--sk);
-        }
-
-        .info-details h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.3rem;
-            color: var(--dk);
-            margin-bottom: 8px;
-        }
-
-        .info-details p,
-        .info-details a {
-            color: #666;
-            font-size: 1.05rem;
-            line-height: 1.5;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .info-details a:hover {
-            color: var(--pk);
-        }
-
-        /* Contact Form */
-        .contact-form-col {
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            position: relative;
-        }
-
-        .contact-form-col h3 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
-            color: var(--dk);
-            margin-bottom: 10px;
-        }
-
-        .contact-form-col p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-label {
-            display: block;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: var(--dk);
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 16px;
-            border: 2px solid #eee;
-            background: #fafafa;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            color: var(--dk);
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--pk);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(255, 107, 138, 0.1);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 150px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: var(--btn);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 50px;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(255, 107, 138, 0.3);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(255, 107, 138, 0.4);
-            background: #ff4dbe;
-            /* Slightly darker pink */
-        }
-    </style>
-@endpush
 
 @section('content')
     <!-- CONTACT HERO -->
     <section class="contact-hero">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
+        <div class="contact-blob contact-blob-1"></div>
+        <div class="contact-blob contact-blob-2"></div>
         <div class="contact-content-wrapper">
             <div class="page-breadcrumb">
                 <a href="{{ route('home') }}">Home</a>
@@ -273,27 +25,27 @@
 
         <!-- Info Cards -->
         <div class="contact-info-col">
-            <div class="info-card card-email">
-                <div class="info-icon">💌</div>
-                <div class="info-details">
+            <div class="contact-info-card contact-card-email">
+                <div class="contact-info-icon">💌</div>
+                <div class="contact-info-details">
                     <h3>Email Us</h3>
                     <p>We're here to help.</p>
                     <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a>
                 </div>
             </div>
 
-            <div class="info-card card-phone">
-                <div class="info-icon">📞</div>
-                <div class="info-details">
+            <div class="contact-info-card contact-card-phone">
+                <div class="contact-info-icon">📞</div>
+                <div class="contact-info-details">
                     <h3>Call Us</h3>
                     <p>Mon - Fri, 9am - 6pm (IST)</p>
                     <a href="tel:18001234567">1800-123-4567</a>
                 </div>
             </div>
 
-            <div class="info-card card-location">
-                <div class="info-icon">🗺️</div>
-                <div class="info-details">
+            <div class="contact-info-card contact-card-location">
+                <div class="contact-info-icon">🗺️</div>
+                <div class="contact-info-details">
                     <h3>Visit Us</h3>
                     <p>42, Wellness Tower, Bengaluru – 560001, Karnataka, India</p>
                 </div>
@@ -324,31 +76,35 @@
             <form action="{{ route('contact.store') }}" method="POST">
                 @csrf
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="firstName">First Name *</label>
-                        <input type="text" id="firstName" name="first_name" class="form-control" placeholder="e.g. Priya" value="{{ old('first_name') }}" required>
+                <div class="contact-form-row">
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="firstName">First Name *</label>
+                        <input type="text" id="firstName" name="first_name" class="contact-form-control @error('first_name') is-invalid @enderror" placeholder="e.g. Priya" value="{{ old('first_name') }}" autocomplete="given-name" required aria-invalid="@error('first_name') true @else false @enderror">
+                        @error('first_name')<span class="contact-field-error">{{ $message }}</span>@enderror
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="last_name" class="form-control" placeholder="e.g. Sharma" value="{{ old('last_name') }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="email">Email Address *</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="your@email.com" value="{{ old('email') }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 98765 43210" value="{{ old('phone') }}">
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="last_name" class="contact-form-control @error('last_name') is-invalid @enderror" placeholder="e.g. Sharma" value="{{ old('last_name') }}" autocomplete="family-name" aria-invalid="@error('last_name') true @else false @enderror">
+                        @error('last_name')<span class="contact-field-error">{{ $message }}</span>@enderror
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="subject">Subject *</label>
-                    <select id="subject" name="subject" class="form-control" required>
+                <div class="contact-form-row">
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" class="contact-form-control @error('email') is-invalid @enderror" placeholder="your@email.com" value="{{ old('email') }}" autocomplete="email" inputmode="email" required aria-invalid="@error('email') true @else false @enderror">
+                        @error('email')<span class="contact-field-error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="contact-form-group">
+                        <label class="contact-form-label" for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="contact-form-control @error('phone') is-invalid @enderror" placeholder="+91 98765 43210" value="{{ old('phone') }}" autocomplete="tel" inputmode="tel" pattern="[0-9+\-\s()]{7,20}" aria-invalid="@error('phone') true @else false @enderror">
+                        @error('phone')<span class="contact-field-error">{{ $message }}</span>@enderror
+                    </div>
+                </div>
+
+                <div class="contact-form-group contact-select-group">
+                    <label class="contact-form-label" for="subject">Subject *</label>
+                    <select id="subject" name="subject" class="contact-form-control @error('subject') is-invalid @enderror" required aria-invalid="@error('subject') true @else false @enderror">
                         <option value="" disabled {{ old('subject') ? '' : 'selected' }}>Select a topic...</option>
                         <option value="Where is my order?" {{ old('subject') == 'Where is my order?' ? 'selected' : '' }}>Where is my order?</option>
                         <option value="Question about a product" {{ old('subject') == 'Question about a product' ? 'selected' : '' }}>Question about a product</option>
@@ -356,14 +112,16 @@
                         <option value="Wholesale / Partnership" {{ old('subject') == 'Wholesale / Partnership' ? 'selected' : '' }}>Wholesale / Partnership</option>
                         <option value="Other" {{ old('subject') == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
+                    @error('subject')<span class="contact-field-error">{{ $message }}</span>@enderror
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="message">Your Message *</label>
-                    <textarea id="message" name="message" class="form-control" placeholder="How can we help you and your little one today?" required>{{ old('message') }}</textarea>
+                <div class="contact-form-group">
+                    <label class="contact-form-label" for="message">Your Message *</label>
+                    <textarea id="message" name="message" class="contact-form-control @error('message') is-invalid @enderror" placeholder="How can we help you and your little one today?" required aria-invalid="@error('message') true @else false @enderror">{{ old('message') }}</textarea>
+                    @error('message')<span class="contact-field-error">{{ $message }}</span>@enderror
                 </div>
 
-                <button type="submit" class="btn-submit">Send Message </button>
+                <button type="submit" class="contact-btn-submit">Send Message </button>
             </form>
         </div>
 

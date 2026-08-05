@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Coupon;
+use App\Models\CouponUsage;
 
 class UserCouponController extends Controller
 {
     public function index()
     {
-        $coupons = Coupon::where('is_active', true)
-            ->where(function ($query) {
-                $query->whereNull('user_id')
-                    ->orWhere('user_id', auth()->id());
-            })
+        $couponUsages = CouponUsage::with(['coupon', 'order'])
+            ->where('user_id', auth()->id())
             ->latest()
             ->get();
 
-        return view('pages.user-panel.my-coupons', compact('coupons'));
+        return view('pages.user-panel.my-coupons', compact('couponUsages'));
     }
 }

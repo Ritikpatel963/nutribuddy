@@ -2,7 +2,7 @@
 @section('title', "NutriBuddy – India's #1 Kids Wellness Gummy")
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}?v={{ filemtime(public_path('assets/css/product.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}?v=2026070101">
 @endpush
 
 @section('content')
@@ -13,7 +13,7 @@
         $defVariant =
             $variantProducts->firstWhere('is_default', true) ?:
             $variantProducts->first() ?:
-            $product->variants->first();
+            null;
 
         $initialPrice = $defVariant ? $defVariant->display_price : $product->display_price;
         $initialComparePrice = $defVariant
@@ -24,12 +24,21 @@
         $defAge = $product->age_group ?: $defVariantAttributes['Age Group'] ?? '';
         $defPack = $product->pack_size ?: $defVariantAttributes['Pack Size'] ?? '';
         $defFlavour = $product->flavor ?: $defVariantAttributes['Flavour'] ?? '';
+        $fallbackProductImage = asset('img/product2.png');
+        $productImageUrl = fn($imagePath = null) => $imagePath && \Illuminate\Support\Facades\Storage::disk('public')->exists($imagePath)
+            ? route('storage.public', ['path' => $imagePath])
+            : $fallbackProductImage;
+        $mainGalleryImage = $product->images->first();
         $variantAttributeGroups = [];
-        foreach ($variantProducts as $variant) {
-            foreach ($variant->attributes ?? [] as $name => $value) {
-                $variantAttributeGroups[$name] ??= [];
-                if ($value !== '' && !in_array($value, $variantAttributeGroups[$name], true)) {
-                    $variantAttributeGroups[$name][] = $value;
+        if (!empty($product->variant_types)) {
+            $variantAttributeGroups = $product->variant_types;
+        } else {
+            foreach ($variantProducts as $variant) {
+                foreach ($variant->attributes ?? [] as $name => $value) {
+                    $variantAttributeGroups[$name] ??= [];
+                    if ($value !== '' && !in_array($value, $variantAttributeGroups[$name], true)) {
+                        $variantAttributeGroups[$name][] = $value;
+                    }
                 }
             }
         }
@@ -65,6 +74,62 @@
                 ];
             })
             ->values();
+        $problemSolutionDefaults = [
+            'brand_title' => 'Nutribuddy',
+            'product_title' => 'Immunity Booster Gummies',
+            'tagline_items' => ['Daily Nutrition', 'Stronger Immunity', 'Healthier You'],
+            'left_label' => "Power Of\nNature",
+            'left_cards' => [
+                ['icon' => 'img/haldi.webp', 'title' => 'TURMERIC', 'text' => "Fights germs &\nsupports immunity"],
+                ['icon' => 'img/Amla.webp', 'title' => 'AMLA', 'text' => "Rich in Vitamin C,\nstrengthens body defenses"],
+                ['icon' => 'img/adrak.png', 'title' => 'GINGER', 'text' => "Soothes throat &\nhelps fight infections"],
+            ],
+            'center_image' => 'img/product2.png',
+            'right_label' => "Daily Goodness\nIn Every Gummy!",
+            'right_cards' => [
+                ['icon' => 'img/new-btn-2.png', 'title' => 'VITAMINS & MINERALS', 'text' => 'Daily nutrition to build strong immunity'],
+                ['icon' => 'img/bb1.png', 'title' => 'NATURAL & SAFE', 'text' => 'Made with natural ingredients'],
+                ['icon' => 'img/c4.png', 'title' => 'YUMMY & FUN', 'text' => 'Delicious gummies kids will love'],
+                ['icon' => 'img/new-btn-3.png', 'title' => 'MODERN SCIENCE', 'text' => 'Formulated with care and research'],
+            ],
+            'shelf_left_image' => 'img/Amla.webp',
+            'shelf_right_image' => 'img/haldi.webp',
+        ];
+        $problemSolutionAsset = function (?string $path, ?string $fallback = null) {
+            $path = trim((string) ($path ?: $fallback));
+            if ($path === '') {
+                return asset('img/product2.png');
+            }
+
+            if (\Illuminate\Support\Str::startsWith($path, ['img/', 'assets/'])) {
+                return asset($path);
+            }
+
+            return \Illuminate\Support\Facades\Storage::disk('public')->exists($path)
+                ? route('storage.public', ['path' => $path])
+                : asset($fallback ?: 'img/product2.png');
+        };
+        $psBrandTitle = $product->ps_brand_title ?: $problemSolutionDefaults['brand_title'];
+        $psProductTitle = $product->ps_product_title ?: $problemSolutionDefaults['product_title'];
+        $psTaglineItems = !empty($product->ps_tagline_items) ? $product->ps_tagline_items : $problemSolutionDefaults['tagline_items'];
+        $psLeftLabel = $product->ps_left_label ?: $problemSolutionDefaults['left_label'];
+        $psLeftCards = !empty($product->ps_left_cards) ? $product->ps_left_cards : $problemSolutionDefaults['left_cards'];
+        $psCenterImage = $problemSolutionAsset($product->ps_center_image, $problemSolutionDefaults['center_image']);
+        $psRightLabel = $product->ps_right_label ?: $problemSolutionDefaults['right_label'];
+        $psRightCards = !empty($product->ps_right_cards) ? $product->ps_right_cards : $problemSolutionDefaults['right_cards'];
+        $psShelfLeftImage = $problemSolutionAsset($product->ps_shelf_left_image, $problemSolutionDefaults['shelf_left_image']);
+        $psShelfRightImage = $problemSolutionAsset($product->ps_shelf_right_image, $problemSolutionDefaults['shelf_right_image']);
+        $transformDefaults = [
+            ['image' => 'img/immune.png', 'title' => 'Stronger Immunity', 'description' => 'Kids fall sick less often. Parents report 60% fewer sick days in the first 3 months of consistent use.', 'week' => 'Visible by Week 3'],
+            ['image' => 'img/check-height.png', 'title' => 'Height & Growth Spurt', 'description' => 'Ashwagandha + Zinc work synergistically to support natural growth hormone function and bone density.', 'week' => 'Visible by Week 8'],
+            ['image' => 'img/energy-drink.png', 'title' => 'All-Day Energy', 'description' => 'No more afternoon crashes. Kids stay energetic and active through school, play, and evening activities.', 'week' => 'Visible by Week 2'],
+            ['image' => 'img/mental-health.png', 'title' => 'Better Mood & Calm', 'description' => 'Adaptogenic Ashwagandha reduces cortisol — kids feel less stressed, sleep better, and wake up happier.', 'week' => 'Visible by Week 4'],
+        ];
+        $transformDescription = $product->transform_description
+            ?: '90 days of ' . $product->name . ' — visible, measurable, life-changing results reported by thousands of parents.';
+        $transformMainImage = $problemSolutionAsset($product->transform_main_image, 'img/tt1.jpeg');
+        $transformResults = is_array($product->transform_results) ? $product->transform_results : $transformDefaults;
+        $transformColors = ['rgba(255,77,143,.12)', 'rgba(0,191,255,.12)', 'rgba(0,214,143,.12)', 'rgba(255,214,0,.15)'];
     @endphp
 
 
@@ -84,24 +149,25 @@
                     <div class="badge-discount d-none" id="pdpDiscountBadge"></div>
                 @endif
 
-                <div class="p-image" style="animation:floatY 4s ease-in-out infinite;display:block;line-height:1">
-                    @if ($product->primaryImage)
-                        <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}"
-                            id="mainPdpImage">
-                    @else
-                        <img src="{{ asset('img/product2.png') }}" alt="{{ $product->name }}" id="mainPdpImage">
-                    @endif
+                <div class="p-image pdp-zoom-source" style="display:block;line-height:1" data-zoom="2.25">
+                    <img src="{{ $productImageUrl($mainGalleryImage?->image_path) }}" alt="{{ $product->name }}"
+                        id="mainPdpImage">
+                    <div class="pdp-zoom-lens" aria-hidden="true"></div>
                 </div>
             </div>
+            <div class="pdp-zoom-result" aria-hidden="true"></div>
             <div class="thumb-row">
                 @foreach ($product->images as $image)
-                    <div class="thumb {{ $image->is_primary ? 'active' : '' }}"
-                        onclick="changePdpImage(this, '{{ asset('storage/' . $image->image_path) }}')">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}">
+                    @php
+                        $thumbImageUrl = $productImageUrl($image->image_path);
+                    @endphp
+                    <div class="thumb {{ $loop->first ? 'active' : '' }}"
+                        onclick="changePdpImage(this, '{{ $thumbImageUrl }}')">
+                        <img src="{{ $thumbImageUrl }}" alt="{{ $product->name }}">
                     </div>
                 @endforeach
                 @if ($product->images->count() == 0)
-                    <div class="thumb active"> <img src="{{ asset('img/product2.png') }}" alt=""></div>
+                    <div class="thumb active"> <img src="{{ $fallbackProductImage }}" alt=""></div>
                     <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
                 @endif
             </div>
@@ -109,13 +175,8 @@
 
         <!-- RIGHT: Info -->
         <div class="pdp-info">
-            <div class="pdp-cat">{{ $product->category->name ?? 'Uncategorized' }}@if ($defAge)
-                    · <span id="pdpTopAge">Kids
-                        {{ $defAge }}</span>
-                @endif
-            </div>
             <h1 class="pdp-name">{{ $product->name }}</h1>
-            <div class="pdp-rating">
+            <a href="#reviews" class="pdp-rating" style="text-decoration: none;">
                 <div class="stars">
                     @php
                         $activeReviewsCount = $product->reviews->where('is_active', true)->count();
@@ -130,7 +191,7 @@
                 <div class="rating-divider"></div>
                 <div class="rating-count">{{ number_format($activeReviewsCount) }}
                     Verified Reviews</div>
-            </div>
+            </a>
 
             <!-- Price -->
             <div class="price-box">
@@ -156,7 +217,7 @@
                 </div>
             </div>
 
-            @if ($variantProducts->isNotEmpty() && !empty($variantAttributeGroups))
+            @if (!empty($variantAttributeGroups))
                 <div class="pdp-variant-panel" id="pdpVariantPanel">
                     <div class="pdp-variant-head">
                         <div>
@@ -180,12 +241,6 @@
                                 </div>
                             </div>
                         @endforeach
-                    </div>
-
-                    <div class="pdp-variant-meta">
-                        <span class="pdp-stock-pill" id="pdpVariantStock">Checking stock</span>
-                        <span class="pdp-selected-pill"
-                            id="pdpVariantSelected">{{ $initialSelectedLabel ?: $defVariant?->name }}</span>
                     </div>
                 </div>
             @else
@@ -261,14 +316,13 @@
                                                 <img src="{{ asset('storage/' . $tag['icon']) }}" alt=""
                                                     style="width: 28px; height: 28px; object-fit: contain;">
                                             @else
-                                                <span
-                                                    style="font-size: 28px; display: inline-block;">{{ $tag['icon'] }}</span>
+                                                <span style="font-size: 28px; display: inline-block;">{{ $tag['icon'] }}</span>
                                             @endif
                                         @else
                                             <span style="font-size: 28px; display: inline-block;">✨</span>
                                         @endif
                                     </div>
-                                    <div class="flavor-name">{!! nl2br(e(\Illuminate\Support\Str::limit($tag['text'] ?? '', 15))) !!}</div>
+                                    <div class="flavor-name">{!! nl2br(e($tag['text'] ?? '')) !!}</div>
                                 </div>
                             @endforeach
                         @endif
@@ -280,16 +334,16 @@
 
             <!-- Quick Specs: Pack Size & Age -->
             <!-- <div class="pdp-specs-row" style="display:flex;gap:20px;margin: 20px 0;padding:15px;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
-                                        <div class="spec-item">
-                                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
-                                            <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
-                                        </div>
-                                        <div style="width:1px;background:#ddd"></div>
-                                        <div class="spec-item">
-                                            <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
-                                            <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
-                                        </div>
-                                    </div> -->
+                                            <div class="spec-item">
+                                                <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
+                                                <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
+                                            </div>
+                                            <div style="width:1px;background:#ddd"></div>
+                                            <div class="spec-item">
+                                                <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
+                                                <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
+                                            </div>
+                                        </div> -->
 
 
             <!-- Quantity Selector -->
@@ -323,7 +377,7 @@
                 </div>
                 <div class="guarantee">
                     <div class="g-icon">🔄</div>
-                    <div class="g-title">30-Day Return</div>
+                    <div class="g-title">7-Day Return</div>
                     <div class="g-sub">No questions asked</div>
                 </div>
                 <div class="guarantee">
@@ -350,28 +404,19 @@
                     @else
                         {{-- Fallback --}}
                         <li>
-                            <div class="hl-dot"></div>Ashwagandha (KSM-66®) + Vitamin D3 + Zinc — clinically proven formula
+                            <div class="hl-dot"></div>Ashwagandha (KSM-66), Vitamin D3, and Zinc support daily wellness.
                         </li>
                         <li>
-                            <div class="hl-dot"></div>Supports immunity, height, bone density & overall energy in one gummy
-                        </li>
-                        <li>
-                            <div class="hl-dot"></div>Zero gelatin · 100% Vegetarian · No artificial colours or flavours
-                        </li>
-                        <li>
-                            <div class="hl-dot"></div>Tastes so good kids ask for it every morning — guaranteed!
+                            <div class="hl-dot"></div>Tastes so good kids ask for it every morning.
                         </li>
                     @endif
                 </ul>
             </div>
         </div>
     </div>
-
-
-
     <!-- ════════════════════════════════════════════════
-                                     PRODUCT DESCRIPTION SECTION
-                                ════════════════════════════════════════════════ -->
+                                         PRODUCT DESCRIPTION SECTION
+                                    ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @php
         $productDescription = trim((string) ($product->description ?? ''));
@@ -402,400 +447,9 @@
             </div>
         </section>
     @endif
-
-    <!-- ══ DESCRIPTION & DETAILS ══ -->
-
-    <!-- ══ HOW IT TRANSFORMS ══ -->
-    <section class="section-wrap transform-section reveal">
-        <div style="max-width:1200px;margin:0 auto;">
-            <span class="sec-eye">Real Results</span>
-            <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
-            <p class="sec-sub">90 days of {{ $product->name }} — visible, measurable, life-changing results reported by
-                thousands of
-                parents.</p>
-            <div class="transform-grid">
-                <div class="transform-visual">
-                    <img src="/img/child-images.png" alt="" loading="lazy" decoding="async">
-                    <!-- <div
-                                                style="font-size:10rem;animation:floatY 4s ease-in-out infinite;position:relative;z-index:2;line-height:1">
-                                                </div>
-                                            <div class="before-after">
-                                                <div class="ba-card">
-                                                    <div class="ba-label">Before</div>
-                                                    <div class="ba-val">😔 Tired</div>
-                                                </div>
-                                                <div class="ba-arrow">→</div>
-                                                <div class="ba-card after">
-                                                    <div class="ba-label">After 90 Days</div>
-                                                    <div class="ba-val">🦸 Superhero!</div>
-                                                </div>
-                                            </div> -->
-                </div>
-                <div class="transform-list">
-                    <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,77,143,.12)"><img src="/img/immune.png"
-                                alt=""></div>
-                        <div class="tr-body">
-                            <div class="tr-title">Stronger Immunity</div>
-                            <div class="tr-desc">Kids fall sick less often. Parents report 60% fewer sick days in the first
-                                3 months
-                                of consistent use.</div>
-                            <div class="tr-week">Visible by Week 3</div>
-                        </div>
-                    </div>
-                    <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,191,255,.12)"><img src="/img/check-height.png"
-                                alt=""></div>
-                        <div class="tr-body">
-                            <div class="tr-title">Height & Growth Spurt</div>
-                            <div class="tr-desc">Ashwagandha + Zinc work synergistically to support natural growth hormone
-                                function
-                                and bone density.</div>
-                            <div class="tr-week">Visible by Week 8</div>
-                        </div>
-                    </div>
-                    <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(0,214,143,.12)"><img src="/img/energy-drink.png"
-                                alt=""></div>
-                        <div class="tr-body">
-                            <div class="tr-title">All-Day Energy</div>
-                            <div class="tr-desc">No more afternoon crashes. Kids stay energetic and active through school,
-                                play, and
-                                evening activities.</div>
-                            <div class="tr-week">Visible by Week 2</div>
-                        </div>
-                    </div>
-                    <div class="tr-item">
-                        <div class="tr-icon" style="background:rgba(255,214,0,.15)"><img src="/img/mental-health.png"
-                                alt=""></div>
-                        <div class="tr-body">
-                            <div class="tr-title">Better Mood & Calm</div>
-                            <div class="tr-desc">Adaptogenic Ashwagandha reduces cortisol — kids feel less stressed, sleep
-                                better, and
-                                wake up happier.</div>
-                            <div class="tr-week">Visible by Week 4</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!--  -->
-
-    <!-- ══ PEDIATRICIAN VIDEO ══ -->
-    <section class="doc-section reveal">
-        <div style="max-width:1100px;margin:0 auto;">
-            <span class="sec-eye">Expert Endorsement</span>
-            <h2 class="sec-title">What <span class="acc">Pediatricians</span> Say</h2>
-            <p class="sec-sub" style="color:rgba(255,255,255,.5)">50+ certified pediatricians and nutritionists recommend
-                NutriBuddy to their own patients and families.</p>
-            <div class="doc-grid">
-                <div>
-                    <div class="doc-video-wrap">
-                        <div class="doc-play">▶</div>
-                        <div class="doc-video-label">Dr. Anita Nair — Pediatrician, Bangalore<br>Watch her recommendation
-                            (2 min)
-                        </div>
-                    </div>
-                    <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--pk)">50+</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Pediatricians</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ye)">3 Yrs</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">R&D Per Product</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--mn)">10K+</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Happy Families</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="doc-info">
-                    <div class="doc-card">
-                        <div class="doc-name">Dr. Anita Nair</div>
-                        <div class="doc-cred">MBBS, DCH · Pediatrician, Bangalore · 18 yrs experience</div>
-                        <div class="doc-quote">As a pediatrician, I'm very selective about what I recommend. NutriBuddy's
-                            completely
-                            transparent formulas and third-party testing give me total confidence to recommend it to my
-                            patients.
-                        </div>
-                    </div>
-                    <div class="doc-card">
-                        <div class="doc-name">Dr. Rajesh Kapoor</div>
-                        <div class="doc-cred">MD Pediatrics · AIIMS Alumni · Delhi</div>
-                        <div class="doc-quote">The KSM-66® Ashwagandha dosage is clinically appropriate and the
-                            bioavailability of
-                            their Zinc Bisglycinate is genuinely impressive. This is science-backed, not just marketing.
-                        </div>
-                    </div>
-                    <div class="doc-card">
-                        <div class="doc-name">Dt. Meena Iyer</div>
-                        <div class="doc-cred">Certified Pediatric Nutritionist · Chennai</div>
-                        <div class="doc-quote">I give it to my own children. The natural fruit extracts, zero artificial
-                            additives,
-                            and the Ayurvedic formulation align perfectly with what I recommend to every family I counsel.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-    <!--  -->
-    <!-- ══════════════════════════════
-                                     FEATURES — NO GELATIN etc.
-                                ══════════════════════════════ -->
-    <section class="features-section reveal" id="features">
-        <div class="feat-inner">
-            <div class="feat-layout">
-                <div>
-                    <span class="sec-eye"> What's NOT in it</span>
-                    <h2 class="feat-title">Pure as<br><span class="acc">Nature Intended</span> 🍃</h2>
-                    <p class="feat-sub">We obsessed over every ingredient that goes in — and even more over what we keep
-                        OUT.
-                        Because your child's body deserves only the best.</p>
-                    <div class="feat-list">
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png"
-                                    alt=""></div>
-                            <div>
-                                <div class="feat-item-title">Zero Gelatin — 100% Vegetarian</div>
-                                <div class="feat-item-desc">Most international gummies use animal gelatin (pig or bovine).
-                                    All
-                                    NutriBuddy gummies use plant-based pectin. Completely safe for every Indian family
-                                    regardless of
-                                    dietary beliefs.</div>
-                            </div>
-                        </div>
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png"
-                                    alt=""></div>
-                            <div>
-                                <div class="feat-item-title">No Refined Sugar</div>
-                                <div class="feat-item-desc">We sweeten with Stevia + monk fruit extract — giving a
-                                    naturally sweet taste
-                                    with zero impact on blood sugar. Kids get the yummy without the sugar crash or tooth
-                                    decay.</div>
-                            </div>
-                        </div>
-
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png"
-                                    alt=""></div>
-                            <div>
-                                <div class="feat-item-title">No Artificial Colors or Flavors</div>
-                                <div class="feat-item-desc">Our vibrant colors come from beetroot, turmeric, and spirulina.
-                                    Our fruity
-                                    burst flavors come from real fruit concentrates — not synthetic flavor chemicals tied to
-                                    hyperactivity
-                                    in children.</div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Comparison Table -->
-                <div class="comparison-box">
-                    <div class="comp-title">NutriBuddy vs. Other Brands</div>
-                    <table class="comp-table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th class="comp-us-head">NutriBuddy</th>
-                                <th style="color:#aaa">Brand 1</th>
-                                <th style="color:#aaa">Brand 2</th>
-                                <th style="color:#aaa">Others</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="comp-us">
-                                <td>Ayurvedic herbs</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Zero Gelatin</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>No refined sugar</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Third-party lab tested</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>Transparent batch results</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Pediatrician approved</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>Age 2+ safe</td>
-                                <td><span class="check">✓</span></td>
-                                <td>4+</td>
-                                <td>4+</td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Price per day</td>
-                                <td class="comp-us" style="color:var(--mn);font-weight:800">~₹20</td>
-                                <td>~₹28</td>
-                                <td>~₹35</td>
-                                <td>Varies</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- SECTION -->
-    <section class="ps-section ps-problems-section">
-        <div class="ps-inner">
-
-            <!-- HEADER -->
-            <div class="ps-header reveal">
-                <div class="eyebrow">The Real Picture</div>
-                <h2 class="ps-title">Kids Face <span class="acc">Real Problems</span> —<br>We Built a <span
-                        class="acc2">Real
-                        Solution</span></h2>
-                <p class="ps-sub">Today's kids miss out on essential nutrition every day. We see the gap — and we've closed
-                    it.
-                </p>
-            </div>
-            <div class="problem-grid">
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Vitamin & Mineral Deficiency</div>
-                    <p class="prob-text">Processed food strips away nutrients. 80% of Indian kids are Vitamin D deficient —
-                        affecting bones, immunity & mood.</p>
-                </div>
-                <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Busy Parent, Skipped Nutrition</div>
-                    <p class="prob-text">Between work and school runs, balanced meals slip through the cracks. Convenience
-                        wins
-                        over nutrition — every single day.</p>
-                </div>
-                <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Junk Food Addiction</div>
-                    <p class="prob-text">Pizza, chips, sugary drinks — kids crave them and get them. High calories, zero
-                        nutrition, and taste buds that reject healthy food.</p>
-                </div>
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Less Outdoor Play, More Screens</div>
-                    <p class="prob-text">No sunlight means no Vitamin D. No movement means weak bones and low immunity —
-                        visible
-                        on the outside, starting from within.</p>
-                </div>
-                <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi5"><img src="/img/test-product.jpg" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Adulterated Food</div>
-                    <p class="prob-text">Preservatives, artificial colors, hidden additives — what's really in your child's
-                        food?
-                        Nobody gives you a guarantee.</p>
-                </div>
-                <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi6"><img src="/img/illness.jpg" alt="" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Weak Immunity — Frequent Illness</div>
-                    <p class="prob-text">The end result: kids fall sick repeatedly. School missed, exams affected, parents
-                        stressed. A cycle that's hard to break.</p>
-                </div>
-            </div>
-
-            <!-- DIVIDER -->
-            <div class="ps-divider reveal">
-                <div class="div-arrow">↓</div>
-                <div class="div-badge"> Here's Our Answer</div>
-                <div class="div-arrow">↓</div>
-            </div>
-
-            <!-- SOLUTION -->
-            <!-- <div class="block-label reveal">
-                                        <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
-                                        <div class="bline g"></div>
-                                    </div> -->
-    </section>
-    <section>
-        <!-- HERO -->
-        <div class="sol-hero reveal">
-            <div class="sol-hero-text">
-                <img src="/img/posr.png" alt="">
-            </div>
-        </div>
-    </section>
-    <section class="ps-section">
-        <!-- EQUATION -->
-        <div class="eq-card reveal">
-            <div class="eq-lbl">✨ The NutriBuddy Formula</div>
-            <div class="eq-wrap">
-                <div class="eq-item">
-                    <div class="eq-icon ei1"><img src="/img/natural-organic.png" alt=""></div>
-                    <div class="eq-nm">Ayurvedic Wisdom</div>
-                </div>
-                <div class="eq-op">+</div>
-                <div class="eq-item">
-                    <div class="eq-icon ei2"><img src="/img/observation.png" alt=""></div>
-                    <div class="eq-nm">Modern Science</div>
-                </div>
-                <div class="eq-op">+</div>
-                <div class="eq-item">
-                    <div class="eq-icon ei3"><img src="/img/tongue.png" alt=""></div>
-                    <div class="eq-nm">Kid-Approved Taste</div>
-                </div>
-                <div class="eq-op">+</div>
-                <div class="eq-item">
-                    <div class="eq-icon ei4"><img src="/img/pediatrician.png" alt=""></div>
-                    <div class="eq-nm">Pediatrician Verified</div>
-                </div>
-                <div class="eq-eq">=</div>
-                <div class="eq-result">
-                    <div class="eq-res-icon"><img src="/img/product2.png" alt=""></div>
-                    <div class="eq-res-nm">NutriBuddy</div>
-                </div>
-            </div>
-        </div>
-
-    </section>
-
     <!-- ════════════════════════════════════════════════
-                                     NUTRIBUDDY INGREDIENT SECTION
-                                ════════════════════════════════════════════════ -->
+                                         NUTRIBUDDY INGREDIENT SECTION
+                                    ════════════════════════════════════════════════ -->
     @if ($product->ingredients->isNotEmpty())
         <section id="nb-ingredients">
 
@@ -892,8 +546,7 @@
                 </button>
                 @foreach ($categoryFilters as $filter)
                     <button class="nb-cat-pill" onclick="nbFilter('{{ $filter['key'] }}',this)">
-                        <span class="nb-cat-dot"
-                            style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }}
+                        <span class="nb-cat-dot" style="background:{{ $filter['dot_color'] }}"></span>{{ $filter['name'] }}
                         ({{ $filter['count'] }})
                     </button>
                 @endforeach
@@ -968,13 +621,419 @@
         </section>
     @endif
     <!-- end ingredients -->
-    <!-- ══════════════════════════════════════════
-                                         PARENT REVIEWS
-                                    ══════════════════════════════════════════ -->
+    <!-- ══ HOW IT TRANSFORMS ══ -->
+    <section class="section-wrap transform-section reveal">
+        <div style="max-width:1200px;margin:0 auto;">
+            <span class="sec-eye">Real Results</span>
+            <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
+            <p class="sec-sub">{{ $transformDescription }}</p>
+            <div class="transform-grid">
+                <div class="transform-visual">
+                    <img src="{{ $transformMainImage }}" alt="{{ $product->name }} transformation results" loading="lazy"
+                        decoding="async">
+                </div>
+                <div class="transform-list">
+                    @foreach ($transformResults as $index => $result)
+                        @php
+                            $resultImage = $problemSolutionAsset($result['image'] ?? null, $transformDefaults[$index]['image'] ?? 'img/immune.png');
+                            $resultColor = $transformColors[$index % count($transformColors)];
+                        @endphp
+                        <div class="tr-item">
+                            <div class="tr-icon" style="background:{{ $resultColor }}">
+                                <img src="{{ $resultImage }}" alt="{{ $result['title'] ?? '' }}" loading="lazy"
+                                    decoding="async">
+                            </div>
+                            <div class="tr-body">
+                                <div class="tr-title">{{ $result['title'] ?? '' }}</div>
+                                <div class="tr-desc">{{ $result['description'] ?? '' }}</div>
+                                @if (!empty($result['week']))
+                                    <div class="tr-week">{{ $result['week'] }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--  -->
+    <!-- ══════════════════════════════
+                                         FEATURES — NO GELATIN etc.
+                                    ══════════════════════════════ -->
+    <section class="features-section reveal" id="features">
+        <div class="feat-inner">
+            <div class="feat-layout">
+                <div>
+                    <span class="sec-eye"> What's NOT in it</span>
+                    <h2 class="feat-title">Pure as<br><span class="acc">Nature Intended</span> 🍃</h2>
+                    <p class="feat-sub">We obsessed over every ingredient that goes in — and even more over what we keep
+                        OUT.
+                        Because your child's body deserves only the best.</p>
+                    <div class="feat-list">
+                        <div class="feat-item">
+                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png" alt="">
+                            </div>
+                            <div>
+                                <div class="feat-item-title">Zero Gelatin — 100% Vegetarian</div>
+                                <div class="feat-item-desc">Most international gummies use animal gelatin (pig or bovine).
+                                    All
+                                    NutriBuddy gummies use plant-based pectin. Completely safe for every Indian family
+                                    regardless of
+                                    dietary beliefs.</div>
+                            </div>
+                        </div>
+                        <div class="feat-item">
+                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png" alt="">
+                            </div>
+                            <div>
+                                <div class="feat-item-title">No Refined Sugar</div>
+                                <div class="feat-item-desc">We sweeten with Stevia + monk fruit extract — giving a
+                                    naturally sweet taste
+                                    with zero impact on blood sugar. Kids get the yummy without the sugar crash or tooth
+                                    decay.</div>
+                            </div>
+                        </div>
+
+                        <div class="feat-item">
+                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png" alt="">
+                            </div>
+                            <div>
+                                <div class="feat-item-title">No Artificial Colors or Flavors</div>
+                                <div class="feat-item-desc">Our vibrant colors come from beetroot, turmeric, and spirulina.
+                                    Our fruity
+                                    burst flavors come from real fruit concentrates — not synthetic flavor chemicals tied to
+                                    hyperactivity
+                                    in children.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="comparison-box">
+                    <div class="comp-title">NutriBuddy vs. Other Brands</div>
+                    <table class="comp-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="comp-us-head">NutriBuddy</th>
+                                <th style="color:#aaa">Others</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="comp-us">
+                                <td>Ayurvedic herbs</td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td>Zero Gelatin</td>
+                                <td class="comp-us"><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr class="comp-us">
+                                <td>No refined sugar</td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td>Third-party lab tested</td>
+                                <td class="comp-us"><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr class="comp-us">
+                                <td>Transparent batch results</td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td>Pediatrician approved</td>
+                                <td class="comp-us"><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr class="comp-us">
+                                <td>Age 2+ safe</td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="cross">✗</span></td>
+                            </tr>
+                            <tr>
+                                <td>Price per day</td>
+                                <td class="comp-us" style="color:var(--mn);font-weight:800">~₹20</td>
+                                <td>Varies</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ══ PEDIATRICIAN VIDEO ══ -->
+    <section class="doc-section reveal">
+        <div style="max-width:1100px;margin:0 auto;">
+            <span class="sec-eye">Expert Endorsement</span>
+            <h2 class="sec-title">What <span class="acc">Pediatricians</span> Say</h2>
+            <p class="sec-sub" style="color:rgba(255,255,255,.5)">50+ certified pediatricians and nutritionists recommend
+                NutriBuddy to their own patients and families.</p>
+            <div class="doc-grid">
+                <div>
+                    <div class="doc-video-wrap">
+                        <div class="doc-play">▶</div>
+                        <div class="doc-video-label">Dr. Anita Nair — Pediatrician, Bangalore<br>Watch her recommendation
+                            (2 min)
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--pk)">50+</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Pediatricians</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ye)">3 Yrs</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">R&D Per Product</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--mn)">10K+</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Happy Families</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="doc-info">
+                    <div class="doc-card">
+                        <div class="doc-name">Dr. Anita Nair</div>
+                        <div class="doc-cred">MBBS, DCH · Pediatrician, Bangalore · 18 yrs experience</div>
+                        <div class="doc-quote">As a pediatrician, I'm very selective about what I recommend. NutriBuddy's
+                            completely
+                            transparent formulas and third-party testing give me total confidence to recommend it to my
+                            patients.
+                        </div>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-name">Dr. Rajesh Kapoor</div>
+                        <div class="doc-cred">MD Pediatrics · AIIMS Alumni · Delhi</div>
+                        <div class="doc-quote">The KSM-66® Ashwagandha dosage is clinically appropriate and the
+                            bioavailability of
+                            their Zinc Bisglycinate is genuinely impressive. This is science-backed, not just marketing.
+                        </div>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-name">Dt. Meena Iyer</div>
+                        <div class="doc-cred">Certified Pediatric Nutritionist · Chennai</div>
+                        <div class="doc-quote">I give it to my own children. The natural fruit extracts, zero artificial
+                            additives,
+                            and the Ayurvedic formulation align perfectly with what I recommend to every family I counsel.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- SECTION -->
+    <section class="ps-section ps-problems-section">
+        <div class="ps-inner">
+
+            <!-- HEADER -->
+            <div class="ps-header reveal">
+                <div class="eyebrow">The Real Picture</div>
+                <h2 class="ps-title">Kids Face <span class="acc">Real Problems</span> —<br>We Built a <span
+                        class="acc2">Real
+                        Solution</span></h2>
+                <p class="ps-sub">Today's kids miss out on essential nutrition every day. We see the gap — and we've closed
+                    it.
+                </p>
+            </div>
+            <div class="problem-grid">
+                <div class="prob-card pc1 reveal d1">
+                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt="" loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Vitamin & Mineral Deficiency</div>
+                    <p class="prob-text">Processed food strips away nutrients. 80% of Indian kids are Vitamin D deficient —
+                        affecting bones, immunity & mood.</p>
+                </div>
+                <div class="prob-card pc2 reveal d2">
+                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt="" loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Busy Parent, Skipped Nutrition</div>
+                    <p class="prob-text">Between work and school runs, balanced meals slip through the cracks. Convenience
+                        wins
+                        over nutrition — every single day.</p>
+                </div>
+                <div class="prob-card pc3 reveal d3">
+                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt="" loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Junk Food Addiction</div>
+                    <p class="prob-text">Pizza, chips, sugary drinks — kids crave them and get them. High calories, zero
+                        nutrition, and taste buds that reject healthy food.</p>
+                </div>
+                <div class="prob-card pc1 reveal d1">
+                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt="" loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Less Outdoor Play, More Screens</div>
+                    <p class="prob-text">No sunlight means no Vitamin D. No movement means weak bones and low immunity —
+                        visible
+                        on the outside, starting from within.</p>
+                </div>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="ps-divider reveal">
+                <div class="div-arrow">↓</div>
+                <div class="div-badge"> Here's Our Answer</div>
+                <div class="div-arrow">↓</div>
+            </div>
+
+            <section class="nb__section reveal">
+                <div class="nb__leaf-cluster nb__leaf-cluster--tl" aria-hidden="true"></div>
+                <div class="nb__leaf-cluster nb__leaf-cluster--tr" aria-hidden="true"></div>
+                <div class="nb__leaf-cluster nb__leaf-cluster--bl" aria-hidden="true"></div>
+                <div class="nb__leaf-cluster nb__leaf-cluster--br" aria-hidden="true"></div>
+
+                <div class="nb__wrap">
+                    <header class="nb__headline">
+                        <h2 class="nb__brand-title">{{ $psBrandTitle }}</h2>
+                        <h3 class="nb__product-title">{{ $psProductTitle }}</h3>
+                        <p class="nb__tagline">
+                            @foreach ($psTaglineItems as $taglineIndex => $taglineItem)
+                                @if ($taglineIndex > 0)
+                                    <span>&bull;</span>
+                                @endif
+                                {{ $taglineItem }}
+                            @endforeach
+                        </p>
+                    </header>
+
+                    <div class="nb__main-grid">
+                        <aside class="nb__ingredients-col">
+                            <div class="nb__corner-label">{!! nl2br(e($psLeftLabel)) !!}</div>
+
+                            @foreach ($psLeftCards as $ingredientIndex => $ingredientCard)
+                                @php
+                                    $ingredientIcon = $problemSolutionAsset($ingredientCard['icon'] ?? '', $problemSolutionDefaults['left_cards'][$ingredientIndex]['icon'] ?? 'img/haldi.webp');
+                                    $ingredientTitle = $ingredientCard['title'] ?? '';
+                                    $ingredientText = $ingredientCard['text'] ?? '';
+                                @endphp
+                                <article class="nb__ingredient-card">
+                                    <div class="nb__ingredient-img">
+                                        <img src="{{ $ingredientIcon }}" alt="{{ $ingredientTitle }}">
+                                    </div>
+                                    <div class="nb__ingredient-text">
+                                        <h4>{{ $ingredientTitle }}</h4>
+                                        <p>{!! nl2br(e($ingredientText)) !!}</p>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </aside>
+
+                        <div class="nb__product-center">
+                            <img class="nb__product-image" src="{{ $psCenterImage }}"
+                                alt="{{ $psBrandTitle }} {{ $psProductTitle }} product">
+                        </div>
+
+                        <aside class="nb__features-col">
+                            <div class="nb__side-label">{!! nl2br(e($psRightLabel)) !!}</div>
+
+                            <div class="nb__feature-panel">
+                                @foreach ($psRightCards as $featureIndex => $featureCard)
+                                    @php
+                                        $featureIcon = $problemSolutionAsset($featureCard['icon'] ?? '', $problemSolutionDefaults['right_cards'][$featureIndex]['icon'] ?? 'img/new-btn-2.png');
+                                        $featureTitle = $featureCard['title'] ?? '';
+                                        $featureText = $featureCard['text'] ?? '';
+                                    @endphp
+                                    <article class="nb__feature-card">
+                                        <div class="nb__feature-icon">
+                                            <img src="{{ $featureIcon }}" alt="{{ $featureTitle }}">
+                                        </div>
+                                        <div class="nb__feature-text">
+                                            <h4>{{ $featureTitle }}</h4>
+                                            <p>{{ $featureText }}</p>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
+                        </aside>
+                    </div>
+
+                    <div class="nb__ingredient-shelf" aria-hidden="true">
+                        <img class="nb__shelf-img nb__shelf-img--amla" src="{{ $psShelfLeftImage }}" alt="">
+                        <img class="nb__shelf-img nb__shelf-img--turmeric" src="{{ $psShelfRightImage }}" alt="">
+                    </div>
+
+                    <footer class="nb__trust-strip">
+                        <div class="nb__trust-badge"><span class="nb__trust-badge-icon"><img
+                                    src="{{ asset('img/vegan-1.png') }}" alt="Ayurvedic wisdom"></span> Ayurvedic<br>Wisdom
+                        </div>
+                        <div class="nb__trust-badge"><span class="nb__trust-badge-icon"><img
+                                    src="{{ asset('img/new-btn-2.png') }}" alt="Safe and trusted formula"></span> Safe &amp;
+                            Trusted<br>Formula</div>
+                        <div class="nb__trust-badge"><span class="nb__trust-badge-icon"><img
+                                    src="{{ asset('img/pro-1.png') }}" alt="No artificial colors"></span> No
+                            Artificial<br>Colors</div>
+                        <div class="nb__trust-badge"><span class="nb__trust-badge-icon"><img
+                                    src="{{ asset('img/new-btn-4.png') }}" alt="Made with love"></span> Made With<br>Love
+                        </div>
+                    </footer>
+                </div>
+            </section>
+
+            <!-- DIVIDER -->
+            <div class="ps-divider reveal">
+                <div class="div-arrow">↓</div>
+                <div class="div-badge"> The Nutribuddy Benefits</div>
+                <div class="div-arrow">↓</div>
+            </div>
+
+            <div class="problem-grid">
+                <div class="prob-card pc1 reveal d1">
+                    <div class="prob-icon pi1"><img src="/img/st1.webp" alt="Happy, strong and active child" loading="lazy"
+                            decoding="async"></div>
+                    <div class="prob-name">Strong Body & Healthy Growth</div>
+                    <p class="prob-text">Essential vitamins and minerals support growing bones and muscles, helping kids
+                        stay strong, active and ready for every day.</p>
+                </div>
+                <div class="prob-card pc2 reveal d2">
+                    <div class="prob-icon pi2"><img src="/img/st-2.webp" alt="Support for children's natural immunity"
+                            loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Stronger Everyday Immunity</div>
+                    <p class="prob-text">A balanced blend of nutrients supports the body's natural defences, helping kids
+                        stay resilient through school, play and changing seasons.</p>
+                </div>
+                <div class="prob-card pc3 reveal d3">
+                    <div class="prob-icon pi3"><img src="/img/st-3.webp" alt="Active child with steady everyday energy"
+                            loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Active Energy & Better Focus</div>
+                    <p class="prob-text">Everyday nutritional support helps kids feel energetic and attentive, so they can
+                        learn, explore and enjoy playtime with confidence.</p>
+                </div>
+                <div class="prob-card pc1 reveal d1">
+                    <div class="prob-icon pi4"><img src="/img/st-4.webp" alt="Complete daily nutrition for a healthy child"
+                            loading="lazy" decoding="async"></div>
+                    <div class="prob-name">Complete Daily Wellness</div>
+                    <p class="prob-text">Helps fill common nutritional gaps to support digestion, mood and overall
+                        well-being for a happier, healthier child.</p>
+                </div>
+            </div>
+            <!-- SOLUTION -->
+
+
+            <!-- <div class="block-label reveal">
+                                            <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
+                                            <div class="bline g"></div>
+                                        </div> -->
+    </section>
+
+
+
+
+
+    <!-- ════════════════════════════════════════════════    <!-- ══════════════════════════════════════════
+                                             PARENT REVIEWS
+                                        ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
+
     <!-- ══════════════════════════════════════════
-                                         FAQ
-                                    ══════════════════════════════════════════ -->
+                                             FAQ
+                                        ══════════════════════════════════════════ -->
     @include('partials.faq-section')
 
     <div class="newsletter reveal">
@@ -994,21 +1053,397 @@
     </div>
 @endsection
 @push('scripts')
+
+    @php
+
+        $nbPdpConfig = [
+
+            'enabled' => true,
+
+            'selectedVariantId' => (string) ($defVariant?->id ?? ''),
+
+            'variants' => $frontendVariants,
+
+            'selectedAttributes' => $initialSelectedAttributes,
+
+            'isLoggedIn' => auth()->check(),
+
+            'checkoutUrl' => route('checkout.index'),
+
+            'fallbackCartMeta' => [
+
+                'product_name' => $product->name,
+
+                'variant_name' => '',
+
+                'image' => $productImageUrl($mainGalleryImage?->image_path),
+
+                'unit_price' => (float) $initialPrice,
+
+                'product_url' => request()->path(),
+
+            ],
+
+        ];
+
+    @endphp
+
+    <script id="nbPdpConfig" type="application/json">@json($nbPdpConfig)</script>
+
     <script>
-        window.NB_PDP_CONFIG = {
-            enabled: true,
-            selectedVariantId: @json((string) ($defVariant?->id ?? '')),
-            variants: @json($frontendVariants),
-            selectedAttributes: @json($initialSelectedAttributes),
-            isLoggedIn: @json(auth()->check()),
-            checkoutUrl: @json(route('checkout.index')),
-            fallbackCartMeta: {
-                product_name: @json($product->name),
-                variant_name: '',
-                image: @json($product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('img/product2.png')),
-                unit_price: Number(@json((float) $initialPrice)),
-                product_url: @json(request()->path()),
-            },
-        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.ps-problems-section .problem-grid').forEach(function (grid, gridIndex) {
+
+                const cards = Array.from(grid.querySelectorAll('.prob-card'));
+
+
+
+                if (cards.length < 2 || grid.dataset.sliderReady === 'true') {
+
+                    return;
+
+                }
+
+
+
+                grid.dataset.sliderReady = 'true';
+
+                grid.classList.add('problem-slider-track');
+
+                grid.setAttribute('aria-label', gridIndex === 0 ? 'Kids real problems slider' : 'Nutribuddy benefits slider');
+
+
+
+                const controls = document.createElement('div');
+
+                controls.className = 'problem-slider-controls';
+
+
+
+                const prevBtn = document.createElement('button');
+
+                prevBtn.type = 'button';
+
+                prevBtn.className = 'problem-slider-btn problem-slider-prev';
+
+                prevBtn.setAttribute('aria-label', 'Previous slide');
+
+                prevBtn.textContent = '\u2039';
+
+
+
+                const dots = document.createElement('div');
+
+                dots.className = 'problem-slider-dots';
+
+                dots.setAttribute('aria-hidden', 'true');
+
+
+
+                const dotBtns = cards.map(function (_, index) {
+
+                    const dot = document.createElement('button');
+
+                    dot.type = 'button';
+
+                    dot.className = 'problem-slider-dot';
+
+                    dot.tabIndex = -1;
+
+                    dot.addEventListener('click', function () {
+
+                        scrollToCard(index);
+
+                    });
+
+                    dots.appendChild(dot);
+
+                    return dot;
+
+                });
+
+
+
+                const nextBtn = document.createElement('button');
+
+                nextBtn.type = 'button';
+
+                nextBtn.className = 'problem-slider-btn problem-slider-next';
+
+                nextBtn.setAttribute('aria-label', 'Next slide');
+
+                nextBtn.textContent = '\u203A';
+
+
+
+                controls.append(prevBtn, dots, nextBtn);
+
+                grid.insertAdjacentElement('afterend', controls);
+
+
+
+                function getActiveIndex() {
+
+                    const gridLeft = grid.getBoundingClientRect().left;
+
+                    return cards.reduce(function (closestIndex, card, index) {
+
+                        const currentDistance = Math.abs(card.getBoundingClientRect().left - gridLeft);
+
+                        const closestDistance = Math.abs(cards[closestIndex].getBoundingClientRect().left - gridLeft);
+
+                        return currentDistance < closestDistance ? index : closestIndex;
+
+                    }, 0);
+
+                }
+
+
+
+                function scrollToCard(index) {
+
+                    const card = cards[Math.max(0, Math.min(index, cards.length - 1))];
+
+                    grid.scrollTo({
+
+                        left: card.offsetLeft - cards[0].offsetLeft,
+
+                        behavior: 'smooth'
+
+                    });
+
+                }
+
+
+
+                function updateControls() {
+
+                    const activeIndex = getActiveIndex();
+
+                    prevBtn.disabled = activeIndex === 0;
+
+                    nextBtn.disabled = activeIndex === cards.length - 1;
+
+                    dotBtns.forEach(function (dot, index) {
+
+                        dot.classList.toggle('is-active', index === activeIndex);
+
+                    });
+
+                }
+
+
+
+                prevBtn.addEventListener('click', function () {
+
+                    scrollToCard(getActiveIndex() - 1);
+
+                });
+
+
+
+                nextBtn.addEventListener('click', function () {
+
+                    scrollToCard(getActiveIndex() + 1);
+
+                });
+
+
+
+                grid.addEventListener('scroll', function () {
+
+                    window.requestAnimationFrame(updateControls);
+
+                }, { passive: true });
+
+
+
+                window.addEventListener('resize', updateControls);
+
+                updateControls();
+
+            });
+
+
+
+            document.querySelectorAll('.transform-list').forEach(function (track) {
+
+                const cards = Array.from(track.querySelectorAll('.tr-item'));
+
+
+
+                if (cards.length < 2 || track.dataset.sliderReady === 'true') {
+
+                    return;
+
+                }
+
+
+
+                track.dataset.sliderReady = 'true';
+
+                track.setAttribute('aria-label', 'Transformation results slider');
+
+
+
+                const controls = document.createElement('div');
+
+                controls.className = 'transform-slider-controls';
+
+
+
+                const prevBtn = document.createElement('button');
+
+                prevBtn.type = 'button';
+
+                prevBtn.className = 'transform-slider-btn transform-slider-prev';
+
+                prevBtn.setAttribute('aria-label', 'Previous result');
+
+                prevBtn.textContent = '\u2039';
+
+
+
+                const dots = document.createElement('div');
+
+                dots.className = 'transform-slider-dots';
+
+                dots.setAttribute('aria-hidden', 'true');
+
+
+
+                const dotBtns = cards.map(function (_, index) {
+
+                    const dot = document.createElement('button');
+
+                    dot.type = 'button';
+
+                    dot.className = 'transform-slider-dot';
+
+                    dot.tabIndex = -1;
+
+                    dot.addEventListener('click', function () {
+
+                        scrollToCard(index);
+
+                    });
+
+                    dots.appendChild(dot);
+
+                    return dot;
+
+                });
+
+
+
+                const nextBtn = document.createElement('button');
+
+                nextBtn.type = 'button';
+
+                nextBtn.className = 'transform-slider-btn transform-slider-next';
+
+                nextBtn.setAttribute('aria-label', 'Next result');
+
+                nextBtn.textContent = '\u203A';
+
+
+
+                controls.append(prevBtn, dots, nextBtn);
+
+                track.insertAdjacentElement('afterend', controls);
+
+
+
+                function getActiveIndex() {
+
+                    const trackLeft = track.getBoundingClientRect().left;
+
+                    return cards.reduce(function (closestIndex, card, index) {
+
+                        const currentDistance = Math.abs(card.getBoundingClientRect().left - trackLeft);
+
+                        const closestDistance = Math.abs(cards[closestIndex].getBoundingClientRect().left - trackLeft);
+
+                        return currentDistance < closestDistance ? index : closestIndex;
+
+                    }, 0);
+
+                }
+
+
+
+                function scrollToCard(index) {
+
+                    const card = cards[Math.max(0, Math.min(index, cards.length - 1))];
+
+                    track.scrollTo({
+
+                        left: card.offsetLeft - cards[0].offsetLeft,
+
+                        behavior: 'smooth'
+
+                    });
+
+                }
+
+
+
+                function updateControls() {
+
+                    const activeIndex = getActiveIndex();
+
+                    prevBtn.disabled = activeIndex === 0;
+
+                    nextBtn.disabled = activeIndex === cards.length - 1;
+
+                    dotBtns.forEach(function (dot, index) {
+
+                        dot.classList.toggle('is-active', index === activeIndex);
+
+                    });
+
+                }
+
+
+
+                prevBtn.addEventListener('click', function () {
+
+                    scrollToCard(getActiveIndex() - 1);
+
+                });
+
+
+
+                nextBtn.addEventListener('click', function () {
+
+                    scrollToCard(getActiveIndex() + 1);
+
+                });
+
+
+
+                track.addEventListener('scroll', function () {
+
+                    window.requestAnimationFrame(updateControls);
+
+                }, { passive: true });
+
+
+
+                window.addEventListener('resize', updateControls);
+
+                updateControls();
+
+            });
+
+
+
+
+
+        });
+
     </script>
+
 @endpush

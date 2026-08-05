@@ -30,16 +30,7 @@
     <div class="page">
         <!-- SUMMARY STRIP -->
         <!-- WELCOME BANNER -->
-        <div class="welcome-banner d1">
-            <div class="welcome-text" style="position:relative;z-index:1">
-                <h2>Welcome back, <span>{{ auth()->user()->name ?? 'User' }}!</span> </h2>
-                <p>Review your recent orders and track packages in one place.</p>
-            </div>
-            <div class="welcome-right">
-              
-                <div class="banner-emoji">📦</div>
-            </div>
-        </div>
+      
 
         <!-- PAGE HEADER -->
         <div class="page-header fade-in d2">
@@ -55,6 +46,18 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
                     <input type="text" placeholder="Search by order ID..." id="searchInput" oninput="filterOrders()">
+                </div>
+                <div class="date-filter">
+                    <label>
+                        <span>From</span>
+                        <input type="date" id="dateFromInput">
+                    </label>
+                    <label>
+                        <span>To</span>
+                        <input type="date" id="dateToInput">
+                    </label>
+                    <button type="button" class="date-filter-btn" onclick="applyDateFilter()">Apply</button>
+                    <button type="button" class="date-filter-clear" onclick="clearDateFilter()">Clear</button>
                 </div>
                 <div class="filter-tabs">
                     <button class="ftab active" id="tab-all" onclick="filterTab(this,'all')">All (0)</button>
@@ -168,6 +171,7 @@
             };
 
             let allOrders = [];
+            let activeStatusFilter = 'all';
 
             function statusClass(status) {
                 if (status === 'delivered') return 's-delivered';
@@ -248,8 +252,7 @@
                     mobile.appendChild(card);
                 });
 
-                document.getElementById('ordersPaginationInfo').textContent =
-                    `Showing ${orders.length} of ${orders.length} orders`;
+                applyFilters();
             }
 
             function updateStats(orders) {
@@ -276,7 +279,21 @@
             }
 
             async function loadOrders() {
-                const response = await fetch(apiConfig.listUrl, {
+                const dateFrom = document.getElementById('dateFromInput')?.value || '';
+                const dateTo = document.getElementById('dateToInput')?.value || '';
+
+                if (dateFrom && dateTo && dateFrom > dateTo) {
+                    if (typeof nbToast === 'function') {
+                        nbToast('Please choose an end date after the start date.', 'warning');
+                    }
+                    return;
+                }
+
+                const url = new URL(apiConfig.listUrl, window.location.origin);
+                if (dateFrom) url.searchParams.set('date_from', dateFrom);
+                if (dateTo) url.searchParams.set('date_to', dateTo);
+
+                const response = await fetch(url.toString(), {
                     headers: {
                         'Accept': 'application/json'
                     }
@@ -297,29 +314,40 @@
             function filterTab(btn, status) {
                 document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
                 btn.classList.add('active');
-                // table rows
+                activeStatusFilter = status;
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const q = document.getElementById('searchInput').value.toLowerCase().trim();
                 document.querySelectorAll('#ordersBody tr').forEach(tr => {
-                    tr.style.display = (status === 'all' || tr.dataset.status === status) ? '' : 'none';
+                    const id = tr.querySelector('.order-id')?.textContent.toLowerCase() || '';
+                    const matchesStatus = activeStatusFilter === 'all' || tr.dataset.status === activeStatusFilter;
+                    const matchesSearch = !q || id.includes(q);
+                    tr.style.display = matchesStatus && matchesSearch ? '' : 'none';
                 });
-                // mobile cards
                 document.querySelectorAll('#mobileOrders .m-order-card').forEach(c => {
-                    c.style.display = (status === 'all' || c.dataset.status === status) ? '' : 'none';
+                    const id = c.querySelector('.m-id')?.textContent.toLowerCase() || '';
+                    const matchesStatus = activeStatusFilter === 'all' || c.dataset.status === activeStatusFilter;
+                    const matchesSearch = !q || id.includes(q);
+                    c.style.display = matchesStatus && matchesSearch ? '' : 'none';
                 });
                 checkEmpty();
             }
 
             // search
             function filterOrders() {
-                const q = document.getElementById('searchInput').value.toLowerCase();
-                document.querySelectorAll('#ordersBody tr').forEach(tr => {
-                    const id = tr.querySelector('.order-id')?.textContent.toLowerCase() || '';
-                    tr.style.display = id.includes(q) ? '' : 'none';
-                });
-                document.querySelectorAll('#mobileOrders .m-order-card').forEach(c => {
-                    const id = c.querySelector('.m-id')?.textContent.toLowerCase() || '';
-                    c.style.display = id.includes(q) ? '' : 'none';
-                });
-                checkEmpty();
+                applyFilters();
+            }
+
+            async function applyDateFilter() {
+                await loadOrders();
+            }
+
+            async function clearDateFilter() {
+                document.getElementById('dateFromInput').value = '';
+                document.getElementById('dateToInput').value = '';
+                await loadOrders();
             }
 
             function checkEmpty() {
@@ -328,6 +356,8 @@
                     .display !== 'none');
                 const empty = visibleRows.length === 0 && visibleCards.length === 0;
                 document.getElementById('emptyState').style.display = empty ? 'block' : 'none';
+                document.getElementById('ordersPaginationInfo').textContent =
+                    `Showing ${visibleRows.length} of ${allOrders.length} orders`;
             }
 
             // cancel modal

@@ -33,6 +33,9 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::delete('products-trash/bulk-force-delete', [AdminProductController::class, 'bulkForceDestroy'])->name('products.bulk-force-destroy');
     Route::patch('products-trash/{product}/restore', [AdminProductController::class, 'restore'])->name('products.restore');
     Route::delete('products-trash/{product}/force-delete', [AdminProductController::class, 'forceDestroy'])->name('products.force-destroy');
+    Route::get('products/problem-solution', [AdminProductController::class, 'problemSolutionIndex'])->name('products.problem-solution.index');
+    Route::get('products/{product}/problem-solution', [AdminProductController::class, 'problemSolution'])->name('products.problem-solution.edit');
+    Route::post('products/{product}/problem-solution', [AdminProductController::class, 'updateProblemSolution'])->name('products.problem-solution.update');
     Route::resource('products', AdminProductController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::patch('products/{product}/inventory', [AdminProductController::class, 'updateInventory'])->name('products.inventory.update');
     Route::delete('products/images/{image}', [AdminProductController::class, 'deleteImage'])->name('products.images.destroy');
@@ -70,6 +73,8 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/general', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'index'])->name('general');
         Route::post('/general', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'update'])->name('general.update');
+        Route::get('/payment-gateways', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'paymentGateways'])->name('payment-gateways');
+        Route::post('/payment-gateways', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'updatePaymentGateways'])->name('payment-gateways.update');
     });
 
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');

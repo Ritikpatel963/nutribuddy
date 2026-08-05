@@ -2,6 +2,19 @@
 @php
     $title = 'Edit Product';
     $subTitle = 'Ecommerce / Products / Edit';
+    $psDefaults = $problemSolutionDefaults ?? [];
+    $storageOrAsset = function (?string $path): ?string {
+        if (!$path) {
+            return null;
+        }
+
+        return \Illuminate\Support\Str::startsWith($path, ['img/', 'assets/'])
+            ? asset($path)
+            : asset('storage/' . $path);
+    };
+    $psTaglineItems = old('ps_tagline_items', $product->ps_tagline_items ?: ($psDefaults['tagline_items'] ?? []));
+    $psLeftCards = old('ps_left_cards', $product->ps_left_cards ?: ($psDefaults['left_cards'] ?? []));
+    $psRightCards = old('ps_right_cards', $product->ps_right_cards ?: ($psDefaults['right_cards'] ?? []));
 @endphp
 
 @section('content')
@@ -108,6 +121,12 @@
                                 <input type="text" name="dosage" value="{{ old('dosage', $product->dosage) }}" class="form-control" placeholder="e.g. 1 Gummy daily">
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Routine</label>
+                                <input type="text" name="routine" value="{{ old('routine', $product->routine) }}" class="form-control" placeholder="e.g. Morning after breakfast">
+                                @error('routine')<span class="text-danger small">{{ $message }}</span>@enderror
+                            </div>
+
                             <div class="col-md-6 d-flex align-items-end gap-24">
                                 <input type="hidden" name="track_stock" value="0">
                                 <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
@@ -146,10 +165,45 @@
                     </div>
                 </div>
 
-                <!-- 5. MEDIA -->
+                <!-- 5. CARD MEDIA -->
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Product Card Images</h5>
+                        <small class="text-secondary">Shown on home and product listing cards only</small>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Default Card Image</label>
+                                @if($product->card_image_path)
+                                    <div class="mb-12 radius-12 overflow-hidden border bg-white shadow-sm" style="width:140px;">
+                                        <img src="{{ asset('storage/' . $product->card_image_path) }}" class="w-100 object-fit-cover" style="aspect-ratio:1/1;">
+                                    </div>
+                                @endif
+                                <input type="file" name="card_image" class="form-control" accept="image/*">
+                                <small class="text-muted">Replace the image used first on index and product listing pages.</small>
+                                @error('card_image')<span class="text-danger small d-block">{{ $message }}</span>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Hover Card Image</label>
+                                @if($product->card_hover_image_path)
+                                    <div class="mb-12 radius-12 overflow-hidden border bg-white shadow-sm" style="width:140px;">
+                                        <img src="{{ asset('storage/' . $product->card_hover_image_path) }}" class="w-100 object-fit-cover" style="aspect-ratio:1/1;">
+                                    </div>
+                                @endif
+                                <input type="file" name="card_hover_image" class="form-control" accept="image/*">
+                                <small class="text-muted">Replace the hover image. If empty, the default image is reused.</small>
+                                @error('card_hover_image')<span class="text-danger small d-block">{{ $message }}</span>@enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. MEDIA -->
                 <div class="card border-0 radius-12 mb-24">
                     <div class="card-header bg-base border-bottom py-16 px-24">
                         <h5 class="card-title mb-0">Product Gallery</h5>
+                        <small class="text-secondary">Shown on product detail page gallery</small>
                     </div>
                     <div class="card-body p-24">
                         <div class="upload-area border-dashed radius-12 p-32 text-center cursor-pointer bg-white transition-base border-2"
@@ -169,8 +223,8 @@
                                     <div class="radius-12 overflow-hidden border bg-white shadow-sm h-100">
                                         <img src="{{ asset('storage/' . $img->image_path) }}" class="w-100 h-100 object-fit-cover" style="aspect-ratio:1/1;">
                                     </div>
-                                    <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-4 p-0 radius-circle d-flex align-items-center justify-content-center shadow-sm" style="width:22px;height:22px;" onclick="if(confirm('Delete image?')){document.getElementById('delete-image-{{ $img->id }}').submit()}">
-                                        <iconify-icon icon="lucide:x" class="text-xs"></iconify-icon>
+                                    <button type="button" class="gallery-delete-btn position-absolute top-0 end-0 m-4 shadow-sm" onclick="if(confirm('Delete image?')){document.getElementById('delete-image-{{ $img->id }}').submit()}" aria-label="Delete image">
+                                        <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                             @endforeach
@@ -206,6 +260,8 @@
                     </div>
                 </div>
 
+                @include('admin.ecommerce.products.partials.transform-section-fields', ['product' => $product])
+
                 <!-- 7. SEO -->
                 <div class="card border-0 radius-12 mb-24">
                     <div class="card-header bg-base border-bottom py-16 px-24">
@@ -224,6 +280,121 @@
                             <div class="col-12">
                                 <label class="form-label fw-bold">Meta Description</label>
                                 <textarea name="meta_description" class="form-control" rows="2" placeholder="Brief summary for Google results">{{ old('meta_description', $product->meta_description) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. PROBLEM SOLUTION SECTION -->
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Problem Solution Section</h5>
+                        <p class="text-secondary-light mb-0 mt-1">Dynamic content shown on this product detail page.</p>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Main Heading</label>
+                                <input type="text" name="ps_brand_title" class="form-control" value="{{ old('ps_brand_title', $product->ps_brand_title ?: ($psDefaults['brand_title'] ?? 'Nutribuddy')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Product Heading</label>
+                                <input type="text" name="ps_product_title" class="form-control" value="{{ old('ps_product_title', $product->ps_product_title ?: ($psDefaults['product_title'] ?? $product->name)) }}">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Small Tagline Items</label>
+                                <div class="row g-3">
+                                    @for ($i = 0; $i < 3; $i++)
+                                        <div class="col-md-4">
+                                            <input type="text" name="ps_tagline_items[]" class="form-control" value="{{ $psTaglineItems[$i] ?? '' }}" placeholder="e.g. Daily Nutrition">
+                                        </div>
+                                    @endfor
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Center Product Image</label>
+                                <input type="hidden" name="ps_center_image" value="{{ old('ps_center_image', $product->ps_center_image) }}">
+                                <input type="file" name="ps_center_image_file" class="form-control" accept="image/*">
+                                @php $centerPreview = $storageOrAsset($product->ps_center_image ?: ($psDefaults['center_image'] ?? null)); @endphp
+                                @if ($centerPreview)
+                                    <img src="{{ $centerPreview }}" class="mt-3 border radius-8 object-fit-contain bg-light" style="width: 160px; height: 160px;" alt="">
+                                @endif
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Bottom Left Image</label>
+                                <input type="hidden" name="ps_shelf_left_image" value="{{ old('ps_shelf_left_image', $product->ps_shelf_left_image) }}">
+                                <input type="file" name="ps_shelf_left_image_file" class="form-control" accept="image/*">
+                                @php $leftShelfPreview = $storageOrAsset($product->ps_shelf_left_image ?: ($psDefaults['shelf_left_image'] ?? null)); @endphp
+                                @if ($leftShelfPreview)
+                                    <img src="{{ $leftShelfPreview }}" class="mt-3 border radius-8 object-fit-contain bg-light" style="width: 140px; height: 120px;" alt="">
+                                @endif
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Bottom Right Image</label>
+                                <input type="hidden" name="ps_shelf_right_image" value="{{ old('ps_shelf_right_image', $product->ps_shelf_right_image) }}">
+                                <input type="file" name="ps_shelf_right_image_file" class="form-control" accept="image/*">
+                                @php $rightShelfPreview = $storageOrAsset($product->ps_shelf_right_image ?: ($psDefaults['shelf_right_image'] ?? null)); @endphp
+                                @if ($rightShelfPreview)
+                                    <img src="{{ $rightShelfPreview }}" class="mt-3 border radius-8 object-fit-contain bg-light" style="width: 140px; height: 120px;" alt="">
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-1">
+                            <div class="col-lg-6">
+                                <div class="border rounded-3 h-100">
+                                    <div class="border-bottom py-14 px-16 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0">Left Ingredient Cards</h6>
+                                            <small class="text-secondary-light">Power of Nature side</small>
+                                        </div>
+                                        <button type="button" class="btn btn-success-600 btn-sm radius-8" data-add-ps-row="left">Add Item</button>
+                                    </div>
+                                    <div class="p-16">
+                                        <label class="form-label fw-bold">Left Label</label>
+                                        <textarea name="ps_left_label" rows="2" class="form-control mb-20">{{ old('ps_left_label', $product->ps_left_label ?: ($psDefaults['left_label'] ?? '')) }}</textarea>
+
+                                        <div data-ps-list="left">
+                                            @foreach ($psLeftCards as $index => $card)
+                                                @include('admin.ecommerce.products.partials.problem-solution-card-row', [
+                                                    'side' => 'left',
+                                                    'index' => $index,
+                                                    'card' => $card,
+                                                    'storageOrAsset' => $storageOrAsset,
+                                                ])
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="border rounded-3 h-100">
+                                    <div class="border-bottom py-14 px-16 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="mb-0">Right Feature Cards</h6>
+                                            <small class="text-secondary-light">Daily Goodness side</small>
+                                        </div>
+                                        <button type="button" class="btn btn-success-600 btn-sm radius-8" data-add-ps-row="right">Add Item</button>
+                                    </div>
+                                    <div class="p-16">
+                                        <label class="form-label fw-bold">Right Label</label>
+                                        <textarea name="ps_right_label" rows="2" class="form-control mb-20">{{ old('ps_right_label', $product->ps_right_label ?: ($psDefaults['right_label'] ?? '')) }}</textarea>
+
+                                        <div data-ps-list="right">
+                                            @foreach ($psRightCards as $index => $card)
+                                                @include('admin.ecommerce.products.partials.problem-solution-card-row', [
+                                                    'side' => 'right',
+                                                    'index' => $index,
+                                                    'card' => $card,
+                                                    'storageOrAsset' => $storageOrAsset,
+                                                ])
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -250,9 +421,64 @@
     @endforeach
 
     <!-- SCRIPTS -->
+    <template id="psRowTemplate">
+        <div class="ps-card-row border rounded-3 p-3 mb-3 bg-light">
+            <input type="hidden" data-name="icon" value="">
+            <div class="d-flex align-items-start gap-3">
+                <div class="flex-shrink-0">
+                    <div class="border rounded-3 bg-white d-flex align-items-center justify-content-center" style="width:72px;height:72px;">
+                        <iconify-icon icon="lucide:image" class="text-secondary-light"></iconify-icon>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <input type="text" data-name="title" class="form-control mb-2" placeholder="Title">
+                    <textarea data-name="text" rows="2" class="form-control mb-2" placeholder="Description"></textarea>
+                    <input type="file" data-name="image" class="form-control" accept="image/*">
+                </div>
+                <button type="button" class="btn btn-outline-danger-600 btn-sm radius-8" data-remove-ps-row>
+                    <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </template>
+
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
         ClassicEditor.create(document.querySelector('#editor')).catch(e => console.error(e));
+
+        function renameProblemSolutionRow(row, side, index) {
+            row.querySelector('[data-name="icon"]').name = `ps_${side}_cards[${index}][icon]`;
+            row.querySelector('[data-name="title"]').name = `ps_${side}_cards[${index}][title]`;
+            row.querySelector('[data-name="text"]').name = `ps_${side}_cards[${index}][text]`;
+            row.querySelector('[data-name="image"]').name = `ps_${side}_card_images[${index}]`;
+        }
+
+        function reindexProblemSolutionRows(side) {
+            document.querySelectorAll(`[data-ps-list="${side}"] .ps-card-row`).forEach(function (row, index) {
+                renameProblemSolutionRow(row, side, index);
+            });
+        }
+
+        document.querySelectorAll('[data-add-ps-row]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const side = button.dataset.addPsRow;
+                const list = document.querySelector(`[data-ps-list="${side}"]`);
+                const row = document.getElementById('psRowTemplate').content.firstElementChild.cloneNode(true);
+                list.appendChild(row);
+                reindexProblemSolutionRows(side);
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+            const removeButton = event.target.closest('[data-remove-ps-row]');
+            if (!removeButton) return;
+
+            const row = removeButton.closest('.ps-card-row');
+            const list = row.closest('[data-ps-list]');
+            const side = list.dataset.psList;
+            row.remove();
+            reindexProblemSolutionRows(side);
+        });
 
         // ============================================================
         // TAGS MANAGEMENT
@@ -269,7 +495,7 @@
         function addTagRow(iconPath = '', text = '') {
             const index = tagCount++;
             const row = document.createElement('div');
-            row.className = 'tag-row d-flex align-items-center gap-3 px-3 py-2 border-bottom';
+            row.className = 'tag-row admin-feature-row d-grid align-items-center gap-3 px-3 py-2 border-bottom';
             row.innerHTML = `
                 <div class="position-relative flex-shrink-0">
                     <div class="tag-icon-preview rounded-2 border bg-light d-flex align-items-center justify-content-center overflow-hidden" style="width:48px;height:48px;">
@@ -283,13 +509,13 @@
                     </label>
                     <input type="hidden" name="tags[${index}][icon]" value="${iconPath}" class="tag-icon-hidden">
                 </div>
-                <div class="flex-grow-1">
+                <div class="min-w-0">
                     <input type="text" name="tags[${index}][text]" value="${text}"
                         class="form-control form-control-sm"
                         placeholder="e.g. No Added Sugar" required>
                 </div>
-                <button type="button" class="btn btn-sm btn-ghost-danger remove-tag-row flex-shrink-0 px-2">
-                    <iconify-icon icon="lucide:trash-2" class="fs-5"></iconify-icon>
+                <button type="button" class="admin-feature-delete remove-tag-row" title="Delete feature" aria-label="Delete feature">
+                    <iconify-icon icon="lucide:trash-2"></iconify-icon>
                 </button>
             `;
             tagsWrapper.appendChild(row);
@@ -426,6 +652,66 @@
         .sticky-bottom { position: sticky; bottom: 20px; z-index: 1000; }
         .tag-item .card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
         .tag-item .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.1) !important; transform: translateY(-2px); }
+        .admin-feature-row { grid-template-columns: 60px minmax(0, 1fr) 44px; }
+        .admin-feature-delete {
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 12px;
+            background: #fee2e2;
+            color: #dc2626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background .18s ease, color .18s ease, transform .18s ease;
+        }
+        .admin-feature-delete:hover {
+            background: #dc2626;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        .gallery-delete-btn {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: #ef4444;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 5;
+            transition: background .18s ease, transform .18s ease;
+        }
+        .gallery-delete-btn span {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 18px;
+            transform: translateY(-1px);
+        }
+        .gallery-delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.06);
+        }
+        .min-w-0 { min-width: 0; }
+        @media (max-width: 575px) {
+            .admin-feature-row {
+                grid-template-columns: 52px minmax(0, 1fr) 40px;
+                gap: 10px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+            .admin-feature-delete {
+                width: 36px;
+                height: 36px;
+            }
+        }
         .radius-12 { border-radius: 12px; }
         .radius-circle { border-radius: 50%; }
     </style>

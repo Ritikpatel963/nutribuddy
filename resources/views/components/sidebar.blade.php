@@ -229,6 +229,10 @@
                         <a href="{{ route('admin.ecommerce.settings.general') }}"><i
                                 class="ri-circle-fill circle-icon text-success w-auto"></i> SEO Settings</a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.settings.payment-gateways') }}"><i
+                                class="ri-circle-fill circle-icon text-warning w-auto"></i> Payment Gateways</a>
+                    </li>
                 </ul>
             </li>
 

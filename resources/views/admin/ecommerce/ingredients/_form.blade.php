@@ -127,14 +127,23 @@
         <div class="card-body p-24">
             <label class="form-label">Select Products that contain this ingredient</label>
             <small class="d-block text-secondary mb-2">These products will show this ingredient in their product detail page ingredient section.</small>
-            <select name="products[]" class="form-select" multiple style="height: 180px;">
-                @foreach($allProducts as $product)
-                    <option value="{{ $product->id }}" {{ in_array($product->id, $selectedProductIds) ? 'selected' : '' }}>
-                        {{ $product->name }}
-                    </option>
-                @endforeach
-            </select>
-            <small class="text-secondary mt-1 d-block">Hold Ctrl / Cmd to select multiple products.</small>
+            <div class="border rounded-3 p-3 d-flex flex-column gap-2" style="max-height: 240px; overflow-y: auto;">
+                @forelse($allProducts as $product)
+                    <label class="form-check d-flex align-items-center gap-2 m-0">
+                        <input
+                            class="form-check-input m-0"
+                            type="checkbox"
+                            name="products[]"
+                            value="{{ $product->id }}"
+                            {{ in_array($product->id, $selectedProductIds) ? 'checked' : '' }}
+                        >
+                        <span class="form-check-label">{{ $product->name }}</span>
+                    </label>
+                @empty
+                    <p class="text-secondary mb-0">No active products found.</p>
+                @endforelse
+            </div>
+            <small class="text-secondary mt-1 d-block">Checked products will show this ingredient on their product detail page.</small>
         </div>
     </div>
 

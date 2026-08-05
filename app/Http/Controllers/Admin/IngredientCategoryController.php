@@ -28,7 +28,7 @@ class IngredientCategoryController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueSlug($validated['slug'] ?? $validated['name']);
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? true);
 
@@ -47,7 +47,7 @@ class IngredientCategoryController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueSlug($validated['slug'] ?? $validated['name'], $ingredientCategory->id);
         $validated['sort_order'] = (int) ($validated['sort_order'] ?? 0);
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
 
@@ -65,5 +65,24 @@ class IngredientCategoryController extends Controller
         $ingredientCategory->delete();
 
         return back()->with('success', 'Ingredient category deleted successfully.');
+    }
+
+    private function uniqueSlug(string $value, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($value) ?: 'category';
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (
+            IngredientCategory::withTrashed()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+                ->exists()
+        ) {
+            $slug = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

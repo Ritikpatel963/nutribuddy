@@ -17,11 +17,17 @@ class ProductReviewController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|max:1000',
             'review_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt|max:20480',
         ]);
 
         $imagePath = null;
         if ($request->hasFile('review_image')) {
             $imagePath = $request->file('review_image')->store('reviews', 'public');
+        }
+
+        $videoPath = null;
+        if ($request->hasFile('review_video')) {
+            $videoPath = $request->file('review_video')->store('reviews/videos', 'public');
         }
 
         ProductReview::create([
@@ -30,6 +36,7 @@ class ProductReviewController extends Controller
             'rating' => $request->rating,
             'comment' => $request->comment,
             'image_path' => $imagePath,
+            'video_path' => $videoPath,
             'is_active' => true,
         ]);
 

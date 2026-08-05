@@ -9,7 +9,7 @@
 
   <!-- Header -->
   <div class="page-header">
-    <h1 class="page-title">7-Day Meal Plan</h1>
+    <h1 class="page-title">Meal Plan</h1>
     <p class="page-meta">
       Arjun
       <span class="sep">·</span>

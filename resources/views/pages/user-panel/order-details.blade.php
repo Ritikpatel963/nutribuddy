@@ -131,6 +131,9 @@
                     @php
                         $couponDiscount = (float) $order->discount_total;
                         $coinDiscount = (float) $order->coin_discount;
+                        $orderPayment = $order->payments->firstWhere("status", "paid")
+                            ?? $order->payments->sortByDesc("created_at")->first();
+                        $orderPaymentId = $orderPayment?->gateway_payment_id ?: $orderPayment?->gateway_order_id;
                     @endphp
 
                     <div class="flex-between">
@@ -167,6 +170,9 @@
                     </div>
                     <div class="payment-method-box">
                         <strong>Method:</strong> {{ strtoupper($order->payment_method) }}<br>
+                        @if($orderPaymentId)
+                            <strong>Payment ID:</strong> <span style="overflow-wrap:anywhere;">{{ $orderPaymentId }}</span><br>
+                        @endif
                         <strong>Status:</strong> <span class="{{ $order->payment_status === "paid" ? "text-success" : "text-danger" }}">{{ strtoupper($order->payment_status) }}</span>
                     </div>
                 </div>

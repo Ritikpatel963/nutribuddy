@@ -2,7 +2,7 @@
 @extends('layouts.main')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/user.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/user.css') }}?v={{ filemtime(public_path('assets/css/user.css')) }}">
     <style>
         @include('partials.user-panel-sidebar-styles')
     </style>
@@ -18,6 +18,7 @@
 
         <main class="ud-main">
             <div class="ud-panel-content @yield('panel-page-class')">
+                @include('partials.user-panel-page-hero')
                 @yield('panel-content')
             </div>
         </main>

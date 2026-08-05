@@ -45,6 +45,22 @@ class Product extends Model
         'age_group',
         'coins_reward',
         'dosage',
+        'routine',
+        'card_image_path',
+        'card_hover_image_path',
+        'ps_brand_title',
+        'ps_product_title',
+        'ps_tagline_items',
+        'ps_left_label',
+        'ps_left_cards',
+        'ps_center_image',
+        'ps_right_label',
+        'ps_right_cards',
+        'ps_shelf_left_image',
+        'ps_shelf_right_image',
+        'transform_description',
+        'transform_main_image',
+        'transform_results',
     ];
 
     protected function casts(): array
@@ -60,6 +76,10 @@ class Product extends Model
             'published_at' => 'datetime',
             'variant_types' => 'array',
             'tags' => 'array',
+            'ps_tagline_items' => 'array',
+            'ps_left_cards' => 'array',
+            'ps_right_cards' => 'array',
+            'transform_results' => 'array',
         ];
     }
 

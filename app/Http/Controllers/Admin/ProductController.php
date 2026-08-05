@@ -88,6 +88,7 @@ class ProductController extends Controller
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
             'dosage' => ['nullable', 'string', 'max:255'],
+            'routine' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['nullable', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
@@ -111,9 +112,11 @@ class ProductController extends Controller
             'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'card_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'card_hover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'tag_images' => ['nullable', 'array'],
             'tag_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-        ]);
+        ] + $this->transformSectionValidationRules());
 
         $variations = $this->normalizedVariations($validated['variations'] ?? []);
         $this->validateVariationSkus($variations);
@@ -129,26 +132,25 @@ class ProductController extends Controller
         $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
-        $validated['variant_types'] = json_decode($validated['variant_types'] ?? '[]', true);
+        $variantTypes = [];
+        $submittedAttrValues = $request->input('product_attribute_values') ?? [];
+        if (!empty($submittedAttrValues)) {
+            $attributesList = \App\Models\Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
+            foreach ($attributesList as $attr) {
+                $variantTypes[$attr->name] = $submittedAttrValues[$attr->id] ?? [];
+            }
+        }
+        $validated['variant_types'] = $variantTypes;
 
         unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
+        unset($validated['images'], $validated['card_image'], $validated['card_hover_image'], $validated['tag_images']);
+        $this->unsetTransformSectionFields($validated);
 
         $product = Product::create($validated);
+        $this->storeProductCardImages($request, $product);
+        $this->saveTransformSectionContent($request, $product);
 
-        // Handle Tags (JSON structure with optional image upload)
-        if ($request->has('tags')) {
-            $tags = $request->input('tags');
-            if ($request->hasFile('tag_images')) {
-                foreach ($request->file('tag_images') as $index => $file) {
-                    $path = $file->store('tags', 'public');
-                    if (! isset($tags[$index]) || ! is_array($tags[$index])) {
-                        $tags[$index] = [];
-                    }
-                    $tags[$index]['icon'] = $path;
-                }
-            }
-            $product->update(['tags' => $tags]);
-        }
+        $product->update(['tags' => $this->prepareProductTags($request)]);
 
         if ($hasVariations) {
             $this->syncProductVariations($product, $variations);
@@ -198,7 +200,94 @@ class ProductController extends Controller
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'taxRates' => TaxRate::where('is_active', true)->orderBy('sort_order')->get(['id', 'name', 'rate']),
             'attributes' => Attribute::where('is_active', true)->orderBy('position')->orderBy('name')->get(),
+            'problemSolutionDefaults' => $this->defaultProblemSolutionContent(),
         ]);
+    }
+
+    public function problemSolutionIndex(Request $request): View
+    {
+        $products = Product::with(['category', 'images'])
+            ->latest()
+            ->get();
+
+        $product = $request->filled('product_id')
+            ? $products->firstWhere('id', (int) $request->product_id)
+            : $products->first();
+
+        if (! $product && $products->isNotEmpty()) {
+            $product = $products->first();
+        }
+
+        return view('admin.ecommerce.products.problem-solution', [
+            'product' => $product,
+            'products' => $products,
+            'defaults' => $this->defaultProblemSolutionContent(),
+            'isProblemSolutionHub' => true,
+        ]);
+    }
+
+    public function problemSolution(Product $product): View
+    {
+        return view('admin.ecommerce.products.problem-solution', [
+            'product' => $product,
+            'defaults' => $this->defaultProblemSolutionContent(),
+        ]);
+    }
+
+    public function updateProblemSolution(Request $request, Product $product): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ps_brand_title' => ['nullable', 'string', 'max:255'],
+            'ps_product_title' => ['nullable', 'string', 'max:255'],
+            'ps_tagline_items' => ['nullable', 'array'],
+            'ps_tagline_items.*' => ['nullable', 'string', 'max:120'],
+            'ps_left_label' => ['nullable', 'string', 'max:255'],
+            'ps_left_cards' => ['nullable', 'array'],
+            'ps_left_cards.*.title' => ['nullable', 'string', 'max:120'],
+            'ps_left_cards.*.text' => ['nullable', 'string', 'max:255'],
+            'ps_left_cards.*.icon' => ['nullable', 'string', 'max:255'],
+            'ps_left_card_images' => ['nullable', 'array'],
+            'ps_left_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_center_image' => ['nullable', 'string', 'max:255'],
+            'ps_center_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
+            'ps_right_label' => ['nullable', 'string', 'max:255'],
+            'ps_right_cards' => ['nullable', 'array'],
+            'ps_right_cards.*.title' => ['nullable', 'string', 'max:120'],
+            'ps_right_cards.*.text' => ['nullable', 'string', 'max:255'],
+            'ps_right_cards.*.icon' => ['nullable', 'string', 'max:255'],
+            'ps_right_card_images' => ['nullable', 'array'],
+            'ps_right_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_shelf_left_image' => ['nullable', 'string', 'max:255'],
+            'ps_shelf_left_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_shelf_right_image' => ['nullable', 'string', 'max:255'],
+            'ps_shelf_right_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ]);
+
+        $updates = [
+            'ps_brand_title' => trim((string) ($validated['ps_brand_title'] ?? '')) ?: null,
+            'ps_product_title' => trim((string) ($validated['ps_product_title'] ?? '')) ?: null,
+            'ps_tagline_items' => $this->prepareProblemSolutionTagline($validated['ps_tagline_items'] ?? []),
+            'ps_left_label' => trim((string) ($validated['ps_left_label'] ?? '')) ?: null,
+            'ps_left_cards' => $this->prepareProblemSolutionCards($request, 'ps_left_cards', 'ps_left_card_images'),
+            'ps_center_image' => $validated['ps_center_image'] ?? null,
+            'ps_right_label' => trim((string) ($validated['ps_right_label'] ?? '')) ?: null,
+            'ps_right_cards' => $this->prepareProblemSolutionCards($request, 'ps_right_cards', 'ps_right_card_images'),
+            'ps_shelf_left_image' => $validated['ps_shelf_left_image'] ?? null,
+            'ps_shelf_right_image' => $validated['ps_shelf_right_image'] ?? null,
+        ];
+
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_center_image', 'ps_center_image_file');
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_shelf_left_image', 'ps_shelf_left_image_file');
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_shelf_right_image', 'ps_shelf_right_image_file');
+
+        $product->forceFill($updates)->save();
+        $this->forgetStorefrontCatalogCache();
+
+        $redirectRoute = $request->boolean('return_to_hub')
+            ? route('admin.ecommerce.products.problem-solution.index', ['product_id' => $product->id])
+            : route('admin.ecommerce.products.problem-solution.edit', $product);
+
+        return redirect($redirectRoute)->with('success', 'Problem solution section updated successfully.');
     }
 
     public function update(Request $request, Product $product): RedirectResponse
@@ -229,6 +318,7 @@ class ProductController extends Controller
             'pack_size' => ['nullable', 'string', 'max:255'],
             'age_group' => ['nullable', 'string', 'max:255'],
             'dosage' => ['nullable', 'string', 'max:255'],
+            'routine' => ['nullable', 'string', 'max:255'],
             'coins_reward' => ['nullable', 'integer', 'min:0'],
             'stock_qty' => ['nullable', 'integer', 'min:0'],
             'track_stock' => ['nullable', 'boolean'],
@@ -252,9 +342,11 @@ class ProductController extends Controller
             'variations.*.is_active' => ['nullable', 'boolean'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'card_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'card_hover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
             'tag_images' => ['nullable', 'array'],
             'tag_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-        ]);
+        ] + $this->problemSolutionValidationRules() + $this->transformSectionValidationRules());
 
         $variations = $this->normalizedVariations($validated['variations'] ?? []);
         $this->validateVariationSkus($variations, $product);
@@ -270,26 +362,27 @@ class ProductController extends Controller
         $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
-        $validated['variant_types'] = json_decode($validated['variant_types'] ?? '[]', true);
+        $variantTypes = [];
+        $submittedAttrValues = $request->input('product_attribute_values') ?? [];
+        if (!empty($submittedAttrValues)) {
+            $attributesList = \App\Models\Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
+            foreach ($attributesList as $attr) {
+                $variantTypes[$attr->name] = $submittedAttrValues[$attr->id] ?? [];
+            }
+        }
+        $validated['variant_types'] = $variantTypes;
 
         unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
+        unset($validated['images'], $validated['card_image'], $validated['card_hover_image'], $validated['tag_images']);
+        $this->unsetProblemSolutionFields($validated);
+        $this->unsetTransformSectionFields($validated);
 
         $product->update($validated);
+        $this->storeProductCardImages($request, $product);
 
-        // Handle Tags (JSON structure with optional image upload)
-        if ($request->has('tags')) {
-            $tags = $request->input('tags');
-            if ($request->hasFile('tag_images')) {
-                foreach ($request->file('tag_images') as $index => $file) {
-                    $path = $file->store('tags', 'public');
-                    if (! isset($tags[$index]) || ! is_array($tags[$index])) {
-                        $tags[$index] = [];
-                    }
-                    $tags[$index]['icon'] = $path;
-                }
-            }
-            $product->update(['tags' => $tags]);
-        }
+        $product->update(['tags' => $this->prepareProductTags($request)]);
+        $this->saveProblemSolutionContent($request, $product);
+        $this->saveTransformSectionContent($request, $product);
 
         if ($hasVariations) {
             $this->syncProductVariations($product, $variations, true);
@@ -385,11 +478,49 @@ class ProductController extends Controller
 
     private function permanentlyDeleteProduct(Product $product): void
     {
+        if ($product->card_image_path) {
+            Storage::disk('public')->delete($product->card_image_path);
+        }
+
+        if ($product->card_hover_image_path) {
+            Storage::disk('public')->delete($product->card_hover_image_path);
+        }
+
+        $this->deleteTransformImage($product->transform_main_image);
+        collect($product->transform_results ?? [])
+            ->pluck('image')
+            ->each(fn ($path) => $this->deleteTransformImage($path));
+
         foreach ($product->images as $image) {
             Storage::disk('public')->delete($image->image_path);
         }
 
         $product->forceDelete();
+    }
+
+    private function storeProductCardImages(Request $request, Product $product): void
+    {
+        $updates = [];
+
+        if ($request->hasFile('card_image')) {
+            if ($product->card_image_path) {
+                Storage::disk('public')->delete($product->card_image_path);
+            }
+
+            $updates['card_image_path'] = $request->file('card_image')->store('product-cards', 'public');
+        }
+
+        if ($request->hasFile('card_hover_image')) {
+            if ($product->card_hover_image_path) {
+                Storage::disk('public')->delete($product->card_hover_image_path);
+            }
+
+            $updates['card_hover_image_path'] = $request->file('card_hover_image')->store('product-cards', 'public');
+        }
+
+        if ($updates) {
+            $product->forceFill($updates)->save();
+        }
     }
 
     public function updateInventory(Request $request, Product $product): RedirectResponse
@@ -608,6 +739,18 @@ class ProductController extends Controller
         $keptVariantIds = [];
         $hasDefault = collect($variations)->contains(fn ($variation) => (bool) ($variation['is_default'] ?? false));
 
+        // Map submitted attribute values to name arrays for validation
+        $allowedValuesByName = [];
+        $submittedAttrValues = request()->input('product_attribute_values') ?? [];
+        if (!empty($submittedAttrValues)) {
+            $attributesList = \App\Models\Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
+            foreach ($attributesList as $attr) {
+                $allowedValuesByName[strtolower($attr->name)] = array_map(function($v) {
+                    return strtolower(trim((string)$v));
+                }, $submittedAttrValues[$attr->id] ?? []);
+            }
+        }
+
         foreach ($variations as $index => $variationData) {
             $attributes = $variationData['attributes'];
             $name = $variationData['name'] ?: $this->variationName($attributes);
@@ -629,6 +772,43 @@ class ProductController extends Controller
                 ? (bool) ($variationData['is_default'] ?? false)
                 : $index === 0;
 
+            $isActive = (bool) ($variationData['is_active'] ?? false);
+            if ($isActive && !empty($allowedValuesByName)) {
+                foreach ($attributes as $key => $value) {
+                    $keyLower = strtolower($key);
+                    $valueLower = strtolower(trim((string)$value));
+                    if (isset($allowedValuesByName[$keyLower])) {
+                        $matched = false;
+                        foreach ($allowedValuesByName[$keyLower] as $allowedVal) {
+                            if ($valueLower === $allowedVal) {
+                                $matched = true;
+                                break;
+                            }
+                            if (str_contains($valueLower, 'grape') && str_contains($allowedVal, 'grape')) {
+                                $matched = true;
+                                break;
+                            }
+                            if (str_contains($valueLower, 'banana') && str_contains($allowedVal, 'banana')) {
+                                $matched = true;
+                                break;
+                            }
+                            if (str_contains($valueLower, 'mango') && str_contains($allowedVal, 'mango')) {
+                                $matched = true;
+                                break;
+                            }
+                            if (str_contains($valueLower, 'apple') && str_contains($allowedVal, 'apple')) {
+                                $matched = true;
+                                break;
+                            }
+                        }
+                        if (!$matched) {
+                            $isActive = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
             $variant->fill([
                 'product_id' => $product->id,
                 'name' => $name,
@@ -639,7 +819,7 @@ class ProductController extends Controller
                 'cost_price' => $variationData['cost_price'] ?? null,
                 'currency' => 'INR',
                 'is_default' => $isDefault,
-                'is_active' => (bool) ($variationData['is_active'] ?? false),
+                'is_active' => $isActive,
                 'position' => $index,
             ]);
             $variant->save();
@@ -676,15 +856,23 @@ class ProductController extends Controller
     private function deactivateProductVariants($variants): void
     {
         foreach ($variants as $variant) {
-            $variant->forceFill([
-                'is_active' => false,
-                'is_default' => false,
-            ])->save();
+            $inOrders = \Illuminate\Support\Facades\DB::table('order_items')->where('product_variant_id', $variant->id)->exists();
+            $inCarts = \Illuminate\Support\Facades\DB::table('cart_items')->where('product_variant_id', $variant->id)->exists();
 
-            Inventory::where('product_variant_id', $variant->id)->update([
-                'stock_qty' => 0,
-                'is_in_stock' => false,
-            ]);
+            if (!$inOrders && !$inCarts) {
+                Inventory::where('product_variant_id', $variant->id)->delete();
+                $variant->delete();
+            } else {
+                $variant->forceFill([
+                    'is_active' => false,
+                    'is_default' => false,
+                ])->save();
+
+                Inventory::where('product_variant_id', $variant->id)->update([
+                    'stock_qty' => 0,
+                    'is_in_stock' => false,
+                ]);
+            }
         }
     }
 
@@ -724,6 +912,261 @@ class ProductController extends Controller
         }
 
         return $this->uniqueSkuForModel(Product::class, $base, $ignoreProductId);
+    }
+
+    private function prepareProductTags(Request $request): array
+    {
+        $tags = $request->input('tags', []);
+        $tags = is_array($tags) ? $tags : [];
+
+        if ($request->hasFile('tag_images')) {
+            foreach ($request->file('tag_images') as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($tags[$index]) || ! is_array($tags[$index])) {
+                    $tags[$index] = [];
+                }
+
+                $tags[$index]['icon'] = $file->store('tags', 'public');
+            }
+        }
+
+        return collect($tags)
+            ->filter(fn ($tag) => is_array($tag) && trim((string) ($tag['text'] ?? '')) !== '')
+            ->map(fn ($tag) => [
+                'icon' => trim((string) ($tag['icon'] ?? '')),
+                'text' => trim((string) ($tag['text'] ?? '')),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function transformSectionValidationRules(): array
+    {
+        return [
+            'transform_description' => ['nullable', 'string', 'max:1000'],
+            'transform_main_image' => ['nullable', 'string', 'max:255'],
+            'transform_main_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'transform_results' => ['nullable', 'array'],
+            'transform_results.*.image' => ['nullable', 'string', 'max:255'],
+            'transform_results.*.title' => ['nullable', 'string', 'max:150'],
+            'transform_results.*.description' => ['nullable', 'string', 'max:1000'],
+            'transform_results.*.week' => ['nullable', 'string', 'max:80'],
+            'transform_result_images' => ['nullable', 'array'],
+            'transform_result_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ];
+    }
+
+    private function unsetTransformSectionFields(array &$validated): void
+    {
+        foreach (array_keys($this->transformSectionValidationRules()) as $field) {
+            unset($validated[$field]);
+        }
+    }
+
+    private function saveTransformSectionContent(Request $request, Product $product): void
+    {
+        $mainImage = trim((string) $request->input('transform_main_image', '')) ?: null;
+
+        if ($request->hasFile('transform_main_image_file')) {
+            $this->deleteTransformImage($product->transform_main_image);
+            $mainImage = $request->file('transform_main_image_file')->store('product-transforms', 'public');
+        }
+
+        $results = $request->input('transform_results', []);
+        $results = is_array($results) ? $results : [];
+
+        if ($request->hasFile('transform_result_images')) {
+            foreach ($request->file('transform_result_images') as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($results[$index]) || ! is_array($results[$index])) {
+                    $results[$index] = [];
+                }
+
+                $results[$index]['image'] = $file->store('product-transforms/results', 'public');
+            }
+        }
+
+        $results = collect($results)
+            ->filter(fn ($result) => is_array($result) && (
+                trim((string) ($result['image'] ?? '')) !== '' ||
+                trim((string) ($result['title'] ?? '')) !== '' ||
+                trim((string) ($result['description'] ?? '')) !== '' ||
+                trim((string) ($result['week'] ?? '')) !== ''
+            ))
+            ->map(fn ($result) => [
+                'image' => trim((string) ($result['image'] ?? '')),
+                'title' => trim((string) ($result['title'] ?? '')),
+                'description' => trim((string) ($result['description'] ?? '')),
+                'week' => trim((string) ($result['week'] ?? '')),
+            ])
+            ->values()
+            ->all();
+
+        $keptImages = collect($results)->pluck('image')->filter()->all();
+        collect($product->transform_results ?? [])
+            ->pluck('image')
+            ->filter(fn ($path) => $path && ! in_array($path, $keptImages, true))
+            ->each(fn ($path) => $this->deleteTransformImage($path));
+
+        $product->forceFill([
+            'transform_description' => trim((string) $request->input('transform_description', '')) ?: null,
+            'transform_main_image' => $mainImage,
+            'transform_results' => $results,
+        ])->save();
+    }
+
+    private function deleteTransformImage(?string $path): void
+    {
+        if ($path && ! Str::startsWith($path, ['img/', 'assets/'])) {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
+    private function problemSolutionValidationRules(): array
+    {
+        return [
+            'ps_brand_title' => ['nullable', 'string', 'max:255'],
+            'ps_product_title' => ['nullable', 'string', 'max:255'],
+            'ps_tagline_items' => ['nullable', 'array'],
+            'ps_tagline_items.*' => ['nullable', 'string', 'max:120'],
+            'ps_left_label' => ['nullable', 'string', 'max:255'],
+            'ps_left_cards' => ['nullable', 'array'],
+            'ps_left_cards.*.title' => ['nullable', 'string', 'max:120'],
+            'ps_left_cards.*.text' => ['nullable', 'string', 'max:255'],
+            'ps_left_cards.*.icon' => ['nullable', 'string', 'max:255'],
+            'ps_left_card_images' => ['nullable', 'array'],
+            'ps_left_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_center_image' => ['nullable', 'string', 'max:255'],
+            'ps_center_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
+            'ps_right_label' => ['nullable', 'string', 'max:255'],
+            'ps_right_cards' => ['nullable', 'array'],
+            'ps_right_cards.*.title' => ['nullable', 'string', 'max:120'],
+            'ps_right_cards.*.text' => ['nullable', 'string', 'max:255'],
+            'ps_right_cards.*.icon' => ['nullable', 'string', 'max:255'],
+            'ps_right_card_images' => ['nullable', 'array'],
+            'ps_right_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_shelf_left_image' => ['nullable', 'string', 'max:255'],
+            'ps_shelf_left_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'ps_shelf_right_image' => ['nullable', 'string', 'max:255'],
+            'ps_shelf_right_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ];
+    }
+
+    private function unsetProblemSolutionFields(array &$validated): void
+    {
+        foreach (array_keys($this->problemSolutionValidationRules()) as $field) {
+            unset($validated[$field]);
+        }
+    }
+
+    private function saveProblemSolutionContent(Request $request, Product $product): void
+    {
+        $updates = [
+            'ps_brand_title' => trim((string) $request->input('ps_brand_title', '')) ?: null,
+            'ps_product_title' => trim((string) $request->input('ps_product_title', '')) ?: null,
+            'ps_tagline_items' => $this->prepareProblemSolutionTagline($request->input('ps_tagline_items', [])),
+            'ps_left_label' => trim((string) $request->input('ps_left_label', '')) ?: null,
+            'ps_left_cards' => $this->prepareProblemSolutionCards($request, 'ps_left_cards', 'ps_left_card_images'),
+            'ps_center_image' => $request->input('ps_center_image'),
+            'ps_right_label' => trim((string) $request->input('ps_right_label', '')) ?: null,
+            'ps_right_cards' => $this->prepareProblemSolutionCards($request, 'ps_right_cards', 'ps_right_card_images'),
+            'ps_shelf_left_image' => $request->input('ps_shelf_left_image'),
+            'ps_shelf_right_image' => $request->input('ps_shelf_right_image'),
+        ];
+
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_center_image', 'ps_center_image_file');
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_shelf_left_image', 'ps_shelf_left_image_file');
+        $this->replaceProblemSolutionImage($request, $product, $updates, 'ps_shelf_right_image', 'ps_shelf_right_image_file');
+
+        $product->forceFill($updates)->save();
+    }
+
+    private function prepareProblemSolutionTagline(array $items): array
+    {
+        return collect($items)
+            ->map(fn ($item) => trim((string) $item))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function prepareProblemSolutionCards(Request $request, string $field, string $fileField): array
+    {
+        $cards = $request->input($field, []);
+        $cards = is_array($cards) ? $cards : [];
+
+        if ($request->hasFile($fileField)) {
+            foreach ($request->file($fileField) as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($cards[$index]) || ! is_array($cards[$index])) {
+                    $cards[$index] = [];
+                }
+
+                $cards[$index]['icon'] = $file->store('problem-solution', 'public');
+            }
+        }
+
+        return collect($cards)
+            ->filter(fn ($card) => is_array($card) && (
+                trim((string) ($card['title'] ?? '')) !== '' ||
+                trim((string) ($card['text'] ?? '')) !== '' ||
+                trim((string) ($card['icon'] ?? '')) !== ''
+            ))
+            ->map(fn ($card) => [
+                'icon' => trim((string) ($card['icon'] ?? '')),
+                'title' => trim((string) ($card['title'] ?? '')),
+                'text' => trim((string) ($card['text'] ?? '')),
+            ])
+            ->values()
+            ->all();
+    }
+
+    private function replaceProblemSolutionImage(Request $request, Product $product, array &$updates, string $column, string $fileField): void
+    {
+        if (! $request->hasFile($fileField)) {
+            $updates[$column] = trim((string) ($updates[$column] ?? '')) ?: null;
+            return;
+        }
+
+        if ($product->{$column}) {
+            Storage::disk('public')->delete($product->{$column});
+        }
+
+        $updates[$column] = $request->file($fileField)->store('problem-solution', 'public');
+    }
+
+    private function defaultProblemSolutionContent(): array
+    {
+        return [
+            'brand_title' => 'Nutribuddy',
+            'product_title' => 'Immunity Booster Gummies',
+            'tagline_items' => ['Daily Nutrition', 'Stronger Immunity', 'Healthier You'],
+            'left_label' => "Power Of\nNature",
+            'left_cards' => [
+                ['icon' => 'img/haldi.webp', 'title' => 'TURMERIC', 'text' => "Fights germs &\nsupports immunity"],
+                ['icon' => 'img/Amla.webp', 'title' => 'AMLA', 'text' => "Rich in Vitamin C,\nstrengthens body defenses"],
+                ['icon' => 'img/adrak.png', 'title' => 'GINGER', 'text' => "Soothes throat &\nhelps fight infections"],
+            ],
+            'center_image' => 'img/product2.png',
+            'right_label' => "Daily Goodness\nIn Every Gummy!",
+            'right_cards' => [
+                ['icon' => 'img/new-btn-2.png', 'title' => 'VITAMINS & MINERALS', 'text' => 'Daily nutrition to build strong immunity'],
+                ['icon' => 'img/bb1.png', 'title' => 'NATURAL & SAFE', 'text' => 'Made with natural ingredients'],
+                ['icon' => 'img/c4.png', 'title' => 'YUMMY & FUN', 'text' => 'Delicious gummies kids will love'],
+                ['icon' => 'img/new-btn-3.png', 'title' => 'MODERN SCIENCE', 'text' => 'Formulated with care and research'],
+            ],
+            'shelf_left_image' => 'img/Amla.webp',
+            'shelf_right_image' => 'img/haldi.webp',
+        ];
     }
 
     private function uniqueVariantSku(?string $sku, ?string $name = null, ?int $ignoreVariantId = null): string

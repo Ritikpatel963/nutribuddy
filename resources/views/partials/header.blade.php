@@ -27,7 +27,7 @@
         <button id="cartIconBtn" title="View Cart">
             <img src="{{ asset('img/shopping-cart.png') }}" alt="Cart"
                 onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span style=\'font-size:1.15rem\'>🛒</span>')">
-            <span class="cart-count" id="cartCount">0</span>
+            <span class="cart-count" id="cartCount" data-guest="{{ auth()->check() ? 'false' : 'true' }}">0</span>
         </button>
 
         <div class="profile-dropdown">

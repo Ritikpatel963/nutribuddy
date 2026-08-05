@@ -12,10 +12,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
         rel="stylesheet">
+    @php($frontendAssetVersion = '2026072101')
     <link rel="stylesheet"
-        href="{{ asset('assets/css/frontendstyle.css') }}?v={{ filemtime(public_path('assets/css/frontendstyle.css')) }}">
+        href="{{ asset('assets/css/frontendstyle.css') }}?v={{ $frontendAssetVersion }}">
     <link rel="stylesheet"
-        href="{{ asset('assets/css/frontendresponsive.css') }}?v={{ filemtime(public_path('assets/css/frontendresponsive.css')) }}">
+        href="{{ asset('assets/css/frontendresponsive.css') }}?v={{ $frontendAssetVersion }}">
     @stack('styles')
 </head>
 
@@ -351,6 +352,30 @@
     <main>
         @yield('content')
     </main>
+
+    <div class="nb-variant-modal" id="nbVariantModal" aria-hidden="true">
+        <div class="nb-variant-modal__backdrop" data-nb-variant-close></div>
+        <div class="nb-variant-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="nbVariantModalTitle">
+            <button type="button" class="nb-variant-modal__close" data-nb-variant-close aria-label="Close">&times;</button>
+            <div class="nb-variant-modal__grid">
+                <div class="nb-variant-modal__options">
+                    <span class="nb-variant-modal__eyebrow">Choose Option</span>
+                    <h3 id="nbVariantModalTitle">Select your pack</h3>
+                    <div class="nb-variant-modal__groups" id="nbVariantModalGroups"></div>
+                    <div class="nb-variant-modal__stock" id="nbVariantModalStock">Available</div>
+                </div>
+                <div class="nb-variant-modal__summary">
+                    <div class="nb-variant-modal__image">
+                        <img src="{{ asset('img/product2.png') }}" alt="" id="nbVariantModalImage">
+                    </div>
+                    <div class="nb-variant-modal__name" id="nbVariantModalName">Product</div>
+                    <div class="nb-variant-modal__selected" id="nbVariantModalSelected">Product option</div>
+                    <div class="nb-variant-modal__price" id="nbVariantModalPrice">Rs. 0</div>
+                    <button type="button" class="nb-variant-modal__add" id="nbVariantModalAdd">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @include('partials.footer')
 

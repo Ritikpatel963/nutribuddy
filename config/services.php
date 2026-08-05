@@ -31,4 +31,24 @@ return [
         ],
     ],
 
+    'cashfree' => [
+        'app_id' => env('CASHFREE_APP_ID'),
+        'secret_key' => env('CASHFREE_SECRET_KEY'),
+        'env' => env('CASHFREE_ENV', 'sandbox'),
+        'api_version' => env('CASHFREE_API_VERSION', '2025-01-01'),
+    ],
+
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET'),
+    ],
+
+    'aisensy' => [
+        'enabled' => env('AISENSY_ENABLED', true),
+        'api_key' => env('AISENSY_API_KEY'),
+        'endpoint' => env('AISENSY_ENDPOINT', 'https://backend.aisensy.com/campaign/t1/api/v2'),
+        'order_paid_campaign' => env('AISENSY_ORDER_PAID_CAMPAIGN'),
+        'webhook_secret' => env('AISENSY_WEBHOOK_SECRET'),
+    ],
+
 ];

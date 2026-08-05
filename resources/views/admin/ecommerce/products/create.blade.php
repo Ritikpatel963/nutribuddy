@@ -123,6 +123,13 @@
                                     placeholder="e.g. 1 Gummy daily">
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Routine</label>
+                                <input type="text" name="routine" value="{{ old('routine') }}" class="form-control"
+                                    placeholder="e.g. Morning after breakfast">
+                                @error('routine')<span class="text-danger small">{{ $message }}</span>@enderror
+                            </div>
+
                             <div class="col-md-6 d-flex align-items-end gap-24">
                                 <input type="hidden" name="track_stock" value="0">
                                 <div class="form-check form-switch d-flex align-items-center gap-2 p-0 mb-8">
@@ -165,10 +172,35 @@
                     </div>
                 </div>
 
-                <!-- 5. MEDIA -->
+                <!-- 5. CARD MEDIA -->
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom py-16 px-24">
+                        <h5 class="card-title mb-0">Product Card Images</h5>
+                        <small class="text-secondary">Shown on home and product listing cards only</small>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Default Card Image</label>
+                                <input type="file" name="card_image" class="form-control" accept="image/*">
+                                <small class="text-muted">This image appears first on index and product listing pages.</small>
+                                @error('card_image')<span class="text-danger small d-block">{{ $message }}</span>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Hover Card Image</label>
+                                <input type="file" name="card_hover_image" class="form-control" accept="image/*">
+                                <small class="text-muted">This image appears on card hover. If empty, the default image is reused.</small>
+                                @error('card_hover_image')<span class="text-danger small d-block">{{ $message }}</span>@enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. MEDIA -->
                 <div class="card border-0 radius-12 mb-24">
                     <div class="card-header bg-base border-bottom py-16 px-24">
                         <h5 class="card-title mb-0">Product Gallery</h5>
+                        <small class="text-secondary">Shown on product detail page gallery</small>
                     </div>
                     <div class="card-body p-24">
                         <div class="upload-area border-dashed radius-12 p-32 text-center cursor-pointer bg-white transition-base border-2"
@@ -210,6 +242,8 @@
                         </div>
                     </div>
                 </div>
+
+                @include('admin.ecommerce.products.partials.transform-section-fields')
 
                 <!-- 7. SEO -->
                 <div class="card border-0 radius-12 mb-24">
@@ -272,7 +306,7 @@
         function addTagRow(iconPath = '', text = '') {
             const index = tagCount++;
             const row = document.createElement('div');
-            row.className = 'tag-row d-flex align-items-center gap-3 px-3 py-2 border-bottom';
+            row.className = 'tag-row admin-feature-row d-grid align-items-center gap-3 px-3 py-2 border-bottom';
             row.innerHTML = `
                 <div class="position-relative flex-shrink-0">
                     <div class="tag-icon-preview rounded-2 border bg-light d-flex align-items-center justify-content-center overflow-hidden" style="width:48px;height:48px;">
@@ -286,13 +320,13 @@
                     </label>
                     <input type="hidden" name="tags[${index}][icon]" value="${iconPath}" class="tag-icon-hidden">
                 </div>
-                <div class="flex-grow-1">
+                <div class="min-w-0">
                     <input type="text" name="tags[${index}][text]" value="${text}"
                         class="form-control form-control-sm"
                         placeholder="e.g. No Added Sugar" required>
                 </div>
-                <button type="button" class="btn btn-sm btn-ghost-danger remove-tag-row flex-shrink-0 px-2">
-                    <iconify-icon icon="lucide:trash-2" class="fs-5"></iconify-icon>
+                <button type="button" class="admin-feature-delete remove-tag-row" title="Delete feature" aria-label="Delete feature">
+                    <iconify-icon icon="lucide:trash-2"></iconify-icon>
                 </button>
             `;
             tagsWrapper.appendChild(row);
@@ -445,6 +479,49 @@
             position: sticky;
             bottom: 20px;
             z-index: 1000;
+        }
+
+        .admin-feature-row {
+            grid-template-columns: 60px minmax(0, 1fr) 44px;
+        }
+
+        .admin-feature-delete {
+            width: 40px;
+            height: 40px;
+            border: 0;
+            border-radius: 12px;
+            background: #fee2e2;
+            color: #dc2626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background .18s ease, color .18s ease, transform .18s ease;
+        }
+
+        .admin-feature-delete:hover {
+            background: #dc2626;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .min-w-0 {
+            min-width: 0;
+        }
+
+        @media (max-width: 575px) {
+            .admin-feature-row {
+                grid-template-columns: 52px minmax(0, 1fr) 40px;
+                gap: 10px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
+
+            .admin-feature-delete {
+                width: 36px;
+                height: 36px;
+            }
         }
     </style>
 @endsection

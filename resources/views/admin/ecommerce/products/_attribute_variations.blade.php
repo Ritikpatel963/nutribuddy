@@ -3,13 +3,19 @@
     $existingVariations = [];
 
     if (isset($product)) {
+        if (!empty($product->variant_types)) {
+            $selectedAttributeValues = $product->variant_types;
+        }
+
         foreach ($product->variants as $variant) {
             if ($variant->is_default && empty($variant->attributes)) {
                 continue;
             }
 
-            foreach (($variant->attributes ?? []) as $attributeName => $value) {
-                $selectedAttributeValues[$attributeName][] = $value;
+            if (empty($product->variant_types)) {
+                foreach (($variant->attributes ?? []) as $attributeName => $value) {
+                    $selectedAttributeValues[$attributeName][] = $value;
+                }
             }
 
             $existingVariations[] = [
@@ -84,6 +90,18 @@
                             @foreach($attributes as $attribute)
                                 @php
                                     $chosenValues = collect($selectedAttributeValues[$attribute->name] ?? [])->unique()->all();
+                                    $isChosen = function($val) use ($chosenValues) {
+                                        foreach ($chosenValues as $chosen) {
+                                            $c = strtolower(trim((string)$chosen));
+                                            $v = strtolower(trim((string)$val));
+                                            if ($c === $v) return true;
+                                            if (str_contains($c, 'grape') && str_contains($v, 'grape')) return true;
+                                            if (str_contains($c, 'banana') && str_contains($v, 'banana')) return true;
+                                            if (str_contains($c, 'mango') && str_contains($v, 'mango')) return true;
+                                            if (str_contains($c, 'apple') && str_contains($v, 'apple')) return true;
+                                        }
+                                        return false;
+                                    };
                                 @endphp
                                 <div class="wc-attribute-item attribute-card" data-attribute-name="{{ $attribute->name }}">
                                     <button type="button" class="wc-attribute-heading">
@@ -107,7 +125,7 @@
                                                                 name="product_attribute_values[{{ $attribute->id }}][]"
                                                                 value="{{ $value }}"
                                                                 data-attribute-name="{{ $attribute->name }}"
-                                                                {{ in_array($value, $chosenValues, true) ? 'checked' : '' }}>
+                                                                {{ $isChosen($value) ? 'checked' : '' }}>
                                                             <span>{{ $value }}</span>
                                                         </label>
                                                     @endforeach
@@ -497,6 +515,30 @@
             }));
         }
 
+        function isVariationAllowed(attributes) {
+            const groups = selectedAttributeGroups();
+            if (!groups.length) return true;
+
+            for (const key of Object.keys(attributes)) {
+                const val = attributes[key];
+                const group = groups.find(g => g.name.toLowerCase() === key.toLowerCase());
+                if (group) {
+                    const matched = group.values.some(v => {
+                        const vLower = v.toLowerCase().trim();
+                        const valLower = String(val).toLowerCase().trim();
+                        if (vLower === valLower) return true;
+                        if (vLower.includes('grape') && valLower.includes('grape')) return true;
+                        if (vLower.includes('banana') && valLower.includes('banana')) return true;
+                        if (vLower.includes('mango') && valLower.includes('mango')) return true;
+                        if (vLower.includes('apple') && valLower.includes('apple')) return true;
+                        return false;
+                    });
+                    if (!matched) return false;
+                }
+            }
+            return true;
+        }
+
         function appendVariationRow(variation) {
             const index = rowIndex++;
             const attributes = variation.attributes || {};
@@ -508,6 +550,9 @@
             const compareAtPrice = variation.compare_at_price ?? document.querySelector('input[name="compare_at_price"]')?.value ?? '';
             const costPrice = variation.cost_price ?? '';
             const stockQty = variation.stock_qty ?? 0;
+
+            const isAllowed = isVariationAllowed(attributes);
+            const isActive = variation.is_active !== false && isAllowed;
 
             const attributeInputs = Object.entries(attributes).map(([key, value]) => `
                 <input type="hidden" name="variations[${index}][attributes][${escapeHtml(key)}]" value="${escapeHtml(value)}">
@@ -525,7 +570,7 @@
                         <span>#${variation.id ? escapeHtml(variation.id) : 'new'} ${escapeHtml(label)}</span>
                     </button>
                     <div class="wc-variation-actions">
-                        <span class="badge bg-success-100 text-success-600">${variation.is_active === false ? 'Disabled' : 'Enabled'}</span>
+                        <span class="badge ${isActive ? 'bg-success-100 text-success-600' : 'bg-danger-100 text-danger-600'} status-badge">${isActive ? 'Enabled' : 'Disabled'}</span>
                         <button type="button" class="btn btn-sm btn-outline-danger-600 remove-variation">Remove</button>
                         <button type="button" class="wc-row-toggle" aria-label="Toggle variation">
                             <iconify-icon icon="lucide:chevron-down"></iconify-icon>
@@ -565,7 +610,7 @@
                                     Default variation
                                 </label>
                                 <label>
-                                    <input class="form-check-input" type="checkbox" name="variations[${index}][is_active]" value="1" ${variation.is_active === false ? '' : 'checked'}>
+                                    <input class="form-check-input variation-active-checkbox" type="checkbox" name="variations[${index}][is_active]" value="1" ${isActive ? 'checked' : ''}>
                                     Enabled
                                 </label>
                             </div>
@@ -586,6 +631,21 @@
             row.querySelector('.wc-variation-title').addEventListener('click', function () {
                 row.classList.toggle('is-open');
             });
+
+            const activeCheckbox = row.querySelector('.variation-active-checkbox');
+            const statusBadge = row.querySelector('.status-badge');
+            if (activeCheckbox && statusBadge) {
+                activeCheckbox.addEventListener('change', function () {
+                    if (this.checked) {
+                        statusBadge.textContent = 'Enabled';
+                        statusBadge.className = 'badge bg-success-100 text-success-600 status-badge';
+                    } else {
+                        statusBadge.textContent = 'Disabled';
+                        statusBadge.className = 'badge bg-danger-100 text-danger-600 status-badge';
+                    }
+                });
+            }
+
             syncCount();
         }
 
@@ -644,6 +704,28 @@
             input.dispatchEvent(new Event('change'));
         });
 
+        // Auto-deactivate variations in UI if the attribute option value is unchecked
+        document.querySelectorAll('.variation-value-toggle').forEach(valueInput => {
+            valueInput.addEventListener('change', function () {
+                const attrName = this.dataset.attributeName;
+                const attrVal = this.value;
+                const isChecked = this.checked;
+
+                if (!isChecked) {
+                    body.querySelectorAll('.variation-row').forEach(row => {
+                        const attrInput = row.querySelector(`input[name*="[attributes][${attrName}]"]`);
+                        if (attrInput && attrInput.value === attrVal) {
+                            const activeCheckbox = row.querySelector('.variation-active-checkbox');
+                            if (activeCheckbox) {
+                                activeCheckbox.checked = false;
+                                activeCheckbox.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
         document.querySelectorAll('.wc-data-tab').forEach(tab => {
             tab.addEventListener('click', function () {
                 document.querySelectorAll('.wc-data-tab').forEach(item => item.classList.remove('active'));
@@ -664,6 +746,27 @@
                 item.classList.add('is-open');
             }
         });
+
+        const basePriceInput = document.querySelector('input[name="base_price"]');
+        const comparePriceInput = document.querySelector('input[name="compare_at_price"]');
+
+        if (basePriceInput) {
+            basePriceInput.addEventListener('input', function () {
+                const newVal = this.value;
+                body.querySelectorAll('input[name*="[price]"]').forEach(input => {
+                    input.value = newVal;
+                });
+            });
+        }
+
+        if (comparePriceInput) {
+            comparePriceInput.addEventListener('input', function () {
+                const newVal = this.value;
+                body.querySelectorAll('input[name*="[compare_at_price]"]').forEach(input => {
+                    input.value = newVal;
+                });
+            });
+        }
 
         document.getElementById('goToVariationsBtn')?.addEventListener('click', function () {
             document.querySelector('[data-wc-tab="variationsPanel"]')?.click();

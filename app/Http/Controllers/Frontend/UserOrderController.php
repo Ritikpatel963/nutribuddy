@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use App\Support\OrderFlow;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -57,21 +58,57 @@ class UserOrderController extends Controller
         $order->load(['items.product', 'items.productVariant', 'payments']);
 
         $invoiceNumber = 'INV-' . $order->order_number;
-        $content = view('invoices.printable', [
+
+        $pdf = Pdf::loadView('invoices.printable', [
             'order' => $order,
             'invoiceNumber' => $invoiceNumber,
-        ])->render();
+        ])->setPaper('a4');
 
-        return response($content)
-            ->header('Content-Type', 'text/html; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="' . $invoiceNumber . '.html"');
+        return $pdf->download($invoiceNumber . '.pdf');
     }
 
     public function index(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date_format:Y-m-d'],
+            'date_to' => ['nullable', 'date_format:Y-m-d'],
+        ]);
+
+        if (
+            ($validated['date_from'] ?? null)
+            && ($validated['date_to'] ?? null)
+            && $validated['date_from'] > $validated['date_to']
+        ) {
+            return response()->json([
+                'message' => 'The end date must be after or equal to the start date.',
+            ], 422);
+        }
+
         $orders = Order::with(['items.returnItems.returnRequest'])
             ->withCount('items')
             ->where('user_id', $request->user()->id)
+            ->when($validated['date_from'] ?? null, function ($query, string $dateFrom) {
+                $query->where(function ($dateQuery) use ($dateFrom) {
+                    $dateQuery
+                        ->whereDate('placed_at', '>=', $dateFrom)
+                        ->orWhere(function ($fallbackQuery) use ($dateFrom) {
+                            $fallbackQuery
+                                ->whereNull('placed_at')
+                                ->whereDate('created_at', '>=', $dateFrom);
+                        });
+                });
+            })
+            ->when($validated['date_to'] ?? null, function ($query, string $dateTo) {
+                $query->where(function ($dateQuery) use ($dateTo) {
+                    $dateQuery
+                        ->whereDate('placed_at', '<=', $dateTo)
+                        ->orWhere(function ($fallbackQuery) use ($dateTo) {
+                            $fallbackQuery
+                                ->whereNull('placed_at')
+                                ->whereDate('created_at', '<=', $dateTo);
+                        });
+                });
+            })
             ->latest()
             ->paginate(10);
 
