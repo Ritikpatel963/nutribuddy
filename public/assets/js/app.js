@@ -108,8 +108,9 @@ if (button) {
     currentThemeSetting = newTheme;
   });
 } else {
-  // If no button is found, just apply the current theme to the page
-  updateThemeOnHtmlEl({ theme: currentThemeSetting });
+  // If no button is found, force light theme to prevent broken colors
+  updateThemeOnHtmlEl({ theme: "light" });
+  localStorage.removeItem("theme");
 }
 
 

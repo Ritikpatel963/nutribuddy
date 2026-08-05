@@ -37,7 +37,7 @@ class ProductReviewController extends Controller
             'comment' => $request->comment,
             'image_path' => $imagePath,
             'video_path' => $videoPath,
-            'is_active' => true,
+            'is_active' => $videoPath ? false : true,
         ]);
 
         return back()->with('success', 'Your review has been submitted and is awaiting approval.');

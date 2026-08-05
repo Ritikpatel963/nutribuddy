@@ -126,6 +126,8 @@
     </div>
 
     <script>
+
+
         function toggleReviewForm(productId) {
             const form = document.getElementById('reviewForm_' + productId);
             if (form.style.display === 'none') {

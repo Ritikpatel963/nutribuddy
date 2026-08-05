@@ -198,7 +198,11 @@
                 <ul class="sidebar-submenu">
                     <li>
                         <a href="{{ route('admin.ecommerce.reviews.index') }}"><i
-                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Reviews & Ratings</a>
+                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Reviews</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.video-reviews.index') }}"><i
+                                class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Video Reviews</a>
                     </li>
                 </ul>
             </li>
