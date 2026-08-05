@@ -70,6 +70,7 @@
                    TESTIMONIALS
               ══════════════════════════════════════════ -->
               <section class="testi-section-new reveal ">
+    @if(!isset($hideSummary) || !$hideSummary)
     <section class="testi-section reveal" id="reviews">
         <span class="sec-eye">Parent Reviews</span>
         <h2 class="sec-title" style="text-align:center">10,000+ Happy Families </h2>
@@ -112,7 +113,8 @@
                 </div>
             </div>
         @endif
-</section>
+    </section>
+    @endif
         @if($videoReviews->isNotEmpty())
         <div class="reels-section-wrap">
 
@@ -144,6 +146,7 @@
                                     </video>
                                 </div>
                                 <div class="reel-ov"></div>
+                                <div class="reel-mute-btn" id="rm{{ $index }}" style="position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; background: rgba(255,255,255,0.22); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); cursor: pointer; z-index: 10;">🔇</div>
                                 <div class="reel-play-btn" id="rp{{ $index }}">▶</div>
                                 <div class="reel-info">
                                     <div class="reel-stars">
@@ -194,6 +197,11 @@
                                     @endfor
                                 </div>
                                 <p class="wrev-txt">{{ $review->comment }}</p>
+                                @if($review->image_path)
+                                    <div style="margin: 12px 0; border-radius: 8px; overflow: hidden; max-height: 250px;">
+                                        <img src="{{ asset('storage/' . $review->image_path) }}" alt="Review Image" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                @endif
                                 <div class="wrev-author">
                                     <div class="wrev-ava" style="background:{{ $loop->index % 2 == 0 ? '#FFE8F5' : '#E8F5FF' }}"></div>
                                     <div>

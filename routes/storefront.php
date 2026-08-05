@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/about', 'pages.about-us')->name('about');
+Route::view('/ingredients', 'pages.ingredients')->name('ingredients');
 Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::view('/diet-chart', 'pages.diet-chart')->name('diet_chart');

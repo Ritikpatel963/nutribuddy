@@ -1466,20 +1466,24 @@ function initNutriBuddy() {
       if (btn) btn.textContent = isPlaying ? 'II' : '▶';
     }
 
-    function playReel(idx) {
+    function playReel(idx, keepUnmuted = false) {
       stopAllReels();
       const card = getReel(idx);
       if (!card) return;
 
       const video = card.querySelector('video');
       const bar = card.querySelector('.reel-bar');
+      const muteBtn = card.querySelector('.reel-mute-btn');
 
       activeReel = idx;
       if (bar) { bar.style.transition = 'width 8s linear'; bar.style.width = '100%'; }
       setReelButton(card, true);
 
       if (video) {
-        video.muted = true;
+        if (!keepUnmuted) {
+            video.muted = true;
+            if (muteBtn) muteBtn.textContent = '🔇';
+        }
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => stopReel(idx));
@@ -1511,9 +1515,27 @@ function initNutriBuddy() {
     cards.forEach(r => {
       r.addEventListener('click', () => {
         const i = +r.dataset.reel;
-        if (activeReel === i) stopReel(i);
-        else playReel(i);
+        const video = r.querySelector('video');
+        if (activeReel === i) {
+            stopReel(i);
+        } else {
+            playReel(i, video && !video.muted);
+        }
       });
+    });
+
+    cards.forEach(r => {
+        const muteBtn = r.querySelector('.reel-mute-btn');
+        if (muteBtn) {
+            muteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const video = r.querySelector('video');
+                if (video) {
+                    video.muted = !video.muted;
+                    muteBtn.textContent = video.muted ? '🔇' : '🔊';
+                }
+            });
+        }
     });
 
     const rvObs = new IntersectionObserver(entries => {

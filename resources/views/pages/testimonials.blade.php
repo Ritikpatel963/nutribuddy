@@ -4,62 +4,25 @@
 
 @section('content')
     @php
-        $reviews = [
-            [
-                'name' => 'Priya Sharma',
-                'meta' => 'Mum of 2 · Delhi',
-                'tag' => 'Immunity support',
-                'avatar' => 'PS',
-                'color' => '#FFE8F5',
-                'text' => 'My 7-year-old was constantly falling sick. After adding GrowStrong to her routine, she has been more energetic and school mornings feel so much smoother.',
-            ],
-            [
-                'name' => 'Rahul Mehta',
-                'meta' => 'Dad of 1 · Mumbai',
-                'tag' => 'Focus and learning',
-                'avatar' => 'RM',
-                'color' => '#E8F5FF',
-                'text' => 'Brain Booster Gummies became our exam-season support. My son is more settled during study time, and he actually reminds me to give it to him.',
-            ],
-            [
-                'name' => 'Dr. Anita Nair',
-                'meta' => 'Pediatrician · Bengaluru',
-                'tag' => 'Expert confidence',
-                'avatar' => 'AN',
-                'color' => '#EDE9FE',
-                'text' => 'I like the transparency of the formulations. Parents need products that are easy to use, age-aware, and made with a clear nutritional purpose.',
-            ],
-            [
-                'name' => 'Fatima Khan',
-                'meta' => 'Mum of 1 · Hyderabad',
-                'tag' => 'Better bedtime',
-                'avatar' => 'FK',
-                'color' => '#FFF4D6',
-                'text' => 'Our bedtime routine used to be a battle. The calm routine with NutriBuddy made evenings feel softer and much more predictable for our family.',
-            ],
-            [
-                'name' => 'Vikram Patel',
-                'meta' => 'Dad of 2 · Ahmedabad',
-                'tag' => 'Daily routine',
-                'avatar' => 'VP',
-                'color' => '#E7FFF5',
-                'text' => 'Both my kids have different needs, but NutriBuddy made it simple to build a routine. The taste helps because there is no convincing needed.',
-            ],
-            [
-                'name' => 'Sneha Joshi',
-                'meta' => 'Mum of toddler · Pune',
-                'tag' => 'Picky eater win',
-                'avatar' => 'SJ',
-                'color' => '#FFEAF0',
-                'text' => 'My toddler is picky with almost everything, but these gummies are the one wellness habit he accepts happily every morning.',
-            ],
-        ];
+        $allReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->latest()->get();
+        
+        // Prioritize a review that has a physical image file on disk
+        $featuredReview = $allReviews->first(function ($review) {
+            return $review->image_path && Storage::disk('public')->exists($review->image_path);
+        });
 
-        $videos = [
-            ['name' => 'Priya Sharma', 'copy' => 'School mornings feel easier now.', 'bg' => 'linear-gradient(160deg,#FF8FAB,#FF4D8F)'],
-            ['name' => 'Rahul Mehta', 'copy' => 'A better study routine for exam weeks.', 'bg' => 'linear-gradient(160deg,#7BC8FF,#0099DD)'],
-            ['name' => 'Dr. Anita Nair', 'copy' => 'Transparent formulas parents can understand.', 'bg' => 'linear-gradient(160deg,#B79FFF,#7C3AED)'],
-            ['name' => 'Fatima Khan', 'copy' => 'Bedtime became calmer and more consistent.', 'bg' => 'linear-gradient(160deg,#6EF0C0,#00A87A)'],
+        $textReviews = $allReviews->whereNull('video_path')->values();
+        $videoReviews = $allReviews->whereNotNull('video_path')->values();
+        
+        if (!$featuredReview) {
+            $featuredReview = $textReviews->first();
+        }
+        
+        $gradients = [
+            'linear-gradient(160deg,#FF8FAB,#FF4D8F)',
+            'linear-gradient(160deg,#7BC8FF,#0099DD)',
+            'linear-gradient(160deg,#B79FFF,#7C3AED)',
+            'linear-gradient(160deg,#6EF0C0,#00A87A)',
         ];
     @endphp
 
@@ -82,7 +45,6 @@
 
             <div class="testimonials-score-card">
                 @php
-                    $allReviews = \App\Models\ProductReview::where('is_active', true);
                     $totalReviews = $allReviews->count();
                 @endphp
                 @if($totalReviews > 0)
@@ -104,7 +66,7 @@
                     <div class="score-bars">
                         @foreach([5, 4, 3, 2, 1] as $star)
                             @php
-                                $starCount = $allReviews->clone()->where('rating', $star)->count();
+                                $starCount = $allReviews->where('rating', $star)->count();
                                 $pct = round(($starCount / $totalReviews) * 100, 1);
                             @endphp
                             <div class="score-row"><span>{{ $star }} ★</span><div class="score-track"><div class="score-fill" style="width:{{ $pct }}%"></div></div><span>{{ $pct }}%</span></div>
@@ -137,36 +99,57 @@
                 </div>
             </div>
 
+            @if($featuredReview)
             <div class="featured-story">
-                <div class="featured-media">
-                    <div class="featured-avatar">💬</div>
-                    <div class="featured-product">Featured Story · GrowStrong Gummies</div>
-                </div>
+                <div class="featured-media" style="position: relative; overflow: hidden;">
+                    @if($featuredReview->image_path && Storage::disk('public')->exists($featuredReview->image_path))
+                        <img src="{{ asset('storage/' . $featuredReview->image_path) }}" alt="Featured Review" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                        <!-- Overlay for text readability -->
+                        <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); z-index: 1;"></div>
+                    @else
+                        <div class="featured-avatar" style="position: relative; z-index: 2;">💬</div>
+                    @endif
+                    <div class="featured-product" style="position: relative; z-index: 2; margin-top: auto;">Featured Story · {{ $featuredReview->product?->name ?? 'NutriBuddy' }}</div>
+                </div>    
+                
                 <div class="featured-content">
-                    <div class="featured-stars">★★★★★</div>
-                    <div class="featured-quote">"It finally became a wellness habit my child looks forward to."</div>
-                    <p class="featured-text">We tried so many routines before, but taste was always the blocker. NutriBuddy made it easy. My daughter enjoys it, and I feel better knowing we are supporting her daily nutrition in a simple, consistent way.</p>
+                    <div class="featured-stars">
+                        @for($i=0; $i<5; $i++) {{ $i < $featuredReview->rating ? '★' : '☆' }} @endfor
+                    </div>
+                    <div class="featured-quote">"{{ Str::limit($featuredReview->comment, 60) }}"</div>
+                    <p class="featured-text">{{ $featuredReview->comment }}</p>
                     <div class="featured-author">
-                        <div class="author-mark">PS</div>
+                        <div class="author-mark">{{ strtoupper(substr($featuredReview->user?->name ?? 'A', 0, 2)) }}</div>
                         <div>
-                            <div class="author-name">Priya Sharma</div>
-                            <div class="author-meta">Mum of 2 · Delhi · Verified Purchase</div>
+                            <div class="author-name">{{ $featuredReview->user?->name ?? 'Anonymous Parent' }}</div>
+                            <div class="author-meta">Verified Purchase</div>
                         </div>
                     </div>
                 </div>
             </div>
+            @endif
 
             <div class="reviews-grid">
-                @foreach($reviews as $review)
+                @foreach($textReviews->reject(fn($r) => $featuredReview && $r->id === $featuredReview->id)->values() as $index => $review)
+                    @php $bgColor = ['#FFE8F5', '#E8F5FF', '#EDE9FE', '#FFF4D6', '#E7FFF5', '#FFEAF0'][$index % 6]; @endphp
                     <article class="review-card">
-                        <div class="review-stars">★★★★★</div>
-                        <span class="review-tag">{{ $review['tag'] }}</span>
-                        <p class="review-text">"{{ $review['text'] }}"</p>
+                        <div class="review-stars">
+                            @for($i=0; $i<5; $i++) {{ $i < $review->rating ? '★' : '☆' }} @endfor
+                        </div>
+                        <span class="review-tag">Parent Review</span>
+                        @if($review->image_path && Storage::disk('public')->exists($review->image_path))
+                            <div style="margin: 15px 0; border-radius: 8px; overflow: hidden; max-height: 200px;">
+                                <img src="{{ asset('storage/' . $review->image_path) }}" alt="Review Image" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        @endif
+                        <p class="review-text">"{{ $review->comment }}"</p>
                         <div class="review-author">
-                            <div class="review-avatar" style="background: {{ $review['color'] }}; color: var(--dk);">{{ $review['avatar'] }}</div>
+                            <div class="review-avatar" style="background: {{ $bgColor }}; color: var(--dk);">
+                                {{ strtoupper(substr($review->user?->name ?? 'A', 0, 2)) }}
+                            </div>
                             <div>
-                                <div class="review-name">{{ $review['name'] }}</div>
-                                <div class="review-meta">{{ $review['meta'] }}</div>
+                                <div class="review-name">{{ $review->user?->name ?? 'Anonymous Parent' }}</div>
+                                <div class="review-meta">Verified Purchase</div>
                             </div>
                         </div>
                     </article>
@@ -183,17 +166,74 @@
                 </div>
 
                 <div class="video-strip">
-                    @foreach($videos as $video)
-                        <article class="video-card" style="background: {{ $video['bg'] }};">
-                            <div class="video-play">▶</div>
-                            <div class="video-info">
-                                <div class="video-stars">★★★★★</div>
-                                <div class="video-name">{{ $video['name'] }}</div>
-                                <div class="video-copy">{{ $video['copy'] }}</div>
+                    @foreach($videoReviews as $index => $video)
+                        @php $bg = $gradients[$index % count($gradients)]; @endphp
+                        <article class="video-card" style="background: {{ $bg }}; position: relative; overflow: hidden; cursor: pointer;" onclick="toggleTestimonialVideo(this, event)">
+                            <video loop playsinline preload="metadata" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity: 0.6; transition: opacity 0.3s;">
+                                @if($video->video_path && Storage::disk('public')->exists($video->video_path))
+                                    <source src="{{ asset('storage/' . $video->video_path) }}" type="video/mp4">
+                                @endif
+                            </video>
+                            <div style="display: flex; justify-content: space-between; position: relative; z-index: 2; align-items: center;">
+                                <div class="video-mute-toggle" style="background: rgba(255,255,255,0.22); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); cursor: pointer;" onclick="toggleMute(this, event)">🔇</div>
+                                <div class="video-play">▶</div>
+                            </div>
+                            <div class="video-info" style="position: relative; z-index: 2; pointer-events: none;">
+                                <div class="video-stars">
+                                    @for($i=0; $i<5; $i++) {{ $i < $video->rating ? '★' : '☆' }} @endfor
+                                </div>
+                                <div class="video-name">{{ $video->user?->name ?? 'Anonymous Parent' }}</div>
+                                <div class="video-copy">{{ Str::limit($video->comment, 50) }}</div>
                             </div>
                         </article>
                     @endforeach
                 </div>
+                <script>
+                    function toggleTestimonialVideo(card, e) {
+                        const video = card.querySelector('video');
+                        const playBtn = card.querySelector('.video-play');
+                        const muteBtn = card.querySelector('.video-mute-toggle');
+                        if (!video) return;
+                        
+                        if (video.paused) {
+                            // Pause all others
+                            document.querySelectorAll('.video-card video').forEach(v => { 
+                                v.pause(); 
+                                v.muted = true; 
+                                v.style.opacity = '0.6';
+                                v.parentElement.querySelector('.video-play').innerText = '▶';
+                                v.parentElement.querySelector('.video-mute-toggle').innerText = '🔇';
+                            });
+                            
+                            video.muted = false; // start with sound
+                            muteBtn.innerText = '🔊';
+                            video.play();
+                            playBtn.innerText = 'II';
+                            video.style.opacity = '1';
+                        } else {
+                            video.pause();
+                            video.muted = true;
+                            muteBtn.innerText = '🔇';
+                            playBtn.innerText = '▶';
+                            video.style.opacity = '0.6';
+                        }
+                    }
+
+                    function toggleMute(btn, e) {
+                        e.stopPropagation(); // prevent clicking the card
+                        const card = btn.closest('.video-card');
+                        const video = card.querySelector('video');
+                        if (!video) return;
+
+                        if (video.muted) {
+                            video.muted = false;
+                            btn.innerText = '🔊';
+                        } else {
+                            video.muted = true;
+                            btn.innerText = '🔇';
+                        }
+                    }
+                </script>
             </div>
 
             <div class="testimonial-cta">
