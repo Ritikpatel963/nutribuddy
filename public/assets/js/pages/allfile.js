@@ -285,11 +285,11 @@
         document.querySelectorAll('.pdp-option-btn').forEach(button => {
             const attribute = button.dataset.attribute;
             const value = button.dataset.value;
-            
+
             const possible = pdpVariants.some(variant => {
                 const vAttrs = variant.attributes || {};
                 if (vAttrs[attribute] === undefined) return false;
-                
+
                 return Object.keys(vAttrs).every(key => {
                     if (key === attribute) {
                         return String(vAttrs[key] ?? '') === String(value);
@@ -905,60 +905,60 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
 /* --- ABOUT US JS --- */
-(function() {
-        // Scroll Reveal
-        const revObs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    e.target.classList.add('visible');
-                    revObs.unobserve(e.target);
-                }
-            });
-        }, {
-            threshold: 0.1
+(function () {
+    // Scroll Reveal
+    const revObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                revObs.unobserve(e.target);
+            }
         });
-        document.querySelectorAll('.about-reveal').forEach(r => revObs.observe(r));
+    }, {
+        threshold: 0.1
+    });
+    document.querySelectorAll('.about-reveal').forEach(r => revObs.observe(r));
 
-        // Counter animation
-        const countObs = new IntersectionObserver(entries => {
-            entries.forEach(e => {
-                if (!e.isIntersecting) return;
-                const el = e.target;
-                const raw = el.textContent;
-                const hasK = raw.includes('K');
-                const hasStar = raw.includes('★');
-                const hasPct = raw.includes('%');
-                const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
-                let start = 0;
-                const dur = 1600,
-                    steps = 60,
-                    inc = num / steps;
-                const iv = setInterval(() => {
-                    start = Math.min(start + inc, num);
-                    let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
-                    if (hasK) display += 'K+';
-                    else if (hasStar) display += '★';
-                    else if (hasPct) display += '%';
-                    else display += '+';
-                    el.textContent = display;
-                    if (start >= num) clearInterval(iv);
-                }, dur / steps);
-                countObs.unobserve(el);
-            });
-        }, {
-            threshold: 0.5
+    // Counter animation
+    const countObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            const el = e.target;
+            const raw = el.textContent;
+            const hasK = raw.includes('K');
+            const hasStar = raw.includes('★');
+            const hasPct = raw.includes('%');
+            const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
+            let start = 0;
+            const dur = 1600,
+                steps = 60,
+                inc = num / steps;
+            const iv = setInterval(() => {
+                start = Math.min(start + inc, num);
+                let display = Number.isInteger(num) ? Math.round(start) : start.toFixed(1);
+                if (hasK) display += 'K+';
+                else if (hasStar) display += '★';
+                else if (hasPct) display += '%';
+                else display += '+';
+                el.textContent = display;
+                if (start >= num) clearInterval(iv);
+            }, dur / steps);
+            countObs.unobserve(el);
         });
-        document.querySelectorAll('.hstat-num').forEach(el => countObs.observe(el));
+    }, {
+        threshold: 0.5
+    });
+    document.querySelectorAll('.hstat-num').forEach(el => countObs.observe(el));
 
-        // Accordion toggle function
+    // Accordion toggle function
 
-        function toggleAboutUsAccordion(header) {
-            const item = header.closest('.acc-item');
-            const isOpen = item.classList.contains('open');
-            document.querySelectorAll('.acc-item.open').forEach(el => el.classList.remove('open'));
-            if (!isOpen) item.classList.add('open');
-        }
-    
+    function toggleAboutUsAccordion(header) {
+        const item = header.closest('.acc-item');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.acc-item.open').forEach(el => el.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+    }
+
     window.toggleAboutUsAccordion = toggleAboutUsAccordion;
 })();
 
@@ -989,135 +989,135 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!cartPageConfig.enabled) return;
     const { cartUrl, deleteTemplate, updateTemplate, csrf } = cartPageConfig;
 
-            /* ── helpers ── */
-            function money(v) {
-                return `Rs. ${Number(v || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    /* ── helpers ── */
+    function money(v) {
+        return `Rs. ${Number(v || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    }
+
+    function clampQty(v, maxStock) {
+        let qty = Math.max(1, parseInt(v, 10) || 1);
+        if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
+            qty = Math.min(qty, maxStock);
+        }
+        return qty;
+    }
+
+    function normalizeImage(src) {
+        if (!src) return '/img/product2.png';
+        if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
+        return `/${src.replace(/^\/+/, '')}`;
+    }
+
+    function storageImageUrl(path) {
+        if (!path) return '';
+        const value = String(path);
+        if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+        return `/storage/${value.replace(/^\/+/, '')}`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+    }
+
+    function cartItemImage(item) {
+        return normalizeImage(
+            storageImageUrl(item?.product?.card_image_path) ||
+            storageImageUrl(item?.product_variant?.image_path) ||
+            storageImageUrl(item?.product?.primary_image?.image_path) ||
+            storageImageUrl(item?.product?.images?.[0]?.image_path) ||
+            '/img/product2.png'
+        );
+    }
+
+    function cartVariantLabel(item) {
+        const variant = item?.product_variant || item?.productVariant || null;
+        let attributes = variant?.attributes || {};
+        if (typeof attributes === 'string') {
+            try {
+                attributes = JSON.parse(attributes);
+            } catch (_) {
+                attributes = attributes.trim() ? { Option: attributes } : {};
             }
+        }
 
-            function clampQty(v, maxStock) {
-                let qty = Math.max(1, parseInt(v, 10) || 1);
-                if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
-                    qty = Math.min(qty, maxStock);
-                }
-                return qty;
-            }
+        const attributeParts = Array.isArray(attributes)
+            ? attributes.filter(Boolean).map(value => String(value))
+            : Object.entries(attributes)
+                .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+                .map(([name, value]) => `${name}: ${value}`);
 
-            function normalizeImage(src) {
-                if (!src) return '/img/product2.png';
-                if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) return src;
-                return `/${src.replace(/^\/+/, '')}`;
-            }
+        if (attributeParts.length) return attributeParts.join(' / ');
 
-            function storageImageUrl(path) {
-                if (!path) return '';
-                const value = String(path);
-                if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
-                return `/storage/${value.replace(/^\/+/, '')}`;
-            }
+        const variantName = String(variant?.name || item?.variant_name || '').trim();
+        if (variantName) return variantName;
 
-            function escapeHtml(value) {
-                return String(value ?? '').replace(/[&<>"']/g, char => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                }[char]));
-            }
+        if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
 
-            function cartItemImage(item) {
-                return normalizeImage(
-                    storageImageUrl(item?.product?.card_image_path) ||
-                    storageImageUrl(item?.product_variant?.image_path) ||
-                    storageImageUrl(item?.product?.primary_image?.image_path) ||
-                    storageImageUrl(item?.product?.images?.[0]?.image_path) ||
-                    '/img/product2.png'
-                );
-            }
+        return [
+            item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
+            item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
+            item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
+            item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
+        ].filter(Boolean).join(' / ');
+    }
 
-            function cartVariantLabel(item) {
-                const variant = item?.product_variant || item?.productVariant || null;
-                let attributes = variant?.attributes || {};
-                if (typeof attributes === 'string') {
-                    try {
-                        attributes = JSON.parse(attributes);
-                    } catch (_) {
-                        attributes = attributes.trim() ? { Option: attributes } : {};
-                    }
-                }
+    /* ── pending (guest) cart helpers ── */
+    function getPendingItems() {
+        try {
+            const raw = localStorage.getItem('nb_pending_cart');
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (_) { return []; }
+    }
 
-                const attributeParts = Array.isArray(attributes)
-                    ? attributes.filter(Boolean).map(value => String(value))
-                    : Object.entries(attributes)
-                        .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
-                        .map(([name, value]) => `${name}: ${value}`);
+    function savePendingItems(items) {
+        localStorage.setItem('nb_pending_cart', JSON.stringify(items || []));
+    }
 
-                if (attributeParts.length) return attributeParts.join(' / ');
+    function pendingKey(productId, variantId = null) {
+        return `${Number(productId || 0)}::${Number(variantId || 0)}`;
+    }
 
-                const variantName = String(variant?.name || item?.variant_name || '').trim();
-                if (variantName) return variantName;
+    function removePendingItem(productId, variantId = null) {
+        const key = pendingKey(productId, variantId);
+        savePendingItems(getPendingItems().filter(it => pendingKey(it.product_id, it.product_variant_id) !== key));
+    }
 
-                if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
+    function updatePendingQty(productId, variantId = null, qty = 1) {
+        const key = pendingKey(productId, variantId);
+        savePendingItems(getPendingItems().map(it =>
+            pendingKey(it.product_id, it.product_variant_id) === key
+                ? { ...it, quantity: clampQty(qty) }
+                : it
+        ));
+    }
 
-                return [
-                    item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
-                    item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
-                    item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
-                    item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
-                ].filter(Boolean).join(' / ');
-            }
+    /* ── summary ── */
+    function setCartSummary(count, total) {
+        document.getElementById('cartPageCount').textContent = count;
+        document.getElementById('cartPageSubtotal').textContent = money(total);
 
-            /* ── pending (guest) cart helpers ── */
-            function getPendingItems() {
-                try {
-                    const raw = localStorage.getItem('nb_pending_cart');
-                    const parsed = raw ? JSON.parse(raw) : [];
-                    return Array.isArray(parsed) ? parsed : [];
-                } catch (_) { return []; }
-            }
+        const checkoutBtn = document.getElementById('cartCheckoutBtn');
+        if (checkoutBtn) {
+            const hasItems = Number(count || 0) > 0;
+            checkoutBtn.style.opacity = hasItems ? '' : '0.55';
+            checkoutBtn.style.pointerEvents = hasItems ? '' : 'none';
+            checkoutBtn.setAttribute('aria-disabled', hasItems ? 'false' : 'true');
+        }
+    }
 
-            function savePendingItems(items) {
-                localStorage.setItem('nb_pending_cart', JSON.stringify(items || []));
-            }
-
-            function pendingKey(productId, variantId = null) {
-                return `${Number(productId || 0)}::${Number(variantId || 0)}`;
-            }
-
-            function removePendingItem(productId, variantId = null) {
-                const key = pendingKey(productId, variantId);
-                savePendingItems(getPendingItems().filter(it => pendingKey(it.product_id, it.product_variant_id) !== key));
-            }
-
-            function updatePendingQty(productId, variantId = null, qty = 1) {
-                const key = pendingKey(productId, variantId);
-                savePendingItems(getPendingItems().map(it =>
-                    pendingKey(it.product_id, it.product_variant_id) === key
-                        ? { ...it, quantity: clampQty(qty) }
-                        : it
-                ));
-            }
-
-            /* ── summary ── */
-            function setCartSummary(count, total) {
-                document.getElementById('cartPageCount').textContent   = count;
-                document.getElementById('cartPageSubtotal').textContent = money(total);
-
-                const checkoutBtn = document.getElementById('cartCheckoutBtn');
-                if (checkoutBtn) {
-                    const hasItems = Number(count || 0) > 0;
-                    checkoutBtn.style.opacity = hasItems ? '' : '0.55';
-                    checkoutBtn.style.pointerEvents = hasItems ? '' : 'none';
-                    checkoutBtn.setAttribute('aria-disabled', hasItems ? 'false' : 'true');
-                }
-            }
-
-            /* ── build a cart row DOM element ── */
-            function createCartRow(image, name, price, qty, variantLabel = '', maxStock) {
-                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
-                const row = document.createElement('div');
-                row.className = 'cart-page-item';
-                row.innerHTML = `
+    /* ── build a cart row DOM element ── */
+    function createCartRow(image, name, price, qty, variantLabel = '', maxStock) {
+        const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
+        const row = document.createElement('div');
+        row.className = 'cart-page-item';
+        row.innerHTML = `
                     <div class="cart-page-item-image">
                         <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}" loading="lazy">
                     </div>
@@ -1133,506 +1133,506 @@ window.addEventListener("DOMContentLoaded", () => {
                     </div>
                     <button type="button" class="cart-page-remove-btn" aria-label="Remove item">&times;</button>
                 `;
-                return row;
+        return row;
+    }
+
+    /* ── bind +/- controls on a row ── */
+    function bindQtyControls(row, initialQty, onCommit, maxStock) {
+        const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
+        const qtyRow = row.querySelector('.cart-page-qty-row');
+        const input = qtyRow.querySelector('.cart-page-qty-val');
+        let currentQty = clampQty(initialQty, effectiveMax);
+        let pendingQty = currentQty;
+        let saveTimer = null;
+
+        function setSaving(isSaving) {
+            qtyRow.classList.toggle('is-updating', isSaving);
+            qtyRow.querySelectorAll('.cart-page-qty-btn, .cart-page-qty-val').forEach(el => el.disabled = isSaving);
+        }
+
+        async function submit(nextVal, options = {}) {
+            const next = clampQty(nextVal, effectiveMax);
+            pendingQty = next;
+            input.value = next;
+
+            if (saveTimer) {
+                clearTimeout(saveTimer);
+                saveTimer = null;
             }
 
-            /* ── bind +/- controls on a row ── */
-            function bindQtyControls(row, initialQty, onCommit, maxStock) {
-                const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
-                const qtyRow = row.querySelector('.cart-page-qty-row');
-                const input  = qtyRow.querySelector('.cart-page-qty-val');
-                let   currentQty = clampQty(initialQty, effectiveMax);
-                let pendingQty = currentQty;
-                let saveTimer = null;
+            if (next === currentQty) return;
 
-                function setSaving(isSaving) {
-                    qtyRow.classList.toggle('is-updating', isSaving);
-                    qtyRow.querySelectorAll('.cart-page-qty-btn, .cart-page-qty-val').forEach(el => el.disabled = isSaving);
-                }
-
-                async function submit(nextVal, options = {}) {
-                    const next = clampQty(nextVal, effectiveMax);
-                    pendingQty = next;
-                    input.value = next;
-
-                    if (saveTimer) {
-                        clearTimeout(saveTimer);
-                        saveTimer = null;
-                    }
-
-                    if (next === currentQty) return;
-
-                    if (!options.immediate) {
-                        saveTimer = setTimeout(() => submit(pendingQty, { immediate: true }), 550);
-                        return;
-                    }
-
-                    setSaving(true);
-
-                    try {
-                        await onCommit(next);
-                        currentQty  = next;
-                        input.value = next;
-                    } catch (err) {
-                        input.value = currentQty;
-                        pendingQty = currentQty;
-                        alert(err.message || 'Unable to update quantity.');
-                    } finally {
-                        setSaving(false);
-                    }
-                }
-
-                qtyRow.querySelectorAll('.cart-page-qty-btn').forEach(btn => {
-                    btn.addEventListener('click', e => {
-                        e.preventDefault();
-                        submit(clampQty(input.value, effectiveMax) + Number(btn.dataset.qtyDelta || 0));
-                    });
-                });
-
-                input.addEventListener('change',  () => submit(input.value));
-                input.addEventListener('blur',    () => submit(input.value, { immediate: true }));
-                input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(input.value, { immediate: true }); } });
+            if (!options.immediate) {
+                saveTimer = setTimeout(() => submit(pendingQty, { immediate: true }), 550);
+                return;
             }
 
-            /* ── render guest/pending cart ── */
-            function renderPendingCart() {
-                const items     = getPendingItems();
-                const subtotal  = items.reduce((s, it) => s + Number(it.unit_price || 0) * Number(it.quantity || 0), 0);
-                const totalQty  = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+            setSaving(true);
 
-                setCartSummary(totalQty, subtotal);
-
-                const list  = document.getElementById('cartPageItems');
-                const empty = document.getElementById('cartPageEmpty');
-                list.innerHTML = '';
-
-                if (!items.length) { empty.style.display = 'block'; return; }
-                empty.style.display = 'none';
-
-                items.forEach(it => {
-                    const qty = Number(it.quantity || 1);
-                    const variantLabel = cartVariantLabel(it);
-                    const row = createCartRow(
-                        it.image || '/img/product2.png',
-                        it.product_name || 'Product',
-                        it.unit_price,
-                        qty,
-                        variantLabel
-                    );
-
-                    const maxStock = it.max_stock !== undefined ? it.max_stock : 999;
-                    bindQtyControls(row, qty, async value => {
-                        updatePendingQty(it.product_id, it.product_variant_id, value);
-                        renderPendingCart();
-                    }, maxStock);
-
-                    row.querySelector('.cart-page-remove-btn').addEventListener('click', () => {
-                        removePendingItem(it.product_id, it.product_variant_id);
-                        renderPendingCart();
-                    });
-
-                    list.appendChild(row);
-                });
+            try {
+                await onCommit(next);
+                currentQty = next;
+                input.value = next;
+            } catch (err) {
+                input.value = currentQty;
+                pendingQty = currentQty;
+                alert(err.message || 'Unable to update quantity.');
+            } finally {
+                setSaving(false);
             }
+        }
 
-            /* ── API calls ── */
-            async function apiUpdateQty(itemId, qty) {
-                const res = await fetch(updateTemplate.replace('__ITEM__', itemId), {
-                    method: 'PATCH',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {})
-                    },
-                    body: JSON.stringify({ quantity: clampQty(qty) })
-                });
-                if (!res.ok) {
-                    const p = await res.json().catch(() => ({}));
-                    throw new Error(p.message || 'Unable to update quantity.');
-                }
-                return res.json().catch(() => ({}));
-            }
-
-            async function apiRemoveItem(itemId) {
-                const res = await fetch(deleteTemplate.replace('__ITEM__', itemId), {
-                    method: 'DELETE',
-                    headers: {
-                        'Accept': 'application/json',
-                        ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {})
-                    }
-                });
-                if (!res.ok) {
-                    const p = await res.json().catch(() => ({}));
-                    throw new Error(p.message || 'Unable to remove item.');
-                }
-                return res.json().catch(() => ({}));
-            }
-
-            /* ── render authenticated cart ── */
-            async function loadCart() {
-                const res = await fetch(cartUrl, { headers: { 'Accept': 'application/json' } });
-                const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
-
-                if (isGuest) { renderPendingCart(); return; }
-                if (!res.ok) return;
-
-                const payload  = await res.json().catch(() => ({}));
-                const items    = payload.cart?.items || [];
-                const total = payload.pricing?.display_subtotal || 0;
-                const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
-
-                setCartSummary(totalQty, total);
-
-                const list  = document.getElementById('cartPageItems');
-                const empty = document.getElementById('cartPageEmpty');
-                list.innerHTML = '';
-
-                if (!items.length) { empty.style.display = 'block'; return; }
-                empty.style.display = 'none';
-
-                items.forEach(it => {
-                    const qty   = Number(it.quantity || 1);
-                    const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
-                    const image = cartItemImage(it);
-                    const variantLabel = cartVariantLabel(it);
-                    const itemMaxStock = it.available_stock != null ? Number(it.available_stock) : null;
-
-                    const row = createCartRow(image, it.product?.name || 'Product', price, qty, variantLabel, itemMaxStock);
-
-                    bindQtyControls(row, qty, async value => {
-                        row.classList.add('is-updating');
-                        try {
-                            await apiUpdateQty(it.id, value);
-                            await loadCart();
-                        } finally {
-                            row.classList.remove('is-updating');
-                        }
-                    }, itemMaxStock);
-
-                    row.querySelector('.cart-page-remove-btn').addEventListener('click', async () => {
-                        row.classList.add('is-updating');
-                        try {
-                            await apiRemoveItem(it.id);
-                            await loadCart();
-                        } catch (err) {
-                            alert(err.message || 'Unable to remove item.');
-                            row.classList.remove('is-updating');
-                        }
-                    });
-
-                    list.appendChild(row);
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const notice = sessionStorage.getItem('nb_cart_notice');
-                if (notice) {
-                    sessionStorage.removeItem('nb_cart_notice');
-                    if (typeof nbToast === 'function') nbToast(notice, 'warning');
-                }
-                loadCart();
+        qtyRow.querySelectorAll('.cart-page-qty-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                submit(clampQty(input.value, effectiveMax) + Number(btn.dataset.qtyDelta || 0));
             });
-        })();
+        });
+
+        input.addEventListener('change', () => submit(input.value));
+        input.addEventListener('blur', () => submit(input.value, { immediate: true }));
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(input.value, { immediate: true }); } });
+    }
+
+    /* ── render guest/pending cart ── */
+    function renderPendingCart() {
+        const items = getPendingItems();
+        const subtotal = items.reduce((s, it) => s + Number(it.unit_price || 0) * Number(it.quantity || 0), 0);
+        const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+
+        setCartSummary(totalQty, subtotal);
+
+        const list = document.getElementById('cartPageItems');
+        const empty = document.getElementById('cartPageEmpty');
+        list.innerHTML = '';
+
+        if (!items.length) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+
+        items.forEach(it => {
+            const qty = Number(it.quantity || 1);
+            const variantLabel = cartVariantLabel(it);
+            const row = createCartRow(
+                it.image || '/img/product2.png',
+                it.product_name || 'Product',
+                it.unit_price,
+                qty,
+                variantLabel
+            );
+
+            const maxStock = it.max_stock !== undefined ? it.max_stock : 999;
+            bindQtyControls(row, qty, async value => {
+                updatePendingQty(it.product_id, it.product_variant_id, value);
+                renderPendingCart();
+            }, maxStock);
+
+            row.querySelector('.cart-page-remove-btn').addEventListener('click', () => {
+                removePendingItem(it.product_id, it.product_variant_id);
+                renderPendingCart();
+            });
+
+            list.appendChild(row);
+        });
+    }
+
+    /* ── API calls ── */
+    async function apiUpdateQty(itemId, qty) {
+        const res = await fetch(updateTemplate.replace('__ITEM__', itemId), {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {})
+            },
+            body: JSON.stringify({ quantity: clampQty(qty) })
+        });
+        if (!res.ok) {
+            const p = await res.json().catch(() => ({}));
+            throw new Error(p.message || 'Unable to update quantity.');
+        }
+        return res.json().catch(() => ({}));
+    }
+
+    async function apiRemoveItem(itemId) {
+        const res = await fetch(deleteTemplate.replace('__ITEM__', itemId), {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {})
+            }
+        });
+        if (!res.ok) {
+            const p = await res.json().catch(() => ({}));
+            throw new Error(p.message || 'Unable to remove item.');
+        }
+        return res.json().catch(() => ({}));
+    }
+
+    /* ── render authenticated cart ── */
+    async function loadCart() {
+        const res = await fetch(cartUrl, { headers: { 'Accept': 'application/json' } });
+        const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
+
+        if (isGuest) { renderPendingCart(); return; }
+        if (!res.ok) return;
+
+        const payload = await res.json().catch(() => ({}));
+        const items = payload.cart?.items || [];
+        const total = payload.pricing?.display_subtotal || 0;
+        const totalQty = items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+
+        setCartSummary(totalQty, total);
+
+        const list = document.getElementById('cartPageItems');
+        const empty = document.getElementById('cartPageEmpty');
+        list.innerHTML = '';
+
+        if (!items.length) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+
+        items.forEach(it => {
+            const qty = Number(it.quantity || 1);
+            const price = it.product_variant ? it.product_variant.display_price : it.product?.display_price;
+            const image = cartItemImage(it);
+            const variantLabel = cartVariantLabel(it);
+            const itemMaxStock = it.available_stock != null ? Number(it.available_stock) : null;
+
+            const row = createCartRow(image, it.product?.name || 'Product', price, qty, variantLabel, itemMaxStock);
+
+            bindQtyControls(row, qty, async value => {
+                row.classList.add('is-updating');
+                try {
+                    await apiUpdateQty(it.id, value);
+                    await loadCart();
+                } finally {
+                    row.classList.remove('is-updating');
+                }
+            }, itemMaxStock);
+
+            row.querySelector('.cart-page-remove-btn').addEventListener('click', async () => {
+                row.classList.add('is-updating');
+                try {
+                    await apiRemoveItem(it.id);
+                    await loadCart();
+                } catch (err) {
+                    alert(err.message || 'Unable to remove item.');
+                    row.classList.remove('is-updating');
+                }
+            });
+
+            list.appendChild(row);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const notice = sessionStorage.getItem('nb_cart_notice');
+        if (notice) {
+            sessionStorage.removeItem('nb_cart_notice');
+            if (typeof nbToast === 'function') nbToast(notice, 'warning');
+        }
+        loadCart();
+    });
+})();
 
 /* --- CHECKOUT PAGE JS --- */
 (function () {
     const config = window.NB_CHECKOUT_CONFIG || {};
     if (!config.enabled) return;
 
-/* ══ STEP NAVIGATION ══ */
-function goToPayment() {
-    const addrCard = document.getElementById('addressCard');
-    const payCard = document.getElementById('paymentCard');
-    const addrBadge = document.getElementById('addrBadge');
-    const step2 = document.getElementById('step-addr');
-    const step3 = document.getElementById('step-pay');
+    /* ══ STEP NAVIGATION ══ */
+    function goToPayment() {
+        const addrCard = document.getElementById('addressCard');
+        const payCard = document.getElementById('paymentCard');
+        const addrBadge = document.getElementById('addrBadge');
+        const step2 = document.getElementById('step-addr');
+        const step3 = document.getElementById('step-pay');
 
-    addrCard.classList.remove('active-card');
-    addrBadge.textContent = '✓';
-    addrBadge.classList.add('done-badge');
-    step2.classList.remove('active');
-    step2.classList.add('done');
-    step2.querySelector('.ts-num').textContent = '✓';
+        addrCard.classList.remove('active-card');
+        addrBadge.textContent = '✓';
+        addrBadge.classList.add('done-badge');
+        step2.classList.remove('active');
+        step2.classList.add('done');
+        step2.querySelector('.ts-num').textContent = '✓';
 
-    payCard.style.opacity = '1';
-    payCard.style.pointerEvents = 'all';
-    payCard.classList.add('active-card');
-    step3.classList.add('active');
+        payCard.style.opacity = '1';
+        payCard.style.pointerEvents = 'all';
+        payCard.classList.add('active-card');
+        step3.classList.add('active');
 
-    document.getElementById('progressFill').style.width = '100%';
-    document.getElementById('placeOrderWrap').style.display = 'block';
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('placeOrderWrap').style.display = 'block';
 
-    payCard.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
-}
-
-function editSection(sec) {
-    if (sec === 'login') alert('Redirecting to login page…');
-}
-
-/* ══ ADDRESS ══ */
-const checkoutCitiesUrlTemplate = config.citiesUrlTemplate || '';
-const checkoutStateOptions = Array.isArray(config.states) ? config.states : [];
-const checkoutCitiesByState = config.citiesByState || {};
-const checkoutAllCities = Array.isArray(config.allCities) ? config.allCities : [];
-let checkoutCityOptions = [];
-
-function normalizeLookup(value = '') {
-    return String(value || '').trim().toLowerCase();
-}
-
-function closeCheckoutDropdown(id) {
-    const menu = document.getElementById(id);
-    if (menu) menu.hidden = true;
-}
-
-function renderCheckoutDropdown(menuId, options = [], onSelect) {
-    const menu = document.getElementById(menuId);
-    if (!menu) return;
-
-    menu.innerHTML = '';
-
-    if (!options.length) {
-        const empty = document.createElement('div');
-        empty.className = 'checkout-combobox-empty';
-        empty.textContent = 'No matches found';
-        menu.appendChild(empty);
-        menu.hidden = false;
-        return;
-    }
-
-    options.forEach((option, index) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `checkout-combobox-option${index === 0 ? ' active' : ''}`;
-        btn.textContent = option.name || option;
-        btn.addEventListener('mousedown', event => {
-            event.preventDefault();
-            onSelect(option);
+        payCard.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
         });
-        menu.appendChild(btn);
-    });
-
-    menu.hidden = false;
-}
-
-function matchingStates(query = '') {
-    const target = normalizeLookup(query);
-    const states = checkoutStateOptions || [];
-
-    if (!target) return states;
-
-    return states.filter(state => normalizeLookup(state.name).includes(target));
-}
-
-function matchingCities(query = '') {
-    const target = normalizeLookup(query);
-    const localCities = checkoutCityOptions || [];
-    const fallbackCities = checkoutAllCities || [];
-    const citySet = new Map();
-
-    localCities.forEach(city => citySet.set(normalizeLookup(city), city));
-    fallbackCities.forEach(city => {
-        const key = normalizeLookup(city);
-        if (!citySet.has(key)) citySet.set(key, city);
-    });
-
-    const cities = Array.from(citySet.values());
-
-    if (!target) return cities;
-
-    return cities.filter(city => normalizeLookup(city).includes(target));
-}
-
-async function selectStateOption(state) {
-    const stateEl = document.getElementById('stateField');
-    const stateCodeEl = document.getElementById('stateCodeField');
-    const cityEl = document.getElementById('cityField');
-
-    if (stateEl) stateEl.value = state.name || '';
-    if (stateCodeEl) stateCodeEl.value = state.code || '';
-    closeCheckoutDropdown('stateDropdown');
-    await loadCitiesForState(state.code || '');
-
-    if (cityEl && !cityEl.disabled) {
-        cityEl.focus();
-        renderCheckoutDropdown('cityDropdown', matchingCities(cityEl.value), selectCityOption);
     }
-}
 
-function selectCityOption(city) {
-    const cityEl = document.getElementById('cityField');
-
-    if (cityEl) cityEl.value = city || '';
-    closeCheckoutDropdown('cityDropdown');
-}
-
-function getNewAddressPayload() {
-    const firstName = document.getElementById('firstName')?.value?.trim() || '';
-    const lastName = document.getElementById('lastName')?.value?.trim() || '';
-    const phoneRaw = document.getElementById('addressPhone')?.value?.trim() || '';
-    const line1 = document.getElementById('addressLine1')?.value?.trim() || '';
-    const line2 = document.getElementById('addressLine2')?.value?.trim() || '';
-    const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
-    const city = document.getElementById('cityField')?.value?.trim() || '';
-    const state = document.getElementById('stateField')?.value?.trim() || '';
-    const activeTypeBtn = document.querySelector('.addr-type-btn.active');
-    const label = activeTypeBtn ? activeTypeBtn.getAttribute('data-type') : 'Home';
-    const phone = phoneRaw.replace(/\D/g, '').slice(-10);
-
-    return {
-        label: label || 'Home',
-        full_name: `${firstName} ${lastName}`.trim(),
-        phone,
-        email: config.email || '',
-        address_line_1: line1,
-        address_line_2: line2,
-        city,
-        state,
-        postal_code: postalCode,
-        country: 'India'
-    };
-}
-
-/* ══ SAVED ADDRESS HELPERS ══ */
-function switchAddrTab(tab) {
-    const savedPanel = document.getElementById('savedAddrPanel');
-    const newPanel   = document.getElementById('newAddrPanel');
-    const tabSaved   = document.getElementById('tabSaved');
-    const tabNew     = document.getElementById('tabNew');
-
-    if (tab === 'saved') {
-        if (savedPanel) savedPanel.style.display = 'block';
-        if (newPanel)   newPanel.style.display   = 'none';
-        tabSaved?.classList.add('active');
-        tabNew?.classList.remove('active');
-        // Restore selected address id from the currently highlighted card
-        const sel = document.querySelector('.addr-item.selected');
-        if (sel) window.__selectedAddressId = sel.dataset.addressId || '';
-    } else {
-        if (savedPanel) savedPanel.style.display = 'none';
-        if (newPanel)   newPanel.style.display   = 'block';
-        tabSaved?.classList.remove('active');
-        tabNew?.classList.add('active');
-        // Clear saved selection so new form is used
-        window.__selectedAddressId = '';
+    function editSection(sec) {
+        if (sec === 'login') alert('Redirecting to login page…');
     }
-}
 
-function selectSavedAddress(el, addressId) {
-    document.querySelectorAll('#savedAddressList .addr-item')
-        .forEach(a => a.classList.remove('selected'));
-    el.classList.add('selected');
-    window.__selectedAddressId = String(addressId);
-}
+    /* ══ ADDRESS ══ */
+    const checkoutCitiesUrlTemplate = config.citiesUrlTemplate || '';
+    const checkoutStateOptions = Array.isArray(config.states) ? config.states : [];
+    const checkoutCitiesByState = config.citiesByState || {};
+    const checkoutAllCities = Array.isArray(config.allCities) ? config.allCities : [];
+    let checkoutCityOptions = [];
 
-async function deleteAddress(e, addressId, btn) {
-    e.stopPropagation();
-    nbConfirm('This address will be permanently removed.', async () => {
+    function normalizeLookup(value = '') {
+        return String(value || '').trim().toLowerCase();
+    }
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-    const res = await fetch('/user/addresses/' + addressId, {
-        method: 'DELETE',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
+    function closeCheckoutDropdown(id) {
+        const menu = document.getElementById(id);
+        if (menu) menu.hidden = true;
+    }
+
+    function renderCheckoutDropdown(menuId, options = [], onSelect) {
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+
+        menu.innerHTML = '';
+
+        if (!options.length) {
+            const empty = document.createElement('div');
+            empty.className = 'checkout-combobox-empty';
+            empty.textContent = 'No matches found';
+            menu.appendChild(empty);
+            menu.hidden = false;
+            return;
         }
-    });
 
-    if (!res.ok) {
-        const errPayload = await res.json().catch(() => ({}));
-        nbToast(errPayload.message || 'Could not delete address. Please try again.', 'error');
-        return;
+        options.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `checkout-combobox-option${index === 0 ? ' active' : ''}`;
+            btn.textContent = option.name || option;
+            btn.addEventListener('mousedown', event => {
+                event.preventDefault();
+                onSelect(option);
+            });
+            menu.appendChild(btn);
+        });
+
+        menu.hidden = false;
     }
 
-    const item = btn.closest('.addr-item');
-    const wasSelected = item.classList.contains('selected');
-    item.remove();
+    function matchingStates(query = '') {
+        const target = normalizeLookup(query);
+        const states = checkoutStateOptions || [];
 
-    const remaining = document.querySelectorAll('#savedAddressList .addr-item');
+        if (!target) return states;
 
-    if (wasSelected && remaining.length) {
-        remaining[0].classList.add('selected');
-        window.__selectedAddressId = remaining[0].dataset.addressId || '';
+        return states.filter(state => normalizeLookup(state.name).includes(target));
     }
 
-    // Update count badge
-    const countEl = document.getElementById('savedAddrCount');
-    if (countEl) {
-        const n = remaining.length;
-        countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
+    function matchingCities(query = '') {
+        const target = normalizeLookup(query);
+        const localCities = checkoutCityOptions || [];
+        const fallbackCities = checkoutAllCities || [];
+        const citySet = new Map();
+
+        localCities.forEach(city => citySet.set(normalizeLookup(city), city));
+        fallbackCities.forEach(city => {
+            const key = normalizeLookup(city);
+            if (!citySet.has(key)) citySet.set(key, city);
+        });
+
+        const cities = Array.from(citySet.values());
+
+        if (!target) return cities;
+
+        return cities.filter(city => normalizeLookup(city).includes(target));
     }
 
-    // No saved addresses left — hide tabs and show new form
-    if (!remaining.length) {
-        const tabsEl = document.querySelector('.addr-tabs');
-        if (tabsEl) tabsEl.style.display = 'none';
-        const savedP = document.getElementById('savedAddrPanel');
-        if (savedP) savedP.style.display = 'none';
+    async function selectStateOption(state) {
+        const stateEl = document.getElementById('stateField');
+        const stateCodeEl = document.getElementById('stateCodeField');
+        const cityEl = document.getElementById('cityField');
+
+        if (stateEl) stateEl.value = state.name || '';
+        if (stateCodeEl) stateCodeEl.value = state.code || '';
+        closeCheckoutDropdown('stateDropdown');
+        await loadCitiesForState(state.code || '');
+
+        if (cityEl && !cityEl.disabled) {
+            cityEl.focus();
+            renderCheckoutDropdown('cityDropdown', matchingCities(cityEl.value), selectCityOption);
+        }
+    }
+
+    function selectCityOption(city) {
+        const cityEl = document.getElementById('cityField');
+
+        if (cityEl) cityEl.value = city || '';
+        closeCheckoutDropdown('cityDropdown');
+    }
+
+    function getNewAddressPayload() {
+        const firstName = document.getElementById('firstName')?.value?.trim() || '';
+        const lastName = document.getElementById('lastName')?.value?.trim() || '';
+        const phoneRaw = document.getElementById('addressPhone')?.value?.trim() || '';
+        const line1 = document.getElementById('addressLine1')?.value?.trim() || '';
+        const line2 = document.getElementById('addressLine2')?.value?.trim() || '';
+        const postalCode = document.getElementById('newPincode')?.value?.trim() || '';
+        const city = document.getElementById('cityField')?.value?.trim() || '';
+        const state = document.getElementById('stateField')?.value?.trim() || '';
+        const activeTypeBtn = document.querySelector('.addr-type-btn.active');
+        const label = activeTypeBtn ? activeTypeBtn.getAttribute('data-type') : 'Home';
+        const phone = phoneRaw.replace(/\D/g, '').slice(-10);
+
+        return {
+            label: label || 'Home',
+            full_name: `${firstName} ${lastName}`.trim(),
+            phone,
+            email: config.email || '',
+            address_line_1: line1,
+            address_line_2: line2,
+            city,
+            state,
+            postal_code: postalCode,
+            country: 'India'
+        };
+    }
+
+    /* ══ SAVED ADDRESS HELPERS ══ */
+    function switchAddrTab(tab) {
+        const savedPanel = document.getElementById('savedAddrPanel');
         const newPanel = document.getElementById('newAddrPanel');
-        if (newPanel) newPanel.style.display = 'block';
-        window.__selectedAddressId = '';
-        if (countEl) countEl.textContent = '0 saved addresses';
+        const tabSaved = document.getElementById('tabSaved');
+        const tabNew = document.getElementById('tabNew');
+
+        if (tab === 'saved') {
+            if (savedPanel) savedPanel.style.display = 'block';
+            if (newPanel) newPanel.style.display = 'none';
+            tabSaved?.classList.add('active');
+            tabNew?.classList.remove('active');
+            // Restore selected address id from the currently highlighted card
+            const sel = document.querySelector('.addr-item.selected');
+            if (sel) window.__selectedAddressId = sel.dataset.addressId || '';
+        } else {
+            if (savedPanel) savedPanel.style.display = 'none';
+            if (newPanel) newPanel.style.display = 'block';
+            tabSaved?.classList.remove('active');
+            tabNew?.classList.add('active');
+            // Clear saved selection so new form is used
+            window.__selectedAddressId = '';
+        }
     }
 
-    nbToast('Address deleted successfully.', 'success');
-}, { title: 'Delete Address?', okText: 'Yes, Delete' });
-}
+    function selectSavedAddress(el, addressId) {
+        document.querySelectorAll('#savedAddressList .addr-item')
+            .forEach(a => a.classList.remove('selected'));
+        el.classList.add('selected');
+        window.__selectedAddressId = String(addressId);
+    }
 
-function appendAddressToSavedList(address) {
-    let listEl = document.getElementById('savedAddressList');
-    const tabsEl = document.querySelector('.addr-tabs');
-    const savedPanel = document.getElementById('savedAddrPanel');
-    const newPanel = document.getElementById('newAddrPanel');
+    async function deleteAddress(e, addressId, btn) {
+        e.stopPropagation();
+        nbConfirm('This address will be permanently removed.', async () => {
 
-    // If no saved list exists yet, create the tabs and panel structure
-    if (!listEl) {
-        const cardBody = document.querySelector('#addressCard .card-body');
-        if (!cardBody) return;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch('/user/addresses/' + addressId, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
 
-        // Create tabs
-        let tabs = tabsEl;
-        if (!tabs) {
-            tabs = document.createElement('div');
-            tabs.className = 'addr-tabs';
-            tabs.innerHTML = `
+            if (!res.ok) {
+                const errPayload = await res.json().catch(() => ({}));
+                nbToast(errPayload.message || 'Could not delete address. Please try again.', 'error');
+                return;
+            }
+
+            const item = btn.closest('.addr-item');
+            const wasSelected = item.classList.contains('selected');
+            item.remove();
+
+            const remaining = document.querySelectorAll('#savedAddressList .addr-item');
+
+            if (wasSelected && remaining.length) {
+                remaining[0].classList.add('selected');
+                window.__selectedAddressId = remaining[0].dataset.addressId || '';
+            }
+
+            // Update count badge
+            const countEl = document.getElementById('savedAddrCount');
+            if (countEl) {
+                const n = remaining.length;
+                countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
+            }
+
+            // No saved addresses left — hide tabs and show new form
+            if (!remaining.length) {
+                const tabsEl = document.querySelector('.addr-tabs');
+                if (tabsEl) tabsEl.style.display = 'none';
+                const savedP = document.getElementById('savedAddrPanel');
+                if (savedP) savedP.style.display = 'none';
+                const newPanel = document.getElementById('newAddrPanel');
+                if (newPanel) newPanel.style.display = 'block';
+                window.__selectedAddressId = '';
+                if (countEl) countEl.textContent = '0 saved addresses';
+            }
+
+            nbToast('Address deleted successfully.', 'success');
+        }, { title: 'Delete Address?', okText: 'Yes, Delete' });
+    }
+
+    function appendAddressToSavedList(address) {
+        let listEl = document.getElementById('savedAddressList');
+        const tabsEl = document.querySelector('.addr-tabs');
+        const savedPanel = document.getElementById('savedAddrPanel');
+        const newPanel = document.getElementById('newAddrPanel');
+
+        // If no saved list exists yet, create the tabs and panel structure
+        if (!listEl) {
+            const cardBody = document.querySelector('#addressCard .card-body');
+            if (!cardBody) return;
+
+            // Create tabs
+            let tabs = tabsEl;
+            if (!tabs) {
+                tabs = document.createElement('div');
+                tabs.className = 'addr-tabs';
+                tabs.innerHTML = `
                 <button class="addr-tab active" id="tabSaved" onclick="switchAddrTab('saved')">📍 Saved Addresses</button>
                 <button class="addr-tab" id="tabNew" onclick="switchAddrTab('new')">➕ Add New</button>
             `;
-            cardBody.insertBefore(tabs, cardBody.firstChild);
-        }
+                cardBody.insertBefore(tabs, cardBody.firstChild);
+            }
 
-        // Create saved panel
-        let sp = savedPanel;
-        if (!sp) {
-            sp = document.createElement('div');
-            sp.id = 'savedAddrPanel';
-            sp.innerHTML = `
+            // Create saved panel
+            let sp = savedPanel;
+            if (!sp) {
+                sp = document.createElement('div');
+                sp.id = 'savedAddrPanel';
+                sp.innerHTML = `
                 <div class="saved-addresses" id="savedAddressList"></div>
                 <button class="add-addr-btn" onclick="switchAddrTab('new')" style="margin-top:8px">
                     <span>➕</span> Add a New Address
                 </button>
             `;
-            tabs.insertAdjacentElement('afterend', sp);
+                tabs.insertAdjacentElement('afterend', sp);
+            }
+
+            listEl = document.getElementById('savedAddressList');
+        } else if (tabsEl) {
+            tabsEl.style.display = 'flex';
         }
 
-        listEl = document.getElementById('savedAddressList');
-    } else if (tabsEl) {
-        tabsEl.style.display = 'flex';
-    }
+        // Deselect all existing
+        listEl.querySelectorAll('.addr-item').forEach(a => a.classList.remove('selected'));
 
-    // Deselect all existing
-    listEl.querySelectorAll('.addr-item').forEach(a => a.classList.remove('selected'));
-
-    // Build new card
-    const card = document.createElement('div');
-    card.className = 'addr-item selected';
-    card.dataset.addressId = address.id;
-    card.setAttribute('onclick', `selectSavedAddress(this, '${address.id}')`);
-    card.innerHTML = `
+        // Build new card
+        const card = document.createElement('div');
+        card.className = 'addr-item selected';
+        card.dataset.addressId = address.id;
+        card.setAttribute('onclick', `selectSavedAddress(this, '${address.id}')`);
+        card.innerHTML = `
         <div class="addr-radio"></div>
         <div class="addr-info" style="flex:1">
             <div class="addr-name">
@@ -1649,571 +1649,92 @@ function appendAddressToSavedList(address) {
         </div>
         <button class="addr-del-btn" title="Delete" onclick="deleteAddress(event, ${address.id}, this)">🗑</button>
     `;
-    listEl.prepend(card);
+        listEl.prepend(card);
 
-    // Update count
-    const countEl = document.getElementById('savedAddrCount');
-    if (countEl) {
-        const n = listEl.querySelectorAll('.addr-item').length;
-        countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
-    }
-
-    // Switch to saved tab
-    window.__selectedAddressId = String(address.id);
-    switchAddrTab('saved');
-}
-
-function clearNewAddressForm() {
-    ['firstName','lastName','addressPhone','addressLine1','addressLine2','newPincode'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-    const stateEl = document.getElementById('stateField');
-    if (stateEl) stateEl.selectedIndex = 0;
-    if (stateEl) stateEl.value = '';
-    const stateCodeEl = document.getElementById('stateCodeField');
-    if (stateCodeEl) stateCodeEl.value = '';
-    resetCityDropdown();
-    const activeType = document.querySelector('.addr-type-btn.active');
-    if (activeType) activeType.classList.remove('active');
-    const homeBtn = document.querySelector('.addr-type-btn[data-type="Home"]');
-    if (homeBtn) homeBtn.classList.add('active');
-}
-
-async function saveAndGoToPayment() {
-    // If user selected a saved address, go straight to payment
-    if (window.__selectedAddressId) {
-        goToPayment();
-        return;
-    }
-
-    // Otherwise validate + save the new address form
-    const payload = getNewAddressPayload();
-    if (!hasRequiredNewAddressFields(payload)) {
-        nbToast('Please fill all required address fields.', 'warning');
-        return;
-    }
-    if (!findStateOption(payload.state)) {
-        nbToast('Please select a valid state from the list.', 'warning');
-        return;
-    }
-    if (!cityExistsInOptions(payload.city)) {
-        nbToast('Please select a valid city from the list.', 'warning');
-        return;
-    }
-
-    if (!isLoggedIn) {
-        // Guest — keep in sessionStorage
-        sessionStorage.setItem('nb_pending_address', JSON.stringify(payload));
-        goToPayment();
-        return;
-    }
-
-    const btn = document.getElementById('addressContinueBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving address…'; }
-
-    const address = await persistNewAddress(payload);
-
-    if (btn) { btn.disabled = false; btn.textContent = 'Continue to Payment'; }
-
-    if (!address?.id) {
-        return;
-    }
-
-    // Add the new address to the saved list dynamically
-    appendAddressToSavedList(address);
-    clearNewAddressForm();
-
-    window.__selectedAddressId = String(address.id);
-    goToPayment();
-}
-
-function hasRequiredNewAddressFields(payload = {}) {
-    return !!(payload.full_name && payload.phone && payload.address_line_1 && payload.postal_code && payload.city &&
-        payload.state);
-}
-
-async function persistNewAddress(payload, options = {}) {
-    const res = await fetch(api.addressesUrl, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...(api.csrf ? {
-                'X-CSRF-TOKEN': api.csrf
-            } : {})
-        },
-        body: JSON.stringify(payload)
-    });
-
-    const responsePayload = await res.json().catch(() => ({}));
-    if (!res.ok) {
-        if (!options.silent) {
-            nbToast(responsePayload.message || 'Unable to save address.', 'error');
+        // Update count
+        const countEl = document.getElementById('savedAddrCount');
+        if (countEl) {
+            const n = listEl.querySelectorAll('.addr-item').length;
+            countEl.textContent = `${n} saved ${n === 1 ? 'address' : 'addresses'}`;
         }
-        return null;
+
+        // Switch to saved tab
+        window.__selectedAddressId = String(address.id);
+        switchAddrTab('saved');
     }
 
-    return responsePayload.data || null;
-}
-
-
-
-async function ensureCheckoutAddressReady() {
-    if (window.__selectedAddressId) {
-        return true;
-    }
-
-    const pendingAddress = getNewAddressPayload();
-    if (hasRequiredNewAddressFields(pendingAddress)) {
-        const createdAddress = await persistNewAddress(pendingAddress, {
-            silent: true
+    function clearNewAddressForm() {
+        ['firstName', 'lastName', 'addressPhone', 'addressLine1', 'addressLine2', 'newPincode'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
         });
-        if (createdAddress?.id) {
-            window.__selectedAddressId = String(createdAddress.id);
-            return true;
-        }
-    }
-
-    await loadAddresses();
-    return !!window.__selectedAddressId;
-}
-
-function toggleAddrType(el) {
-    document.querySelectorAll('.addr-type-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function resetCityDropdown(message = 'Select State First') {
-    const cityEl = document.getElementById('cityField');
-    if (!cityEl) return;
-
-    checkoutCityOptions = [];
-    cityEl.value = '';
-    cityEl.placeholder = message;
-    cityEl.disabled = true;
-    closeCheckoutDropdown('cityDropdown');
-}
-
-function setCityDropdownOptions(cities = [], selectedCity = '') {
-    const cityEl = document.getElementById('cityField');
-    if (!cityEl) return;
-
-    checkoutCityOptions = cities;
-    cityEl.value = selectedCity || '';
-    cityEl.placeholder = cities.length ? 'Type or select city' : 'No cities found';
-    cityEl.disabled = cities.length === 0;
-    closeCheckoutDropdown('cityDropdown');
-}
-
-function findStateOption(value = '') {
-    const target = normalizeLookup(value);
-    if (!target) return null;
-
-    return (checkoutStateOptions || []).find(state => {
-        return normalizeLookup(state.name) === target ||
-            normalizeLookup(state.code) === target;
-    }) || null;
-}
-
-function cityExistsInOptions(city = '') {
-    const target = normalizeLookup(city);
-    if (!target) return false;
-
-    return (checkoutCityOptions || []).some(option => normalizeLookup(option) === target) ||
-        (checkoutAllCities || []).some(option => normalizeLookup(option) === target);
-}
-
-async function loadCitiesForState(stateCode, selectedCity = '') {
-    const spinner = document.getElementById('citySpinner');
-
-    if (!stateCode) {
-        resetCityDropdown();
-        return;
-    }
-
-    resetCityDropdown('Loading cities...');
-    spinner?.classList.add('show');
-
-    try {
-        if (Object.prototype.hasOwnProperty.call(checkoutCitiesByState, stateCode)) {
-            setCityDropdownOptions(checkoutCitiesByState[stateCode] || [], selectedCity);
-            return;
-        }
-
-        const res = await fetch(checkoutCitiesUrlTemplate.replace('__STATE__', encodeURIComponent(stateCode)), {
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        const payload = await res.json().catch(() => ({}));
-        setCityDropdownOptions(payload.cities || [], selectedCity);
-    } catch (error) {
-        resetCityDropdown('Unable to load cities');
-    } finally {
-        spinner?.classList.remove('show');
-    }
-}
-
-function hydrateLocationFields(stateValue = '', cityValue = '') {
-    const stateOption = findStateOption(stateValue);
-    const stateEl = document.getElementById('stateField');
-    const stateCodeEl = document.getElementById('stateCodeField');
-
-    if (stateEl && stateOption) {
-        stateEl.value = stateOption.name || '';
-        if (stateCodeEl) stateCodeEl.value = stateOption.code || '';
-        loadCitiesForState(stateOption.code || '', cityValue || '');
-    } else {
+        const stateEl = document.getElementById('stateField');
+        if (stateEl) stateEl.selectedIndex = 0;
+        if (stateEl) stateEl.value = '';
+        const stateCodeEl = document.getElementById('stateCodeField');
         if (stateCodeEl) stateCodeEl.value = '';
         resetCityDropdown();
-    }
-}
-
-function handleStateTyping() {
-    const stateEl = document.getElementById('stateField');
-    const stateCodeEl = document.getElementById('stateCodeField');
-    const option = findStateOption(stateEl?.value || '');
-
-    renderCheckoutDropdown('stateDropdown', matchingStates(stateEl?.value || ''), selectStateOption);
-
-    if (!option) {
-        if (stateCodeEl) stateCodeEl.value = '';
-        resetCityDropdown('Type and select a valid state');
-        return;
+        const activeType = document.querySelector('.addr-type-btn.active');
+        if (activeType) activeType.classList.remove('active');
+        const homeBtn = document.querySelector('.addr-type-btn[data-type="Home"]');
+        if (homeBtn) homeBtn.classList.add('active');
     }
 
-    const code = option.code || '';
-    if (stateCodeEl?.value === code) return;
-
-    if (stateCodeEl) stateCodeEl.value = code;
-    loadCitiesForState(code);
-}
-
-function autoFillCity() {
-    const pin = document.getElementById('newPincode').value;
-    if (pin.length === 6) {
-        const cities = {
-            '560102': 'Bengaluru',
-            '400001': 'Mumbai',
-            '110001': 'Delhi',
-            '600001': 'Chennai',
-            '500001': 'Hyderabad'
-        };
-        if (cities[pin]) {
-            const cityEl = document.getElementById('cityField');
-            if (cityEl && !cityEl.disabled) {
-                cityEl.value = cities[pin];
-            }
-        }
-    }
-}
-
-/* ══ PAYMENT ══ */
-const api = {
-    ...(config.api || {}),
-    csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || config.api?.csrf || ''
-};
-
-// Pre-select first saved address if available
-window.__selectedAddressId = String(config.selectedAddressId || '');
-window.__checkoutToken = '';
-window.__couponCode = '';
-let isLoggedIn = Boolean(config.isLoggedIn);
-let isApplyingCoupon = false;
-let isVerifyingOtp = false;
-let isPlacingOrder = false;
-const pendingCartKey = 'nb_pending_cart';
-const cartPageUrl = config.cartPageUrl || '/cart';
-let currentTotal = 0;
-
-if (config.isGuest) {
-    try {
-        const raw = localStorage.getItem(pendingCartKey);
-        const items = raw ? JSON.parse(raw) : [];
-        const count = Array.isArray(items)
-            ? items.reduce((sum, item) => sum + Number(item && item.quantity || 0), 0)
-            : 0;
-
-        if (count < 1) {
-            sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
-            window.location.replace(cartPageUrl);
-        }
-    } catch (error) {
-        sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
-        window.location.replace(cartPageUrl);
-    }
-}
-
-function markLoginStepDone() {
-    const addressStep = document.getElementById('step-addr');
-    if (addressStep && !addressStep.classList.contains('done')) {
-        addressStep.classList.add('active');
-    }
-    const progress = document.getElementById('progressFill');
-    if (progress && progress.style.width === '') {
-        progress.style.width = '50%';
-    }
-}
-
-function redirectEmptyCheckout() {
-    sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
-    window.location.replace(cartPageUrl);
-}
-
-function updateCsrfToken(token) {
-    if (!token) {
-        return;
-    }
-
-    api.csrf = token;
-    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-    if (csrfMeta) {
-        csrfMeta.setAttribute('content', token);
-    }
-}
-
-async function refreshCsrfToken() {
-    const res = await fetch(api.csrfTokenUrl, {
-        headers: { 'Accept': 'application/json' },
-        credentials: 'same-origin'
-    });
-    const payload = await res.json().catch(() => ({}));
-    updateCsrfToken(payload.csrf_token || '');
-    return api.csrf;
-}
-
-async function fetchWithCsrfRetry(url, options = {}) {
-    const buildOptions = () => ({
-        ...options,
-        credentials: 'same-origin',
-        headers: {
-            ...(options.headers || {}),
-            ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
-        }
-    });
-
-    let response = await fetch(url, buildOptions());
-    if (response.status === 419) {
-        await refreshCsrfToken();
-        response = await fetch(url, buildOptions());
-    }
-
-    return response;
-}
-
-function getPendingCartItems() {
-    try {
-        const raw = localStorage.getItem(pendingCartKey);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (_) {
-        return [];
-    }
-}
-
-function savePendingCartItems(items) {
-    localStorage.setItem(pendingCartKey, JSON.stringify(items || []));
-}
-
-function normalizeCheckoutQuantity(quantity, maxStock) {
-    let qty = Math.max(1, Number(quantity || 1));
-    if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
-        qty = Math.min(qty, maxStock);
-    }
-    return qty;
-}
-
-function checkoutStorageImageUrl(path) {
-    if (!path) return '';
-    const value = String(path);
-    if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) {
-        return value;
-    }
-    return `/storage/${value.replace(/^\/+/, '')}`;
-}
-
-function checkoutCartItemImage(item) {
-    return checkoutStorageImageUrl(item?.product?.card_image_path) ||
-        checkoutStorageImageUrl(item?.product_variant?.image_path) ||
-        checkoutStorageImageUrl(item?.product?.primary_image?.image_path) ||
-        checkoutStorageImageUrl(item?.product?.images?.[0]?.image_path) ||
-        item?.fallback_image ||
-        '/img/product2.png';
-}
-
-function escapeCheckoutText(value) {
-    return String(value ?? '').replace(/[&<>"']/g, char => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    }[char]));
-}
-
-function checkoutVariantLabel(item) {
-    const variant = item?.product_variant || item?.productVariant || null;
-    let attributes = variant?.attributes || {};
-    if (typeof attributes === 'string') {
-        try {
-            attributes = JSON.parse(attributes);
-        } catch (_) {
-            attributes = attributes.trim() ? { Option: attributes } : {};
-        }
-    }
-    const attributeParts = Array.isArray(attributes)
-        ? attributes.filter(Boolean).map(value => String(value))
-        : Object.entries(attributes)
-            .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
-            .map(([name, value]) => `${name}: ${value}`);
-
-    if (attributeParts.length) {
-        return attributeParts.join(' / ');
-    }
-
-    const variantName = String(variant?.name || item?.variant_name || '').trim();
-    if (variantName) return variantName;
-
-    if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
-
-    return [
-        item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
-        item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
-        item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
-        item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
-    ].filter(Boolean).join(' / ');
-}
-
-function updatePendingCartItemQuantity(productId, productVariantId = null, quantity = 1) {
-    const targetKey = `${Number(productId || 0)}::${Number(productVariantId || 0)}`;
-    const nextItems = getPendingCartItems().map(it => {
-        const itemKey = `${Number(it.product_id || 0)}::${Number(it.product_variant_id || 0)}`;
-        if (itemKey !== targetKey) return it;
-
-        return {
-            ...it,
-            quantity: normalizeCheckoutQuantity(quantity)
-        };
-    });
-
-    savePendingCartItems(nextItems);
-}
-
-function createCheckoutQtyControls(quantity, maxStock) {
-    const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
-    const qty = normalizeCheckoutQuantity(quantity, effectiveMax);
-    return `
-                        <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">−</button>
-                        <input type="number" min="1" max="${effectiveMax}" class="qty-val" value="${qty}" aria-label="Quantity">
-                        <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
-                    `;
-}
-
-function bindCheckoutQtyControls(row, quantity, onChange, maxStock) {
-    const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
-    const qtyRow = row.querySelector('.ci-qty-row');
-    if (!qtyRow) return;
-    const input = qtyRow.querySelector('.qty-val');
-    let currentQty = normalizeCheckoutQuantity(quantity, effectiveMax);
-    let pendingQty = currentQty;
-    let saveTimer = null;
-
-    function setSaving(isSaving) {
-        qtyRow.classList.toggle('is-updating', isSaving);
-        qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
-            control.disabled = isSaving;
-        });
-    }
-
-    async function submitQuantity(nextQty, options = {}) {
-        const normalizedQty = normalizeCheckoutQuantity(nextQty, effectiveMax);
-        pendingQty = normalizedQty;
-        if (input) input.value = String(normalizedQty);
-
-        if (saveTimer) {
-            clearTimeout(saveTimer);
-            saveTimer = null;
-        }
-
-        if (normalizedQty === currentQty) {
+    async function saveAndGoToPayment() {
+        // If user selected a saved address, go straight to payment
+        if (window.__selectedAddressId) {
+            goToPayment();
             return;
         }
 
-        if (!options.immediate) {
-            saveTimer = setTimeout(() => submitQuantity(pendingQty, { immediate: true }), 550);
+        // Otherwise validate + save the new address form
+        const payload = getNewAddressPayload();
+        if (!hasRequiredNewAddressFields(payload)) {
+            nbToast('Please fill all required address fields.', 'warning');
+            return;
+        }
+        if (!findStateOption(payload.state)) {
+            nbToast('Please select a valid state from the list.', 'warning');
+            return;
+        }
+        if (!cityExistsInOptions(payload.city)) {
+            nbToast('Please select a valid city from the list.', 'warning');
             return;
         }
 
-        setSaving(true);
-
-        try {
-            await onChange(normalizedQty);
-            currentQty = normalizedQty;
-        } catch (error) {
-            pendingQty = currentQty;
-            if (input) input.value = String(currentQty);
-            nbToast(error.message || 'Unable to update cart quantity.', 'error');
-        } finally {
-            setSaving(false);
+        if (!isLoggedIn) {
+            // Guest — keep in sessionStorage
+            sessionStorage.setItem('nb_pending_address', JSON.stringify(payload));
+            goToPayment();
+            return;
         }
+
+        const btn = document.getElementById('addressContinueBtn');
+        if (btn) { btn.disabled = true; btn.textContent = 'Saving address…'; }
+
+        const address = await persistNewAddress(payload);
+
+        if (btn) { btn.disabled = false; btn.textContent = 'Continue to Payment'; }
+
+        if (!address?.id) {
+            return;
+        }
+
+        // Add the new address to the saved list dynamically
+        appendAddressToSavedList(address);
+        clearNewAddressForm();
+
+        window.__selectedAddressId = String(address.id);
+        goToPayment();
     }
 
-    qtyRow.querySelectorAll('.qty-btn').forEach(btn => {
-        btn.addEventListener('click', event => {
-            event.preventDefault();
-            const delta = Number(btn.dataset.qtyDelta || 0);
-            const baseQty = input ? normalizeCheckoutQuantity(input.value, effectiveMax) :
-                normalizeCheckoutQuantity(quantity, effectiveMax);
-            submitQuantity(baseQty + delta);
-        });
-    });
-
-    if (input) {
-        input.addEventListener('change', () => {
-            submitQuantity(input.value);
-        });
-        input.addEventListener('blur', () => {
-            input.value = String(normalizeCheckoutQuantity(input.value, effectiveMax));
-            submitQuantity(input.value, { immediate: true });
-        });
-        input.addEventListener('keydown', event => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                submitQuantity(input.value, { immediate: true });
-            }
-        });
-    }
-}
-
-async function updateServerCartQuantity(itemId, quantity) {
-    const res = await fetch(api.cartUpdateTemplate.replace('__ITEM__', itemId), {
-        method: 'PATCH',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...(api.csrf ? {
-                'X-CSRF-TOKEN': api.csrf
-            } : {})
-        },
-        body: JSON.stringify({
-            quantity: normalizeCheckoutQuantity(quantity)
-        })
-    });
-
-    if (!res.ok) {
-        const errorPayload = await res.json().catch(() => ({}));
-        throw new Error(errorPayload.message || 'Unable to update cart quantity.');
+    function hasRequiredNewAddressFields(payload = {}) {
+        return !!(payload.full_name && payload.phone && payload.address_line_1 && payload.postal_code && payload.city &&
+            payload.state);
     }
 
-    return res.json().catch(() => ({}));
-}
-
-async function syncPendingCartToServer() {
-    const items = getPendingCartItems();
-    if (!items.length) return;
-    for (const item of items) {
-        await fetch(api.cartUrl, {
+    async function persistNewAddress(payload, options = {}) {
+        const res = await fetch(api.addressesUrl, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -2222,225 +1743,704 @@ async function syncPendingCartToServer() {
                     'X-CSRF-TOKEN': api.csrf
                 } : {})
             },
-            body: JSON.stringify({
-                product_id: item.product_id,
-                product_variant_id: item.product_variant_id,
-                quantity: item.quantity || 1
-            })
-        }).catch(() => null);
-    }
-    localStorage.removeItem(pendingCartKey);
-}
+            body: JSON.stringify(payload)
+        });
 
-function coinRedemptionEnabled() {
-    const toggle = document.getElementById('coinRedeemToggle');
-    return !!(toggle && !toggle.disabled && toggle.checked);
-}
+        const responsePayload = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            if (!options.silent) {
+                nbToast(responsePayload.message || 'Unable to save address.', 'error');
+            }
+            return null;
+        }
 
-function getCoinsToRedeem() {
-    const slider = document.getElementById('coinSlider');
-    if (!slider || !coinRedemptionEnabled()) {
-        return 0;
+        return responsePayload.data || null;
     }
 
-    return Math.max(0, Number(slider.value || 0));
-}
 
-function updateCoinRedemptionUI(preferMax = false) {
-    const slider = document.getElementById('coinSlider');
-    const toggle = document.getElementById('coinRedeemToggle');
-    const box = document.getElementById('coinRedeemBox');
-    const label = document.getElementById('coinsToRedeemValue');
-    const discountText = document.getElementById('coinDiscountText');
 
-    if (!slider) {
-        return;
+    async function ensureCheckoutAddressReady() {
+        if (window.__selectedAddressId) {
+            return true;
+        }
+
+        const pendingAddress = getNewAddressPayload();
+        if (hasRequiredNewAddressFields(pendingAddress)) {
+            const createdAddress = await persistNewAddress(pendingAddress, {
+                silent: true
+            });
+            if (createdAddress?.id) {
+                window.__selectedAddressId = String(createdAddress.id);
+                return true;
+            }
+        }
+
+        await loadAddresses();
+        return !!window.__selectedAddressId;
     }
 
-    const enabled = coinRedemptionEnabled();
-    slider.disabled = !enabled;
-    if (box) box.classList.toggle('is-disabled', !enabled);
-
-    if (!enabled) {
-        slider.value = 0;
-    } else if (preferMax && toggle && slider.value === '0') {
-        slider.value = slider.max || 0;
+    function toggleAddrType(el) {
+        document.querySelectorAll('.addr-type-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
     }
 
-    if (label) label.textContent = `Redeeming: ${slider.value || 0} Coins`;
-    if (!enabled && discountText) discountText.textContent = 'Value: ₹0.00 off';
-}
+    function resetCityDropdown(message = 'Select State First') {
+        const cityEl = document.getElementById('cityField');
+        if (!cityEl) return;
 
-function updatePriceUI(pricing, itemsCount) {
-    const mrp = Number(pricing.display_subtotal !== undefined ? pricing.display_subtotal : (pricing.subtotal || 0));
-    const totalDiscount = Number(pricing.display_discount_total !== undefined ? pricing.display_discount_total : (pricing.discount_total || 0));
-    
-    const couponDiscount = Number(pricing.display_coupon_discount !== undefined ? pricing.display_coupon_discount : (pricing.discount_total || 0));
-    const coinDiscount = Number(pricing.display_coin_discount !== undefined ? pricing.display_coin_discount : (pricing.coin_discount || 0));
-    
-    // Generic discount is any savings NOT coming from coupon or coins (e.g. built-in item discounts)
-    const genericDiscount = Math.max(0, totalDiscount - couponDiscount - coinDiscount);
-
-    const shipping = Number(pricing.shipping_total || 0);
-    const gst = Number(pricing.display_tax_total !== undefined ? pricing.display_tax_total : (pricing.tax_total || 0));
-    const total = Number(pricing.grand_total || 0);
-
-    const mrpLabel = document.getElementById('pbMrpLabel');
-    const mrpValue = document.getElementById('pbMrpValue');
-    const productDiscount = document.getElementById('pbProductDiscount');
-    const delivery = document.getElementById('pbDelivery');
-    const gstEl = document.getElementById('pbGst');
-    const totalEl = document.getElementById('totalDisplay');
-    const savingsEl = document.getElementById('savingsAmt');
-    const loyaltyEl = document.getElementById('loyaltyPoints');
-
-    if (mrpLabel) mrpLabel.textContent = `Price (${itemsCount} items)`;
-    if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    if (productDiscount) {
-        const pdRow = productDiscount.closest('.pb-row');
-        if (pdRow) pdRow.style.display = genericDiscount > 0 ? 'flex' : 'none';
-        productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    }
-    if (delivery) delivery.textContent = shipping > 0 ?
-        `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : 'FREE 🎉';
-    
-    // Coupon Discount Display
-    const cRow2 = document.getElementById('couponRow2');
-    if (cRow2) {
-        cRow2.style.display = couponDiscount > 0 ? 'flex' : 'none';
-        document.getElementById('couponDiscount').textContent = `− ₹${couponDiscount.toLocaleString('en-IN')}`;
+        checkoutCityOptions = [];
+        cityEl.value = '';
+        cityEl.placeholder = message;
+        cityEl.disabled = true;
+        closeCheckoutDropdown('cityDropdown');
     }
 
-    // Coin Discount Display
-    const coinRow = document.getElementById('coinDiscountRow');
-    if (coinRow) {
-        coinRow.style.display = coinDiscount > 0 ? 'flex' : 'none';
-        document.getElementById('coinDiscountVal').textContent = `− ₹${coinDiscount.toLocaleString('en-IN')}`;
-        const discountText = document.getElementById('coinDiscountText');
-        if (discountText) discountText.textContent = `Value: ₹${coinDiscount.toLocaleString('en-IN')} off`;
+    function setCityDropdownOptions(cities = [], selectedCity = '') {
+        const cityEl = document.getElementById('cityField');
+        if (!cityEl) return;
+
+        checkoutCityOptions = cities;
+        cityEl.value = selectedCity || '';
+        cityEl.placeholder = cities.length ? 'Type or select city' : 'No cities found';
+        cityEl.disabled = cities.length === 0;
+        closeCheckoutDropdown('cityDropdown');
     }
 
-    const coinSlider = document.getElementById('coinSlider');
-    if (coinSlider && pricing.coins_redeemed !== undefined) {
-        const redeemedCoins = Number(pricing.coins_redeemed || 0);
-        coinSlider.value = coinRedemptionEnabled() ? Math.min(Number(coinSlider.max || 0), redeemedCoins) : 0;
-        const redeemLabel = document.getElementById('coinsToRedeemValue');
-        if (redeemLabel) redeemLabel.textContent = `Redeeming: ${coinSlider.value} Coins`;
-    }
-    updateCoinRedemptionUI();
+    function findStateOption(value = '') {
+        const target = normalizeLookup(value);
+        if (!target) return null;
 
-    if (gstEl) {
-        const gstRow = gstEl.closest('.pb-row');
-        if (gstRow) {
-            if (gst > 0) {
-                gstRow.style.display = 'flex';
-                gstEl.textContent = `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-            } else {
-                gstRow.style.display = 'none';
+        return (checkoutStateOptions || []).find(state => {
+            return normalizeLookup(state.name) === target ||
+                normalizeLookup(state.code) === target;
+        }) || null;
+    }
+
+    function cityExistsInOptions(city = '') {
+        const target = normalizeLookup(city);
+        if (!target) return false;
+
+        return (checkoutCityOptions || []).some(option => normalizeLookup(option) === target) ||
+            (checkoutAllCities || []).some(option => normalizeLookup(option) === target);
+    }
+
+    async function loadCitiesForState(stateCode, selectedCity = '') {
+        const spinner = document.getElementById('citySpinner');
+
+        if (!stateCode) {
+            resetCityDropdown();
+            return;
+        }
+
+        resetCityDropdown('Loading cities...');
+        spinner?.classList.add('show');
+
+        try {
+            if (Object.prototype.hasOwnProperty.call(checkoutCitiesByState, stateCode)) {
+                setCityDropdownOptions(checkoutCitiesByState[stateCode] || [], selectedCity);
+                return;
+            }
+
+            const res = await fetch(checkoutCitiesUrlTemplate.replace('__STATE__', encodeURIComponent(stateCode)), {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            const payload = await res.json().catch(() => ({}));
+            setCityDropdownOptions(payload.cities || [], selectedCity);
+        } catch (error) {
+            resetCityDropdown('Unable to load cities');
+        } finally {
+            spinner?.classList.remove('show');
+        }
+    }
+
+    function hydrateLocationFields(stateValue = '', cityValue = '') {
+        const stateOption = findStateOption(stateValue);
+        const stateEl = document.getElementById('stateField');
+        const stateCodeEl = document.getElementById('stateCodeField');
+
+        if (stateEl && stateOption) {
+            stateEl.value = stateOption.name || '';
+            if (stateCodeEl) stateCodeEl.value = stateOption.code || '';
+            loadCitiesForState(stateOption.code || '', cityValue || '');
+        } else {
+            if (stateCodeEl) stateCodeEl.value = '';
+            resetCityDropdown();
+        }
+    }
+
+    function handleStateTyping() {
+        const stateEl = document.getElementById('stateField');
+        const stateCodeEl = document.getElementById('stateCodeField');
+        const option = findStateOption(stateEl?.value || '');
+
+        renderCheckoutDropdown('stateDropdown', matchingStates(stateEl?.value || ''), selectStateOption);
+
+        if (!option) {
+            if (stateCodeEl) stateCodeEl.value = '';
+            resetCityDropdown('Type and select a valid state');
+            return;
+        }
+
+        const code = option.code || '';
+        if (stateCodeEl?.value === code) return;
+
+        if (stateCodeEl) stateCodeEl.value = code;
+        loadCitiesForState(code);
+    }
+
+    function autoFillCity() {
+        const pin = document.getElementById('newPincode').value;
+        if (pin.length === 6) {
+            const cities = {
+                '560102': 'Bengaluru',
+                '400001': 'Mumbai',
+                '110001': 'Delhi',
+                '600001': 'Chennai',
+                '500001': 'Hyderabad'
+            };
+            if (cities[pin]) {
+                const cityEl = document.getElementById('cityField');
+                if (cityEl && !cityEl.disabled) {
+                    cityEl.value = cities[pin];
+                }
             }
         }
     }
-    if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    if (savingsEl) savingsEl.textContent = `₹${totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
-    
-    // Earned Coins Display
-    if (loyaltyEl) {
-        const earned = pricing.total_coins_earned || Math.round(total / 20);
-        loyaltyEl.textContent = `${earned} NutriBuddy Coins`;
-    }
-}
 
-async function renderPendingCheckoutCart() {
-    const pending = getPendingCartItems();
-    const totalQuantity = pending.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
-    if (totalQuantity < 1) {
-        redirectEmptyCheckout();
-        return;
-    }
-    
-    let lineItemsToRender = [];
+    /* ══ PAYMENT ══ */
+    const api = {
+        ...(config.api || {}),
+        csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || config.api?.csrf || ''
+    };
 
-    try {
-        const res = await fetch('/guest/checkout/summary', {
-            method: 'POST',
+    // Pre-select first saved address if available
+    window.__selectedAddressId = String(config.selectedAddressId || '');
+    window.__checkoutToken = '';
+    window.__couponCode = '';
+    let isLoggedIn = Boolean(config.isLoggedIn);
+    let isApplyingCoupon = false;
+    let isVerifyingOtp = false;
+    let isPlacingOrder = false;
+    const pendingCartKey = 'nb_pending_cart';
+    const cartPageUrl = config.cartPageUrl || '/cart';
+    let currentTotal = 0;
+
+    if (config.isGuest) {
+        try {
+            const raw = localStorage.getItem(pendingCartKey);
+            const items = raw ? JSON.parse(raw) : [];
+            const count = Array.isArray(items)
+                ? items.reduce((sum, item) => sum + Number(item && item.quantity || 0), 0)
+                : 0;
+
+            if (count < 1) {
+                sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+                window.location.replace(cartPageUrl);
+            }
+        } catch (error) {
+            sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+            window.location.replace(cartPageUrl);
+        }
+    }
+
+    function markLoginStepDone() {
+        const addressStep = document.getElementById('step-addr');
+        if (addressStep && !addressStep.classList.contains('done')) {
+            addressStep.classList.add('active');
+        }
+        const progress = document.getElementById('progressFill');
+        if (progress && progress.style.width === '') {
+            progress.style.width = '50%';
+        }
+    }
+
+    function redirectEmptyCheckout() {
+        sessionStorage.setItem('nb_cart_notice', 'Please add at least one item to your cart before checkout.');
+        window.location.replace(cartPageUrl);
+    }
+
+    function updateCsrfToken(token) {
+        if (!token) {
+            return;
+        }
+
+        api.csrf = token;
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        if (csrfMeta) {
+            csrfMeta.setAttribute('content', token);
+        }
+    }
+
+    async function refreshCsrfToken() {
+        const res = await fetch(api.csrfTokenUrl, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        });
+        const payload = await res.json().catch(() => ({}));
+        updateCsrfToken(payload.csrf_token || '');
+        return api.csrf;
+    }
+
+    async function fetchWithCsrfRetry(url, options = {}) {
+        const buildOptions = () => ({
+            ...options,
+            credentials: 'same-origin',
+            headers: {
+                ...(options.headers || {}),
+                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+            }
+        });
+
+        let response = await fetch(url, buildOptions());
+        if (response.status === 419) {
+            await refreshCsrfToken();
+            response = await fetch(url, buildOptions());
+        }
+
+        return response;
+    }
+
+    function getPendingCartItems() {
+        try {
+            const raw = localStorage.getItem(pendingCartKey);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+            return [];
+        }
+    }
+
+    function savePendingCartItems(items) {
+        localStorage.setItem(pendingCartKey, JSON.stringify(items || []));
+    }
+
+    function normalizeCheckoutQuantity(quantity, maxStock) {
+        let qty = Math.max(1, Number(quantity || 1));
+        if (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) {
+            qty = Math.min(qty, maxStock);
+        }
+        return qty;
+    }
+
+    function checkoutStorageImageUrl(path) {
+        if (!path) return '';
+        const value = String(path);
+        if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) {
+            return value;
+        }
+        return `/storage/${value.replace(/^\/+/, '')}`;
+    }
+
+    function checkoutCartItemImage(item) {
+        return checkoutStorageImageUrl(item?.product?.card_image_path) ||
+            checkoutStorageImageUrl(item?.product_variant?.image_path) ||
+            checkoutStorageImageUrl(item?.product?.primary_image?.image_path) ||
+            checkoutStorageImageUrl(item?.product?.images?.[0]?.image_path) ||
+            item?.fallback_image ||
+            '/img/product2.png';
+    }
+
+    function escapeCheckoutText(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
+    }
+
+    function checkoutVariantLabel(item) {
+        const variant = item?.product_variant || item?.productVariant || null;
+        let attributes = variant?.attributes || {};
+        if (typeof attributes === 'string') {
+            try {
+                attributes = JSON.parse(attributes);
+            } catch (_) {
+                attributes = attributes.trim() ? { Option: attributes } : {};
+            }
+        }
+        const attributeParts = Array.isArray(attributes)
+            ? attributes.filter(Boolean).map(value => String(value))
+            : Object.entries(attributes)
+                .filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+                .map(([name, value]) => `${name}: ${value}`);
+
+        if (attributeParts.length) {
+            return attributeParts.join(' / ');
+        }
+
+        const variantName = String(variant?.name || item?.variant_name || '').trim();
+        if (variantName) return variantName;
+
+        if (item?.product_variant_id) return `Option #${item.product_variant_id}`;
+
+        return [
+            item?.product?.flavor ? `Flavour: ${item.product.flavor}` : '',
+            item?.product?.pack_size ? `Pack Size: ${item.product.pack_size}` : '',
+            item?.product?.age_group ? `Age Group: ${item.product.age_group}` : '',
+            item?.product?.dosage ? `Dosage: ${item.product.dosage}` : ''
+        ].filter(Boolean).join(' / ');
+    }
+
+    function updatePendingCartItemQuantity(productId, productVariantId = null, quantity = 1) {
+        const targetKey = `${Number(productId || 0)}::${Number(productVariantId || 0)}`;
+        const nextItems = getPendingCartItems().map(it => {
+            const itemKey = `${Number(it.product_id || 0)}::${Number(it.product_variant_id || 0)}`;
+            if (itemKey !== targetKey) return it;
+
+            return {
+                ...it,
+                quantity: normalizeCheckoutQuantity(quantity)
+            };
+        });
+
+        savePendingCartItems(nextItems);
+    }
+
+    function createCheckoutQtyControls(quantity, maxStock) {
+        const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : 999;
+        const qty = normalizeCheckoutQuantity(quantity, effectiveMax);
+        return `
+                        <button type="button" class="qty-btn" data-qty-delta="-1" aria-label="Decrease quantity">−</button>
+                        <input type="number" min="1" max="${effectiveMax}" class="qty-val" value="${qty}" aria-label="Quantity">
+                        <button type="button" class="qty-btn" data-qty-delta="1" aria-label="Increase quantity">+</button>
+                    `;
+    }
+
+    function bindCheckoutQtyControls(row, quantity, onChange, maxStock) {
+        const effectiveMax = (maxStock != null && Number.isFinite(maxStock) && maxStock > 0) ? maxStock : null;
+        const qtyRow = row.querySelector('.ci-qty-row');
+        if (!qtyRow) return;
+        const input = qtyRow.querySelector('.qty-val');
+        let currentQty = normalizeCheckoutQuantity(quantity, effectiveMax);
+        let pendingQty = currentQty;
+        let saveTimer = null;
+
+        function setSaving(isSaving) {
+            qtyRow.classList.toggle('is-updating', isSaving);
+            qtyRow.querySelectorAll('.qty-btn, .qty-val').forEach(control => {
+                control.disabled = isSaving;
+            });
+        }
+
+        async function submitQuantity(nextQty, options = {}) {
+            const normalizedQty = normalizeCheckoutQuantity(nextQty, effectiveMax);
+            pendingQty = normalizedQty;
+            if (input) input.value = String(normalizedQty);
+
+            if (saveTimer) {
+                clearTimeout(saveTimer);
+                saveTimer = null;
+            }
+
+            if (normalizedQty === currentQty) {
+                return;
+            }
+
+            if (!options.immediate) {
+                saveTimer = setTimeout(() => submitQuantity(pendingQty, { immediate: true }), 550);
+                return;
+            }
+
+            setSaving(true);
+
+            try {
+                await onChange(normalizedQty);
+                currentQty = normalizedQty;
+            } catch (error) {
+                pendingQty = currentQty;
+                if (input) input.value = String(currentQty);
+                nbToast(error.message || 'Unable to update cart quantity.', 'error');
+            } finally {
+                setSaving(false);
+            }
+        }
+
+        qtyRow.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', event => {
+                event.preventDefault();
+                const delta = Number(btn.dataset.qtyDelta || 0);
+                const baseQty = input ? normalizeCheckoutQuantity(input.value, effectiveMax) :
+                    normalizeCheckoutQuantity(quantity, effectiveMax);
+                submitQuantity(baseQty + delta);
+            });
+        });
+
+        if (input) {
+            input.addEventListener('change', () => {
+                submitQuantity(input.value);
+            });
+            input.addEventListener('blur', () => {
+                input.value = String(normalizeCheckoutQuantity(input.value, effectiveMax));
+                submitQuantity(input.value, { immediate: true });
+            });
+            input.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    submitQuantity(input.value, { immediate: true });
+                }
+            });
+        }
+    }
+
+    async function updateServerCartQuantity(itemId, quantity) {
+        const res = await fetch(api.cartUpdateTemplate.replace('__ITEM__', itemId), {
+            method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                ...(api.csrf ? {
+                    'X-CSRF-TOKEN': api.csrf
+                } : {})
             },
-            body: JSON.stringify({ items: pending })
+            body: JSON.stringify({
+                quantity: normalizeCheckoutQuantity(quantity)
+            })
         });
-        
-        if (res.ok) {
-            const payload = await res.json();
-            const pricing = payload.pricing || {};
-            currentTotal = Number(pricing.grand_total || 0);
-            updatePriceUI(pricing, totalQuantity);
-            
-            // Use server-calculated line items
-            lineItemsToRender = pricing.line_items || [];
-            
-            const totalWithCod = currentTotal;
-            const payBtn = document.getElementById('paymentPlaceBtn');
-            if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-            const pob = document.querySelector('.place-order-btn');
-            if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-        } else {
-            throw new Error('Fallback to local calculation');
+
+        if (!res.ok) {
+            const errorPayload = await res.json().catch(() => ({}));
+            throw new Error(errorPayload.message || 'Unable to update cart quantity.');
         }
-    } catch(e) {
-        const subtotal = pending.reduce((sum, it) => sum + (Number(it.unit_price || 0) * Number(it.quantity || 0)), 0);
-        const localGst = subtotal * 0.18;
-        const localGrandTotal = subtotal + localGst;
-        currentTotal = localGrandTotal;
 
-        updatePriceUI({
-            display_subtotal: subtotal,
-            discount_total: 0,
-            shipping_total: 0,
-            display_tax_total: localGst,
-            grand_total: localGrandTotal
-        }, totalQuantity);
-        
-        // Fallback: use pending items and map to standard structure
-        lineItemsToRender = pending.map(it => ({
-            cart_item: {
-                product: { name: it.product_name },
-                product_variant: { name: it.variant_name },
-                fallback_image: it.image || '/img/product2.png',
-                id: null,
-                product_id: it.product_id,
-                product_variant_id: it.product_variant_id
-            },
-            quantity: Number(it.quantity || 0),
-            display_line_total: Number(it.unit_price || 0) * Number(it.quantity || 0)
-        }));
+        return res.json().catch(() => ({}));
     }
 
-    const itemsCount = document.querySelector('.item-count');
-    if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
-
-    const cartWrap = document.getElementById('checkoutCartItems');
-    if (!cartWrap) return;
-
-    cartWrap.innerHTML = '';
-    if (!lineItemsToRender.length) {
-        cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
-        return;
+    async function syncPendingCartToServer() {
+        const items = getPendingCartItems();
+        if (!items.length) return;
+        for (const item of items) {
+            await fetch(api.cartUrl, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    ...(api.csrf ? {
+                        'X-CSRF-TOKEN': api.csrf
+                    } : {})
+                },
+                body: JSON.stringify({
+                    product_id: item.product_id,
+                    product_variant_id: item.product_variant_id,
+                    quantity: item.quantity || 1
+                })
+            }).catch(() => null);
+        }
+        localStorage.removeItem(pendingCartKey);
     }
 
-    lineItemsToRender.forEach(li => {
-        const it = li.cart_item;
-        const name = it.product?.name || 'Product';
-        const qty = li.quantity || 1;
-        const linePrice = li.display_line_total || 0;
-        const variantLabel = checkoutVariantLabel(it);
-        
-        const img = checkoutCartItemImage(it);
+    function coinRedemptionEnabled() {
+        const toggle = document.getElementById('coinRedeemToggle');
+        return !!(toggle && !toggle.disabled && toggle.checked);
+    }
 
-        const row = document.createElement('div');
-        row.className = 'ci';
-        row.innerHTML = `
+    function getCoinsToRedeem() {
+        const slider = document.getElementById('coinSlider');
+        if (!slider || !coinRedemptionEnabled()) {
+            return 0;
+        }
+
+        return Math.max(0, Number(slider.value || 0));
+    }
+
+    function updateCoinRedemptionUI(preferMax = false) {
+        const slider = document.getElementById('coinSlider');
+        const toggle = document.getElementById('coinRedeemToggle');
+        const box = document.getElementById('coinRedeemBox');
+        const label = document.getElementById('coinsToRedeemValue');
+        const discountText = document.getElementById('coinDiscountText');
+
+        if (!slider) {
+            return;
+        }
+
+        const enabled = coinRedemptionEnabled();
+        slider.disabled = !enabled;
+        if (box) box.classList.toggle('is-disabled', !enabled);
+
+        if (!enabled) {
+            slider.value = 0;
+        } else if (preferMax && toggle && slider.value === '0') {
+            slider.value = slider.max || 0;
+        }
+
+        if (label) label.textContent = `Redeeming: ${slider.value || 0} Coins`;
+        if (!enabled && discountText) discountText.textContent = 'Value: ₹0.00 off';
+    }
+
+    function updatePriceUI(pricing, itemsCount) {
+        const mrp = Number(pricing.display_subtotal !== undefined ? pricing.display_subtotal : (pricing.subtotal || 0));
+        const totalDiscount = Number(pricing.display_discount_total !== undefined ? pricing.display_discount_total : (pricing.discount_total || 0));
+
+        const couponDiscount = Number(pricing.display_coupon_discount !== undefined ? pricing.display_coupon_discount : (pricing.discount_total || 0));
+        const coinDiscount = Number(pricing.display_coin_discount !== undefined ? pricing.display_coin_discount : (pricing.coin_discount || 0));
+
+        // Generic discount is any savings NOT coming from coupon or coins (e.g. built-in item discounts)
+        const genericDiscount = Math.max(0, totalDiscount - couponDiscount - coinDiscount);
+
+        const shipping = Number(pricing.shipping_total || 0);
+        const gst = Number(pricing.display_tax_total !== undefined ? pricing.display_tax_total : (pricing.tax_total || 0));
+        const total = Number(pricing.grand_total || 0);
+
+        const mrpLabel = document.getElementById('pbMrpLabel');
+        const mrpValue = document.getElementById('pbMrpValue');
+        const productDiscount = document.getElementById('pbProductDiscount');
+        const delivery = document.getElementById('pbDelivery');
+        const gstEl = document.getElementById('pbGst');
+        const totalEl = document.getElementById('totalDisplay');
+        const savingsEl = document.getElementById('savingsAmt');
+        const loyaltyEl = document.getElementById('loyaltyPoints');
+
+        if (mrpLabel) mrpLabel.textContent = `Price (${itemsCount} items)`;
+        if (mrpValue) mrpValue.textContent = `₹${mrp.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        if (productDiscount) {
+            const pdRow = productDiscount.closest('.pb-row');
+            if (pdRow) pdRow.style.display = genericDiscount > 0 ? 'flex' : 'none';
+            productDiscount.textContent = `− ₹${genericDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        }
+        if (delivery) delivery.textContent = shipping > 0 ?
+            `₹${shipping.toLocaleString('en-IN', { maximumFractionDigits: 0 })}` : 'FREE 🎉';
+
+        // Coupon Discount Display
+        const cRow2 = document.getElementById('couponRow2');
+        if (cRow2) {
+            cRow2.style.display = couponDiscount > 0 ? 'flex' : 'none';
+            document.getElementById('couponDiscount').textContent = `− ₹${couponDiscount.toLocaleString('en-IN')}`;
+        }
+
+        // Coin Discount Display
+        const coinRow = document.getElementById('coinDiscountRow');
+        if (coinRow) {
+            coinRow.style.display = coinDiscount > 0 ? 'flex' : 'none';
+            document.getElementById('coinDiscountVal').textContent = `− ₹${coinDiscount.toLocaleString('en-IN')}`;
+            const discountText = document.getElementById('coinDiscountText');
+            if (discountText) discountText.textContent = `Value: ₹${coinDiscount.toLocaleString('en-IN')} off`;
+        }
+
+        const coinSlider = document.getElementById('coinSlider');
+        if (coinSlider && pricing.coins_redeemed !== undefined) {
+            const redeemedCoins = Number(pricing.coins_redeemed || 0);
+            coinSlider.value = coinRedemptionEnabled() ? Math.min(Number(coinSlider.max || 0), redeemedCoins) : 0;
+            const redeemLabel = document.getElementById('coinsToRedeemValue');
+            if (redeemLabel) redeemLabel.textContent = `Redeeming: ${coinSlider.value} Coins`;
+        }
+        updateCoinRedemptionUI();
+
+        if (gstEl) {
+            const gstRow = gstEl.closest('.pb-row');
+            if (gstRow) {
+                if (gst > 0) {
+                    gstRow.style.display = 'flex';
+                    gstEl.textContent = `+ ₹${gst.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                } else {
+                    gstRow.style.display = 'none';
+                }
+            }
+        }
+        if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+        if (savingsEl) savingsEl.textContent = `₹${totalDiscount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+
+        // Earned Coins Display
+        if (loyaltyEl) {
+            const earned = pricing.total_coins_earned || Math.round(total / 20);
+            loyaltyEl.textContent = `${earned} NutriBuddy Coins`;
+        }
+    }
+
+    async function renderPendingCheckoutCart() {
+        const pending = getPendingCartItems();
+        const totalQuantity = pending.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+        if (totalQuantity < 1) {
+            redirectEmptyCheckout();
+            return;
+        }
+
+        let lineItemsToRender = [];
+
+        try {
+            const res = await fetch('/guest/checkout/summary', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                },
+                body: JSON.stringify({ items: pending })
+            });
+
+            if (res.ok) {
+                const payload = await res.json();
+                const pricing = payload.pricing || {};
+                currentTotal = Number(pricing.grand_total || 0);
+                updatePriceUI(pricing, totalQuantity);
+
+                // Use server-calculated line items
+                lineItemsToRender = pricing.line_items || [];
+
+                const totalWithCod = currentTotal;
+                const payBtn = document.getElementById('paymentPlaceBtn');
+                if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+                const pob = document.querySelector('.place-order-btn');
+                if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+            } else {
+                throw new Error('Fallback to local calculation');
+            }
+        } catch (e) {
+            const subtotal = pending.reduce((sum, it) => sum + (Number(it.unit_price || 0) * Number(it.quantity || 0)), 0);
+            const localGst = subtotal * 0.18;
+            const localGrandTotal = subtotal + localGst;
+            currentTotal = localGrandTotal;
+
+            updatePriceUI({
+                display_subtotal: subtotal,
+                discount_total: 0,
+                shipping_total: 0,
+                display_tax_total: localGst,
+                grand_total: localGrandTotal
+            }, totalQuantity);
+
+            // Fallback: use pending items and map to standard structure
+            lineItemsToRender = pending.map(it => ({
+                cart_item: {
+                    product: { name: it.product_name },
+                    product_variant: { name: it.variant_name },
+                    fallback_image: it.image || '/img/product2.png',
+                    id: null,
+                    product_id: it.product_id,
+                    product_variant_id: it.product_variant_id
+                },
+                quantity: Number(it.quantity || 0),
+                display_line_total: Number(it.unit_price || 0) * Number(it.quantity || 0)
+            }));
+        }
+
+        const itemsCount = document.querySelector('.item-count');
+        if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
+
+        const cartWrap = document.getElementById('checkoutCartItems');
+        if (!cartWrap) return;
+
+        cartWrap.innerHTML = '';
+        if (!lineItemsToRender.length) {
+            cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
+            return;
+        }
+
+        lineItemsToRender.forEach(li => {
+            const it = li.cart_item;
+            const name = it.product?.name || 'Product';
+            const qty = li.quantity || 1;
+            const linePrice = li.display_line_total || 0;
+            const variantLabel = checkoutVariantLabel(it);
+
+            const img = checkoutCartItemImage(it);
+
+            const row = document.createElement('div');
+            row.className = 'ci';
+            row.innerHTML = `
                           <div class="ci-img"><img src="${img}" alt=""></div>
                           <div class="ci-info">
                             <div class="ci-name">${escapeCheckoutText(name)}</div>
@@ -2453,789 +2453,810 @@ async function renderPendingCheckoutCart() {
                           <div class="ci-price">₹${Math.round(linePrice).toLocaleString('en-IN')}</div>
                           </div>
                         `;
-        cartWrap.appendChild(row);
-        bindCheckoutQtyControls(row, qty, async nextQty => {
-            updatePendingCartItemQuantity(it.product_id, it.product_variant_id, nextQty);
-            renderPendingCheckoutCart();
+            cartWrap.appendChild(row);
+            bindCheckoutQtyControls(row, qty, async nextQty => {
+                updatePendingCartItemQuantity(it.product_id, it.product_variant_id, nextQty);
+                renderPendingCheckoutCart();
+            });
         });
-    });
-}
-
-function selectPayMethod(el, type) {
-    document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
-    el.classList.add('selected');
-    
-    const total = currentTotal;
-    const formattedTotal = `₹${total.toLocaleString('en-IN')}`;
-    const btnText = type === 'cod' ? `Confirm COD Order — ${formattedTotal}` : `Pay Securely — ${formattedTotal}`;
-    
-    const payBtn = document.getElementById('paymentPlaceBtn');
-    if (payBtn) payBtn.innerHTML = btnText;
-    
-    const placeBtn = document.querySelector('.place-order-btn');
-    if (placeBtn) placeBtn.innerHTML = btnText;
-}
-
-function selectUpiApp(e, el) {
-    e.stopPropagation();
-    document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
-}
-
-function verifyUPI() {
-    const id = document.getElementById('upiId').value.trim();
-    const msg = document.getElementById('upiMsg');
-    msg.style.display = 'block';
-    if (id.includes('@')) {
-        msg.textContent = '✅ UPI ID verified successfully!';
-        msg.style.color = 'var(--mn)';
-    } else {
-        msg.textContent = '❌ Invalid UPI ID. Format: name@bank';
-        msg.style.color = 'var(--or)';
     }
-}
 
-function selectEmi(e, el) {
-    e.stopPropagation();
-    document.querySelectorAll('.emi-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
+    function selectPayMethod(el, type) {
+        document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+        el.classList.add('selected');
 
-function selectWallet(e, el) {
-    e.stopPropagation();
-    document.querySelectorAll('.wallet-item').forEach(w => w.classList.remove('active'));
-    el.classList.add('active');
-}
+        const total = currentTotal;
+        const formattedTotal = `₹${total.toLocaleString('en-IN')}`;
+        const btnText = type === 'cod' ? `Confirm COD Order — ${formattedTotal}` : `Pay Securely — ${formattedTotal}`;
 
-async function ensureCheckoutToken(couponCode = null, options = {}) {
-    const normalizedCode = typeof couponCode === 'string' ? couponCode.trim().toUpperCase() : '';
-    const forceRefresh = !!options.forceRefresh;
+        const payBtn = document.getElementById('paymentPlaceBtn');
+        if (payBtn) payBtn.innerHTML = btnText;
 
-    if (!forceRefresh && window.__checkoutToken) {
+        const placeBtn = document.querySelector('.place-order-btn');
+        if (placeBtn) placeBtn.innerHTML = btnText;
+    }
+
+    function selectUpiApp(e, el) {
+        e.stopPropagation();
+        document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function verifyUPI() {
+        const id = document.getElementById('upiId').value.trim();
+        const msg = document.getElementById('upiMsg');
+        msg.style.display = 'block';
+        if (id.includes('@')) {
+            msg.textContent = '✅ UPI ID verified successfully!';
+            msg.style.color = 'var(--mn)';
+        } else {
+            msg.textContent = '❌ Invalid UPI ID. Format: name@bank';
+            msg.style.color = 'var(--or)';
+        }
+    }
+
+    function selectEmi(e, el) {
+        e.stopPropagation();
+        document.querySelectorAll('.emi-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function selectWallet(e, el) {
+        e.stopPropagation();
+        document.querySelectorAll('.wallet-item').forEach(w => w.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    async function ensureCheckoutToken(couponCode = null, options = {}) {
+        const normalizedCode = typeof couponCode === 'string' ? couponCode.trim().toUpperCase() : '';
+        const forceRefresh = !!options.forceRefresh;
+
+        if (!forceRefresh && window.__checkoutToken) {
+            return {
+                success: true,
+                token: window.__checkoutToken,
+                payload: null
+            };
+        }
+
+        const res = await fetch(api.checkoutSummaryUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...(api.csrf ? {
+                    'X-CSRF-TOKEN': api.csrf
+                } : {})
+            },
+            body: JSON.stringify({
+                coupon_code: normalizedCode || null,
+                coins_to_redeem: getCoinsToRedeem()
+            })
+        });
+
+        const wasRedirectedToLogin = res.redirected && /\/login(?:[/?#]|$)/i.test(res.url || '');
+        if (res.status === 401 || wasRedirectedToLogin) {
+            return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
+        }
+        if (res.status === 419) {
+            // 419 = CSRF mismatch, NOT an auth failure.
+            // If user is already logged in, don't open the OTP modal — ask them to refresh.
+            if (isLoggedIn) {
+                return { success: false, requiresLogin: false, message: 'Your session has expired. Please refresh the page and try again.' };
+            }
+            return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
+        }
+
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok || !payload.checkout_token) {
+            return {
+                success: false,
+                payload,
+                message: payload.message || 'Unable to prepare checkout. Please try again.'
+            };
+        }
+
+        window.__checkoutToken = payload.checkout_token;
+
         return {
             success: true,
             token: window.__checkoutToken,
-            payload: null
+            payload
         };
     }
 
-    const res = await fetch(api.checkoutSummaryUrl, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...(api.csrf ? {
-                'X-CSRF-TOKEN': api.csrf
-            } : {})
-        },
-        body: JSON.stringify({
-            coupon_code: normalizedCode || null,
-            coins_to_redeem: getCoinsToRedeem()
-        })
-    });
+    /* ══ REFRESH SUMMARY ══ */
+    async function refreshCheckoutSummary() {
+        const couponInput = document.getElementById('couponInput');
+        const code = couponInput ? couponInput.value.trim().toUpperCase() : (window.__couponCode || '');
+        const msg = document.getElementById('couponMsg');
 
-    const wasRedirectedToLogin = res.redirected && /\/login(?:[/?#]|$)/i.test(res.url || '');
-    if (res.status === 401 || wasRedirectedToLogin) {
-        return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
-    }
-    if (res.status === 419) {
-        // 419 = CSRF mismatch, NOT an auth failure.
-        // If user is already logged in, don't open the OTP modal — ask them to refresh.
-        if (isLoggedIn) {
-            return { success: false, requiresLogin: false, message: 'Your session has expired. Please refresh the page and try again.' };
-        }
-        return { success: false, requiresLogin: true, message: 'Login at checkout to continue.' };
-    }
-
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok || !payload.checkout_token) {
-        return {
-            success: false,
-            payload,
-            message: payload.message || 'Unable to prepare checkout. Please try again.'
-        };
-    }
-
-    window.__checkoutToken = payload.checkout_token;
-
-    return {
-        success: true,
-        token: window.__checkoutToken,
-        payload
-    };
-}
-
-/* ══ REFRESH SUMMARY ══ */
-async function refreshCheckoutSummary() {
-    const couponInput = document.getElementById('couponInput');
-    const code = couponInput ? couponInput.value.trim().toUpperCase() : (window.__couponCode || '');
-    const msg = document.getElementById('couponMsg');
-
-    if (msg) {
-        msg.classList.add('show');
-        msg.style.color = 'var(--text-light)';
-        msg.textContent = 'Updating totals...';
-    }
-
-    const tokenState = await ensureCheckoutToken(code, {
-        forceRefresh: true
-    });
-
-    if (tokenState.requiresLogin) {
         if (msg) {
-            msg.style.color = 'var(--or)';
-            msg.textContent = 'Login at checkout to apply discounts.';
+            msg.classList.add('show');
+            msg.style.color = 'var(--text-light)';
+            msg.textContent = 'Updating totals...';
         }
-        openOtpModal();
-        return;
-    }
 
-    if (!tokenState.success) {
-        if (msg) {
-            msg.style.color = 'var(--or)';
-            msg.textContent = tokenState.message || 'Error updating totals.';
-        }
-        return;
-    }
-
-    const payload = tokenState.payload || {};
-    const pricing = payload.pricing || {};
-    window.__couponCode = code;
-    window.__checkoutToken = payload.checkout_token;
-
-    // Update UI
-    const totalQuantity = (payload.cart?.items || []).reduce((sum, it) => sum + Number(it.quantity || 0), 0);
-    updatePriceUI(pricing, totalQuantity);
-
-    if (msg) {
-        if (code && pricing.display_coupon_discount > 0) {
-            msg.style.color = '#00a870';
-            msg.textContent = `✅ Coupon "${code}" applied!`;
-            document.getElementById('couponRow')?.classList.add('applied');
-        } else if (code) {
-            msg.style.color = 'var(--or)';
-            msg.textContent = 'Coupon code not applicable.';
-        } else {
-            msg.textContent = '';
-            msg.classList.remove('show');
-        }
-    }
-
-    currentTotal = Number(pricing.grand_total || 0);
-    const totalWithCod = currentTotal;
-    const payBtn = document.getElementById('paymentPlaceBtn');
-    if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-    const pob = document.querySelector('.place-order-btn');
-    if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-}
-
-/* ══ COUPON ══ */
-async function applyCoupon() {
-    await refreshCheckoutSummary();
-}
-
-/* ══ QTY ══ */
-function updateQty(btn, delta) {
-    const valEl = btn.parentElement.querySelector('.qty-val');
-    let v = parseInt(valEl.textContent) + delta;
-    if (v < 1) v = 1;
-    valEl.textContent = v;
-}
-
-/* ══ FORMAT CARD ══ */
-function formatCard(input) {
-    let v = input.value.replace(/\D/g, '').substring(0, 16);
-    input.value = v.replace(/(.{4})/g, '$1 ').trim();
-}
-
-document.getElementById('couponInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') applyCoupon();
-});
-
-/* ════════════════════════════════════════
-   OTP MODAL LOGIC
-════════════════════════════════════════ */
-let otpTimer = null;
-const otpFieldIds = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'];
-
-function openOtpModal() {
-    if (isLoggedIn) {
-        placeOrder();
-        return;
-    }
-    // Reset to phone step
-    showStep('stepPhone');
-    document.getElementById('phoneInput').value = '';
-    document.getElementById('phoneError').style.display = 'none';
-    clearOtpBoxes();
-    document.getElementById('otpError').classList.remove('show');
-    document.getElementById('otpModal').classList.add('show');
-    setTimeout(() => document.getElementById('phoneInput').focus(), 300);
-}
-
-function closeOtpModal() {
-    document.getElementById('otpModal').classList.remove('show');
-    clearInterval(otpTimer);
-}
-
-function showStep(id) {
-    document.querySelectorAll('.om-step').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-}
-
-function useSavedPhone() {
-    document.getElementById('phoneInput').value = String(config.phone || '').replace(/\D/g, '').slice(0, 10);
-    document.getElementById('phoneError').style.display = 'none';
-}
-
-document.getElementById('phoneInput')?.addEventListener('input', function(e) {
-    this.value = this.value.replace(/\D/g, '').slice(0, 10);
-});
-
-async function sendOtp() {
-    const phoneInput = document.getElementById('phoneInput');
-    phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-    const phone = phoneInput.value.trim();
-    const errEl = document.getElementById('phoneError');
-
-    if (phone.length !== 10) {
-        errEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.';
-        errEl.style.display = 'block';
-        document.getElementById('phoneInput').focus();
-        return;
-    }
-
-    errEl.style.display = 'none';
-
-    const btn = document.getElementById('sendOtpBtn');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-
-    const res = await fetchWithCsrfRetry(api.sendOtpUrl, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            phone
-        })
-    });
-
-    const payload = await res.json().catch(() => ({}));
-    btn.disabled = false;
-    btn.textContent = 'Send OTP →';
-
-    if (!res.ok) {
-        errEl.textContent = payload.message || 'Unable to send OTP.';
-        errEl.style.display = 'block';
-        return;
-    }
-
-    document.getElementById('sentToNum').textContent = '+91 ' + phone;
-    showStep('stepOtp');
-    clearOtpBoxes();
-    document.getElementById('otpError').classList.remove('show');
-    startResendTimer();
-    setTimeout(() => document.getElementById('otp1').focus(), 200);
-}
-
-function backToPhone() {
-    clearInterval(otpTimer);
-    showStep('stepPhone');
-    setTimeout(() => document.getElementById('phoneInput').focus(), 200);
-}
-
-/* OTP box helpers */
-function clearOtpBoxes() {
-    otpFieldIds.forEach(id => {
-        const el = document.getElementById(id);
-        el.value = '';
-        el.classList.remove('filled');
-    });
-}
-
-function otpInput(el, prevId, nextId) {
-    const digits = el.value.replace(/\D/g, '');
-    if (digits.length > 1) {
-        fillOtpFrom(el.id, digits);
-        return;
-    }
-
-    el.value = digits;
-    if (digits) {
-        el.classList.add('filled');
-        if (nextId) {
-            setTimeout(() => document.getElementById(nextId).focus(), 10);
-        }
-    } else {
-        el.classList.remove('filled');
-    }
-    const all = otpFieldIds.map(id => document.getElementById(id).value);
-    if (all.every(v => v !== '')) {
-        document.getElementById('otpError').classList.remove('show');
-    }
-}
-
-function otpKeydown(e, el, prevId, nextId) {
-    if (e.key.length === 1 && !/^\d$/.test(e.key)) {
-        e.preventDefault();
-        return;
-    }
-    if (e.key === 'Backspace' && !el.value && prevId) {
-        setTimeout(() => document.getElementById(prevId).focus(), 10);
-    }
-    if (e.key === 'Enter') verifyOtp();
-}
-
-function fillOtpFrom(startId, value) {
-    const startIndex = Math.max(0, otpFieldIds.indexOf(startId));
-    const digits = String(value || '').replace(/\D/g, '').slice(0, otpFieldIds.length - startIndex);
-
-    digits.split('').forEach((digit, offset) => {
-        const target = document.getElementById(otpFieldIds[startIndex + offset]);
-        if (!target) return;
-        target.value = digit;
-        target.classList.add('filled');
-    });
-
-    const nextIndex = Math.min(startIndex + digits.length, otpFieldIds.length - 1);
-    setTimeout(() => document.getElementById(otpFieldIds[nextIndex])?.focus(), 10);
-    document.getElementById('otpError').classList.remove('show');
-}
-
-otpFieldIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('paste', event => {
-        event.preventDefault();
-        fillOtpFrom(id, event.clipboardData.getData('text'));
-    });
-});
-
-async function verifyOtp() {
-    const entered = otpFieldIds
-        .map(id => document.getElementById(id).value)
-        .join('');
-
-    if (entered.length < otpFieldIds.length) {
-        document.getElementById('otpError').textContent = '⚠️ Please enter all 6 digits.';
-        document.getElementById('otpError').classList.add('show');
-        return;
-    }
-
-    const btn = document.getElementById('verifyOtpBtn');
-
-    document.getElementById('otpError').classList.remove('show');
-    btn.textContent = '⏳ Verifying…';
-    btn.disabled = true;
-    btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
-
-    const phone = document.getElementById('phoneInput').value.trim();
-    const otp = entered;
-
-    const res = await fetchWithCsrfRetry(api.verifyOtpUrl, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            phone,
-            otp
-        })
-    });
-
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok || !payload.success) {
-        btn.textContent = '✅ Verify & Place Order';
-        btn.disabled = false;
-        btn.style.background = '';
-        document.getElementById('otpError').textContent = payload.message || '❌ Invalid OTP.';
-        document.getElementById('otpError').classList.add('show');
-        // Shake the boxes
-        otpFieldIds.forEach(id => {
-            const el = document.getElementById(id);
-            el.style.borderColor = 'var(--or)';
-            el.style.background = 'var(--orl)';
-            setTimeout(() => {
-                el.style.borderColor = '';
-                el.style.background = '';
-                el.classList.remove('filled');
-                el.value = '';
-            }, 600);
-        });
-        setTimeout(() => document.getElementById('otp1').focus(), 650);
-        return;
-    }
-
-    clearInterval(otpTimer);
-    isLoggedIn = true;
-    markLoginStepDone();
-    updateCsrfToken(payload.csrf_token || '');
-    await syncPendingCartToServer();
-
-    const hasAddressReady = await ensureCheckoutAddressReady();
-    const couponInput = document.getElementById('couponInput');
-    if (couponInput && couponInput.value.trim()) {
-        window.__checkoutToken = '';
-        await applyCoupon();
-    } else {
-        await loadCartSummary();
-    }
-
-    closeOtpModal();
-
-    if (!hasAddressReady) {
-        nbToast('Login successful! Please add or select a delivery address to place your order.', 'warning', 'Address Required');
-        return;
-    }
-
-    await placeOrder();
-}
-
-/* Resend timer */
-function startResendTimer() {
-    let secs = 30;
-    const timerEl = document.getElementById('timerCount');
-    const timerText = document.getElementById('otpTimerText');
-    timerEl.textContent = secs + 's';
-    timerText.innerHTML = `Resend OTP in <strong id="timerCount">${secs}s</strong>`;
-
-    clearInterval(otpTimer);
-    otpTimer = setInterval(() => {
-        secs--;
-        document.getElementById('timerCount').textContent = secs + 's';
-        if (secs <= 0) {
-            clearInterval(otpTimer);
-            document.getElementById('otpTimerText').innerHTML =
-                `<span class="resend-link" onclick="resendOtp()">Resend OTP</span>`;
-        }
-    }, 1000);
-}
-
-async function resendOtp() {
-    await sendOtp();
-    const otp1 = document.getElementById(otpFieldIds[0]);
-    if (otp1) otp1.focus();
-}
-
-/* ══ PLACE ORDER (called after OTP success) ══ */
-async function placeOrder() {
-    if (!isLoggedIn) {
-        if (typeof openLoginModal === 'function') {
-            openLoginModal(async (data) => {
-                isLoggedIn = true;
-                markLoginStepDone();
-                if (typeof updateCsrfToken === 'function') updateCsrfToken(data.csrf_token);
-                await syncPendingCartToServer();
-                await loadCartSummary();
-                // Save the address that was entered as a guest
-                const hasAddressReady = await ensureCheckoutAddressReady();
-                if (hasAddressReady) {
-                    await placeOrder();
-                } else {
-                    nbToast('Please add or select a delivery address to continue.', 'warning', 'Address Required');
-                }
-            });
-        } else if (typeof openOtpModal === 'function') {
-            openOtpModal();
-        }
-        return;
-    }
-
-    const addressId = window.__selectedAddressId;
-    if (!addressId) {
-        nbToast('Please select a delivery address to continue.', 'warning', 'Address Required');
-        return;
-    }
-
-    if (!window.__checkoutToken) {
-        const tokenState = await ensureCheckoutToken(window.__couponCode || null, {
+        const tokenState = await ensureCheckoutToken(code, {
             forceRefresh: true
         });
+
         if (tokenState.requiresLogin) {
+            if (msg) {
+                msg.style.color = 'var(--or)';
+                msg.textContent = 'Login at checkout to apply discounts.';
+            }
             openOtpModal();
             return;
         }
+
         if (!tokenState.success) {
-            alert(tokenState.message || 'Unable to prepare checkout. Please try again.');
-            return;
-        }
-    }
-
-    const paymentMethod = document.querySelector('.pay-method.selected')?.getAttribute('data-method') || 'cashfree';
-
-    if (paymentMethod === 'razorpay' && typeof Razorpay !== 'function') {
-        if (typeof nbToast === 'function') {
-            nbToast('Razorpay checkout is loading. Please wait a moment or refresh the page.', 'warning');
-        }
-        return;
-    }
-
-    if (paymentMethod === 'cashfree' && typeof Cashfree !== 'function') {
-        if (typeof nbToast === 'function') {
-            nbToast('Cashfree checkout is loading. Please wait a moment or refresh the page.', 'warning');
-        }
-        return;
-    }
-
-    const res = await fetch(api.placeOrderUrl, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            ...(api.csrf ? {
-                'X-CSRF-TOKEN': api.csrf
-            } : {})
-        },
-        body: JSON.stringify({
-            address_id: Number(addressId),
-            coupon_code: window.__couponCode || null,
-            coins_to_redeem: getCoinsToRedeem(),
-            payment_method: document.querySelector('.pay-method.selected')?.getAttribute('data-method') || 'cashfree',
-            checkout_token: window.__checkoutToken || ''
-        })
-    });
-
-    if (res.status === 401 || res.status === 419) {
-        openOtpModal();
-        return;
-    }
-
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok) {
-        if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to place order.', 'error');
-        return;
-    }
-
-    updateCsrfToken(payload.csrf_token || '');
-
-    const orderNumber = payload.order?.order_number || '';
-    const orderId     = payload.order?.id || '';
-    const paymentSessionId = payload.payment?.payment_session_id || '';
-
-    if (payload.payment?.provider === 'razorpay') {
-        const razorpayKeyId = payload.payment.razorpay_key_id;
-        const razorpayOrderId = payload.payment.razorpay_order_id;
-
-        if (typeof Razorpay !== 'function') {
-            if (typeof nbToast === 'function') {
-                nbToast('Razorpay checkout could not load. Please refresh and try again.', 'error');
+            if (msg) {
+                msg.style.color = 'var(--or)';
+                msg.textContent = tokenState.message || 'Error updating totals.';
             }
             return;
         }
 
-        const btn = document.querySelector('.place-order-btn');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = 'Opening Razorpay...';
+        const payload = tokenState.payload || {};
+        const pricing = payload.pricing || {};
+        window.__couponCode = code;
+        window.__checkoutToken = payload.checkout_token;
+
+        // Update UI
+        const totalQuantity = (payload.cart?.items || []).reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+        updatePriceUI(pricing, totalQuantity);
+
+        if (msg) {
+            if (code && pricing.display_coupon_discount > 0) {
+                msg.style.color = '#00a870';
+                msg.textContent = `✅ Coupon "${code}" applied!`;
+                document.getElementById('couponRow')?.classList.add('applied');
+            } else if (code) {
+                msg.style.color = 'var(--or)';
+                msg.textContent = 'Coupon code not applicable.';
+            } else {
+                msg.textContent = '';
+                msg.classList.remove('show');
+            }
         }
 
-        const options = {
-            key: razorpayKeyId,
-            amount: Math.round(Number(payload.order.grand_total) * 100),
-            currency: 'INR',
-            name: 'NutriBuddy',
-            description: `Order #${orderNumber}`,
-            order_id: razorpayOrderId,
-            handler: async function (response) {
-                if (btn) btn.innerHTML = 'Verifying...';
-                try {
-                    const verifyRes = await fetch('/payment/razorpay/verify', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
-                        },
-                        body: JSON.stringify({
-                            order_id: orderId,
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature
-                        })
-                    });
+        currentTotal = Number(pricing.grand_total || 0);
+        const totalWithCod = currentTotal;
+        const payBtn = document.getElementById('paymentPlaceBtn');
+        if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+        const pob = document.querySelector('.place-order-btn');
+        if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+    }
 
-                    const verifyPayload = await verifyRes.json().catch(() => ({}));
-                    if (verifyRes.ok && verifyPayload.success) {
-                        window.location.href = `/user/orders/${orderId}/detail`;
+    /* ══ COUPON ══ */
+    async function applyCoupon() {
+        await refreshCheckoutSummary();
+    }
+
+    /* ══ QTY ══ */
+    function updateQty(btn, delta) {
+        const valEl = btn.parentElement.querySelector('.qty-val');
+        let v = parseInt(valEl.textContent) + delta;
+        if (v < 1) v = 1;
+        valEl.textContent = v;
+    }
+
+    /* ══ FORMAT CARD ══ */
+    function formatCard(input) {
+        let v = input.value.replace(/\D/g, '').substring(0, 16);
+        input.value = v.replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    document.getElementById('couponInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') applyCoupon();
+    });
+
+    /* ════════════════════════════════════════
+       OTP MODAL LOGIC
+    ════════════════════════════════════════ */
+    let otpTimer = null;
+    const otpFieldIds = ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'];
+
+    function openOtpModal() {
+        if (isLoggedIn) {
+            placeOrder();
+            return;
+        }
+        // Reset to phone step
+        showStep('stepPhone');
+        document.getElementById('phoneInput').value = '';
+        document.getElementById('phoneError').style.display = 'none';
+        clearOtpBoxes();
+        document.getElementById('otpError').classList.remove('show');
+        document.getElementById('otpModal').classList.add('show');
+        setTimeout(() => document.getElementById('phoneInput').focus(), 300);
+    }
+
+    function closeOtpModal() {
+        document.getElementById('otpModal').classList.remove('show');
+        clearInterval(otpTimer);
+    }
+
+    function showStep(id) {
+        document.querySelectorAll('.om-step').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function useSavedPhone() {
+        document.getElementById('phoneInput').value = String(config.phone || '').replace(/\D/g, '').slice(0, 10);
+        document.getElementById('phoneError').style.display = 'none';
+    }
+
+    document.getElementById('phoneInput')?.addEventListener('input', function (e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    async function sendOtp() {
+        const phoneInput = document.getElementById('phoneInput');
+        phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+        const phone = phoneInput.value.trim();
+        const errEl = document.getElementById('phoneError');
+
+        if (phone.length !== 10) {
+            errEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.';
+            errEl.style.display = 'block';
+            document.getElementById('phoneInput').focus();
+            return;
+        }
+
+        errEl.style.display = 'none';
+
+        const btn = document.getElementById('sendOtpBtn');
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+
+        const res = await fetchWithCsrfRetry(api.sendOtpUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone
+            })
+        });
+
+        const payload = await res.json().catch(() => ({}));
+        btn.disabled = false;
+        btn.textContent = 'Send OTP →';
+
+        if (!res.ok) {
+            errEl.textContent = payload.message || 'Unable to send OTP.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        document.getElementById('sentToNum').textContent = '+91 ' + phone;
+        showStep('stepOtp');
+        clearOtpBoxes();
+        document.getElementById('otpError').classList.remove('show');
+        startResendTimer();
+        setTimeout(() => document.getElementById('otp1').focus(), 200);
+    }
+
+    function backToPhone() {
+        clearInterval(otpTimer);
+        showStep('stepPhone');
+        setTimeout(() => document.getElementById('phoneInput').focus(), 200);
+    }
+
+    /* OTP box helpers */
+    function clearOtpBoxes() {
+        otpFieldIds.forEach(id => {
+            const el = document.getElementById(id);
+            el.value = '';
+            el.classList.remove('filled');
+        });
+    }
+
+    function otpInput(el, prevId, nextId) {
+        const digits = el.value.replace(/\D/g, '');
+        if (digits.length > 1) {
+            fillOtpFrom(el.id, digits);
+            return;
+        }
+
+        el.value = digits;
+        if (digits) {
+            el.classList.add('filled');
+            if (nextId) {
+                setTimeout(() => document.getElementById(nextId).focus(), 10);
+            }
+        } else {
+            el.classList.remove('filled');
+        }
+        const all = otpFieldIds.map(id => document.getElementById(id).value);
+        if (all.every(v => v !== '')) {
+            document.getElementById('otpError').classList.remove('show');
+        }
+    }
+
+    function otpKeydown(e, el, prevId, nextId) {
+        if (e.key.length === 1 && !/^\d$/.test(e.key)) {
+            e.preventDefault();
+            return;
+        }
+        if (e.key === 'Backspace' && !el.value && prevId) {
+            setTimeout(() => document.getElementById(prevId).focus(), 10);
+        }
+        if (e.key === 'Enter') verifyOtp();
+    }
+
+    function fillOtpFrom(startId, value) {
+        const startIndex = Math.max(0, otpFieldIds.indexOf(startId));
+        const digits = String(value || '').replace(/\D/g, '').slice(0, otpFieldIds.length - startIndex);
+
+        digits.split('').forEach((digit, offset) => {
+            const target = document.getElementById(otpFieldIds[startIndex + offset]);
+            if (!target) return;
+            target.value = digit;
+            target.classList.add('filled');
+        });
+
+        const nextIndex = Math.min(startIndex + digits.length, otpFieldIds.length - 1);
+        setTimeout(() => document.getElementById(otpFieldIds[nextIndex])?.focus(), 10);
+        document.getElementById('otpError').classList.remove('show');
+    }
+
+    otpFieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('paste', event => {
+            event.preventDefault();
+            fillOtpFrom(id, event.clipboardData.getData('text'));
+        });
+    });
+
+    async function verifyOtp() {
+        const entered = otpFieldIds
+            .map(id => document.getElementById(id).value)
+            .join('');
+
+        if (entered.length < otpFieldIds.length) {
+            document.getElementById('otpError').textContent = '⚠️ Please enter all 6 digits.';
+            document.getElementById('otpError').classList.add('show');
+            return;
+        }
+
+        const btn = document.getElementById('verifyOtpBtn');
+
+        document.getElementById('otpError').classList.remove('show');
+        btn.textContent = '⏳ Verifying…';
+        btn.disabled = true;
+        btn.style.background = 'linear-gradient(135deg,var(--mn),#00a870)';
+
+        const phone = document.getElementById('phoneInput').value.trim();
+        const otp = entered;
+
+        const res = await fetchWithCsrfRetry(api.verifyOtpUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone,
+                otp
+            })
+        });
+
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok || !payload.success) {
+            btn.textContent = '✅ Verify & Place Order';
+            btn.disabled = false;
+            btn.style.background = '';
+            document.getElementById('otpError').textContent = payload.message || '❌ Invalid OTP.';
+            document.getElementById('otpError').classList.add('show');
+            // Shake the boxes
+            otpFieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                el.style.borderColor = 'var(--or)';
+                el.style.background = 'var(--orl)';
+                setTimeout(() => {
+                    el.style.borderColor = '';
+                    el.style.background = '';
+                    el.classList.remove('filled');
+                    el.value = '';
+                }, 600);
+            });
+            setTimeout(() => document.getElementById('otp1').focus(), 650);
+            return;
+        }
+
+        clearInterval(otpTimer);
+        isLoggedIn = true;
+        markLoginStepDone();
+        updateCsrfToken(payload.csrf_token || '');
+        await syncPendingCartToServer();
+
+        const hasAddressReady = await ensureCheckoutAddressReady();
+        const couponInput = document.getElementById('couponInput');
+        if (couponInput && couponInput.value.trim()) {
+            window.__checkoutToken = '';
+            await applyCoupon();
+        } else {
+            await loadCartSummary();
+        }
+
+        closeOtpModal();
+
+        if (!hasAddressReady) {
+            nbToast('Login successful! Please add or select a delivery address to place your order.', 'warning', 'Address Required');
+            return;
+        }
+
+        await placeOrder();
+    }
+
+    /* Resend timer */
+    function startResendTimer() {
+        let secs = 30;
+        const timerEl = document.getElementById('timerCount');
+        const timerText = document.getElementById('otpTimerText');
+        timerEl.textContent = secs + 's';
+        timerText.innerHTML = `Resend OTP in <strong id="timerCount">${secs}s</strong>`;
+
+        clearInterval(otpTimer);
+        otpTimer = setInterval(() => {
+            secs--;
+            document.getElementById('timerCount').textContent = secs + 's';
+            if (secs <= 0) {
+                clearInterval(otpTimer);
+                document.getElementById('otpTimerText').innerHTML =
+                    `<span class="resend-link" onclick="resendOtp()">Resend OTP</span>`;
+            }
+        }, 1000);
+    }
+
+    async function resendOtp() {
+        await sendOtp();
+        const otp1 = document.getElementById(otpFieldIds[0]);
+        if (otp1) otp1.focus();
+    }
+
+    /* ══ PLACE ORDER (called after OTP success) ══ */
+    async function placeOrder() {
+        if (!isLoggedIn) {
+            if (typeof openLoginModal === 'function') {
+                openLoginModal(async (data) => {
+                    isLoggedIn = true;
+                    markLoginStepDone();
+                    if (typeof updateCsrfToken === 'function') updateCsrfToken(data.csrf_token);
+                    await syncPendingCartToServer();
+                    await loadCartSummary();
+                    // Save the address that was entered as a guest
+                    const hasAddressReady = await ensureCheckoutAddressReady();
+                    if (hasAddressReady) {
+                        await placeOrder();
                     } else {
-                        if (typeof nbToast === 'function') {
-                            nbToast(verifyPayload.message || 'Payment verification failed.', 'error');
+                        nbToast('Please add or select a delivery address to continue.', 'warning', 'Address Required');
+                    }
+                });
+            } else if (typeof openOtpModal === 'function') {
+                openOtpModal();
+            }
+            return;
+        }
+
+        const addressId = window.__selectedAddressId;
+        if (!addressId) {
+            nbToast('Please select a delivery address to continue.', 'warning', 'Address Required');
+            return;
+        }
+
+        if (!window.__checkoutToken) {
+            const tokenState = await ensureCheckoutToken(window.__couponCode || null, {
+                forceRefresh: true
+            });
+            if (tokenState.requiresLogin) {
+                openOtpModal();
+                return;
+            }
+            if (!tokenState.success) {
+                alert(tokenState.message || 'Unable to prepare checkout. Please try again.');
+                return;
+            }
+        }
+
+        const btn = document.querySelector('.place-order-btn');
+        if (btn) {
+            if (btn.disabled) return;
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Processing...';
+        }
+
+        const resetBtn = () => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.originalHtml || 'Pay Securely';
+            }
+        };
+
+        const paymentMethod = document.querySelector('.pay-method.selected')?.getAttribute('data-method') || 'cashfree';
+
+        if (paymentMethod === 'razorpay' && typeof Razorpay !== 'function') {
+            if (typeof nbToast === 'function') {
+                nbToast('Razorpay checkout is loading. Please wait a moment or refresh the page.', 'warning');
+            }
+            resetBtn();
+            return;
+        }
+
+        if (paymentMethod === 'cashfree' && typeof Cashfree !== 'function') {
+            if (typeof nbToast === 'function') {
+                nbToast('Cashfree checkout is loading. Please wait a moment or refresh the page.', 'warning');
+            }
+            resetBtn();
+            return;
+        }
+
+        const res = await fetch(api.placeOrderUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...(api.csrf ? {
+                    'X-CSRF-TOKEN': api.csrf
+                } : {})
+            },
+            body: JSON.stringify({
+                address_id: Number(addressId),
+                coupon_code: window.__couponCode || null,
+                coins_to_redeem: getCoinsToRedeem(),
+                payment_method: document.querySelector('.pay-method.selected')?.getAttribute('data-method') || 'cashfree',
+                checkout_token: window.__checkoutToken || ''
+            })
+        });
+
+        if (res.status === 401 || res.status === 419) {
+            resetBtn();
+            openOtpModal();
+            return;
+        }
+
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok) {
+            if (typeof nbToast === 'function') nbToast(payload.message || 'Unable to place order.', 'error');
+            resetBtn();
+            return;
+        }
+
+        updateCsrfToken(payload.csrf_token || '');
+
+        const orderNumber = payload.order?.order_number || '';
+        const orderId = payload.order?.id || '';
+        const paymentSessionId = payload.payment?.payment_session_id || '';
+
+        if (payload.payment?.provider === 'razorpay') {
+            const razorpayKeyId = payload.payment.razorpay_key_id;
+            const razorpayOrderId = payload.payment.razorpay_order_id;
+
+            if (typeof Razorpay !== 'function') {
+                if (typeof nbToast === 'function') {
+                    nbToast('Razorpay checkout could not load. Please refresh and try again.', 'error');
+                }
+                resetBtn();
+                return;
+            }
+
+            const btn = document.querySelector('.place-order-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Opening Razorpay...';
+            }
+
+            const options = {
+                key: razorpayKeyId,
+                amount: Math.round(Number(payload.order.grand_total) * 100),
+                currency: 'INR',
+                name: 'NutriBuddy',
+                description: `Order #${orderNumber}`,
+                order_id: razorpayOrderId,
+                handler: async function (response) {
+                    if (btn) btn.innerHTML = 'Verifying...';
+                    try {
+                        const verifyRes = await fetch('/payment/razorpay/verify', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                ...(api.csrf ? { 'X-CSRF-TOKEN': api.csrf } : {})
+                            },
+                            body: JSON.stringify({
+                                order_id: orderId,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+
+                        const verifyPayload = await verifyRes.json().catch(() => ({}));
+                        if (verifyRes.ok && verifyPayload.success) {
+                            window.location.href = `/user/orders/${orderId}/detail`;
+                        } else {
+                            if (typeof nbToast === 'function') {
+                                nbToast(verifyPayload.message || 'Payment verification failed.', 'error');
+                            }
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = 'Pay Securely';
+                            }
                         }
+                    } catch (e) {
+                        if (typeof nbToast === 'function') nbToast('Payment verification check failed.', 'error');
                         if (btn) {
                             btn.disabled = false;
                             btn.innerHTML = 'Pay Securely';
                         }
                     }
-                } catch (e) {
-                    if (typeof nbToast === 'function') nbToast('Payment verification check failed.', 'error');
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = 'Pay Securely';
+                },
+                modal: {
+                    ondismiss: function () {
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'Pay Securely';
+                        }
                     }
+                },
+                prefill: {
+                    name: (document.getElementById('firstName')?.value || '') + ' ' + (document.getElementById('lastName')?.value || ''),
+                    contact: document.getElementById('addressPhone')?.value || ''
+                },
+                theme: {
+                    color: '#063c36'
                 }
-            },
-            modal: {
-                ondismiss: function () {
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = 'Pay Securely';
-                    }
-                }
-            },
-            prefill: {
-                name: (document.getElementById('firstName')?.value || '') + ' ' + (document.getElementById('lastName')?.value || ''),
-                contact: document.getElementById('addressPhone')?.value || ''
-            },
-            theme: {
-                color: '#063c36'
-            }
-        };
+            };
 
-        const rzp = new Razorpay(options);
-        rzp.open();
-        return;
-    }
-
-    if (paymentSessionId) {
-        if (typeof Cashfree !== 'function') {
-            if (typeof nbToast === 'function') {
-                nbToast('Cashfree checkout could not load. Please refresh and try again.', 'error');
-            }
+            const rzp = new Razorpay(options);
+            rzp.open();
             return;
         }
 
-        const btn = document.querySelector('.place-order-btn');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = 'Opening Cashfree...';
+        if (paymentSessionId) {
+            if (typeof Cashfree !== 'function') {
+                if (typeof nbToast === 'function') {
+                    nbToast('Cashfree checkout could not load. Please refresh and try again.', 'error');
+                }
+                resetBtn();
+                return;
+            }
+
+            const btn = document.querySelector('.place-order-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Opening Cashfree...';
+            }
+
+            const cashfree = Cashfree({
+                mode: config.cashfreeMode || 'sandbox'
+            });
+
+            cashfree.checkout({
+                paymentSessionId,
+                redirectTarget: '_self'
+            });
+            return;
         }
 
-        const cashfree = Cashfree({
-            mode: config.cashfreeMode || 'sandbox'
+        const numEl = document.getElementById('successOrderNumber');
+        if (numEl && orderNumber) numEl.textContent = `Order ID: ${orderNumber}`;
+
+        // Wire the "View Order Details" link
+        const detailBtn = document.getElementById('orderDetailBtn');
+        if (detailBtn && orderId) detailBtn.href = `/user/orders/${orderId}/detail`;
+
+        // Start countdown then redirect
+        let countdown = 5;
+        const countEl = document.getElementById('redirectCountdown');
+        const countTimer = setInterval(() => {
+            countdown--;
+            if (countEl) countEl.textContent = countdown;
+            if (countdown <= 0) {
+                clearInterval(countTimer);
+                if (orderId) window.location.href = `/user/orders/${orderId}/detail`;
+            }
+        }, 1000);
+
+        document.getElementById('progressFill').style.width = '100%';
+        setTimeout(() => document.getElementById('successOverlay').classList.add('show'), 400);
+    }
+
+    async function loadAddresses() {
+        const res = await fetch(api.addressesUrl, {
+            headers: {
+                'Accept': 'application/json'
+            }
         });
+        const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
+        if (isGuest) {
+            const panel = document.getElementById('savedAddrPanel');
+            if (panel) panel.innerHTML =
+                `<div style="padding:14px;color:var(--text-light)">Login at checkout to load saved addresses.</div>`;
+            window.__selectedAddressId = '';
+            return;
+        }
+        if (!res.ok) return;
 
-        cashfree.checkout({
-            paymentSessionId,
-            redirectTarget: '_self'
+        const payload = await res.json().catch(() => ({}));
+        const addresses = payload.data || [];
+
+        if (!addresses.length) {
+            window.__selectedAddressId = '';
+            return;
+        }
+
+        // Pre-fill the form with the most recent address
+        const a = addresses[0];
+        const names = a.full_name.split(' ');
+        if (document.getElementById('firstName')) document.getElementById('firstName').value = names[0] || '';
+        if (document.getElementById('lastName')) document.getElementById('lastName').value = names.slice(1).join(' ') || '';
+        if (document.getElementById('addressPhone')) document.getElementById('addressPhone').value = a.phone || '';
+        if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
+        if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
+        if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
+        hydrateLocationFields(a.state || '', a.city || '');
+
+        if (a.label) {
+            const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
+            if (btn) toggleAddrType(btn);
+        }
+
+        window.__selectedAddressId = String(a.id);
+    }
+
+    async function loadCartSummary() {
+        const res = await fetch(api.cartUrl, {
+            headers: {
+                'Accept': 'application/json'
+            }
         });
-        return;
-    }
-
-    const numEl = document.getElementById('successOrderNumber');
-    if (numEl && orderNumber) numEl.textContent = `Order ID: ${orderNumber}`;
-
-    // Wire the "View Order Details" link
-    const detailBtn = document.getElementById('orderDetailBtn');
-    if (detailBtn && orderId) detailBtn.href = `/user/orders/${orderId}/detail`;
-
-    // Start countdown then redirect
-    let countdown = 5;
-    const countEl = document.getElementById('redirectCountdown');
-    const countTimer = setInterval(() => {
-        countdown--;
-        if (countEl) countEl.textContent = countdown;
-        if (countdown <= 0) {
-            clearInterval(countTimer);
-            if (orderId) window.location.href = `/user/orders/${orderId}/detail`;
+        const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
+        if (isGuest) {
+            renderPendingCheckoutCart();
+            return;
         }
-    }, 1000);
+        if (!res.ok) return;
 
-    document.getElementById('progressFill').style.width = '100%';
-    setTimeout(() => document.getElementById('successOverlay').classList.add('show'), 400);
-}
-
-async function loadAddresses() {
-    const res = await fetch(api.addressesUrl, {
-        headers: {
-            'Accept': 'application/json'
+        const payload = await res.json().catch(() => ({}));
+        const items = payload.cart?.items || [];
+        const pricing = payload.pricing || {};
+        const totalQuantity = items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
+        if (totalQuantity < 1) {
+            redirectEmptyCheckout();
+            return;
         }
-    });
-    const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
-    if (isGuest) {
-        const panel = document.getElementById('savedAddrPanel');
-        if (panel) panel.innerHTML =
-            `<div style="padding:14px;color:var(--text-light)">Login at checkout to load saved addresses.</div>`;
-        window.__selectedAddressId = '';
-        return;
-    }
-    if (!res.ok) return;
 
-    const payload = await res.json().catch(() => ({}));
-    const addresses = payload.data || [];
+        currentTotal = Number(pricing.grand_total || 0);
+        updatePriceUI(pricing, totalQuantity);
 
-    if (!addresses.length) {
-        window.__selectedAddressId = '';
-        return;
-    }
+        const itemsCount = document.querySelector('.item-count');
+        if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
 
-    // Pre-fill the form with the most recent address
-    const a = addresses[0];
-    const names = a.full_name.split(' ');
-    if (document.getElementById('firstName')) document.getElementById('firstName').value = names[0] || '';
-    if (document.getElementById('lastName')) document.getElementById('lastName').value = names.slice(1).join(' ') || '';
-    if (document.getElementById('addressPhone')) document.getElementById('addressPhone').value = a.phone || '';
-    if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
-    if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
-    if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-    hydrateLocationFields(a.state || '', a.city || '');
-    
-    if (a.label) {
-        const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
-        if (btn) toggleAddrType(btn);
-    }
+        const cartWrap = document.getElementById('checkoutCartItems');
+        if (cartWrap) {
+            cartWrap.innerHTML = '';
+            const lineItems = pricing.line_items || [];
+            if (!lineItems.length) {
+                cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
+            } else {
+                lineItems.forEach(li => {
+                    const it = li.cart_item;
+                    const name = it.product?.name || 'Product';
+                    const qty = li.quantity || 1;
+                    const linePrice = li.display_line_total || 0;
+                    const variantLabel = checkoutVariantLabel(it);
+                    const img = checkoutCartItemImage(it);
 
-    window.__selectedAddressId = String(a.id);
-}
-
-async function loadCartSummary() {
-    const res = await fetch(api.cartUrl, {
-        headers: {
-            'Accept': 'application/json'
-        }
-    });
-    const isGuest = res.status === 401 || res.status === 419 || (res.redirected && /\/login(?:[/?#]|$)/i.test(res.url));
-    if (isGuest) {
-        renderPendingCheckoutCart();
-        return;
-    }
-    if (!res.ok) return;
-
-    const payload = await res.json().catch(() => ({}));
-    const items = payload.cart?.items || [];
-    const pricing = payload.pricing || {};
-    const totalQuantity = items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
-    if (totalQuantity < 1) {
-        redirectEmptyCheckout();
-        return;
-    }
-
-    currentTotal = Number(pricing.grand_total || 0);
-    updatePriceUI(pricing, totalQuantity);
-
-    const itemsCount = document.querySelector('.item-count');
-    if (itemsCount) itemsCount.textContent = `${totalQuantity} Items`;
-
-    const cartWrap = document.getElementById('checkoutCartItems');
-    if (cartWrap) {
-        cartWrap.innerHTML = '';
-        const lineItems = pricing.line_items || [];
-        if (!lineItems.length) {
-            cartWrap.innerHTML = `<div style="padding:10px;color:var(--text-light)">Your cart is empty.</div>`;
-        } else {
-            lineItems.forEach(li => {
-                const it = li.cart_item;
-                const name = it.product?.name || 'Product';
-                const qty = li.quantity || 1;
-                const linePrice = li.display_line_total || 0;
-                const variantLabel = checkoutVariantLabel(it);
-                const img = checkoutCartItemImage(it);
-
-                const row = document.createElement('div');
-                row.className = 'ci';
-                row.innerHTML = `
+                    const row = document.createElement('div');
+                    row.className = 'ci';
+                    row.innerHTML = `
                                   <div class="ci-img"><img src="${img}" alt=""></div>
                                   <div class="ci-info">
                                     <div class="ci-name">${escapeCheckoutText(name)}</div>
@@ -3248,159 +3269,159 @@ async function loadCartSummary() {
                                     <div class="ci-price">₹${linePrice.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</div>
                                   </div>
                                 `;
-                cartWrap.appendChild(row);
-                bindCheckoutQtyControls(row, qty, async nextQty => {
-                    await updateServerCartQuantity(it.id, nextQty);
-                    await loadCartSummary();
+                    cartWrap.appendChild(row);
+                    bindCheckoutQtyControls(row, qty, async nextQty => {
+                        await updateServerCartQuantity(it.id, nextQty);
+                        await loadCartSummary();
+                    });
                 });
+            }
+        }
+
+        // generate a token for idempotency
+        window.__checkoutToken = window.__checkoutToken || '';
+        if (!window.__checkoutToken) {
+            const tokenState = await ensureCheckoutToken(window.__couponCode || null);
+            if (tokenState.requiresLogin) {
+                return;
+            }
+        }
+
+        // Cashfree: update payment button with current total
+        const totalWithCod = currentTotal;
+        const payBtn = document.getElementById('paymentPlaceBtn');
+        if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+        const pob = document.querySelector('.place-order-btn');
+        if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
+    }
+
+
+    Object.assign(window, {
+        goToPayment,
+        editSection,
+        switchAddrTab,
+        selectSavedAddress,
+        deleteAddress,
+        saveAndGoToPayment,
+        toggleAddrType,
+        autoFillCity,
+        selectPayMethod,
+        selectUpiApp,
+        verifyUPI,
+        selectEmi,
+        selectWallet,
+        applyCoupon,
+        updateQty,
+        formatCard,
+        openOtpModal,
+        closeOtpModal,
+        showStep,
+        useSavedPhone,
+        sendOtp,
+        backToPhone,
+        otpInput,
+        otpKeydown,
+        fillOtpFrom,
+        verifyOtp,
+        resendOtp,
+        placeOrder
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const stateEl = document.getElementById('stateField');
+        const cityEl = document.getElementById('cityField');
+        if (stateEl) {
+            stateEl.addEventListener('input', handleStateTyping);
+            stateEl.addEventListener('change', handleStateTyping);
+            stateEl.addEventListener('focus', function () {
+                renderCheckoutDropdown('stateDropdown', matchingStates(this.value), selectStateOption);
+            });
+
+            if (stateEl.value) {
+                hydrateLocationFields(stateEl.value, cityEl?.dataset.oldCity || '');
+            }
+        }
+        if (cityEl) {
+            cityEl.addEventListener('input', function () {
+                renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
+            });
+            cityEl.addEventListener('focus', function () {
+                if (!this.disabled) {
+                    renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
+                }
             });
         }
-    }
-
-    // generate a token for idempotency
-    window.__checkoutToken = window.__checkoutToken || '';
-    if (!window.__checkoutToken) {
-        const tokenState = await ensureCheckoutToken(window.__couponCode || null);
-        if (tokenState.requiresLogin) {
-            return;
-        }
-    }
-
-    // Cashfree: update payment button with current total
-    const totalWithCod = currentTotal;
-    const payBtn = document.getElementById('paymentPlaceBtn');
-    if (payBtn) payBtn.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-    const pob = document.querySelector('.place-order-btn');
-    if (pob) pob.innerHTML = `Pay Securely — ₹${totalWithCod.toLocaleString('en-IN')}`;
-}
-
-
-Object.assign(window, {
-    goToPayment,
-    editSection,
-    switchAddrTab,
-    selectSavedAddress,
-    deleteAddress,
-    saveAndGoToPayment,
-    toggleAddrType,
-    autoFillCity,
-    selectPayMethod,
-    selectUpiApp,
-    verifyUPI,
-    selectEmi,
-    selectWallet,
-    applyCoupon,
-    updateQty,
-    formatCard,
-    openOtpModal,
-    closeOtpModal,
-    showStep,
-    useSavedPhone,
-    sendOtp,
-    backToPhone,
-    otpInput,
-    otpKeydown,
-    fillOtpFrom,
-    verifyOtp,
-    resendOtp,
-    placeOrder
-});
-document.addEventListener('DOMContentLoaded', function () {
-    const stateEl = document.getElementById('stateField');
-    const cityEl = document.getElementById('cityField');
-    if (stateEl) {
-        stateEl.addEventListener('input', handleStateTyping);
-        stateEl.addEventListener('change', handleStateTyping);
-        stateEl.addEventListener('focus', function() {
-            renderCheckoutDropdown('stateDropdown', matchingStates(this.value), selectStateOption);
-        });
-
-        if (stateEl.value) {
-            hydrateLocationFields(stateEl.value, cityEl?.dataset.oldCity || '');
-        }
-    }
-    if (cityEl) {
-        cityEl.addEventListener('input', function() {
-            renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
-        });
-        cityEl.addEventListener('focus', function() {
-            if (!this.disabled) {
-                renderCheckoutDropdown('cityDropdown', matchingCities(this.value), selectCityOption);
+        document.addEventListener('mousedown', function (event) {
+            if (!event.target.closest('.checkout-combobox')) {
+                closeCheckoutDropdown('stateDropdown');
+                closeCheckoutDropdown('cityDropdown');
             }
         });
-    }
-    document.addEventListener('mousedown', function(event) {
-        if (!event.target.closest('.checkout-combobox')) {
-            closeCheckoutDropdown('stateDropdown');
-            closeCheckoutDropdown('cityDropdown');
+
+        // Only call loadAddresses() if no saved addresses were rendered server-side
+        const hasSavedCards = document.querySelectorAll('#savedAddressList .addr-item').length > 0;
+        if (!hasSavedCards) {
+            loadAddresses();
+        }
+        loadCartSummary();
+
+        // Restore pending address if user was logged in midway
+        const pending = sessionStorage.getItem('nb_pending_address');
+        if (pending) {
+            try {
+                const a = JSON.parse(pending);
+                const names = (a.full_name || '').split(' ');
+                if (document.getElementById('firstName')) document.getElementById('firstName').value = names[0] || '';
+                if (document.getElementById('lastName')) document.getElementById('lastName').value = names.slice(1).join(' ') || '';
+                if (document.getElementById('addressPhone')) document.getElementById('addressPhone').value = a.phone || '';
+                if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
+                if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
+                if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
+                hydrateLocationFields(a.state || '', a.city || '');
+                if (a.label) {
+                    const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
+                    if (btn) toggleAddrType(btn);
+                }
+                sessionStorage.removeItem('nb_pending_address');
+            } catch (e) { }
+        }
+
+        const initialPayMethod = document.querySelector('.pay-method.selected') || document.querySelector('.pay-method');
+        if (initialPayMethod) {
+            selectPayMethod(initialPayMethod, initialPayMethod.getAttribute('data-method'));
+        }
+
+        // Coin redemption controls
+        const coinToggle = document.getElementById('coinRedeemToggle');
+        const slider = document.getElementById('coinSlider');
+        if (coinToggle && slider) {
+            updateCoinRedemptionUI();
+            coinToggle.addEventListener('change', function () {
+                if (this.checked && slider.value === '0') {
+                    slider.value = slider.max || 0;
+                }
+                updateCoinRedemptionUI(true);
+                refreshCheckoutSummary();
+            });
+        }
+        if (slider) {
+            slider.addEventListener('input', function () {
+                if (!coinRedemptionEnabled()) return;
+                document.getElementById('coinsToRedeemValue').textContent = `Redeeming: ${this.value} Coins`;
+            });
+            slider.addEventListener('change', function () {
+                if (!coinRedemptionEnabled()) return;
+                refreshCheckoutSummary(); // Unified refresh
+            });
         }
     });
 
-    // Only call loadAddresses() if no saved addresses were rendered server-side
-    const hasSavedCards = document.querySelectorAll('#savedAddressList .addr-item').length > 0;
-    if (!hasSavedCards) {
-        loadAddresses();
-    }
-    loadCartSummary();
-    
-    // Restore pending address if user was logged in midway
-    const pending = sessionStorage.getItem('nb_pending_address');
-    if (pending) {
-        try {
-            const a = JSON.parse(pending);
-            const names = (a.full_name || '').split(' ');
-            if (document.getElementById('firstName')) document.getElementById('firstName').value = names[0] || '';
-            if (document.getElementById('lastName')) document.getElementById('lastName').value = names.slice(1).join(' ') || '';
-            if (document.getElementById('addressPhone')) document.getElementById('addressPhone').value = a.phone || '';
-            if (document.getElementById('addressLine1')) document.getElementById('addressLine1').value = a.address_line_1 || '';
-            if (document.getElementById('addressLine2')) document.getElementById('addressLine2').value = a.address_line_2 || '';
-            if (document.getElementById('newPincode')) document.getElementById('newPincode').value = a.postal_code || '';
-            hydrateLocationFields(a.state || '', a.city || '');
-            if (a.label) {
-                const btn = document.querySelector(`.addr-type-btn[data-type="${a.label}"]`);
-                if (btn) toggleAddrType(btn);
-            }
-            sessionStorage.removeItem('nb_pending_address');
-        } catch(e) {}
-    }
+    /* Close modal on backdrop click */
+    document.getElementById('otpModal').addEventListener('click', function (e) {
+        if (e.target === this) closeOtpModal();
+    });
 
-    const initialPayMethod = document.querySelector('.pay-method.selected') || document.querySelector('.pay-method');
-    if (initialPayMethod) {
-        selectPayMethod(initialPayMethod, initialPayMethod.getAttribute('data-method'));
-    }
-
-    // Coin redemption controls
-    const coinToggle = document.getElementById('coinRedeemToggle');
-    const slider = document.getElementById('coinSlider');
-    if (coinToggle && slider) {
-        updateCoinRedemptionUI();
-        coinToggle.addEventListener('change', function() {
-            if (this.checked && slider.value === '0') {
-                slider.value = slider.max || 0;
-            }
-            updateCoinRedemptionUI(true);
-            refreshCheckoutSummary();
-        });
-    }
-    if (slider) {
-        slider.addEventListener('input', function() {
-            if (!coinRedemptionEnabled()) return;
-            document.getElementById('coinsToRedeemValue').textContent = `Redeeming: ${this.value} Coins`;
-        });
-        slider.addEventListener('change', function() {
-            if (!coinRedemptionEnabled()) return;
-            refreshCheckoutSummary(); // Unified refresh
-        });
-    }
-});
-
-/* Close modal on backdrop click */
-document.getElementById('otpModal').addEventListener('click', function (e) {
-    if (e.target === this) closeOtpModal();
-});
-
-document.getElementById('successOverlay').addEventListener('click', function (e) {
-    if (e.target === this) this.classList.remove('show');
-});
+    document.getElementById('successOverlay').addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('show');
+    });
 })();
 

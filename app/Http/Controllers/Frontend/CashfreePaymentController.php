@@ -52,9 +52,11 @@ class CashfreePaymentController extends Controller
         $signature = $request->header('x-webhook-signature');
         $timestamp = $request->header('x-webhook-timestamp');
 
-        if ($signature || $timestamp) {
-            abort_unless($cashfree->webhookSignatureIsValid($rawBody, $signature, $timestamp), 401);
+        if (!$signature || !$timestamp) {
+            abort(401, 'Missing webhook signature or timestamp');
         }
+
+        abort_unless($cashfree->webhookSignatureIsValid($rawBody, $signature, $timestamp), 401);
 
         $payload = $request->json()->all();
         $cashfreeOrderId = data_get($payload, 'data.order.order_id')

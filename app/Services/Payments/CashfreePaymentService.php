@@ -39,8 +39,8 @@ class CashfreePaymentService
                 'customer_phone' => preg_replace('/\D+/', '', (string) $order->customer_phone),
             ],
             'order_meta' => [
-                'return_url' => route('cashfree.return') . '?order_id={order_id}',
-                'notify_url' => route('cashfree.webhook'),
+                'return_url' => str_replace('http://', 'https://', route('cashfree.return')) . '?order_id={order_id}',
+                'notify_url' => str_replace('http://', 'https://', route('cashfree.webhook')),
             ],
             'order_note' => 'NutriBuddy order ' . $order->order_number,
             'order_tags' => [

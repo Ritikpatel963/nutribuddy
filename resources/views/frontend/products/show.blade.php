@@ -23,8 +23,6 @@
                 <div class="p-image" style="display:block;line-height:1">
                     @if($product->primaryImage)
                         <img src="{{ asset('storage/' . $product->primaryImage->image_path) }}" alt="{{ $product->name }}" id="mainPdpImage">
-                    @else
-                        <img src="{{ asset('img/productt.png') }}" alt="{{ $product->name }}" id="mainPdpImage">
                     @endif
                 </div>
             </div>
@@ -261,8 +259,6 @@
                         <a href="{{ route('product.show', $rel->slug) }}" class="pc-emoji p-image">
                             @if($rel->primaryImage)
                                 <img src="{{ asset('storage/' . $rel->primaryImage->image_path) }}" alt="{{ $rel->name }}" class="default-img">
-                            @else
-                                <img src="{{ asset('img/productt.png') }}" alt="{{ $rel->name }}" class="default-img">
                             @endif
                         </a>
                     </div>

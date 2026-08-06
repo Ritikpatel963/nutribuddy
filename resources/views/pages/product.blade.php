@@ -24,7 +24,7 @@
         $defAge = $product->age_group ?: $defVariantAttributes['Age Group'] ?? '';
         $defPack = $product->pack_size ?: $defVariantAttributes['Pack Size'] ?? '';
         $defFlavour = $product->flavor ?: $defVariantAttributes['Flavour'] ?? '';
-        $fallbackProductImage = asset('img/product2.png');
+        $fallbackProductImage = '';
         $productImageUrl = fn($imagePath = null) => $imagePath && \Illuminate\Support\Facades\Storage::disk('public')->exists($imagePath)
             ? route('storage.public', ['path' => $imagePath])
             : $fallbackProductImage;
@@ -74,31 +74,10 @@
                 ];
             })
             ->values();
-        $problemSolutionDefaults = [
-            'brand_title' => 'Nutribuddy',
-            'product_title' => 'Immunity Booster Gummies',
-            'tagline_items' => ['Daily Nutrition', 'Stronger Immunity', 'Healthier You'],
-            'left_label' => "Power Of\nNature",
-            'left_cards' => [
-                ['icon' => 'img/haldi.webp', 'title' => 'TURMERIC', 'text' => "Fights germs &\nsupports immunity"],
-                ['icon' => 'img/Amla.webp', 'title' => 'AMLA', 'text' => "Rich in Vitamin C,\nstrengthens body defenses"],
-                ['icon' => 'img/adrak.png', 'title' => 'GINGER', 'text' => "Soothes throat &\nhelps fight infections"],
-            ],
-            'center_image' => 'img/product2.png',
-            'right_label' => "Daily Goodness\nIn Every Gummy!",
-            'right_cards' => [
-                ['icon' => 'img/new-btn-2.png', 'title' => 'VITAMINS & MINERALS', 'text' => 'Daily nutrition to build strong immunity'],
-                ['icon' => 'img/bb1.png', 'title' => 'NATURAL & SAFE', 'text' => 'Made with natural ingredients'],
-                ['icon' => 'img/c4.png', 'title' => 'YUMMY & FUN', 'text' => 'Delicious gummies kids will love'],
-                ['icon' => 'img/new-btn-3.png', 'title' => 'MODERN SCIENCE', 'text' => 'Formulated with care and research'],
-            ],
-            'shelf_left_image' => 'img/Amla.webp',
-            'shelf_right_image' => 'img/haldi.webp',
-        ];
-        $problemSolutionAsset = function (?string $path, ?string $fallback = null) {
-            $path = trim((string) ($path ?: $fallback));
+        $problemSolutionAsset = function (?string $path) {
+            $path = trim((string) $path);
             if ($path === '') {
-                return asset('img/product2.png');
+                return '';
             }
 
             if (\Illuminate\Support\Str::startsWith($path, ['img/', 'assets/'])) {
@@ -107,28 +86,22 @@
 
             return \Illuminate\Support\Facades\Storage::disk('public')->exists($path)
                 ? route('storage.public', ['path' => $path])
-                : asset($fallback ?: 'img/product2.png');
+                : '';
         };
-        $psBrandTitle = $product->ps_brand_title ?: $problemSolutionDefaults['brand_title'];
-        $psProductTitle = $product->ps_product_title ?: $problemSolutionDefaults['product_title'];
-        $psTaglineItems = !empty($product->ps_tagline_items) ? $product->ps_tagline_items : $problemSolutionDefaults['tagline_items'];
-        $psLeftLabel = $product->ps_left_label ?: $problemSolutionDefaults['left_label'];
-        $psLeftCards = !empty($product->ps_left_cards) ? $product->ps_left_cards : $problemSolutionDefaults['left_cards'];
-        $psCenterImage = $problemSolutionAsset($product->ps_center_image, $problemSolutionDefaults['center_image']);
-        $psRightLabel = $product->ps_right_label ?: $problemSolutionDefaults['right_label'];
-        $psRightCards = !empty($product->ps_right_cards) ? $product->ps_right_cards : $problemSolutionDefaults['right_cards'];
-        $psShelfLeftImage = $problemSolutionAsset($product->ps_shelf_left_image, $problemSolutionDefaults['shelf_left_image']);
-        $psShelfRightImage = $problemSolutionAsset($product->ps_shelf_right_image, $problemSolutionDefaults['shelf_right_image']);
-        $transformDefaults = [
-            ['image' => 'img/immune.png', 'title' => 'Stronger Immunity', 'description' => 'Kids fall sick less often. Parents report 60% fewer sick days in the first 3 months of consistent use.', 'week' => 'Visible by Week 3'],
-            ['image' => 'img/check-height.png', 'title' => 'Height & Growth Spurt', 'description' => 'Ashwagandha + Zinc work synergistically to support natural growth hormone function and bone density.', 'week' => 'Visible by Week 8'],
-            ['image' => 'img/energy-drink.png', 'title' => 'All-Day Energy', 'description' => 'No more afternoon crashes. Kids stay energetic and active through school, play, and evening activities.', 'week' => 'Visible by Week 2'],
-            ['image' => 'img/mental-health.png', 'title' => 'Better Mood & Calm', 'description' => 'Adaptogenic Ashwagandha reduces cortisol — kids feel less stressed, sleep better, and wake up happier.', 'week' => 'Visible by Week 4'],
-        ];
-        $transformDescription = $product->transform_description
-            ?: '90 days of ' . $product->name . ' — visible, measurable, life-changing results reported by thousands of parents.';
-        $transformMainImage = $problemSolutionAsset($product->transform_main_image, 'img/tt1.jpeg');
-        $transformResults = is_array($product->transform_results) ? $product->transform_results : $transformDefaults;
+        $psBrandTitle = $product->ps_brand_title;
+        $psProductTitle = $product->ps_product_title;
+        $psTaglineItems = !empty($product->ps_tagline_items) ? $product->ps_tagline_items : [];
+        $psLeftLabel = $product->ps_left_label;
+        $psLeftCards = !empty($product->ps_left_cards) ? $product->ps_left_cards : [];
+        $psCenterImage = $problemSolutionAsset($product->ps_center_image);
+        $psRightLabel = $product->ps_right_label;
+        $psRightCards = !empty($product->ps_right_cards) ? $product->ps_right_cards : [];
+        $psShelfLeftImage = $problemSolutionAsset($product->ps_shelf_left_image);
+        $psShelfRightImage = $problemSolutionAsset($product->ps_shelf_right_image);
+        
+        $transformDescription = $product->transform_description;
+        $transformMainImage = $problemSolutionAsset($product->transform_main_image);
+        $transformResults = is_array($product->transform_results) ? $product->transform_results : [];
         $transformColors = ['rgba(255,77,143,.12)', 'rgba(0,191,255,.12)', 'rgba(0,214,143,.12)', 'rgba(255,214,0,.15)'];
     @endphp
 
@@ -150,8 +123,10 @@
                 @endif
 
                 <div class="p-image pdp-zoom-source" style="display:block;line-height:1" data-zoom="2.25">
-                    <img src="{{ $productImageUrl($mainGalleryImage?->image_path) }}" alt="{{ $product->name }}"
-                        id="mainPdpImage">
+                    @if ($mainGalleryImage)
+                        <img src="{{ $productImageUrl($mainGalleryImage->image_path) }}" alt="{{ $product->name }}"
+                            id="mainPdpImage">
+                    @endif
                     <div class="pdp-zoom-lens" aria-hidden="true"></div>
                 </div>
             </div>
@@ -166,10 +141,6 @@
                         <img src="{{ $thumbImageUrl }}" alt="{{ $product->name }}">
                     </div>
                 @endforeach
-                @if ($product->images->count() == 0)
-                    <div class="thumb active"> <img src="{{ $fallbackProductImage }}" alt=""></div>
-                    <div class="thumb"> <img src="{{ asset('img/p1.jpeg') }}" alt=""></div>
-                @endif
             </div>
         </div>
 
@@ -635,7 +606,7 @@
                 <div class="transform-list">
                     @foreach ($transformResults as $index => $result)
                         @php
-                            $resultImage = $problemSolutionAsset($result['image'] ?? null, $transformDefaults[$index]['image'] ?? 'img/immune.png');
+                            $resultImage = $problemSolutionAsset($result['image'] ?? null);
                             $resultColor = $transformColors[$index % count($transformColors)];
                         @endphp
                         <div class="tr-item">
@@ -909,7 +880,7 @@
 
                             @foreach ($psLeftCards as $ingredientIndex => $ingredientCard)
                                 @php
-                                    $ingredientIcon = $problemSolutionAsset($ingredientCard['icon'] ?? '', $problemSolutionDefaults['left_cards'][$ingredientIndex]['icon'] ?? 'img/haldi.webp');
+                                    $ingredientIcon = $problemSolutionAsset($ingredientCard['icon'] ?? '');
                                     $ingredientTitle = $ingredientCard['title'] ?? '';
                                     $ingredientText = $ingredientCard['text'] ?? '';
                                 @endphp
@@ -926,8 +897,10 @@
                         </aside>
 
                         <div class="nb__product-center">
-                            <img class="nb__product-image" src="{{ $psCenterImage }}"
-                                alt="{{ $psBrandTitle }} {{ $psProductTitle }} product">
+                            @if ($psCenterImage)
+                                <img class="nb__product-image" src="{{ $psCenterImage }}"
+                                    alt="{{ $psBrandTitle }} {{ $psProductTitle }} product">
+                            @endif
                         </div>
 
                         <aside class="nb__features-col">
@@ -936,7 +909,7 @@
                             <div class="nb__feature-panel">
                                 @foreach ($psRightCards as $featureIndex => $featureCard)
                                     @php
-                                        $featureIcon = $problemSolutionAsset($featureCard['icon'] ?? '', $problemSolutionDefaults['right_cards'][$featureIndex]['icon'] ?? 'img/new-btn-2.png');
+                                        $featureIcon = $problemSolutionAsset($featureCard['icon'] ?? '');
                                         $featureTitle = $featureCard['title'] ?? '';
                                         $featureText = $featureCard['text'] ?? '';
                                     @endphp

@@ -41,6 +41,7 @@ return [
     'razorpay' => [
         'key_id' => env('RAZORPAY_KEY_ID'),
         'key_secret' => env('RAZORPAY_KEY_SECRET'),
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
     ],
 
     'aisensy' => [
@@ -49,6 +50,12 @@ return [
         'endpoint' => env('AISENSY_ENDPOINT', 'https://backend.aisensy.com/campaign/t1/api/v2'),
         'order_paid_campaign' => env('AISENSY_ORDER_PAID_CAMPAIGN'),
         'webhook_secret' => env('AISENSY_WEBHOOK_SECRET'),
+    ],
+
+    'shiprocket' => [
+        'email' => env('SHIPROCKET_EMAIL'),
+        'password' => env('SHIPROCKET_PASSWORD'),
+        'base_url' => env('SHIPROCKET_BASE_URL', 'https://apiv2.shiprocket.in'),
     ],
 
 ];

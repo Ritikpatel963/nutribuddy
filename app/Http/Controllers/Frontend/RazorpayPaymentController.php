@@ -97,11 +97,13 @@ class RazorpayPaymentController extends Controller
         $signature = $request->header('x-razorpay-signature');
         $webhookSecret = config('services.razorpay.webhook_secret');
 
-        if ($signature && $webhookSecret) {
-            $expected = hash_hmac('sha256', $rawBody, $webhookSecret);
-            if (!hash_equals($expected, $signature)) {
-                return response()->json(['ok' => false], 401);
-            }
+        if (!$signature || !$webhookSecret) {
+            return response()->json(['ok' => false, 'message' => 'Missing signature or webhook secret'], 401);
+        }
+
+        $expected = hash_hmac('sha256', $rawBody, $webhookSecret);
+        if (!hash_equals($expected, $signature)) {
+            return response()->json(['ok' => false, 'message' => 'Invalid signature'], 401);
         }
 
         $payload = $request->json()->all();
