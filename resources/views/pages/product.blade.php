@@ -606,7 +606,7 @@
                 <div class="transform-list">
                     @foreach ($transformResults as $index => $result)
                         @php
-                            $resultImage = $problemSolutionAsset($result['image'] ?? null);
+                            $resultImage = $problemSolutionAsset($result['image'] ?? null, $transformDefaults[$index]['image'] ?? 'img/immune.png');
                             $resultColor = $transformColors[$index % count($transformColors)];
                         @endphp
                         <div class="tr-item">
@@ -999,7 +999,7 @@
 
 
 
-    <!-- ════════════════════════════════════════════════    <!-- ══════════════════════════════════════════
+    <!-- ════════════════════════════════════════════════   ══════════════════════════════════════════
                                              PARENT REVIEWS
                                         ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
