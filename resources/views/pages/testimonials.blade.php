@@ -102,7 +102,7 @@
             @if($featuredReview)
             <div class="featured-story">
                 <div class="featured-media" style="position: relative; overflow: hidden;">
-                    @if($featuredReview->image_path && Storage::disk('public')->exists($featuredReview->image_path))
+                    @if($featuredReview->image_path)
                         <img src="{{ asset('storage/' . $featuredReview->image_path) }}" alt="Featured Review" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
                         <!-- Overlay for text readability -->
                         <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); z-index: 1;"></div>
@@ -137,7 +137,7 @@
                             @for($i=0; $i<5; $i++) {{ $i < $review->rating ? '★' : '☆' }} @endfor
                         </div>
                         <span class="review-tag">Parent Review</span>
-                        @if($review->image_path && Storage::disk('public')->exists($review->image_path))
+                        @if($review->image_path)
                             <div style="margin: 15px 0; border-radius: 8px; overflow: hidden; max-height: 200px;">
                                 <img src="{{ asset('storage/' . $review->image_path) }}" alt="Review Image" style="width: 100%; height: 100%; object-fit: cover;">
                             </div>
