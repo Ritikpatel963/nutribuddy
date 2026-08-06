@@ -13,8 +13,7 @@ class LoyaltyController extends Controller
     {
         $settings = [
             'loyalty_conversion_rate' => Setting::get('loyalty_conversion_rate', 10),
-            'loyalty_max_redemption_percent' => Setting::get('loyalty_max_redemption_percent', 30),
-            'loyalty_max_redeemable_coins' => Setting::get('loyalty_max_redeemable_coins', 0),
+            'loyalty_discount_percentage' => Setting::get('loyalty_discount_percentage', 10),
             'loyalty_enabled' => Setting::get('loyalty_enabled', 1),
         ];
 
@@ -25,14 +24,12 @@ class LoyaltyController extends Controller
     {
         $request->validate([
             'loyalty_conversion_rate' => 'required|integer|min:1',
-            'loyalty_max_redemption_percent' => 'required|integer|min:0|max:100',
-            'loyalty_max_redeemable_coins' => 'required|integer|min:0',
+            'loyalty_discount_percentage' => 'required|integer|min:0|max:100',
             'loyalty_enabled' => 'required|boolean',
         ]);
 
         Setting::set('loyalty_conversion_rate', $request->loyalty_conversion_rate);
-        Setting::set('loyalty_max_redemption_percent', $request->loyalty_max_redemption_percent);
-        Setting::set('loyalty_max_redeemable_coins', $request->loyalty_max_redeemable_coins);
+        Setting::set('loyalty_discount_percentage', $request->loyalty_discount_percentage);
         Setting::set('loyalty_enabled', $request->loyalty_enabled);
 
         return back()->with('success', 'Loyalty settings updated successfully.');

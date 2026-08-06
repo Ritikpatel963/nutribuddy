@@ -26,8 +26,10 @@ class CheckoutSummaryService
 
         abort_if($cart->items->isEmpty(), 422, 'Cart is empty.');
 
-        $coinsToRedeem = (int) ($validated['coins_to_redeem'] ?? 0);
-        abort_if($coinsToRedeem > (int) $user->coins_balance, 422, 'Insufficient coin balance.');
+        // Always use the user's full balance — PricingService caps it to the allowed % automatically.
+        // This makes coin redemption fully automatic without relying on client-sent values.
+        $coinsToRedeem = (int) $user->coins_balance;
+
 
         $pricing = $this->pricingService->calculate($cart->items, $coupon, $coinsToRedeem);
         $this->assertCouponMinimum($coupon, (float) $pricing['subtotal']);
