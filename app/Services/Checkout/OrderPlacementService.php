@@ -50,8 +50,9 @@ class OrderPlacementService
 
             abort_if($cart->items->isEmpty(), 422, 'Cart is empty.');
 
-            $coinsToRedeem = (int) ($validated['coins_to_redeem'] ?? 0);
-            abort_if($coinsToRedeem > (int) $user->coins_balance, 422, 'Insufficient coin balance.');
+            // Always use the user's full balance — PricingService caps it to the allowed % automatically.
+            $coinsToRedeem = (int) $user->coins_balance;
+
 
             $pricing = $this->pricingService->calculate($cart->items, $coupon, $coinsToRedeem);
             $this->validateCouponRules($coupon, (float) $pricing['subtotal'], $user->id);

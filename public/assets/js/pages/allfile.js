@@ -2232,43 +2232,10 @@ window.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem(pendingCartKey);
     }
 
-    function coinRedemptionEnabled() {
-        const toggle = document.getElementById('coinRedeemToggle');
-        return !!(toggle && !toggle.disabled && toggle.checked);
-    }
-
+    // Coins are always auto-applied at max redeemable amount — no toggle/slider needed
     function getCoinsToRedeem() {
-        const slider = document.getElementById('coinSlider');
-        if (!slider || !coinRedemptionEnabled()) {
-            return 0;
-        }
-
-        return Math.max(0, Number(slider.value || 0));
-    }
-
-    function updateCoinRedemptionUI(preferMax = false) {
-        const slider = document.getElementById('coinSlider');
-        const toggle = document.getElementById('coinRedeemToggle');
-        const box = document.getElementById('coinRedeemBox');
-        const label = document.getElementById('coinsToRedeemValue');
-        const discountText = document.getElementById('coinDiscountText');
-
-        if (!slider) {
-            return;
-        }
-
-        const enabled = coinRedemptionEnabled();
-        slider.disabled = !enabled;
-        if (box) box.classList.toggle('is-disabled', !enabled);
-
-        if (!enabled) {
-            slider.value = 0;
-        } else if (preferMax && toggle && slider.value === '0') {
-            slider.value = slider.max || 0;
-        }
-
-        if (label) label.textContent = `Redeeming: ${slider.value || 0} Coins`;
-        if (!enabled && discountText) discountText.textContent = 'Value: ₹0.00 off';
+        // Returns the stored max redeemable coins from the last server response
+        return Number(window.__maxRedeemableCoins || 0);
     }
 
     function updatePriceUI(pricing, itemsCount) {
@@ -2316,18 +2283,24 @@ window.addEventListener("DOMContentLoaded", () => {
         if (coinRow) {
             coinRow.style.display = coinDiscount > 0 ? 'flex' : 'none';
             document.getElementById('coinDiscountVal').textContent = `− ₹${coinDiscount.toLocaleString('en-IN')}`;
-            const discountText = document.getElementById('coinDiscountText');
-            if (discountText) discountText.textContent = `Value: ₹${coinDiscount.toLocaleString('en-IN')} off`;
         }
 
-        const coinSlider = document.getElementById('coinSlider');
-        if (coinSlider && pricing.coins_redeemed !== undefined) {
-            const redeemedCoins = Number(pricing.coins_redeemed || 0);
-            coinSlider.value = coinRedemptionEnabled() ? Math.min(Number(coinSlider.max || 0), redeemedCoins) : 0;
-            const redeemLabel = document.getElementById('coinsToRedeemValue');
-            if (redeemLabel) redeemLabel.textContent = `Redeeming: ${coinSlider.value} Coins`;
+        // Update the auto-apply coin info card
+        if (pricing.max_redeemable_coins !== undefined) {
+            window.__maxRedeemableCoins = Number(pricing.max_redeemable_coins || 0);
         }
-        updateCoinRedemptionUI();
+        const coinsLabel = document.getElementById('coinsToRedeemValue');
+        const coinDiscountText = document.getElementById('coinDiscountText');
+        const redeemedCoins = Number(pricing.coins_redeemed || 0);
+        const coinDiscountAmt = Number(pricing.display_coin_discount ?? pricing.coin_discount ?? 0);
+        if (coinsLabel) {
+            coinsLabel.textContent = redeemedCoins > 0
+                ? `${redeemedCoins} Coins applied`
+                : (window.__maxRedeemableCoins > 0 ? `${window.__maxRedeemableCoins} Coins` : 'No coins to apply');
+        }
+        if (coinDiscountText) {
+            coinDiscountText.textContent = coinDiscountAmt > 0 ? `−₹${coinDiscountAmt.toLocaleString('en-IN')}` : '−₹0';
+        }
 
         if (gstEl) {
             const gstRow = gstEl.closest('.pb-row');
@@ -2530,7 +2503,8 @@ window.addEventListener("DOMContentLoaded", () => {
             },
             body: JSON.stringify({
                 coupon_code: normalizedCode || null,
-                coins_to_redeem: getCoinsToRedeem()
+                // Always send the full balance; server caps it to the allowed % automatically
+                coins_to_redeem: window.NB_CHECKOUT_CONFIG?.userCoinsBalance || 0
             })
         });
 
@@ -3009,7 +2983,8 @@ window.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({
                 address_id: Number(addressId),
                 coupon_code: window.__couponCode || null,
-                coins_to_redeem: getCoinsToRedeem(),
+                // Always send full balance; server caps to allowed % automatically
+                coins_to_redeem: window.NB_CHECKOUT_CONFIG?.userCoinsBalance || 0,
                 payment_method: document.querySelector('.pay-method.selected')?.getAttribute('data-method') || 'cashfree',
                 checkout_token: window.__checkoutToken || ''
             })
@@ -3273,6 +3248,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     bindCheckoutQtyControls(row, qty, async nextQty => {
                         await updateServerCartQuantity(it.id, nextQty);
                         await loadCartSummary();
+                        await refreshCheckoutSummary();
                     });
                 });
             }
@@ -3390,29 +3366,8 @@ window.addEventListener("DOMContentLoaded", () => {
             selectPayMethod(initialPayMethod, initialPayMethod.getAttribute('data-method'));
         }
 
-        // Coin redemption controls
-        const coinToggle = document.getElementById('coinRedeemToggle');
-        const slider = document.getElementById('coinSlider');
-        if (coinToggle && slider) {
-            updateCoinRedemptionUI();
-            coinToggle.addEventListener('change', function () {
-                if (this.checked && slider.value === '0') {
-                    slider.value = slider.max || 0;
-                }
-                updateCoinRedemptionUI(true);
-                refreshCheckoutSummary();
-            });
-        }
-        if (slider) {
-            slider.addEventListener('input', function () {
-                if (!coinRedemptionEnabled()) return;
-                document.getElementById('coinsToRedeemValue').textContent = `Redeeming: ${this.value} Coins`;
-            });
-            slider.addEventListener('change', function () {
-                if (!coinRedemptionEnabled()) return;
-                refreshCheckoutSummary(); // Unified refresh
-            });
-        }
+        // Refresh checkout summary to get final pricing including auto-applied coins
+        refreshCheckoutSummary();
     });
 
     /* Close modal on backdrop click */

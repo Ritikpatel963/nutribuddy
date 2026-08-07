@@ -12,6 +12,7 @@
         selectedAddressId: @json((string)(auth()->check() && isset($savedAddresses) && $savedAddresses->first() ? $savedAddresses->first()->id : '')),
         email: @json(auth()->user()->email ?? ''),
         phone: @json(auth()->user()->phone ?? ''),
+        userCoinsBalance: @json((int)(auth()->user()->coins_balance ?? 0)),
         cartPageUrl: @json(route('cart.page')),
         citiesUrlTemplate: @json(route('checkout.cities', ['stateCode' => '__STATE__'])),
         states: @json($states),
@@ -311,42 +312,31 @@
                     <div class="coupon-applied-msg" id="couponMsg"></div>
                 </div>
 
-                <!-- Loyalty Coins -->
+                <!-- Loyalty Coins — Auto Applied -->
                 @auth
                 @php
-                    $adminMaxRedeemableCoins = (int) \App\Models\Setting::get('loyalty_max_redeemable_coins', 0);
-                    $checkoutCoinSliderMax = $adminMaxRedeemableCoins > 0
-                        ? min((int) auth()->user()->coins_balance, $adminMaxRedeemableCoins)
-                        : (int) auth()->user()->coins_balance;
-                    $canRedeemCoins = $checkoutCoinSliderMax > 0;
+                    $userCoinBalance = (int) auth()->user()->coins_balance;
                 @endphp
+                @if ($userCoinBalance > 0)
                 <div class="loyalty-row" id="coinRedeemRow" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 20px;">
-                    <div class="d-flex justify-content-between align-items-center mb-10" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div class="coupon-label" style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--dk);">Redeem NB Coins 🪙</div>
-                        <div class="lb-pts" id="userCoinBalance" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.85rem;">{{ auth()->user()->coins_balance }} Available</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.82rem; color: var(--dk);">NB Coins 🪙</div>
+                        <div id="userCoinBalance" data-balance="{{ $userCoinBalance }}" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.85rem;">{{ $userCoinBalance }} Available</div>
                     </div>
-                    <div class="coin-redeem-box is-disabled" id="coinRedeemBox">
-                        <label class="coin-redeem-toggle {{ $canRedeemCoins ? '' : 'is-disabled' }}" for="coinRedeemToggle">
-                            <input type="checkbox" id="coinRedeemToggle" {{ $canRedeemCoins ? '' : 'disabled' }}>
-                            <span>{{ $canRedeemCoins ? 'Use NB Coins on this order' : 'No NB Coins available to redeem' }}</span>
-                        </label>
-                        <input type="range" class="coin-slider" id="coinSlider" min="0" max="{{ $checkoutCoinSliderMax }}" value="0" step="1" data-admin-max="{{ $adminMaxRedeemableCoins }}" disabled>
-                        <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                            <span style="font-size: 0.7rem; color: #aaa;">0</span>
-                            <span id="coinsToRedeemValue" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.95rem;">Redeeming: 0 Coins</span>
-                            <span id="coinSliderMaxValue" style="font-size: 0.7rem; color: #aaa;">{{ $checkoutCoinSliderMax }}</span>
-                        </div>
-                        @if($adminMaxRedeemableCoins > 0)
-                            <div style="font-size: 0.7rem; color: #777; text-align: center; margin-top: 6px; font-weight: 700;">
-                                Max {{ $adminMaxRedeemableCoins }} coins per order
+                    <div id="coinRedeemBox" style="background: #fff8f0; border: 1.5px solid #f5c18a; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.1rem;">🪙</span>
+                            <div>
+                                <div id="coinsToRedeemValue" style="font-family: 'Fredoka One', cursive; color: var(--or); font-size: 0.9rem; line-height: 1.2;">Calculating...</div>
+                                <div style="font-size: 0.7rem; color: #888; margin-top: 2px;">Applied automatically</div>
                             </div>
-                        @endif
-                        <div id="coinDiscountText" style="font-size: 0.72rem; color: #777; text-align: center; margin-top: 8px; font-weight: 600;">
-                            Value: ₹0.00 off
                         </div>
+                        <div id="coinDiscountText" style="font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.88rem; color: #00a870;">−₹0</div>
                     </div>
                 </div>
+                @endif
                 @endauth
+
 
                 <!-- Price Breakdown -->
                 <div class="price-breakdown" id="priceBreakdown">

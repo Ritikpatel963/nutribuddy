@@ -104,24 +104,18 @@ class PricingService
         // ══ COIN REDEMPTION LOGIC ══
         $coinDiscount = 0.0;
         $coinsRedeemed = 0;
-        $maxCoinDiscountPercent = (int) Setting::get('loyalty_max_redemption_percent', 30);
-        $maxRedeemableCoins = (int) Setting::get('loyalty_max_redeemable_coins', 0);
+        $discountPercent = (int) Setting::get('loyalty_discount_percentage', 10);
         $coinToCashRate = max(1, (int) Setting::get('loyalty_conversion_rate', 10));
         $isLoyaltyEnabled = (bool) Setting::get('loyalty_enabled', 1);
-        
+
+        // Max coins that can be redeemed based on % of order total (before coupon)
+        $maxAllowedCoinDiscount = (($subtotal + $taxTotal) * $discountPercent) / 100;
+        // After coupon is applied, remaining order value
+        $remainingBalance = ($subtotal + $taxTotal) - $discountTotal;
+        $maxRedeemableCoins = (int) floor(max(0, min($maxAllowedCoinDiscount, $remainingBalance)) * $coinToCashRate);
+
         if ($isLoyaltyEnabled && $coinsToRedeem > 0) {
-            $requestedCoins = $maxRedeemableCoins > 0
-                ? min($coinsToRedeem, $maxRedeemableCoins)
-                : $coinsToRedeem;
-
-            // Limit based on max percentage of the total MRP
-            $maxAllowedCoinDiscount = (($subtotal + $taxTotal) * $maxCoinDiscountPercent) / 100;
-            
-            // Apply after coupon
-            $remainingBalance = ($subtotal + $taxTotal) - $discountTotal;
-            $maxCoinsByOrderValue = (int) floor(max(0, min($maxAllowedCoinDiscount, $remainingBalance)) * $coinToCashRate);
-
-            $coinsRedeemed = min($requestedCoins, $maxCoinsByOrderValue);
+            $coinsRedeemed = min($coinsToRedeem, $maxRedeemableCoins);
             $coinDiscount = $coinsRedeemed / $coinToCashRate;
         }
 
