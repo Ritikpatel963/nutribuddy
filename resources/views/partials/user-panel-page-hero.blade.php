@@ -191,11 +191,60 @@
         ];
     } elseif (request()->routeIs('user-return')) {
         $hero = [
-            'title' => 'Return Policy',
+            'title'    => 'Return Policy',
             'subtitle' => 'Understand return eligibility, timelines, and refund rules.',
-            'stats' => [
+            'stats'    => [
                 ['value' => 'Sealed', 'label' => 'Items'],
                 ['value' => 'Policy', 'label' => 'Guide'],
+            ],
+        ];
+    } elseif (request()->routeIs('user.assessment.index')) {
+        $questions = \App\Models\AssessmentQuestion::active()->count();
+        $hero = [
+            'title'    => 'Health Assessment',
+            'subtitle' => 'Answer every question honestly to get the most accurate score for your child.',
+            'stats'    => [
+                ['value' => $questions, 'label' => 'Questions'],
+                ['value' => '5',       'label' => 'Sections'],
+            ],
+        ];
+    } elseif (request()->routeIs('user.assessment.history')) {
+        $attemptCount = $user ? \App\Models\AssessmentAttempt::where('user_id', $user->id)->count() : 0;
+        $hero = [
+            'title'    => 'Assessment History',
+            'subtitle' => 'All previous child health assessments, newest first.',
+            'stats'    => [
+                ['value' => $attemptCount, 'label' => 'Attempts'],
+                ['value' => 'Health',      'label' => 'Track'],
+            ],
+        ];
+    } elseif (request()->routeIs('user.assessment.result')) {
+        $attempt = request()->route('attempt');
+        $hero = [
+            'title'    => 'Assessment Result',
+            'subtitle' => 'Your child health score breakdown and section insights.',
+            'stats'    => [
+                ['value' => $attempt ? number_format($attempt->percentage, 0) . '%' : '-', 'label' => 'Score'],
+                ['value' => $attempt?->result_level ?? '-', 'label' => 'Rating'],
+            ],
+        ];
+    } elseif (request()->routeIs('user.assessment.compare')) {
+        $hero = [
+            'title'    => 'Assessment Comparison',
+            'subtitle' => 'Compare your child\'s progress between the last two attempts.',
+            'stats'    => [
+                ['value' => '2',        'label' => 'Attempts'],
+                ['value' => 'Progress', 'label' => 'Insight'],
+            ],
+        ];
+    } elseif (request()->routeIs('user.assessment.detail')) {
+        $attempt = request()->route('attempt');
+        $hero = [
+            'title'    => 'Assessment Breakdown',
+            'subtitle' => 'Question-by-question answer and score review.',
+            'stats'    => [
+                ['value' => $attempt ? $attempt->total_score . '/' . $attempt->max_score : '-', 'label' => 'Score'],
+                ['value' => $attempt?->result_level ?? '-', 'label' => 'Rating'],
             ],
         ];
     }

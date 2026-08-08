@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Frontend\AssessmentController;
 use App\Http\Controllers\Frontend\CartController as FrontendCartController;
 use App\Http\Controllers\Frontend\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\Frontend\ProductReviewController;
@@ -76,4 +77,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/support-tickets/{ticket}/reply', [UserSupportTicketController::class, 'reply'])->name('user.support-tickets.reply');
     Route::get('/user/reviews', [ProductReviewController::class, 'userIndex'])->name('user.reviews.index');
     Route::post('/product/{product}/reviews', [ProductReviewController::class, 'store'])->name('reviews.store');
+
+    // ── Health Assessment ────────────────────────────────────────────────────
+    Route::prefix('/user/assessment')->name('user.assessment.')->group(function () {
+        Route::get('/', [AssessmentController::class, 'index'])->name('index');
+        Route::post('/', [AssessmentController::class, 'store'])->name('store');
+        Route::get('/history', [AssessmentController::class, 'history'])->name('history');
+        Route::get('/compare', [AssessmentController::class, 'compare'])->name('compare');
+        Route::get('/{attempt}/result', [AssessmentController::class, 'result'])->name('result');
+        Route::get('/{attempt}/detail', [AssessmentController::class, 'detail'])->name('detail');
+    });
 });

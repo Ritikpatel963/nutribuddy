@@ -72,6 +72,37 @@
             </svg>
             Quarterly Check-in
         </a>
+
+        {{-- ── Health Assessment ────────────────────────────────── --}}
+        <a href="{{ route('user.assessment.index') }}" class="nav-item {{ request()->routeIs('user.assessment.index') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            Start Assessment
+        </a>
+        <a href="{{ route('user.assessment.history') }}" class="nav-item {{ request()->routeIs('user.assessment.history') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Assessment History
+            @php $attemptCount = auth()->user()->assessmentAttempts()->count(); @endphp
+            @if($attemptCount > 0)
+                <span class="nbadge" style="background:var(--pu);margin-left:auto;">{{ $attemptCount }}</span>
+            @endif
+        </a>
+        @php $latestAttempt = auth()->user()->assessmentAttempts()->latest()->first(); @endphp
+        @if($latestAttempt)
+        <a href="{{ route('user.assessment.result', $latestAttempt) }}" class="nav-item {{ request()->routeIs('user.assessment.result') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            Latest Result
+            <span class="nbadge" style="background:var(--mn);margin-left:auto;">{{ number_format($latestAttempt->percentage, 0) }}%</span>
+        </a>
+        @endif
+
         <a href="{{ route('order') }}" class="nav-item {{ request()->routeIs('order') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />

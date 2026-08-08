@@ -92,3 +92,16 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
         Route::get('/transactions', [\App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions');
     });
 });
+
+// ── Assessment / Quiz Management ─────────────────────────────────────────────
+Route::prefix('admin/assessment')->name('admin.assessment.')->middleware('auth:admin')->group(function () {
+    Route::resource('questions', \App\Http\Controllers\Admin\AssessmentQuestionController::class)
+        ->only(['index', 'store', 'edit', 'update', 'destroy']);
+    Route::patch('questions/{question}/toggle', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'toggleActive'])
+        ->name('questions.toggle');
+    Route::post('questions/reorder', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'reorder'])
+        ->name('questions.reorder');
+    Route::patch('sections/rename', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'renameSection'])
+        ->name('sections.rename');
+});
+

@@ -3,6 +3,9 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/user.css') }}?v={{ filemtime(public_path('assets/css/user.css')) }}">
+    @if(request()->routeIs('user.assessment.*'))
+    <link rel="stylesheet" href="{{ asset('assets/css/assessment.css') }}?v={{ filemtime(public_path('assets/css/assessment.css')) }}">
+    @endif
     <style>
         @include('partials.user-panel-sidebar-styles')
     </style>
