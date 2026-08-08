@@ -11,6 +11,7 @@ class ReviewController extends Controller
     public function index()
     {
         $reviews = ProductReview::with(['product', 'user'])
+            ->whereNull('video_path')
             ->orderBy('created_at', 'desc')
             ->get();
             

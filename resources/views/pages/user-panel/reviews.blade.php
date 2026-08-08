@@ -3,42 +3,155 @@
 @section('panel-page-class', 'panel-reviews')
 @section('panel-content')
    
+    <style>
+        .rev-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid #f3f4f6;
+            margin-bottom: 20px;
+            transition: 0.3s ease;
+        }
+        .rev-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+            border-color: #fce7f3;
+        }
+        .rev-upload-btn {
+            border: 2px dashed #e2e8f0;
+            border-radius: 14px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f8fafc;
+            transition: 0.2s;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .rev-upload-btn:hover {
+            background: #fff1f2;
+            border-color: #fda4af;
+            color: #e11d48;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .preview-box {
+            position: relative;
+            width: 65px;
+            height: 65px;
+            border-radius: 12px;
+            overflow: visible;
+        }
+        .preview-box-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            background: #000;
+        }
+        .preview-box img, .preview-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 0;
+            transition: 0.2s;
+        }
+        .remove-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        .star-opt {
+            font-size: 1.8rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: 0.2s;
+            margin: 0 2px;
+        }
+        .rev-textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            background: #f8fafc;
+            transition: 0.3s;
+            resize: none;
+        }
+        .rev-textarea:focus {
+            outline: none;
+            border-color: #f472b6;
+            background: #fff;
+            box-shadow: 0 0 0 4px #fce7f3;
+        }
+    </style>
 
     <div class="row">
         <div class="col-12">
-            <h5 style="font-family: 'Fredoka One', cursive; color: var(--dk); margin-bottom: 20px; font-size: 1.1rem; border-left: 4px solid var(--pk); padding-left: 12px;">Pending Your Review</h5>
+            <h5 style="font-family: 'Fredoka One', cursive; color: var(--dk); margin-bottom: 24px; font-size: 1.3rem; border-left: 5px solid var(--pk); padding-left: 14px;">Pending Your Review</h5>
 
             @forelse($purchasedProducts as $product)
-                @php
-                    $existingReview = $product->reviews->first();
-                @endphp
-                <div class="compact-list-item">
+                <div class="rev-card">
                     <div class="row align-items-center">
                         <div class="col-auto">
-                            <img src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('img/product2.png') }}" class="p-img-compact">
+                            <div style="width: 70px; height: 70px; border-radius: 14px; overflow: hidden; border: 1px solid #f1f5f9; background: #fff; padding: 5px;">
+                                <img src="{{ $product->primaryImage ? asset('storage/' . $product->primaryImage->image_path) : asset('img/product2.png') }}" style="width: 100%; height: 100%; object-fit: contain;">
+                            </div>
                         </div>
                         <div class="col">
-                            <h6 style="font-weight: 800; margin: 0; color: var(--dk);">{{ $product->name }}</h6>
-                            <span style="font-size: 0.75rem; color: #aaa;">{{ $product->category->name ?? 'Immunity & Growth' }}</span>
+                            <h6 style="font-weight: 800; margin: 0 0 4px; color: var(--dk); font-size: 1.05rem;">{{ $product->name }}</h6>
+                            <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">{{ $product->category->name ?? 'Immunity & Growth' }}</span>
                         </div>
                         <div class="col-auto">
-                            @if($existingReview)
-                                <span class="review-status-badge" style="background: #E8F9F1; color: #00A87A;">✅ Reviewed</span>
-                            @else
-                                <button class="btn-main" onclick="toggleReviewForm('{{ $product->id }}')" style="padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; background: var(--pk);">
-                                    Rate Now
-                                </button>
-                            @endif
+                            <button onclick="toggleReviewForm('{{ $product->id }}')" style="padding: 10px 24px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; background: linear-gradient(135deg, #ff4d8f, #f43f5e); color: #fff; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(244,63,94,0.3); transition: 0.2s;">
+                                Rate Now
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Hidden Compact Form -->
-                    <div id="reviewForm_{{ $product->id }}" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                    @if($errors->any())
+                        <div class="alert alert-danger" style="margin-top: 15px; border-radius: 12px; font-size: 0.9rem;">
+                            <ul style="margin: 0; padding-left: 20px;">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <!-- Hidden Review Form -->
+                    <div id="reviewForm_{{ $product->id }}" style="display: none; margin-top: 24px; padding-top: 24px; border-top: 1px dashed #e2e8f0;">
                         <form action="{{ route('reviews.store', $product->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="row g-3">
-                                <div class="col-md-4 text-center">
-                                    <label style="display:block; font-weight:700; font-size:0.75rem; color:#888; margin-bottom:5px;">YOUR RATING</label>
+                            <div class="row g-4">
+                                <div class="col-md-3 text-center d-flex flex-column justify-content-center">
+                                    <label style="display:block; font-weight:800; font-size:0.75rem; color:#94a3b8; margin-bottom:10px; letter-spacing: 1px;">YOUR RATING</label>
                                     <div class="rating-input_{{ $product->id }}">
                                         @for($i=1; $i<=5; $i++)
                                             <span data-val="{{ $i }}" class="star-opt star-opt-{{ $product->id }}">★</span>
@@ -46,79 +159,116 @@
                                     </div>
                                     <input type="hidden" name="rating" id="ratingValue_{{ $product->id }}" value="5">
                                 </div>
+                                
                                 <div class="col-md-5">
-                                    <textarea name="comment" rows="2" style="width:100%; padding:10px 15px; border-radius:12px; border:1px solid #eee; font-size: 0.9rem; background: #fafafa;" placeholder="Tell us what you think..." required></textarea>
+                                    <textarea name="comment" rows="3" class="rev-textarea" placeholder="Tell us what you loved about it..." required></textarea>
                                 </div>
-                                <div class="col-md-3">
-                                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                                        <div class="review-img-upload" onclick="this.querySelector('input').click()" style="flex: 1; height: 50px; text-align: center;">
-                                            <span style="font-size: 0.7rem; color: #999; font-weight: 600; white-space: nowrap;">+ Photo</span>
-                                            <input type="file" name="review_image" accept="image/*" style="display: none;" onchange="if(this.files[0]) this.previousElementSibling.innerText = '✓ Photo'">
+                                
+                                <div class="col-md-4">
+                                    <div style="display: flex; gap: 10px;">
+                                        <!-- Photo Upload -->
+                                        <div style="flex: 1;">
+                                            <label class="rev-upload-btn" onclick="document.getElementById('img_input_{{ $product->id }}').click()">
+                                                <span>+ Photos</span>
+                                            </label>
+                                            <input type="file" id="img_input_{{ $product->id }}" name="review_images[]" multiple accept="image/*" style="display: none;" onchange="handleFileSelect(event, '{{ $product->id }}', 'image')">
                                         </div>
-                                        <div class="review-img-upload" onclick="this.querySelector('input').click()" style="flex: 1; height: 50px; text-align: center;">
-                                            <span style="font-size: 0.7rem; color: #999; font-weight: 600; white-space: nowrap;">+ Video</span>
-                                            <input type="file" name="review_video" accept="video/*" style="display: none;" onchange="if(this.files[0]) this.previousElementSibling.innerText = '✓ Video'">
+                                        
+                                        <!-- Video Upload -->
+                                        <div style="flex: 1;">
+                                            <label class="rev-upload-btn" onclick="document.getElementById('vid_input_{{ $product->id }}').click()">
+                                                <span>+ Video</span>
+                                            </label>
+                                            <input type="file" id="vid_input_{{ $product->id }}" name="review_video" accept="video/*" style="display: none;" onchange="handleFileSelect(event, '{{ $product->id }}', 'video')">
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn-main w-100" style="padding: 10px; border-radius: 12px; font-size: 0.85rem;">Post 🚀</button>
+
+                                    <!-- Previews Container -->
+                                    <div id="previewContainer_image_{{ $product->id }}" class="preview-container"></div>
+                                    <div id="previewContainer_video_{{ $product->id }}" class="preview-container"></div>
+
+                                    <button type="submit" style="width: 100%; margin-top: 16px; padding: 12px; border-radius: 14px; font-size: 0.95rem; font-weight: 800; background: var(--dk); color: #fff; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.2s;">
+                                        Post Review 🚀
+                                    </button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             @empty
-                <div style="text-align: center; padding: 40px; background: #fafafa; border-radius: 15px; border: 1px dashed #ddd;">
-                    <p style="color: #999; margin: 0;">No products to review yet.</p>
+                <div style="text-align: center; padding: 60px 20px; background: #fff; border-radius: 20px; border: 2px dashed #e2e8f0;">
+                    <iconify-icon icon="solar:box-minimalistic-bold-duotone" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 16px;"></iconify-icon>
+                    <h5 style="color: #64748b; margin: 0; font-weight: 700;">No products to review yet</h5>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 8px;">Purchase some products to leave a review!</p>
                 </div>
             @endforelse
 
             <!-- MODERN CARD-BASED HISTORY -->
             @if($userReviews->count() > 0)
-                <h5 style="font-family: 'Fredoka One', cursive; color: var(--dk); margin: 50px 0 25px; font-size: 1.15rem; border-left: 4px solid var(--mn); padding-left: 15px;">My Review History</h5>
+                <h5 style="font-family: 'Fredoka One', cursive; color: var(--dk); margin: 60px 0 25px; font-size: 1.3rem; border-left: 5px solid var(--mn); padding-left: 14px;">My Review History</h5>
                 
-                <div class="review-history-grid" style="display: grid; gap: 20px;">
+                <div style="display: grid; gap: 24px;">
                     @foreach($userReviews as $review)
-                        <div class="history-card" style="background: #fff; border: 1px solid #eee; border-radius: 20px; padding: 25px; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; flex-wrap: wrap; gap: 15px;">
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div style="width: 55px; height: 55px; border-radius: 12px; overflow: hidden; border: 1px solid #f0f0f0; flex-shrink: 0;">
-                                        <img src="{{ $review->product->primaryImage ? asset('storage/' . $review->product->primaryImage->image_path) : asset('img/product2.png') }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="rev-card" style="padding: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 65px; height: 65px; border-radius: 14px; overflow: hidden; border: 1px solid #f1f5f9; background: #fff; padding: 5px; flex-shrink: 0;">
+                                        <img src="{{ $review->product->primaryImage ? asset('storage/' . $review->product->primaryImage->image_path) : asset('img/product2.png') }}" onerror="this.onerror=null; this.src='{{ asset('img/product2.png') }}';" style="width: 100%; height: 100%; object-fit: contain;">
                                     </div>
                                     <div>
-                                        <h4 style="font-family: 'Nunito', sans-serif; font-weight: 900; color: var(--dk); margin: 0; font-size: 1rem;">{{ $review->product->name }}</h4>
-                                        <div style="color: #FFD700; font-size: 0.9rem; margin-top: 4px; letter-spacing: 1px;">
+                                        <h4 style="font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--dk); margin: 0 0 6px; font-size: 1.1rem;">{{ $review->product->name }}</h4>
+                                        <div style="color: #FFD700; font-size: 1rem; letter-spacing: 2px;">
                                             @for($i=0; $i<5; $i++)
                                                 {{ $i < $review->rating ? '★' : '☆' }}
                                             @endfor
                                         </div>
                                     </div>
                                 </div>
-                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
-                                    <span class="review-status-badge" style="background: {{ $review->is_active ? '#E8F9F1' : '#FFF8E1' }}; color: {{ $review->is_active ? '#00A87A' : '#f57c00' }}; padding: 4px 12px; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;">
+                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                                    <span style="background: {{ $review->is_active ? '#ecfdf5' : '#fffbeb' }}; color: {{ $review->is_active ? '#10b981' : '#f59e0b' }}; padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
                                         {{ $review->is_active ? 'Published' : 'Pending Approval' }}
                                     </span>
-                                    <span style="font-size: 0.75rem; color: #bbb; font-weight: 600;">{{ $review->created_at->format('M d, Y') }}</span>
+                                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 600;">{{ $review->created_at->format('M d, Y') }}</span>
                                 </div>
                             </div>
 
-                            <div style="background: #f9f9fb; border-radius: 15px; padding: 18px; position: relative; margin-bottom: 15px;">
-                                <div style="font-size: 1.5rem; color: #e0e0e0; position: absolute; top: 10px; left: 10px; font-family: serif; line-height: 1;">"</div>
-                                <p style="font-size: 0.95rem; color: #555; line-height: 1.6; margin: 0; padding-left: 15px; font-style: italic;">
+                            <div style="background: #f8fafc; border-radius: 16px; padding: 20px; position: relative;">
+                                <div style="font-size: 2rem; color: #cbd5e1; position: absolute; top: 12px; left: 16px; font-family: serif; line-height: 1;">"</div>
+                                <p style="font-size: 1rem; color: #475569; line-height: 1.6; margin: 0; padding-left: 24px; font-style: italic; font-weight: 500;">
                                     {{ $review->comment }}
                                 </p>
                             </div>
 
-                            @if($review->image_path)
-                                <div style="margin-top: 15px; display: flex; gap: 10px;">
-                                    <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;" onclick="window.open('{{ asset('storage/' . $review->image_path) }}')">
-                                        <img src="{{ asset('storage/' . $review->image_path) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                    </div>
+                            @if(!empty($review->images) || $review->image_path || $review->video_path)
+                                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                                    
+                                    @if(!empty($review->images))
+                                        @foreach($review->images as $img)
+                                            <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;" onclick="window.open('{{ asset('storage/' . $img) }}')">
+                                                <img src="{{ asset('storage/' . $img) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            </div>
+                                        @endforeach
+                                    @elseif($review->image_path)
+                                        <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;" onclick="window.open('{{ asset('storage/' . $review->image_path) }}')">
+                                            <img src="{{ asset('storage/' . $review->image_path) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    @endif
+
+                                    @if($review->video_path)
+                                        <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; background: #000; position: relative;" onclick="window.open('{{ asset('storage/' . $review->video_path) }}')">
+                                            <video src="{{ asset('storage/' . $review->video_path) }}" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                                            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(0,0,0,0.3);">
+                                                <iconify-icon icon="solar:play-circle-bold" style="font-size: 1.5rem;"></iconify-icon>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                 </div>
                             @endif
                         </div>
                     @endforeach
                 </div>
-                <div style="margin-top: 20px;">
+                <div style="margin-top: 30px;">
                     {{ $userReviews->links() }}
                 </div>
             @endif
@@ -126,13 +276,104 @@
     </div>
 
     <script>
+        // Track uploaded files per product and type (image/video)
+        const fileStore = {};
 
+        function handleFileSelect(event, productId, type) {
+            const input = event.target;
+            if (!input.files || input.files.length === 0) return;
+
+            const storeKey = `${productId}_${type}`;
+            const dt = fileStore[storeKey] || new DataTransfer();
+
+            // For videos (single file input), clear the existing transfer object
+            if (type === 'video') {
+                dt.items.clear();
+            }
+
+            // Append new files
+            for (let i = 0; i < input.files.length; i++) {
+                dt.items.add(input.files[i]);
+            }
+
+            fileStore[storeKey] = dt;
+            input.files = dt.files; // Sync input
+
+            renderPreviews(productId, type);
+        }
+
+        function removeFile(productId, type, index) {
+            const storeKey = `${productId}_${type}`;
+            const dt = fileStore[storeKey];
+            if (!dt) return;
+
+            const newDt = new DataTransfer();
+            for (let i = 0; i < dt.files.length; i++) {
+                if (i !== index) {
+                    newDt.items.add(dt.files[i]);
+                }
+            }
+
+            fileStore[storeKey] = newDt;
+            
+            // Sync with input element
+            const inputId = type === 'image' ? `img_input_${productId}` : `vid_input_${productId}`;
+            document.getElementById(inputId).files = newDt.files;
+
+            renderPreviews(productId, type);
+        }
+
+        function renderPreviews(productId, type) {
+            const storeKey = `${productId}_${type}`;
+            const dt = fileStore[storeKey];
+            const container = document.getElementById(`previewContainer_${type}_${productId}`);
+            container.innerHTML = '';
+
+            if (!dt || dt.files.length === 0) return;
+
+            for (let i = 0; i < dt.files.length; i++) {
+                const file = dt.files[i];
+                const url = URL.createObjectURL(file);
+                
+                const box = document.createElement('div');
+                box.className = 'preview-box';
+
+                const innerBox = document.createElement('div');
+                innerBox.className = 'preview-box-inner';
+                
+                if (type === 'image' || file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    innerBox.appendChild(img);
+                } else if (type === 'video' || file.type.startsWith('video/')) {
+                    const vid = document.createElement('video');
+                    vid.src = url;
+                    innerBox.appendChild(vid);
+                }
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '✕';
+                removeBtn.type = 'button';
+                removeBtn.onclick = () => removeFile(productId, type, i);
+
+                box.appendChild(innerBox);
+                box.appendChild(removeBtn);
+                container.appendChild(box);
+            }
+        }
 
         function toggleReviewForm(productId) {
             const form = document.getElementById('reviewForm_' + productId);
             if (form.style.display === 'none') {
                 form.style.display = 'block';
-                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Reset file store for this form if reopening
+                fileStore[`${productId}_image`] = new DataTransfer();
+                fileStore[`${productId}_video`] = new DataTransfer();
+                document.getElementById(`img_input_${productId}`).files = fileStore[`${productId}_image`].files;
+                document.getElementById(`vid_input_${productId}`).files = fileStore[`${productId}_video`].files;
+                document.getElementById(`previewContainer_image_${productId}`).innerHTML = '';
+                document.getElementById(`previewContainer_video_${productId}`).innerHTML = '';
             } else {
                 form.style.display = 'none';
             }
@@ -146,12 +387,13 @@
                 const val = this.getAttribute('data-val');
                 document.getElementById('ratingValue_' + productId).value = val;
                 
-                // Color stars
                 document.querySelectorAll('.star-opt-' + productId).forEach(s => {
                     if(parseInt(s.getAttribute('data-val')) <= parseInt(val)) {
-                        s.style.color = '#FFD700'; // Gold
+                        s.style.color = '#FFD700';
+                        s.style.transform = 'scale(1.1)';
                     } else {
-                        s.style.color = '#eee';
+                        s.style.color = '#e2e8f0';
+                        s.style.transform = 'scale(1)';
                     }
                 });
             });
@@ -160,9 +402,9 @@
                 const val = this.getAttribute('data-val');
                 document.querySelectorAll('.star-opt-' + productId).forEach(s => {
                     if(parseInt(s.getAttribute('data-val')) <= parseInt(val)) {
-                        s.style.color = '#FFD700';
+                        s.style.color = '#fde047';
                     } else {
-                        s.style.color = '#eee';
+                        s.style.color = '#e2e8f0';
                     }
                 });
             });
@@ -172,22 +414,20 @@
                 document.querySelectorAll('.star-opt-' + productId).forEach(s => {
                     if(parseInt(s.getAttribute('data-val')) <= parseInt(val)) {
                         s.style.color = '#FFD700';
+                        s.style.transform = 'scale(1)';
                     } else {
-                        s.style.color = '#eee';
+                        s.style.color = '#e2e8f0';
                     }
                 });
             });
         });
 
-        // Default set 5 stars for all forms
+        // Default set 5 stars
         window.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('[id^="ratingValue_"]').forEach(input => {
                 const productId = input.id.split('_')[1];
-                const defaultVal = 5;
                 document.querySelectorAll('.star-opt-' + productId).forEach(s => {
-                    if(parseInt(s.getAttribute('data-val')) <= defaultVal) {
-                        s.style.color = '#FFD700';
-                    }
+                    s.style.color = '#FFD700';
                 });
             });
         });

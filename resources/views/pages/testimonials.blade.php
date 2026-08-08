@@ -4,18 +4,17 @@
 
 @section('content')
     @php
-        $allReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->latest()->get();
+        // Separate queries to handle huge datasets without memory crashes
+        $textReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->whereNull('video_path')->latest()->paginate(24);
         
-        // Prioritize a review that has a physical image file on disk
-        $featuredReview = $allReviews->first(function ($review) {
+        $videoReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->whereNotNull('video_path')->latest()->take(10)->get();
+        
+        $featuredReview = collect($textReviews->items())->first(function ($review) {
             return $review->image_path && Storage::disk('public')->exists($review->image_path);
         });
 
-        $textReviews = $allReviews->whereNull('video_path')->values();
-        $videoReviews = $allReviews->whereNotNull('video_path')->values();
-        
         if (!$featuredReview) {
-            $featuredReview = $textReviews->first();
+            $featuredReview = collect($textReviews->items())->first();
         }
         
         $gradients = [
@@ -45,11 +44,11 @@
 
             <div class="testimonials-score-card">
                 @php
-                    $totalReviews = $allReviews->count();
+                    $totalReviews = \App\Models\ProductReview::where('is_active', true)->count();
                 @endphp
                 @if($totalReviews > 0)
                     @php
-                        $displayAvg = number_format($allReviews->avg('rating'), 1);
+                        $displayAvg = number_format(\App\Models\ProductReview::where('is_active', true)->avg('rating'), 1);
                     @endphp
                     <div class="score-top">
                         <div class="score-number">{{ $displayAvg }}</div>
@@ -66,7 +65,7 @@
                     <div class="score-bars">
                         @foreach([5, 4, 3, 2, 1] as $star)
                             @php
-                                $starCount = $allReviews->where('rating', $star)->count();
+                                $starCount = \App\Models\ProductReview::where('is_active', true)->where('rating', $star)->count();
                                 $pct = round(($starCount / $totalReviews) * 100, 1);
                             @endphp
                             <div class="score-row"><span>{{ $star }} ★</span><div class="score-track"><div class="score-fill" style="width:{{ $pct }}%"></div></div><span>{{ $pct }}%</span></div>
@@ -137,9 +136,26 @@
                             @for($i=0; $i<5; $i++) {{ $i < $review->rating ? '★' : '☆' }} @endfor
                         </div>
                         <span class="review-tag">Parent Review</span>
-                        @if($review->image_path)
-                            <div style="margin: 15px 0; border-radius: 8px; overflow: hidden; max-height: 200px;">
-                                <img src="{{ asset('storage/' . $review->image_path) }}" alt="Review Image" style="width: 100%; height: 100%; object-fit: cover;">
+                        @php
+                            $cardImages = [];
+                            if (!empty($review->images)) {
+                                $cardImages = $review->images;
+                            } elseif ($review->image_path) {
+                                $cardImages = [$review->image_path];
+                            }
+                        @endphp
+                        @if(count($cardImages) > 0)
+                            <div style="margin: 15px 0; display: flex; gap: 8px;">
+                                @foreach(array_slice($cardImages, 0, 3) as $idx => $img)
+                                    <div style="width: 70px; height: 70px; border-radius: 8px; overflow: hidden; position: relative; cursor: pointer;" onclick="openLightbox('{{ json_encode($cardImages) }}', {{ $idx }})">
+                                        <img src="{{ asset('storage/' . $img) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @if($idx === 2 && count($cardImages) > 3)
+                                            <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                +{{ count($cardImages) - 3 }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
                         @endif
                         <p class="review-text">"{{ $review->comment }}"</p>
@@ -154,6 +170,10 @@
                         </div>
                     </article>
                 @endforeach
+            </div>
+
+            <div style="margin-top: 40px; display: flex; justify-content: center;">
+                {{ $textReviews->links() }}
             </div>
 
             <div class="video-review-section">
@@ -245,4 +265,75 @@
             </div>
         </div>
     </section>
+
+    <!-- Lightbox Modal -->
+    <div id="imageLightbox" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column;">
+        <button onclick="closeLightbox()" style="position: absolute; top: 20px; right: 30px; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">✕</button>
+        
+        <div style="position: relative; max-width: 90%; max-height: 80vh; display: flex; align-items: center;">
+            <button id="lbPrev" style="position: absolute; left: -50px; background: none; border: none; color: white; font-size: 40px; cursor: pointer;">‹</button>
+            <img id="lbMainImg" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px;">
+            <button id="lbNext" style="position: absolute; right: -50px; background: none; border: none; color: white; font-size: 40px; cursor: pointer;">›</button>
+        </div>
+        
+        <div id="lbThumbnails" style="display: flex; gap: 10px; margin-top: 20px; max-width: 90%; overflow-x: auto; padding-bottom: 10px;"></div>
+    </div>
+
+    <script>
+        let currentLightboxImages = [];
+        let currentLightboxIndex = 0;
+
+        function openLightbox(imagesJson, startIndex = 0) {
+            try {
+                currentLightboxImages = JSON.parse(imagesJson);
+                if(currentLightboxImages.length === 0) return;
+                
+                currentLightboxIndex = startIndex;
+                document.getElementById('imageLightbox').style.display = 'flex';
+                updateLightbox();
+            } catch(e) {}
+        }
+
+        function closeLightbox() {
+            document.getElementById('imageLightbox').style.display = 'none';
+        }
+
+        function updateLightbox() {
+            const mainImg = document.getElementById('lbMainImg');
+            const thumbsContainer = document.getElementById('lbThumbnails');
+            
+            mainImg.src = '/storage/' + currentLightboxImages[currentLightboxIndex];
+            
+            thumbsContainer.innerHTML = '';
+            currentLightboxImages.forEach((img, idx) => {
+                const thumb = document.createElement('img');
+                thumb.src = '/storage/' + img;
+                thumb.style.height = '60px';
+                thumb.style.width = '60px';
+                thumb.style.objectFit = 'cover';
+                thumb.style.borderRadius = '6px';
+                thumb.style.cursor = 'pointer';
+                thumb.style.opacity = idx === currentLightboxIndex ? '1' : '0.5';
+                thumb.style.border = idx === currentLightboxIndex ? '2px solid white' : 'none';
+                thumb.onclick = () => {
+                    currentLightboxIndex = idx;
+                    updateLightbox();
+                };
+                thumbsContainer.appendChild(thumb);
+            });
+
+            document.getElementById('lbPrev').style.display = currentLightboxImages.length > 1 ? 'block' : 'none';
+            document.getElementById('lbNext').style.display = currentLightboxImages.length > 1 ? 'block' : 'none';
+        }
+
+        document.getElementById('lbPrev').onclick = () => {
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+            updateLightbox();
+        };
+
+        document.getElementById('lbNext').onclick = () => {
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+            updateLightbox();
+        };
+    </script>
 @endsection

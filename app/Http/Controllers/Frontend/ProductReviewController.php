@@ -16,13 +16,16 @@ class ProductReviewController extends Controller
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|max:1000',
-            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'review_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'review_images' => 'nullable|array|max:5',
             'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt|max:20480',
         ]);
 
-        $imagePath = null;
-        if ($request->hasFile('review_image')) {
-            $imagePath = $request->file('review_image')->store('reviews', 'public');
+        $imagesPaths = [];
+        if ($request->hasFile('review_images')) {
+            foreach ($request->file('review_images') as $file) {
+                $imagesPaths[] = $file->store('reviews', 'public');
+            }
         }
 
         $videoPath = null;
@@ -35,9 +38,10 @@ class ProductReviewController extends Controller
             'user_id' => Auth::id(),
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'image_path' => $imagePath,
+            'image_path' => count($imagesPaths) > 0 ? $imagesPaths[0] : null,
+            'images' => $imagesPaths,
             'video_path' => $videoPath,
-            'is_active' => $videoPath ? false : true,
+            'is_active' => false,
         ]);
 
         return back()->with('success', 'Your review has been submitted and is awaiting approval.');
