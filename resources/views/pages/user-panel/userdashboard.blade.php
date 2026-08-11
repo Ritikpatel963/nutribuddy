@@ -152,6 +152,25 @@
 
         <!-- RIGHT COLUMN -->
         <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- Assessment Widget -->
+          @php $latestAttempt = auth()->user()->assessmentAttempts()->latest()->first(); @endphp
+          <div class="progress-card" onclick="window.location.href='{{ route('user.assessment.index') }}'" style="cursor: pointer; background: linear-gradient(135deg, var(--pkl) 0%, var(--pul) 100%);">
+            <h4 style="color: var(--pu);">🩺 Health Score</h4>
+            @if($latestAttempt)
+                <div style="font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--pu); margin: 8px 0;">
+                    {{ number_format($latestAttempt->percentage, 0) }}%
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-light);">{{ $latestAttempt->result_level }} (Latest)</p>
+                <div class="progress-bar" style="height: 6px; margin-top: 10px;">
+                  <div class="progress-fill" style="width:{{ $latestAttempt->percentage }}%; background: var(--pu);"></div>
+                </div>
+            @else
+                <div style="font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--pu); margin: 8px 0;">
+                    Not Taken Yet
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-light);">Take your first assessment now!</p>
+            @endif
+          </div>
           <!-- Loyalty -->
           <div class="progress-card" onclick="window.location.href='{{ route('wallet') }}'" style="cursor: pointer;">
             <h4>NB Coins Wallet 🪙</h4>

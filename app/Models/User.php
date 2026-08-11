@@ -90,4 +90,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ContactLead::class, 'assigned_to');
     }
+
+    public function assessmentAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AssessmentAttempt::class);
+    }
 }

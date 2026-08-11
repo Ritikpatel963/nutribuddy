@@ -73,6 +73,23 @@
                                     <div class="max-w-200-px text-truncate text-sm text-secondary-light" title="{{ $review->comment }}">
                                         {{ $review->comment ?? 'No comment' }}
                                     </div>
+                                    @php
+                                        $mediaList = [];
+                                        if (!empty($review->images)) {
+                                            $mediaList = $review->images;
+                                        } elseif ($review->image_path) {
+                                            $mediaList = [$review->image_path];
+                                        }
+                                    @endphp
+                                    @if(count($mediaList) > 0)
+                                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                                            @foreach($mediaList as $img)
+                                                <a href="{{ asset('storage/' . $img) }}" target="_blank">
+                                                    <img src="{{ asset('storage/' . $img) }}" class="w-32-px h-32-px radius-4 border object-fit-cover" title="Click to view">
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column gap-1">

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use App\Models\Setting;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         // Block destructive database commands (migrate:fresh, db:wipe, etc.)
         // unless explicitly allowed via ALLOW_DB_RESET=true in .env
         if (! app()->environment('testing') && ! filter_var(env('ALLOW_DB_RESET', false), FILTER_VALIDATE_BOOLEAN)) {

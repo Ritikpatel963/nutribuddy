@@ -51,7 +51,9 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::delete('blog-posts-trash/bulk-force-delete', [AdminBlogPostController::class, 'bulkForceDestroy'])->name('blog-posts.bulk-force-destroy');
     Route::patch('blog-posts-trash/{blogPost}/restore', [AdminBlogPostController::class, 'restore'])->name('blog-posts.restore');
     Route::delete('blog-posts-trash/{blogPost}/force-delete', [AdminBlogPostController::class, 'forceDestroy'])->name('blog-posts.force-destroy');
-    Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('blog-posts/bulk-destroy', [AdminBlogPostController::class, 'bulkForceDestroy'])->name('blog-posts.bulk-destroy');
+    Route::post('blog-posts/upload-image', [AdminBlogPostController::class, 'uploadImage'])->name('blog-posts.upload-image');
+    Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::resource('contact-leads', AdminContactLeadController::class)->only(['index', 'update', 'destroy']);
     Route::get('newsletter/export', [AdminNewsletterSubscriberController::class, 'export'])->name('newsletter.export');
@@ -92,3 +94,16 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
         Route::get('/transactions', [\App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions');
     });
 });
+
+// ── Assessment / Quiz Management ─────────────────────────────────────────────
+Route::prefix('admin/assessment')->name('admin.assessment.')->middleware('auth:admin')->group(function () {
+    Route::resource('questions', \App\Http\Controllers\Admin\AssessmentQuestionController::class)
+        ->only(['index', 'store', 'edit', 'update', 'destroy']);
+    Route::patch('questions/{question}/toggle', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'toggleActive'])
+        ->name('questions.toggle');
+    Route::post('questions/reorder', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'reorder'])
+        ->name('questions.reorder');
+    Route::patch('sections/rename', [\App\Http\Controllers\Admin\AssessmentQuestionController::class, 'renameSection'])
+        ->name('sections.rename');
+});
+

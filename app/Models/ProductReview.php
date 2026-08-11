@@ -17,6 +17,7 @@ class ProductReview extends Model
         'comment',
         'image_path',
         'video_path',
+        'images',
         'is_active',
     ];
 
@@ -25,6 +26,7 @@ class ProductReview extends Model
         return [
             'is_active' => 'boolean',
             'rating' => 'integer',
+            'images' => 'array',
         ];
     }
 

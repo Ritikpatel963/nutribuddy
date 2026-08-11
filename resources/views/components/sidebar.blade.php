@@ -251,6 +251,10 @@
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Blog Categories</a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.ecommerce.blog-posts.create') }}"><i
+                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> Create Blog Post</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin.ecommerce.blog-posts.index') }}"><i
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Blog Posts</a>
                     </li>
@@ -260,6 +264,19 @@
                     </li>
                 </ul>
             </li>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:clipboard-list-outline" class="menu-icon"></iconify-icon>
+                    <span>Assessment</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="{{ route('admin.assessment.questions.index') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Questions</a>
+                    </li>
+                </ul>
+            </li>
+
             {{-- <li class="sidebar-menu-group-title">Application</li>
             <li>
                   <a href="{{ route('email') }}">

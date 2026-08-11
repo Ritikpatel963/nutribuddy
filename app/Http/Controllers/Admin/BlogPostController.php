@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class BlogPostController extends Controller
 {
@@ -20,7 +21,24 @@ class BlogPostController extends Controller
             'posts' => BlogPost::with(['category', 'author'])->latest()->get(),
             'trashCount' => BlogPost::onlyTrashed()->count(),
             'categories' => BlogCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
-            'users' => User::orderBy('name')->get(['id', 'name']),
+            'users' => User::where('role', 'admin')->orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    public function create(): View
+    {
+        return view('admin.ecommerce.blog-posts.create', [
+            'categories' => BlogCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'users' => User::where('role', 'admin')->orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    public function edit(BlogPost $blogPost): View
+    {
+        return view('admin.ecommerce.blog-posts.edit', [
+            'post' => $blogPost,
+            'categories' => BlogCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']),
+            'users' => User::where('role', 'admin')->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -39,9 +57,8 @@ class BlogPostController extends Controller
             'author_id' => ['nullable', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:blog_posts,slug'],
-            'excerpt' => ['nullable', 'string'],
             'content' => ['required', 'string'],
-            'featured_image' => ['nullable', 'string', 'max:255'],
+            'featured_image' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
             'published_at' => ['nullable', 'date'],
             'meta_title' => ['nullable', 'string', 'max:255'],
@@ -53,10 +70,14 @@ class BlogPostController extends Controller
         if ($validated['status'] === 'published' && empty($validated['published_at'])) {
             $validated['published_at'] = now();
         }
+        
+        if ($request->hasFile('featured_image')) {
+            $validated['featured_image'] = $request->file('featured_image')->store('blog-posts', 'public');
+        }
 
         BlogPost::create($validated);
 
-        return back()->with('success', 'Blog post created successfully.');
+        return redirect()->route('admin.ecommerce.blog-posts.index')->with('success', 'Blog post created successfully.');
     }
 
     public function update(Request $request, BlogPost $blogPost): RedirectResponse
@@ -66,9 +87,8 @@ class BlogPostController extends Controller
             'author_id' => ['nullable', 'exists:users,id'],
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('blog_posts', 'slug')->ignore($blogPost->id)],
-            'excerpt' => ['nullable', 'string'],
             'content' => ['required', 'string'],
-            'featured_image' => ['nullable', 'string', 'max:255'],
+            'featured_image' => ['nullable', 'image', 'max:2048'],
             'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
             'published_at' => ['nullable', 'date'],
             'meta_title' => ['nullable', 'string', 'max:255'],
@@ -79,6 +99,15 @@ class BlogPostController extends Controller
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
         if ($validated['status'] === 'published' && empty($validated['published_at']) && ! $blogPost->published_at) {
             $validated['published_at'] = now();
+        }
+
+        if ($request->hasFile('featured_image')) {
+            if ($blogPost->featured_image) {
+                Storage::disk('public')->delete($blogPost->featured_image);
+            }
+            $validated['featured_image'] = $request->file('featured_image')->store('blog-posts', 'public');
+        } else {
+            unset($validated['featured_image']);
         }
 
         $blogPost->update($validated);
@@ -125,5 +154,30 @@ class BlogPostController extends Controller
         }
 
         return back()->with('success', $posts->count() . ' blog post(s) permanently deleted successfully.');
+    }
+
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
+
+            $request->file('upload')->storeAs('public/blog-images', $fileName);
+
+            $url = Storage::url('blog-images/' . $fileName);
+
+            return response()->json([
+                'uploaded' => 1,
+                'fileName' => $fileName,
+                'url' => $url
+            ]);
+        }
+        
+        return response()->json([
+            'uploaded' => 0,
+            'error' => ['message' => 'No image uploaded']
+        ]);
     }
 }
