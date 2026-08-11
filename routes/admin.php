@@ -51,7 +51,9 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::delete('blog-posts-trash/bulk-force-delete', [AdminBlogPostController::class, 'bulkForceDestroy'])->name('blog-posts.bulk-force-destroy');
     Route::patch('blog-posts-trash/{blogPost}/restore', [AdminBlogPostController::class, 'restore'])->name('blog-posts.restore');
     Route::delete('blog-posts-trash/{blogPost}/force-delete', [AdminBlogPostController::class, 'forceDestroy'])->name('blog-posts.force-destroy');
-    Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('blog-posts/bulk-destroy', [AdminBlogPostController::class, 'bulkForceDestroy'])->name('blog-posts.bulk-destroy');
+    Route::post('blog-posts/upload-image', [AdminBlogPostController::class, 'uploadImage'])->name('blog-posts.upload-image');
+    Route::resource('blog-posts', AdminBlogPostController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::resource('contact-leads', AdminContactLeadController::class)->only(['index', 'update', 'destroy']);
     Route::get('newsletter/export', [AdminNewsletterSubscriberController::class, 'export'])->name('newsletter.export');

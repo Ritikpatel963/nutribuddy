@@ -44,7 +44,7 @@
                     <tbody>
                         @forelse ($posts as $post)
                             @php
-                                $statusClass = match(strtolower($post->status)) {
+                                $statusClass = match(strtolower($post->status ?? '')) {
                                     'published' => 'success',
                                     'draft' => 'warning',
                                     'archived' => 'secondary',

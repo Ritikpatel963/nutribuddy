@@ -7,20 +7,51 @@ use App\Models\BlogPost;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $blogPosts = BlogPost::with('category')
+        $query = BlogPost::with('category')
             ->where('status', 'published')
-            ->latest('published_at')
-            ->latest()
-            ->get();
+            ->latest('published_at');
 
-        return view('pages.blog', compact('blogPosts'));
+        if ($request->has('category') && $request->category !== 'all') {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('name', $request->category);
+            });
+        }
+
+        $backendBlogPosts = $query->paginate(10);
+        $categories = \App\Models\BlogCategory::all();
+
+        return view('pages.blog', compact('backendBlogPosts', 'categories'));
     }
 
-    public function show(int $id)
+    public function show($id)
     {
-        return view('pages.blog-show', compact('id'));
+        $blogPost = BlogPost::with(['category', 'author'])->findOrFail($id);
+        
+        $relatedBlogs = BlogPost::with('category')
+            ->where('blog_category_id', $blogPost->blog_category_id)
+            ->where('id', '!=', $blogPost->id)
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+            
+        $recentBlogs = BlogPost::with('category')
+            ->where('status', 'published')
+            ->where('id', '!=', $blogPost->id)
+            ->latest('published_at')
+            ->take(4)
+            ->get();
+            
+        $popularBlogs = BlogPost::with('category')
+            ->where('status', 'published')
+            ->where('id', '!=', $blogPost->id)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+            
+        return view('pages.blog-show', compact('blogPost', 'relatedBlogs', 'recentBlogs', 'popularBlogs'));
     }
 
     public function addBlog()

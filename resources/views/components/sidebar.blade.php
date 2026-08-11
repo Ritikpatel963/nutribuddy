@@ -251,6 +251,10 @@
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Blog Categories</a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.ecommerce.blog-posts.create') }}"><i
+                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> Create Blog Post</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin.ecommerce.blog-posts.index') }}"><i
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Blog Posts</a>
                     </li>

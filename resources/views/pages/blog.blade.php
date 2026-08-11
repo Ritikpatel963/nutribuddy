@@ -1,5 +1,5 @@
-﻿@extends('layouts.main')
-@section('title', 'Blog & Tips â€” NutriBuddy Kids')
+@extends('layouts.main')
+@section('title', 'Blog & Tips — NutriBuddy Kids')
 
 @push('styles')
     <style>
@@ -346,24 +346,22 @@
                 <h2 class="blog-section-title">Practical Wellness Reads</h2>
                 <p class="blog-section-sub">Helpful, parent-friendly articles on nutrition, habits, recipes and everyday child wellness.</p>
             </div>
-            <div class="blog-count-pill"><span id="blogVisibleCount">{{ isset($blogPosts) ? count($blogPosts) : 0 }}</span>&nbsp;articles</div>
+            <div class="blog-count-pill"><span id="blogVisibleCount">{{ $backendBlogPosts->total() }}</span>&nbsp;articles</div>
         </div>
 
         <!-- Filters -->
         <div class="blog-filters">
-            <button type="button" class="blog-filter-btn active" data-filter="all">All Posts</button>
-            <button type="button" class="blog-filter-btn" data-filter="nutrition">Nutrition</button>
-            <button type="button" class="blog-filter-btn" data-filter="parenting">Parenting</button>
-            <button type="button" class="blog-filter-btn" data-filter="wellness">Wellness</button>
-            <button type="button" class="blog-filter-btn" data-filter="recipes">Recipes</button>
+            <a href="{{ route('blog') }}" class="blog-filter-btn {{ !request('category') || request('category') == 'all' ? 'active' : '' }}" style="text-decoration:none;display:inline-flex;align-items:center;">All Posts</a>
+            @foreach($categories as $category)
+                <a href="{{ route('blog', ['category' => strtolower($category->name)]) }}" class="blog-filter-btn {{ request('category') == strtolower($category->name) ? 'active' : '' }}" style="text-decoration:none;display:inline-flex;align-items:center;">{{ $category->name }}</a>
+            @endforeach
         </div>
 
         <!-- Blog Grid -->
         <div class="blog-grid">
             @php
-                $backendBlogPosts = isset($blogPosts) ? collect($blogPosts) : collect();
                 $blogPosts = $backendBlogPosts->count()
-                    ? $backendBlogPosts->map(function ($post) {
+                    ? collect($backendBlogPosts->items())->map(function ($post) {
                         $words = str_word_count(strip_tags($post->content ?? ''));
                         $image = trim((string) $post->featured_image);
                         $imageUrl = null;
@@ -376,12 +374,12 @@
 
                         return [
                             'id' => $post->id,
-                            'title' => $post->title,
-                            'excerpt' => $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content ?? ''), 130),
+                            'title' => html_entity_decode($post->title),
+                            'excerpt' => \Illuminate\Support\Str::limit(html_entity_decode(strip_tags($post->content ?? '')), 130),
                             'category' => $post->category?->name ?? 'Wellness',
                             'date' => optional($post->published_at ?? $post->created_at)->format('M j, Y'),
                             'readTime' => max(1, (int) ceil($words / 200)) . ' min read',
-                            'emoji' => 'ðŸ“š',
+                            'emoji' => '📚',
                             'image' => $imageUrl,
                         ];
                     })->values()->all()
@@ -405,52 +403,51 @@
                         </h3>
                         <p class="blog-card-excerpt">{{ $post['excerpt'] }}</p>
                         <div class="blog-card-meta">
-                            <span class="blog-card-date">ðŸ“… {{ $post['date'] }}</span>
-                            <span class="blog-card-read-time">â±ï¸ {{ $post['readTime'] }}</span>
+                            <span class="blog-card-date">📅 {{ $post['date'] }}</span>
+                            <span class="blog-card-read-time">⏱️ {{ $post['readTime'] }}</span>
                         </div>
                         <a href="{{ route('blog.show', $post['id']) }}" class="blog-card-link">
-                            Read Article â†’
+                            Read Article →
                         </a>
                     </div>
                 </div>
             @endforeach
-            <div class="blog-empty" id="blogEmptyState">No articles found in this category.</div>
+            @if(count($blogPosts) == 0)
+                <div class="blog-empty" style="display: block;">No articles found in this category.</div>
+            @endif
         </div>
+
+        <!-- Pagination -->
+        @if($backendBlogPosts->hasPages())
+            <div class="blog-pagination" style="margin-top: 40px;">
+                {{-- Previous Page Link --}}
+                @if ($backendBlogPosts->onFirstPage())
+                    <span class="pagination-btn disabled" style="opacity: 0.5; cursor: not-allowed; display:flex;align-items:center;justify-content:center;">&laquo;</span>
+                @else
+                    <a href="{{ $backendBlogPosts->appends(request()->query())->previousPageUrl() }}" class="pagination-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">&laquo;</a>
+                @endif
+
+                {{-- Array Of Links --}}
+                @foreach ($backendBlogPosts->getUrlRange(1, $backendBlogPosts->lastPage()) as $page => $url)
+                    @if ($page == $backendBlogPosts->currentPage())
+                        <span class="pagination-btn active" style="display:flex;align-items:center;justify-content:center;">{{ $page }}</span>
+                    @else
+                        <a href="{{ $backendBlogPosts->appends(request()->query())->url($page) }}" class="pagination-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">{{ $page }}</a>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($backendBlogPosts->hasMorePages())
+                    <a href="{{ $backendBlogPosts->appends(request()->query())->nextPageUrl() }}" class="pagination-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">&raquo;</a>
+                @else
+                    <span class="pagination-btn disabled" style="opacity: 0.5; cursor: not-allowed; display:flex;align-items:center;justify-content:center;">&raquo;</span>
+                @endif
+            </div>
+        @endif
 
     </section>
 
     <!-- Parent Reviews & FAQ -->
     @include('partials.parent-reviews')
     @include('partials.faq-section')
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const cards = Array.from(document.querySelectorAll('.blog-card'));
-            const buttons = Array.from(document.querySelectorAll('.blog-filter-btn'));
-            const visibleCount = document.getElementById('blogVisibleCount');
-            const emptyState = document.getElementById('blogEmptyState');
-
-            function filterBlog(category) {
-                let count = 0;
-
-                cards.forEach(card => {
-                    const show = category === 'all' || card.dataset.category === category;
-                    card.style.display = show ? '' : 'none';
-                    if (show) count++;
-                });
-
-                if (visibleCount) visibleCount.textContent = count;
-                if (emptyState) emptyState.style.display = count === 0 ? 'block' : 'none';
-            }
-
-            buttons.forEach(button => {
-                button.addEventListener('click', () => {
-                    buttons.forEach(item => item.classList.toggle('active', item === button));
-                    filterBlog(button.dataset.filter || 'all');
-                });
-            });
-
-            filterBlog('all');
-        });
-    </script>
 @endsection

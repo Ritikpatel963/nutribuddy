@@ -1,88 +1,21 @@
 @php
-    // Blog posts database-like array
-    $blogs = [
-        1 => [
-            'id' => 1,
-            'title' => '5 Essential Vitamins Every Child Needs',
-            'category' => 'Nutrition',
-            'date' => 'May 3, 2026',
-            'readTime' => '5 min read',
-            'emoji' => '🧬',
-            'author' => 'Dr. Priya Sharma',
-            'authorRole' => 'Pediatric Nutritionist',
-            'authorEmoji' => '👩‍⚕️',
-            'tags' => ['Nutrition', 'Vitamins', 'ChildHealth', 'HealthyKids', 'ParentingTips'],
-        ],
-        2 => [
-            'id' => 2,
-            'title' => 'How to Make Nutrition Fun for Picky Eaters',
-            'category' => 'Parenting',
-            'date' => 'May 1, 2026',
-            'readTime' => '4 min read',
-            'emoji' => '🎨',
-            'author' => 'Ms. Neha Patel',
-            'authorRole' => 'Child Psychologist',
-            'authorEmoji' => '👩‍🏫',
-            'tags' => ['Parenting', 'Picky Eaters', 'Nutrition', 'FamilyTips'],
-        ],
-        3 => [
-            'id' => 3,
-            'title' => 'Ayurvedic Approaches to Child Wellness',
-            'category' => 'Wellness',
-            'date' => 'Apr 28, 2026',
-            'readTime' => '6 min read',
-            'emoji' => '🌿',
-            'author' => 'Dr. Rajesh Kumar',
-            'authorRole' => 'Ayurvedic Specialist',
-            'authorEmoji' => '👨‍⚕️',
-            'tags' => ['Wellness', 'Ayurveda', 'ChildHealth', 'Holistic'],
-        ],
-        4 => [
-            'id' => 4,
-            'title' => 'Healthy Recipes Kids Will Actually Eat',
-            'category' => 'Recipes',
-            'date' => 'Apr 25, 2026',
-            'readTime' => '7 min read',
-            'emoji' => '🥘',
-            'author' => 'Chef Priya Desai',
-            'authorRole' => 'Nutritional Chef',
-            'authorEmoji' => '👨‍🍳',
-            'tags' => ['Recipes', 'HealthyEating', 'KidFriendly', 'EasyRecipes'],
-        ],
-        5 => [
-            'id' => 5,
-            'title' => 'Boosting Immunity Naturally: The Science Behind Ashwagandha',
-            'category' => 'Nutrition',
-            'date' => 'Apr 22, 2026',
-            'readTime' => '5 min read',
-            'emoji' => '🛡️',
-            'author' => 'Dr. Priya Sharma',
-            'authorRole' => 'Pediatric Nutritionist',
-            'authorEmoji' => '👩‍⚕️',
-            'tags' => ['Nutrition', 'Immunity', 'Ashwagandha', 'Ayurveda'],
-        ],
-        6 => [
-            'id' => 6,
-            'title' => 'Building Healthy Eating Habits From Early Childhood',
-            'category' => 'Parenting',
-            'date' => 'Apr 19, 2026',
-            'readTime' => '6 min read',
-            'emoji' => '👶',
-            'author' => 'Ms. Neha Patel',
-            'authorRole' => 'Child Psychologist',
-            'authorEmoji' => '👩‍🏫',
-            'tags' => ['Parenting', 'HealthyHabits', 'EarlyChildhood', 'Nutrition'],
-        ],
-    ];
-
-    // Get the blog ID from the URL parameter or use default
-    $blogId = request('id') ?? 1;
-    $blog = $blogs[$blogId] ?? $blogs[1];
-    $relatedBlogs = collect($blogs)->where('category', $blog['category'])->where('id', '!=', $blogId)->take(3)->values();
+    $words = str_word_count(strip_tags($blogPost->content ?? ''));
+    $readTime = max(1, (int) ceil($words / 200)) . ' min read';
+    $date = optional($blogPost->published_at ?? $blogPost->created_at)->format('M j, Y');
+    $authorName = $blogPost->author?->name ?? 'Admin';
+    $categoryName = $blogPost->category?->name ?? 'Wellness';
+    
+    $image = trim((string) $blogPost->featured_image);
+    $imageUrl = null;
+    if ($image !== '') {
+        $imageUrl = \Illuminate\Support\Str::startsWith($image, ['http://', 'https://'])
+            ? $image
+            : asset(\Illuminate\Support\Str::startsWith($image, ['storage/', '/storage/']) ? ltrim($image, '/') : 'storage/' . ltrim($image, '/'));
+    }
 @endphp
 
 @extends('layouts.main')
-@section('title', $blog['title'] . ' — NutriBuddy Kids')
+@section('title', html_entity_decode($blogPost->title) . ' — NutriBuddy Kids')
 
 @push('styles')
     <style>
@@ -190,11 +123,13 @@
         .blog-detail-author-info {
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
         .blog-detail-author-name {
             font-weight: 700;
-            color: var(--dk);
+            color: #ffffff;
+            margin-bottom: 2px;
         }
 
         .blog-detail-author-title {
@@ -235,6 +170,18 @@
             line-height: 2;
             font-size: 1.05rem;
             color: #444;
+            min-width: 0; /* Prevents flex/grid blowout */
+        }
+        
+        .blog-sidebar {
+            min-width: 0;
+        }
+
+        .blog-article img, 
+        .blog-article iframe, 
+        .blog-article video {
+            max-width: 100%;
+            height: auto;
         }
 
         .blog-article h2 {
@@ -422,18 +369,18 @@
                 <span>/</span>
                 <a href="{{ route('blog') }}">Blog</a>
                 <span>/</span>
-                <span>{{ $blog['title'] }}</span>
+                <span>{{ html_entity_decode($blogPost->title) }}</span>
             </div>
-            <span class="blog-detail-category">📚 {{ $blog['category'] }}</span>
-            <h1 class="blog-detail-title">{{ $blog['title'] }}</h1>
+            <span class="blog-detail-category">{{ $categoryName }}</span>
+            <h1 class="blog-detail-title">{{ html_entity_decode($blogPost->title) }}</h1>
             <div class="blog-detail-meta">
-                <div class="blog-detail-meta-item">📅 {{ $blog['date'] }}</div>
-                <div class="blog-detail-meta-item">⏱️ {{ $blog['readTime'] }}</div>
+                <div class="blog-detail-meta-item">📅 {{ $date }}</div>
+                <div class="blog-detail-meta-item">⏱️ {{ $readTime }}</div>
                 <div class="blog-detail-author">
-                    <div class="blog-detail-author-avatar">{{ $blog['authorEmoji'] }}</div>
+                    <div class="blog-detail-author-avatar">👤</div>
                     <div class="blog-detail-author-info">
-                        <span class="blog-detail-author-name">{{ $blog['author'] }}</span>
-                        <span class="blog-detail-author-title">{{ $blog['authorRole'] }}</span>
+                        <span class="blog-detail-author-name">{{ $authorName }}</span>
+                        <span class="blog-detail-author-title">Author</span>
                     </div>
                 </div>
             </div>
@@ -443,110 +390,67 @@
     <!-- Content -->
     <div class="blog-content-wrapper">
         <article class="blog-article">
-            <div class="blog-featured-image">{{ $blog['emoji'] }}</div>
+            @if($imageUrl)
+                <div class="blog-featured-image" style="background: none; font-size: initial;">
+                    <img src="{{ $imageUrl }}" alt="{{ html_entity_decode($blogPost->title) }}">
+                </div>
+            @endif
 
-            <h2 id="intro">Understanding Your Child's Nutritional Needs</h2>
-            <p>Every parent wants their child to grow up healthy and strong. A crucial part of this journey is ensuring they receive the essential vitamins and minerals their growing bodies need. In this comprehensive guide, we'll explore the five most important vitamins for children's development and how to ensure they're getting enough.</p>
+            {!! $blogPost->content !!}
 
-            <div class="blog-highlight">
-                <p>💡 Did you know? Children's nutritional needs are 40-50% higher than adults' on a per-pound basis because they're growing so rapidly!</p>
+            <div class="blog-share-icons" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h4 style="font-family: 'Fredoka One', cursive; margin-bottom: 16px; font-size: 1.2rem; color: var(--dk);">Share this article</h4>
+                <div style="display: flex; gap: 12px;">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: #1877F2; color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: bold; font-family: sans-serif; font-size: 1.2rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">f</a>
+                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->fullUrl()) }}&text={{ urlencode($blogPost->title) }}" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: #000000; color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: bold; font-family: sans-serif; font-size: 1.2rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">𝕏</a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ urlencode(request()->fullUrl()) }}&title={{ urlencode($blogPost->title) }}" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: #0A66C2; color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: bold; font-family: sans-serif; font-size: 1.1rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">in</a>
+                    <a href="https://api.whatsapp.com/send?text={{ urlencode($blogPost->title . ' ' . request()->fullUrl()) }}" target="_blank" style="width: 44px; height: 44px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: bold; font-family: sans-serif; font-size: 1.2rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">W</a>
+                </div>
             </div>
-
-            <h3 id="vitamin-d">1. Vitamin D: The Sunshine Vitamin</h3>
-            <p>Vitamin D is essential for calcium absorption and bone development. While our bodies can produce vitamin D when exposed to sunlight, many children don't get enough sun exposure, especially in urban areas.</p>
-            <ul>
-                <li>Recommended daily intake: 600-1000 IU for children</li>
-                <li>Best sources: Fortified milk, fatty fish, egg yolks</li>
-                <li>Benefits: Strong bones, immune support, mood regulation</li>
-            </ul>
-
-            <h3 id="vitamin-c">2. Vitamin C: The Immunity Booster</h3>
-            <p>This water-soluble vitamin is crucial for immune function and collagen production. It also helps protect cells from damage caused by free radicals.</p>
-            <ul>
-                <li>Recommended daily intake: 15-45 mg for children</li>
-                <li>Best sources: Citrus fruits, berries, bell peppers</li>
-                <li>Benefits: Enhanced immunity, wound healing, antioxidant protection</li>
-            </ul>
-
-            <h3 id="vitamin-a">3. Vitamin A: The Vision Protector</h3>
-            <p>Essential for eye health and vision development, vitamin A also supports immune function and skin health. Children's eyes are still developing, making this vitamin particularly important.</p>
-            <ul>
-                <li>Recommended daily intake: 300-600 mcg for children</li>
-                <li>Best sources: Sweet potatoes, carrots, spinach, kale</li>
-                <li>Benefits: Healthy vision, immune support, skin health</li>
-            </ul>
-
-            <h3 id="b-vitamins">4. B Vitamins: Energy & Brain Power</h3>
-            <p>The B-complex vitamins are essential for converting food into energy and supporting brain development. They play a crucial role in cognitive function and concentration.</p>
-            <ul>
-                <li>Recommended daily intake: Varies by age and specific B vitamin</li>
-                <li>Best sources: Whole grains, legumes, meat, eggs</li>
-                <li>Benefits: Energy production, brain development, nervous system support</li>
-            </ul>
-
-            <h3 id="iron">5. Iron: Building Strong Blood</h3>
-            <p>Iron is critical for cognitive development and oxygen transport throughout the body. Iron deficiency can lead to anemia and developmental delays if left untreated.</p>
-            <ul>
-                <li>Recommended daily intake: 7-10 mg for children</li>
-                <li>Best sources: Red meat, beans, fortified cereals</li>
-                <li>Benefits: Healthy brain development, energy, oxygen transport</li>
-            </ul>
-
-            <div class="blog-highlight">
-                <p>🎯 Pro Tip: Pair iron-rich foods with vitamin C sources to enhance absorption. For example, serve beans with bell peppers or citrus juice!</p>
-            </div>
-
-            <h2 id="fun">Making Nutrition Fun & Sustainable</h2>
-            <p>The challenge isn't just about meeting nutritional requirements—it's about making it sustainable and enjoyable for your child. Here are some proven strategies:</p>
-
-            <h3>Lead by Example</h3>
-            <p>Children are more likely to develop healthy eating habits if they see their parents practicing them. Make nutritious choices visible and enthusiastic.</p>
-
-            <h3>Make It Interactive</h3>
-            <p>Involve children in meal planning and preparation. Let them choose from healthy options and help in the kitchen. This creates ownership and excitement.</p>
-
-            <h3>Create Positive Associations</h3>
-            <p>Avoid using treats as rewards or punishments. Instead, create positive experiences around nutritious foods through family meals and fun recipes.</p>
-
-            <h2 id="supplements">When Supplements Make Sense</h2>
-            <p>While whole foods should be your primary source of vitamins, supplements can be helpful when dietary intake is insufficient. NutriBuddy's formulations are designed to fill nutritional gaps with kid-friendly delivery methods.</p>
-
-            <p style="margin-top: 40px; font-style: italic; color: #999;">Have questions about your child's nutrition? Consult with a pediatrician or registered dietitian to create a personalized nutrition plan.</p>
         </article>
 
-        <!-- Table of Contents -->
-        <aside class="blog-toc">
-            <h4 class="blog-toc-title">📑 Contents</h4>
-            <ul>
-                <li><a href="#intro">Understanding Needs</a></li>
-                <li><a href="#vitamin-d">Vitamin D</a></li>
-                <li><a href="#vitamin-c">Vitamin C</a></li>
-                <li><a href="#vitamin-a">Vitamin A</a></li>
-                <li><a href="#b-vitamins">B Vitamins</a></li>
-                <li><a href="#iron">Iron</a></li>
-                <li><a href="#fun">Making It Fun</a></li>
-                <li><a href="#supplements">Supplements</a></li>
-            </ul>
+        <aside class="blog-sidebar">
+            <div class="blog-toc" style="margin-bottom: 30px;">
+                <h4 class="blog-toc-title">🕒 Recent Posts</h4>
+                <ul>
+                    @foreach($recentBlogs as $recent)
+                        <li>
+                            <a href="{{ route('blog.show', $recent->id) }}" style="display:block; line-height: 1.4;">
+                                <strong>{{ \Illuminate\Support\Str::limit(html_entity_decode($recent->title), 40) }}</strong>
+                                <div style="font-size: 0.8rem; color: #999; margin-top: 4px;">{{ optional($recent->published_at ?? $recent->created_at)->format('M j, Y') }}</div>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            
+            <div class="blog-toc">
+                <h4 class="blog-toc-title">🔥 Popular Posts</h4>
+                <ul>
+                    @foreach($popularBlogs as $popular)
+                        <li>
+                            <a href="{{ route('blog.show', $popular->id) }}" style="display:block; line-height: 1.4;">
+                                <strong>{{ \Illuminate\Support\Str::limit(html_entity_decode($popular->title), 40) }}</strong>
+                                <div style="font-size: 0.8rem; color: #999; margin-top: 4px;">{{ optional($popular->published_at ?? $popular->created_at)->format('M j, Y') }}</div>
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         </aside>
     </div>
 
     <!-- Footer -->
     <section class="blog-footer">
-        <div class="blog-tags">
-            @foreach($blog['tags'] as $tag)
-                <a href="#" class="blog-tag">#{{ $tag }}</a>
-            @endforeach
-        </div>
-
         @if($relatedBlogs->count() > 0)
             <h3 style="font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--dk); margin-bottom: 20px;">📖 Related Articles</h3>
             <div class="blog-related">
                 @foreach($relatedBlogs as $relatedBlog)
                     <div class="blog-related-card">
-                        <div class="blog-related-card-emoji">{{ $relatedBlog['emoji'] }}</div>
-                        <h4>{{ $relatedBlog['title'] }}</h4>
-                        <p>{{ substr($relatedBlog['title'], 0, 60) }}...</p>
-                        <a href="{{ route('blog.show', $relatedBlog['id']) }}">Read Article →</a>
+                        <div class="blog-related-card-emoji">📚</div>
+                        <h4>{{ html_entity_decode($relatedBlog->title) }}</h4>
+                        <p>{{ \Illuminate\Support\Str::limit(html_entity_decode(strip_tags($relatedBlog->content)), 60) }}</p>
+                        <a href="{{ route('blog.show', $relatedBlog->id) }}">Read Article →</a>
                     </div>
                 @endforeach
             </div>
