@@ -28,7 +28,7 @@
           </svg>
           <div class="asmnt-ring-inner">
             <div class="asmnt-ring-score" id="resultScoreNum">0</div>
-            <div class="asmnt-ring-label">/ {{ $attempt->max_score }}</div>
+            <div class="asmnt-ring-label">%</div>
           </div>
         </div>
       </div>
@@ -39,9 +39,7 @@
         </div>
         <h2 class="asmnt-result-title">Health Assessment Complete!</h2>
         <p class="asmnt-result-sub">
-          Your child scored <strong>{{ $attempt->total_score }} out of {{ $attempt->max_score }}</strong>
-          &nbsp;·&nbsp;
-          <strong>{{ number_format($attempt->percentage, 1) }}%</strong>
+          <strong>Overall Weighted Health Score: {{ number_format($attempt->percentage, 1) }}%</strong>
         </p>
         <p class="asmnt-result-date">
           Completed on {{ $attempt->completed_at?->format('d M Y, g:i A') }}
@@ -130,7 +128,7 @@
 (function () {
   // Animated score counter.
   const el     = document.getElementById('resultScoreNum');
-  const target = {{ $attempt->total_score }};
+  const target = {{ $attempt->percentage }};
   const dur    = 1400;
   const step   = target / (dur / 16);
   let cur      = 0;

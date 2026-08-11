@@ -19,8 +19,8 @@ class AssessmentQuestionController extends Controller
             ->get()
             ->groupBy('section');
 
-        // Unique sections list for the form dropdown.
-        $sections = AssessmentQuestion::distinct()->pluck('section')->sort()->values();
+        // Unique sections list for the form dropdown (strictly the 6 sectors).
+        $sections = collect(array_keys(\App\Services\AssessmentService::SECTORS));
 
         return view('admin.assessment.questions.index', compact('questions', 'sections'));
     }
@@ -32,7 +32,7 @@ class AssessmentQuestionController extends Controller
         $data = $request->validate([
             'title'                    => ['required', 'string', 'max:500'],
             'description'              => ['nullable', 'string'],
-            'section'                  => ['required', 'string', 'max:100'],
+            'section'                  => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Services\AssessmentService::SECTORS))],
             'sort_order'               => ['nullable', 'integer', 'min:0'],
             'options'                  => ['required', 'array', 'min:2'],
             'options.*.option_text'    => ['required', 'string', 'max:255'],
@@ -66,7 +66,7 @@ class AssessmentQuestionController extends Controller
     public function edit(AssessmentQuestion $question): View
     {
         $question->load('options');
-        $sections = AssessmentQuestion::distinct()->pluck('section')->sort()->values();
+        $sections = collect(array_keys(\App\Services\AssessmentService::SECTORS));
 
         return view('admin.assessment.questions.edit', compact('question', 'sections'));
     }
@@ -78,7 +78,7 @@ class AssessmentQuestionController extends Controller
         $data = $request->validate([
             'title'                    => ['required', 'string', 'max:500'],
             'description'              => ['nullable', 'string'],
-            'section'                  => ['required', 'string', 'max:100'],
+            'section'                  => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Services\AssessmentService::SECTORS))],
             'sort_order'               => ['nullable', 'integer', 'min:0'],
             'options'                  => ['required', 'array', 'min:2'],
             'options.*.id'             => ['nullable', 'integer'],
@@ -174,25 +174,6 @@ class AssessmentQuestionController extends Controller
 
     public function renameSection(Request $request)
     {
-        $data = $request->validate([
-            'old_name' => ['required', 'string', 'max:100'],
-            'new_name' => ['required', 'string', 'max:100'],
-        ]);
-
-        $oldName = trim($data['old_name']);
-        $newName = trim($data['new_name']);
-
-        if ($oldName === $newName) {
-            return response()->json(['success' => true, 'message' => 'No change.']);
-        }
-
-        $updated = AssessmentQuestion::where('section', $oldName)
-            ->update(['section' => $newName]);
-
-        return response()->json([
-            'success'  => true,
-            'updated'  => $updated,
-            'new_name' => $newName,
-        ]);
+        return response()->json(['success' => false, 'message' => 'Sections are predefined and cannot be renamed.']);
     }
 }

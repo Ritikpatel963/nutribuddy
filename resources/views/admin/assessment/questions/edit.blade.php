@@ -45,14 +45,12 @@
       <div style="display:flex;gap:12px;margin-bottom:16px">
         <div style="flex:1">
           <label style="display:block;font-weight:700;font-size:.83rem;color:#444;margin-bottom:6px">Section <span style="color:#ff4d8f">*</span></label>
-          <input type="text" name="section" required list="sectionsList"
-                 style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-size:.88rem;outline:none;box-sizing:border-box"
-                 value="{{ old('section', $question->section) }}">
-          <datalist id="sectionsList">
-            @foreach($sections as $sec)<option value="{{ $sec }}">@endforeach
-            <option value="Nutrition"><option value="Sleep"><option value="Physical Activity">
-            <option value="Mental Wellness"><option value="Hygiene & Habits">
-          </datalist>
+          <select name="section" required
+                  style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:9px 13px;font-size:.88rem;outline:none;box-sizing:border-box">
+            @foreach($sections as $sec)
+              <option value="{{ $sec }}" {{ old('section', $question->section) == $sec ? 'selected' : '' }}>{{ $sec }}</option>
+            @endforeach
+          </select>
         </div>
         <div style="width:130px">
           <label style="display:block;font-weight:700;font-size:.83rem;color:#444;margin-bottom:6px">Sort Order</label>

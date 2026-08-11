@@ -51,22 +51,8 @@
             onclick="switchTab({{ $i }})">
             <span class="aqt-tab-name" data-section="{{ $sec }}">{{ $sec }}</span>
             <span class="aqt-tab-badge">{{ $questions[$sec]->count() }}</span>
-            <span class="aqt-tab-edit" onclick="event.stopPropagation(); startTabRename(this)" title="Rename section">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-              </svg>
-            </span>
           </button>
         @endforeach
-        {{-- ── Add New Section button ── --}}
-        <button class="aqt-tab-new" onclick="openNewSectionModal()" title="Add a new section">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          New Section
-        </button>
       </div>
       <div class="aqt-tabs-line"></div>
     </div>
@@ -166,18 +152,11 @@
           <div class="aqt-field-row">
             <div class="aqt-field" style="flex:1">
               <label>Section <span class="req">*</span></label>
-              <input type="text" name="section" class="aqt-ctrl" required list="sectionsList" placeholder="e.g. Nutrition"
-                value="{{ old('section') }}" id="modal-section-input">
-              <datalist id="sectionsList">
+              <select name="section" class="aqt-ctrl" required id="modal-section-input">
                 @foreach($sections as $sec)
-                  <option value="{{ $sec }}">
+                  <option value="{{ $sec }}" {{ old('section') == $sec ? 'selected' : '' }}>{{ $sec }}</option>
                 @endforeach
-                <option value="Nutrition">
-                <option value="Sleep">
-                <option value="Physical Activity">
-                <option value="Mental Wellness">
-                <option value="Hygiene &amp; Habits">
-              </datalist>
+              </select>
             </div>
             <div class="aqt-field" style="width:110px;flex-shrink:0">
               <label>Sort Order</label>

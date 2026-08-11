@@ -11,6 +11,15 @@ use Illuminate\Support\Collection;
 
 class AssessmentService
 {
+    public const SECTORS = [
+        'Growth & Physical Development' => 20,
+        'Immunity & Resilience' => 20,
+        'Brain & Cognitive Development' => 15,
+        'Gut & Digestive Health' => 15,
+        'Bones, Muscles & Strength' => 15,
+        'Energy, Sleep & Lifestyle' => 15,
+    ];
+
     // ─── Question Loading ─────────────────────────────────────────────────────
 
     /**
@@ -24,7 +33,10 @@ class AssessmentService
             ->ordered()
             ->with(['options' => fn ($q) => $q->orderBy('sort_order')])
             ->get()
-            ->groupBy('section');
+            ->groupBy('section')
+            ->sortBy(function ($group, $section) {
+                return array_search($section, array_keys(self::SECTORS));
+            });
     }
 
     /**
@@ -94,7 +106,14 @@ class AssessmentService
             ];
         }
 
-        $percentage  = $maxScore > 0 ? round(($totalScore / $maxScore) * 100, 2) : 0;
+        $weightedPercentage = 0;
+        foreach ($sectionData as $section => $data) {
+            $sectionPct = $data['max'] > 0 ? ($data['score'] / $data['max']) * 100 : 0;
+            $weight = self::SECTORS[$section] ?? 0;
+            $weightedPercentage += ($sectionPct * $weight / 100);
+        }
+        $percentage = round($weightedPercentage, 2);
+
         $resultLevel = $this->getResultLevel($percentage);
 
         // Create the attempt record.

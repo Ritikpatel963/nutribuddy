@@ -26,7 +26,7 @@ class AssessmentController extends Controller
         $questions        = $this->service->getActiveQuestions();
         $totalQuestions   = $questions->count();
 
-        abort_if($totalQuestions === 0, 404, 'No assessment questions available yet.');
+        // We will no longer abort, so the view can display a friendly empty state message.
 
         return view('pages.user-panel.assessment.index', compact(
             'questionsGrouped',
