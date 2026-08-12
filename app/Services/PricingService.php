@@ -1,0 +1,164 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Coupon;
+use App\Models\Product;
+use App\Models\Setting;
+use App\Models\TaxRate;
+use Illuminate\Support\Collection;
+
+class PricingService
+{
+    public function calculate(Collection $cartItems, ?Coupon $coupon = null, int $coinsToRedeem = 0): array
+    {
+        $subtotal = 0.0;
+        $taxTotal = 0.0;
+        $shippingTotal = 0.0;
+        $lineItems = [];
+        $totalCoinsEarned = 0;
+
+        // Variables for what the user sees in the checkout breakdown
+        $displaySubtotal = 0.0;
+        $hiddenTaxOnSubtotal = 0.0;
+        $shownTaxOnSubtotal = 0.0;
+
+        foreach ($cartItems as $cartItem) {
+            /** @var Product $product */
+            $product = $cartItem->product;
+            if (! $product) {
+                continue;
+            }
+            $variant = $cartItem->productVariant;
+            $quantity = (int) $cartItem->quantity;
+            $unitPrice = (float) ($variant?->price ?? $product->base_price);
+            $lineSubTotal = $unitPrice * $quantity;
+
+            /** @var TaxRate|null $taxRate */
+            $taxRate = $product->taxRate;
+            $taxPercent = (float) ($taxRate?->rate ?? 0);
+            $showGstInCheckout = (bool) ($taxRate?->show_in_checkout ?? true);
+            
+            // Storefront prices are tax-exclusive, so apply GST ON TOP of the price.
+            $lineTax = $taxPercent > 0
+                ? ($lineSubTotal * $taxPercent) / 100
+                : 0.0;
+            $lineShipping = ((float) ($product->shipping_price ?? 0)) * $quantity;
+
+            // Calculate Coins Earned for this line item
+            $lineCoinsReward = (int) (!empty($product->coins_reward) ? $product->coins_reward : round($unitPrice * 0.05));
+            $totalCoinsEarned += ($lineCoinsReward * $quantity);
+
+            // Update actual totals
+            $subtotal += $lineSubTotal;
+            $taxTotal += $lineTax;
+            $shippingTotal += $lineShipping;
+
+            // Update display components
+            if ($showGstInCheckout) {
+                $displaySubtotal += $lineSubTotal;
+                $shownTaxOnSubtotal += $lineTax;
+            } else {
+                // If hidden, add the tax directly into the subtotal (MRP) shown to the user
+                $displaySubtotal += ($lineSubTotal + $lineTax);
+                $hiddenTaxOnSubtotal += $lineTax;
+            }
+
+            // For itemized display
+            $displayUnitPrice = $showGstInCheckout ? $unitPrice : ($unitPrice + ($unitPrice * $taxPercent) / 100);
+
+            $lineItems[] = [
+                'cart_item' => $cartItem,
+                'quantity' => $quantity,
+                'unit_price' => round($unitPrice, 0),
+                'display_unit_price' => round($displayUnitPrice, 0),
+                'display_line_total' => round($displayUnitPrice * $quantity, 0),
+                'tax_percent' => round($taxPercent, 2),
+                'tax_code' => $taxRate?->code,
+                'tax_amount' => round($lineTax, 0),
+                'show_gst_in_checkout' => $showGstInCheckout,
+                'shipping_amount' => round($lineShipping, 0),
+                'coins_earned' => $lineCoinsReward * $quantity,
+            ];
+        }
+
+        // ══ COUPON LOGIC ══
+        $discountTotal = 0.0;
+        if ($coupon) {
+            if ($coupon->discount_type === 'percentage') {
+                // Apply percentage on the displayed subtotal (matches user expectations whether tax is hidden or not)
+                $discountTotal = ($displaySubtotal * (float) $coupon->discount_value) / 100;
+            } else {
+                // Fixed amount: user wants the full value to be deducted
+                $discountTotal = (float) $coupon->discount_value;
+            }
+
+            if ($coupon->max_discount_amount !== null) {
+                $discountTotal = min($discountTotal, (float) $coupon->max_discount_amount);
+            }
+            
+            // Limit discount to Subtotal + Tax (don't go negative)
+            $discountTotal = min($discountTotal, ($subtotal + $taxTotal));
+        }
+
+        // ══ COIN REDEMPTION LOGIC ══
+        $coinDiscount = 0.0;
+        $coinsRedeemed = 0;
+        $discountPercent = (int) Setting::get('loyalty_discount_percentage', 10);
+        $coinToCashRate = max(1, (int) Setting::get('loyalty_conversion_rate', 10));
+        $isLoyaltyEnabled = (bool) Setting::get('loyalty_enabled', 1);
+
+        // Max coins that can be redeemed based on % of order total (before coupon)
+        $maxAllowedCoinDiscount = (($subtotal + $taxTotal) * $discountPercent) / 100;
+        // After coupon is applied, remaining order value
+        $remainingBalance = ($subtotal + $taxTotal) - $discountTotal;
+        $maxRedeemableCoins = (int) floor(max(0, min($maxAllowedCoinDiscount, $remainingBalance)) * $coinToCashRate);
+
+        if ($isLoyaltyEnabled && $coinsToRedeem > 0) {
+            $coinsRedeemed = min($coinsToRedeem, $maxRedeemableCoins);
+            $coinDiscount = $coinsRedeemed / $coinToCashRate;
+        }
+
+        // ══ TOTALS CALCULATION ══
+        // Display Subtotal and Tax are already accumulated correctly based on the `show_in_checkout` flag
+        $displayTaxTotal = $shownTaxOnSubtotal;
+
+        // Discount components for display
+        $displayCouponDiscount = $discountTotal;
+        $displayCoinDiscount = $coinDiscount;
+        $displayDiscountTotal = $discountTotal + $coinDiscount;
+
+        // Round components first to ensure no amount mismatch
+        $roundedSubtotal = round($subtotal, 0);
+        $roundedTaxTotal = round($taxTotal, 0);
+        $roundedShippingTotal = round($shippingTotal, 0);
+        $roundedDiscountTotal = round($discountTotal, 0);
+        $roundedCoinDiscount = round($coinDiscount, 0);
+
+        // Calculations for DB / Logic based on rounded values
+        $grandTotal = ($roundedSubtotal + $roundedTaxTotal + $roundedShippingTotal) - $roundedDiscountTotal - $roundedCoinDiscount;
+        $grandTotal = max(0, $grandTotal);
+
+        return [
+            'line_items' => $lineItems,
+            'subtotal' => $roundedSubtotal,
+            'tax_total' => $roundedTaxTotal,
+            'discount_total' => $roundedDiscountTotal,
+            'coin_discount' => $roundedCoinDiscount,
+            'coins_redeemed' => $coinsRedeemed,
+            'max_redeemable_coins' => $maxRedeemableCoins,
+            'total_coins_earned' => $totalCoinsEarned,
+            'display_subtotal' => round($displaySubtotal, 0),
+            'display_tax_total' => round($displayTaxTotal, 0),
+            'display_discount_total' => round($displayDiscountTotal, 0),
+            'display_coupon_discount' => round($displayCouponDiscount, 0),
+            'display_coin_discount' => round($displayCoinDiscount, 0),
+            'gst_total' => $roundedTaxTotal,
+            'cgst_total' => round($taxTotal / 2, 0),
+            'sgst_total' => round($taxTotal / 2, 0),
+            'igst_total' => 0.0,
+            'shipping_total' => $roundedShippingTotal,
+            'grand_total' => $grandTotal,
+        ];
+    }
+}
