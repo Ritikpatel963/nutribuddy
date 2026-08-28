@@ -40,6 +40,7 @@ class RazorpayPaymentController extends Controller
         try {
             $previousStatus = $order->status;
             $previousFulfillmentStatus = $order->fulfillment_status;
+            $previousPaymentStatus = $order->payment_status;
 
             $order->forceFill([
                 'status' => $order->status === 'pending' ? 'confirmed' : $order->status,
@@ -79,6 +80,10 @@ class RazorpayPaymentController extends Controller
                     'updated_by' => $order->user_id,
                     'note' => 'Razorpay payment confirmed.',
                 ]);
+            }
+            
+            if ($previousPaymentStatus !== 'paid') {
+                event(new \App\Events\OrderPaid($order->refresh()));
             }
         } catch (\Throwable $exception) {
             Log::error('Error updating order status for Razorpay.', [
@@ -124,6 +129,7 @@ class RazorpayPaymentController extends Controller
                     if ($order && $order->payment_status !== 'paid') {
                         $previousStatus = $order->status;
                         $previousFulfillmentStatus = $order->fulfillment_status;
+                        $previousPaymentStatus = $order->payment_status;
 
                         $order->forceFill([
                             'status' => $order->status === 'pending' ? 'confirmed' : $order->status,
@@ -147,6 +153,10 @@ class RazorpayPaymentController extends Controller
                                 'updated_by' => $order->user_id,
                                 'note' => 'Razorpay payment confirmed via webhook.',
                             ]);
+                        }
+                        
+                        if ($previousPaymentStatus !== 'paid') {
+                            event(new \App\Events\OrderPaid($order->refresh()));
                         }
                     }
                 }

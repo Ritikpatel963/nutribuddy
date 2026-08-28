@@ -58,4 +58,18 @@ return [
         'base_url' => env('SHIPROCKET_BASE_URL', 'https://apiv2.shiprocket.in'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google OAuth (Socialite)
+    | Credentials are stored in the DB via Setting model.
+    | Falls back to .env values if DB is unavailable.
+    |--------------------------------------------------------------------------
+    */
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID', ''),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET', ''),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+    ],
+
 ];
+

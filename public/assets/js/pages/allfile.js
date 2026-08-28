@@ -589,6 +589,22 @@
 
     // Default set 5 stars
     window.addEventListener('DOMContentLoaded', () => {
+        const addToCartBtn = document.getElementById('pdpAddToCartBtn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleAddToCart(pdpProductId || config.productId, this);
+            });
+        }
+        
+        const buyNowBtn = document.getElementById('pdpBuyNowBtn');
+        if (buyNowBtn) {
+            buyNowBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleBuyNow(pdpProductId || config.productId, this);
+            });
+        }
+
         document.querySelectorAll('.pdp-option-btn').forEach(button => {
             button.addEventListener('click', () => selectPdpOption(button));
         });
@@ -2664,12 +2680,25 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         // Reset to phone step
         showStep('stepPhone');
-        document.getElementById('phoneInput').value = '';
-        document.getElementById('phoneError').style.display = 'none';
+        
+        const phoneInput = document.getElementById('phoneInput');
+        if (phoneInput) {
+            phoneInput.value = '';
+            setTimeout(() => phoneInput.focus(), 300);
+        }
+        
+        const phoneError = document.getElementById('phoneError');
+        if (phoneError) {
+            phoneError.style.display = 'none';
+        }
+        
+        const otpError = document.getElementById('otpError');
+        if (otpError) {
+            otpError.classList.remove('show');
+        }
+        
         clearOtpBoxes();
-        document.getElementById('otpError').classList.remove('show');
         document.getElementById('otpModal').classList.add('show');
-        setTimeout(() => document.getElementById('phoneInput').focus(), 300);
     }
 
     function closeOtpModal() {

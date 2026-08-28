@@ -4,10 +4,22 @@
 
 @section('content')
     @php
-        // Separate queries to handle huge datasets without memory crashes
-        $textReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->whereNull('video_path')->latest()->paginate(24);
+        $sort = request('sort', 'latest');
+        $baseQuery = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true);
         
-        $videoReviews = \App\Models\ProductReview::with(['user', 'product'])->where('is_active', true)->whereNotNull('video_path')->latest()->take(10)->get();
+        if (request('product_id')) {
+            $baseQuery->where('product_id', request('product_id'));
+        }
+
+        if ($sort === 'positive') {
+            $baseQuery->orderBy('rating', 'desc')->latest();
+        } elseif ($sort === 'negative') {
+            $baseQuery->orderBy('rating', 'asc')->latest();
+        } else {
+            $baseQuery->latest();
+        }
+        $textReviews = (clone $baseQuery)->whereNull('video_path')->paginate(5, ['*'], 'tpage')->appends(request()->query());
+        $videoReviews = (clone $baseQuery)->whereNotNull('video_path')->paginate(5, ['*'], 'vpage')->appends(request()->query());
         
         $featuredReview = collect($textReviews->items())->first(function ($review) {
             return $review->image_path && Storage::disk('public')->exists($review->image_path);
@@ -91,10 +103,17 @@
                     <h2 class="section-title">Wellness routines parents can actually keep</h2>
                     <p class="section-sub">Clean, scannable stories from families using NutriBuddy as part of their child's everyday nutrition and wellness routine.</p>
                 </div>
-                <div class="trust-pills">
-                    <span class="testimonials-trust-pill">Verified parents</span>
-                    <span class="testimonials-trust-pill">Kid-approved taste</span>
-                    <span class="testimonials-trust-pill">Daily routine friendly</span>
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div class="trust-pills">
+                        <span class="testimonials-trust-pill">Verified parents</span>
+                        <span class="testimonials-trust-pill">Kid-approved taste</span>
+                        <span class="testimonials-trust-pill">Daily routine friendly</span>
+                    </div>
+                    <div class="sort-pills" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}" class="testimonials-trust-pill" style="text-decoration:none; {{ request('sort', 'latest') === 'latest' ? 'background:var(--pk); color:#fff; border-color:var(--pk);' : '' }}">Latest</a>
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'positive']) }}" class="testimonials-trust-pill" style="text-decoration:none; {{ request('sort') === 'positive' ? 'background:var(--pk); color:#fff; border-color:var(--pk);' : '' }}">Positive</a>
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'negative']) }}" class="testimonials-trust-pill" style="text-decoration:none; {{ request('sort') === 'negative' ? 'background:var(--pk); color:#fff; border-color:var(--pk);' : '' }}">Negative</a>
+                    </div>
                 </div>
             </div>
 
@@ -128,7 +147,7 @@
             </div>
             @endif
 
-            <div class="reviews-grid">
+            <div class="reviews-grid" id="textReviewsGrid">
                 @foreach($textReviews->reject(fn($r) => $featuredReview && $r->id === $featuredReview->id)->values() as $index => $review)
                     @php $bgColor = ['#FFE8F5', '#E8F5FF', '#EDE9FE', '#FFF4D6', '#E7FFF5', '#FFEAF0'][$index % 6]; @endphp
                     <article class="review-card">
@@ -172,9 +191,12 @@
                 @endforeach
             </div>
 
-            <div style="margin-top: 40px; display: flex; justify-content: center;">
-                {{ $textReviews->links() }}
-            </div>
+            @if($textReviews->hasMorePages())
+                <div class="mt-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 40px;">
+                    <button class="btn load-more-btn" id="loadMoreTextBtn" data-page="2" data-url="{{ request()->url() }}" style="background: var(--dk); color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;">Load More Testimonials</button>
+                    <button class="btn show-less-btn" id="showLessTextBtn" style="display: none; background: #e2e8f0; color: var(--dk); border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;">Show Less</button>
+                </div>
+            @endif
 
             <div class="video-review-section">
                 <div class="testimonials-section-head">
@@ -185,7 +207,7 @@
                     </div>
                 </div>
 
-                <div class="video-strip">
+                <div class="video-strip" id="videoReviewsGrid">
                     @foreach($videoReviews as $index => $video)
                         @php $bg = $gradients[$index % count($gradients)]; @endphp
                         <article class="video-card" style="background: {{ $bg }}; position: relative; overflow: hidden; cursor: pointer;" onclick="toggleTestimonialVideo(this, event)">
@@ -208,6 +230,14 @@
                         </article>
                     @endforeach
                 </div>
+
+                @if($videoReviews->hasMorePages())
+                    <div class="mt-4" style="display: flex; justify-content: center; gap: 10px; margin-top: 30px;">
+                        <button class="btn load-more-btn" id="loadMoreVideosBtn" data-page="2" data-url="{{ request()->url() }}" style="background: var(--dk); color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;">Load More Videos</button>
+                        <button class="btn show-less-btn" id="showLessVideosBtn" style="display: none; background: #e2e8f0; color: var(--dk); border: none; padding: 10px 24px; border-radius: 30px; font-weight: 600; cursor: pointer;">Show Less</button>
+                    </div>
+                @endif
+
                 <script>
                     function toggleTestimonialVideo(card, e) {
                         const video = card.querySelector('video');
@@ -253,6 +283,78 @@
                             btn.innerText = '🔇';
                         }
                     }
+
+                    // --- AJAX Pagination Logic ---
+                    function setupLoadMore(btnId, lessBtnId, gridId, pageParam) {
+                        const btn = document.getElementById(btnId);
+                        const lessBtn = document.getElementById(lessBtnId);
+                        if (!btn) return;
+                        
+                        btn.addEventListener('click', function() {
+                            const page = this.dataset.page;
+                            const url = new URL(this.dataset.url);
+                            url.searchParams.set(pageParam, page);
+                            
+                            if (!btn.dataset.originalText) btn.dataset.originalText = btn.innerText;
+                            btn.innerText = 'Loading...';
+                            btn.disabled = true;
+                            
+                            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                            .then(res => res.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                const newGrid = doc.getElementById(gridId);
+                                
+                                if (newGrid && newGrid.innerHTML.trim() !== '') {
+                                    Array.from(newGrid.children).forEach(child => {
+                                        child.dataset.loadedPage = page;
+                                        document.getElementById(gridId).appendChild(child);
+                                    });
+                                    
+                                    const newBtn = doc.getElementById(btnId);
+                                    if (newBtn) {
+                                        btn.dataset.page = newBtn.dataset.page;
+                                        btn.innerText = btn.dataset.originalText;
+                                        btn.disabled = false;
+                                    } else {
+                                        btn.style.display = 'none'; 
+                                    }
+                                    if (lessBtn) lessBtn.style.display = 'inline-block';
+                                } else {
+                                    btn.style.display = 'none';
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                if (btn.dataset.originalText) btn.innerText = btn.dataset.originalText;
+                                btn.disabled = false;
+                            });
+                        });
+
+                        if (lessBtn) {
+                            lessBtn.addEventListener('click', function() {
+                                const grid = document.getElementById(gridId);
+                                const loadedItems = Array.from(grid.querySelectorAll('[data-loaded-page]'));
+                                if (loadedItems.length === 0) return;
+                                
+                                const pages = loadedItems.map(i => parseInt(i.dataset.loadedPage));
+                                const maxPage = Math.max(...pages);
+                                
+                                grid.querySelectorAll(`[data-loaded-page="${maxPage}"]`).forEach(i => i.remove());
+                                
+                                btn.dataset.page = maxPage;
+                                btn.style.display = 'inline-block';
+                                btn.disabled = false;
+                                if (btn.dataset.originalText) btn.innerText = btn.dataset.originalText;
+                                
+                                if (maxPage <= 2) lessBtn.style.display = 'none';
+                            });
+                        }
+                    }
+                    
+                    setupLoadMore('loadMoreVideosBtn', 'showLessVideosBtn', 'videoReviewsGrid', 'vpage');
+                    setupLoadMore('loadMoreTextBtn', 'showLessTextBtn', 'textReviewsGrid', 'tpage');
                 </script>
             </div>
 

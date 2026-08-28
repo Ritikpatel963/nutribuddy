@@ -37,6 +37,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'payment/cashfree/webhook',
             'webhooks/aisensy',
         ]);
+        
+        $middleware->alias([
+            'diet.subscription' => \App\Http\Middleware\CheckDietSubscription::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

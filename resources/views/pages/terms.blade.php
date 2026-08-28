@@ -18,144 +18,167 @@
 
     <section class="terms-text-wrap">
         <div class="terms-block">
-            <h2>Terms and Conditions</h2>
-            <p><strong>Last Updated: August 7, 2026</strong></p>
-            <p>Welcome to NutriBuddy. These Terms and Conditions (&ldquo;Terms&rdquo;) govern your access to and use of <a href="https://www.nutribuddy.in">www.nutribuddy.in</a> (the &ldquo;Website&rdquo;) and any purchase you make through it. By accessing the Website or placing an order, you agree to be bound by these Terms. Please read them carefully before using our Website.</p>
-            <p>NutriBuddy is marketed by Trivana Lifescience LLP and manufactured by Calibro Nutrasciences, Ahmedabad, Gujarat.</p>
-
+            <h2>Terms of Use</h2>
+            <p>This website <a href="http://www.nutribuddy.in">www.nutribuddy.in</a> (hereinafter referred to as the “Website”) is owned and operated by Trivana Lifescience LLP, having its address at D/503, Orchid Blue, Shantipura, Ahmedabad, Gujarat – 380058.</p>
+            <p>By browsing, accessing, registering on, purchasing from, or otherwise using the Website, you agree to be bound by these Terms of Use (“Terms”). We reserve the right to modify or update these Terms from time to time. If you do not agree with any of these Terms, you must immediately discontinue your access to and use of the Website and its services.</p>
+            <p>Your continued use of the Website following any changes to these Terms will constitute your acceptance of the updated Terms.</p>
+            <p>Your acceptance of these Terms shall also be deemed to signify your agreement to the Privacy Policy displayed on the Website. We therefore recommend that you read these Terms of Use together with our Privacy Policy before using the Website.</p>
+            <p>For the purposes of these Terms, wherever the context so requires, “You” or “Your” shall mean any person accessing or using the Website, and “We,” “Our,” “Us,” or “NutriBuddy” shall mean Trivana Lifescience LLP.</p>
+        
             <hr>
-
+        
             <h3>1. Eligibility</h3>
-            <p>You must be at least 18 years old, or accessing the Website under the supervision of a parent/legal guardian, to place an order on NutriBuddy. By using the Website, you confirm that you have the legal authority to enter into a binding contract.</p>
-
-            <hr>
-
-            <h3>2. Our Products</h3>
-            <p>NutriBuddy offers Ayurvedic and nutraceutical wellness products formulated for children, including gummies and effervescent tablets.</p>
-            <p><strong>Please note:</strong></p>
+            <p>You must fulfil the following eligibility requirements to use the Website:</p>
             <ul>
-                <li>Our products are nutraceuticals and are not intended to diagnose, treat, cure, or prevent any disease.</li>
-                <li>Our products are not a substitute for a balanced, varied diet or professional medical advice.</li>
-                <li>Always read the product label, recommended usage, and age suitability before use.</li>
-                <li>If your child has any pre-existing medical condition, allergy, or is on any medication, please consult a healthcare professional before use.</li>
-                <li>Product packaging, ingredient lists, and nutritional information govern over any conflicting description on the Website. In case of any discrepancy, the physical product label shall prevail.</li>
+                <li>You must be a natural person.</li>
+                <li>You must be legally competent to enter into a binding agreement under applicable Indian laws.</li>
+                <li>You should be 18 years of age or above to create an account, place an order, or use purchasing facilities on the Website.</li>
+                <li>Where NutriBuddy Products are purchased for children, the purchase and use of the Website must be undertaken by a parent, legal guardian, or responsible adult.</li>
             </ul>
-
+            <p>You are responsible for ensuring that the information provided by you is accurate, complete, and up to date.</p>
+            <p>By using the Website, you represent and warrant that you satisfy the eligibility requirements stated above.</p>
+        
             <hr>
-
-            <h3>3. Account Registration</h3>
-            <p>You may be required to create an account to place an order. You agree to:</p>
+        
+            <h3>2. General Details of the Website</h3>
+            <h4>2.1 About the Website</h4>
+            <p>NutriBuddy is an online platform operated by Trivana Lifescience LLP that provides information about children's nutrition and wellness and offers nutritional and related Products for purchase.</p>
+            <p>The Website may also provide educational content, Product information, nutritional information, recommendations, questionnaires, diet or nutrition suggestions, and other resources intended to support parents and guardians in making informed choices.</p>
+            <p>The information available through the Website is provided for general informational and educational purposes only and should not be considered medical advice, diagnosis, or treatment.</p>
+            <p>Parents and guardians are responsible for determining whether a Product or recommendation is appropriate for their child.</p>
+            <p>If a child has a medical condition, food allergy, food intolerance, special dietary requirement, or is taking medication, you should consult an appropriately qualified healthcare professional before using any Product or following any nutritional recommendation.</p>
+            
+            <h4>2.2 Product Information</h4>
+            <p>We make reasonable efforts to ensure that Product descriptions, images, ingredients, nutritional information, availability, and other information displayed on the Website are accurate.</p>
+            <p>However, Product packaging, formulation, ingredients, nutritional information, or presentation may change from time to time.</p>
+            <p>You should always check the Product packaging and label for the most current information, including ingredients, allergens, recommended usage, age suitability, storage instructions, expiry/best-before date, and other applicable information before using the Product.</p>
+        
+            <h4>2.3 Location</h4>
+            <p>The Website is primarily intended for users accessing it from India.</p>
+            <p>If you access or use the Website from outside India, you do so at your own initiative and are responsible for complying with applicable local laws.</p>
+        
+            <hr>
+        
+            <h3>3. Use of Website</h3>
+            <p>NutriBuddy grants you a limited, non-exclusive, non-transferable right to access and use the Website for lawful personal purposes.</p>
+            <p>You agree that your use of the Website shall be governed by the following principles. You shall not:</p>
             <ul>
-                <li>Provide accurate, current, and complete information</li>
-                <li>Keep your login credentials confidential</li>
-                <li>Notify us immediately of any unauthorized use of your account</li>
+                <li>Upload, publish, transmit, modify, or share information that belongs to another person and to which you do not have the necessary rights.</li>
+                <li>Submit content that is unlawful, defamatory, abusive, threatening, obscene, misleading, fraudulent, hateful, or otherwise objectionable.</li>
+                <li>Use the Website for any unlawful or fraudulent purpose.</li>
+                <li>Attempt to impersonate another person or entity or falsely represent your relationship with NutriBuddy.</li>
+                <li>Upload or transmit viruses, malware, malicious code, or other harmful technologies.</li>
+                <li>Attempt to gain unauthorized access to the Website, servers, databases, accounts, networks, or other systems connected to the Website.</li>
+                <li>Use bots, crawlers, scraping tools, automated systems, or similar technologies to access or collect information from the Website without our prior written permission.</li>
+                <li>Copy, reproduce, distribute, modify, sell, publish, or commercially exploit any Website content without our prior written consent.</li>
+                <li>Use the Website in a manner that may damage, disable, overburden, or impair the Website or interfere with another person's use of the Website.</li>
+                <li>Violate any applicable law, regulation, or third-party right.</li>
             </ul>
-            <p>We reserve the right to suspend or terminate accounts that provide false information or violate these Terms.</p>
-
+            <p>We reserve the right to restrict, suspend, or terminate your access to the Website if we reasonably believe that you have violated these Terms.</p>
+        
             <hr>
-
-            <h3>4. Orders and Order Acceptance</h3>
+        
+            <h3>4. Access to Website</h3>
+            <h4>4.1</h4>
+            <p>We make reasonable efforts to keep the Website available and functioning properly. However, we do not guarantee that access to the Website will always be uninterrupted, timely, secure, or error-free.</p>
+            <p>Access may occasionally be suspended, restricted, or terminated due to maintenance, upgrades, technical issues, security concerns, or circumstances beyond our reasonable control.</p>
+        
+            <h4>4.2</h4>
+            <p>We do not warrant that the Website or its servers will always be free from viruses, malware, or other harmful components.</p>
+            <p>You are responsible for ensuring that your device, browser, operating system, and internet connection are appropriately configured and protected.</p>
+        
+            <h4>4.3</h4>
+            <p>We reserve the right to change, modify, update, suspend, replace, or remove any part of the Website, including Products, content, features, services, or information, at any time.</p>
+            <p>We may also restrict access to certain portions of the Website for maintenance, security, upgrades, or other operational reasons.</p>
+        
+            <h4>4.4</h4>
+            <p>Product availability, pricing, offers, delivery timelines, and other information displayed on the Website may change without prior notice.</p>
+        
+            <hr>
+        
+            <h3>5. Intellectual Property Rights</h3>
+            <p>All intellectual property rights relating to the Website and its content, including but not limited to:</p>
             <ul>
-                <li>Placing an order on the Website constitutes an offer to purchase. All orders are subject to acceptance and availability.</li>
-                <li>We reserve the right to refuse or cancel any order at our discretion, including in cases of pricing errors, suspected fraud, or stock unavailability. In such cases, any amount paid will be refunded.</li>
-                <li>Order confirmation via email/SMS does not guarantee product availability; final confirmation is subject to dispatch.</li>
+                <li>NutriBuddy name and branding</li>
+                <li>Logos and trademarks</li>
+                <li>Product names</li>
+                <li>Product descriptions</li>
+                <li>Photographs and images</li>
+                <li>Graphics and illustrations</li>
+                <li>Videos and audio</li>
+                <li>Articles and educational resources</li>
+                <li>Website design and layout</li>
+                <li>Software and technical elements</li>
+                <li>Text and other content</li>
             </ul>
-
+            <p>are owned by, licensed to, or otherwise lawfully used by Trivana Lifescience LLP / NutriBuddy or the respective rights holders.</p>
+            <p>Nothing contained on the Website shall be interpreted as granting you any ownership or other intellectual property rights in our content, trademarks, Products, or Website.</p>
+            <p>You may access and use Website content for your personal, non-commercial purposes only.</p>
+            <p>You must not copy, reproduce, modify, distribute, publish, transmit, sell, license, create derivative works from, or commercially exploit any Website content without our prior written permission.</p>
+            <p>Any unauthorized use of our intellectual property may constitute a violation of applicable intellectual property laws.</p>
+        
             <hr>
-
-            <h3>5. Pricing and Payment</h3>
+        
+            <h3>6. Personal Data</h3>
+            <p>Your use of the Website may require us to collect and process certain personal information.</p>
+            <p>Such information may include your name, email address, telephone number, delivery address, account information, order information, information voluntarily provided about a child for Product recommendations, communications with customer support, and other information described in our Privacy Policy.</p>
+            <p>By using the Website, you acknowledge that your personal information may be collected, used, stored, and shared in accordance with our Privacy Policy.</p>
+            <p>We may use personal information for purposes including:</p>
             <ul>
-                <li>All prices listed on the Website are in Indian Rupees (INR) and are inclusive of applicable taxes, unless stated otherwise.</li>
-                <li>We reserve the right to change product prices at any time without prior notice; however, orders already placed will be honored at the price confirmed at checkout.</li>
-                <li>Payments are processed through secure third-party payment gateways. We do not store your complete card or banking details.</li>
-                <li>In the event of a failed transaction where the amount is debited but the order is not confirmed, the amount will be refunded as per our Refund Policy timelines.</li>
+                <li>Processing and delivering orders.</li>
+                <li>Providing customer support.</li>
+                <li>Sending transactional communications.</li>
+                <li>Providing Product-related information.</li>
+                <li>Personalizing Product recommendations where applicable.</li>
+                <li>Improving our Website and services.</li>
+                <li>Preventing fraud and unauthorized activity.</li>
+                <li>Complying with applicable legal and regulatory requirements.</li>
             </ul>
-
+            <p>We may share relevant information with service providers such as payment gateways, logistics and courier partners, technology providers, analytics providers, fulfilment partners, and authorities where required by law.</p>
+            <p>We do not sell your personal information.</p>
+            <p>You may review our Privacy Policy for detailed information regarding collection, use, sharing, retention, security, and your rights relating to personal information.</p>
+            <p>No method of electronic transmission or storage can be guaranteed to be completely secure. While we take reasonable measures to protect personal information, we cannot guarantee absolute security of information transmitted to or through the Website.</p>
+        
             <hr>
-
-            <h3>6. Shipping and Delivery</h3>
+        
+            <h3>7. Governing Law and Jurisdiction</h3>
+            <p>These Terms of Use shall be governed by and interpreted in accordance with the laws of India.</p>
+            <p>Subject to applicable consumer protection laws and mandatory statutory rights, any dispute arising out of or relating to the Website, Products, Services, or these Terms shall be subject to the jurisdiction of the competent courts in Ahmedabad, Gujarat, India.</p>
+            <p>Nothing in these Terms shall prevent a consumer from exercising any statutory right or remedy available under applicable law.</p>
+        
+            <hr>
+        
+            <h3>8. Liability Release</h3>
+            <p>The Website and its content are provided on a reasonable-efforts basis.</p>
+            <p>To the maximum extent permitted by applicable law, NutriBuddy and Trivana Lifescience LLP do not guarantee that:</p>
             <ul>
-                <li>We aim to process and dispatch orders within [Insert Number] business days.</li>
-                <li>Estimated delivery timelines will be shared at checkout or via order confirmation and may vary based on location, courier availability, or unforeseen circumstances.</li>
-                <li>Risk of loss or damage passes to you upon delivery to the shipping address provided.</li>
-                <li>We are not liable for delays caused by courier partners, natural events, or circumstances beyond our reasonable control.</li>
+                <li>The Website will always be available or uninterrupted.</li>
+                <li>Website information will always be completely accurate or error-free.</li>
+                <li>The Website will be free from technical defects or harmful components.</li>
+                <li>Nutritional information or recommendations will produce a particular result.</li>
+                <li>A Product will be suitable for every individual child or circumstance.</li>
             </ul>
-
+            <p>Information relating to nutrition, wellness, diet, Products, or children's health available through the Website is not a substitute for professional medical or nutritional advice.</p>
+            <p>Parents and guardians are responsible for reviewing Product information and determining whether a Product is appropriate for their child.</p>
+            <p>To the maximum extent permitted by applicable law, NutriBuddy, Trivana Lifescience LLP, its partners, employees, representatives, service providers, and affiliates shall not be liable for indirect, incidental, special, consequential, or punitive losses arising from or relating to your access to or use of the Website or Products.</p>
+            <p>This may include loss of profits, revenue, business, data, goodwill, or other intangible losses.</p>
+            <p>We shall not be responsible for failures, delays, or losses caused by third-party service providers, payment gateways, courier partners, telecommunications providers, internet service providers, or events beyond our reasonable control.</p>
+            <p>Nothing in these Terms shall exclude or limit liability or statutory consumer rights that cannot legally be excluded or limited under applicable Indian law.</p>
+        
             <hr>
-
-            <h3>7. Cancellation, Return, and Refund Policy</h3>
-            <ul>
-                <li>Orders can be cancelled within [Insert Time Window] of placing the order, provided they have not been shipped.</li>
-                <li>Given the consumable nature of our products, returns are accepted only in cases of damaged, defective, expired, or incorrect items received, and must be reported within [Insert Number] days of delivery along with photographic/video evidence.</li>
-                <li>Approved refunds will be processed to the original payment method within [Insert Number] business days.</li>
-                <li>Products that have been opened, used, or tampered with (other than due to a manufacturing defect) are not eligible for return.</li>
-            </ul>
-
-            <hr>
-
-            <h3>8. Intellectual Property</h3>
-            <p>All content on the Website &mdash; including the NutriBuddy name, logo, product designs, packaging, graphics, text, and images &mdash; is the exclusive property of Trivana Lifescience LLP / NutriBuddy and is protected under applicable intellectual property laws. You may not copy, reproduce, distribute, or use any content from the Website without our prior written consent.</p>
-
-            <hr>
-
-            <h3>9. User Conduct</h3>
-            <p>By using the Website, you agree not to:</p>
-            <ul>
-                <li>Use the Website for any unlawful purpose</li>
-                <li>Attempt to gain unauthorized access to our systems or other users&rsquo; accounts</li>
-                <li>Upload or transmit any harmful, offensive, or misleading content</li>
-                <li>Interfere with the proper functioning of the Website</li>
-                <li>Use automated tools (bots, scrapers) to access or extract data from the Website without permission</li>
-            </ul>
-
-            <hr>
-
-            <h3>10. Reviews and User-Generated Content</h3>
-            <p>If you submit a product review, comment, or other content on the Website, you grant NutriBuddy a non-exclusive, royalty-free, worldwide license to use, reproduce, and display such content for marketing and promotional purposes. You agree not to submit false, misleading, defamatory, or offensive content.</p>
-
-            <hr>
-
-            <h3>11. Limitation of Liability</h3>
-            <p>To the maximum extent permitted by law, NutriBuddy, its affiliates, manufacturer, and marketer shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the Website or our products, except in cases of proven manufacturing defects covered under applicable consumer protection laws. Our total liability for any claim shall not exceed the amount paid by you for the relevant product.</p>
-
-            <hr>
-
-            <h3>12. Indemnification</h3>
-            <p>You agree to indemnify and hold harmless NutriBuddy, Trivana Lifescience LLP, and Calibro Nutrasciences from any claims, damages, losses, or expenses arising from your misuse of the Website, violation of these Terms, or violation of any applicable law.</p>
-
-            <hr>
-
-            <h3>13. Governing Law and Jurisdiction</h3>
-            <p>These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising out of or in connection with these Terms shall be subject to the exclusive jurisdiction of the courts at Ahmedabad, Gujarat.</p>
-
-            <hr>
-
-            <h3>14. Grievance Redressal</h3>
-            <p>In accordance with the Consumer Protection (E-Commerce) Rules, 2020, and the Information Technology Act, 2000, any grievances or complaints may be addressed to:</p>
-            <ul>
-                <li><strong>Name:</strong> [Insert Grievance Officer Name]</li>
-                <li><strong>Email:</strong> <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a></li>
-                <li><strong>Phone:</strong> <a href="tel:+919213507981">+91 9213507981</a></li>
-                <li><strong>Address:</strong> Trivana Lifescience LLP, D/503, Orchid Blue, Shantipura, Ahmedabad, Gujarat &ndash; 380058</li>
-            </ul>
-            <p>We aim to acknowledge complaints within [Insert Number] days and resolve them within [Insert Number] days of receipt.</p>
-
-            <hr>
-
-            <h3>15. Changes to These Terms</h3>
-            <p>We may revise these Terms from time to time. Any changes will be posted on this page with an updated &ldquo;Last Updated&rdquo; date. Continued use of the Website after changes are posted constitutes your acceptance of the revised Terms.</p>
-
-            <hr>
-
-            <h3>16. Contact Us</h3>
-            <p>For any questions regarding these Terms, please contact us:</p>
-            <ul>
-                <li><strong>Email:</strong> <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a></li>
-                <li><strong>Phone:</strong> <a href="tel:+919213507981">+91 9213507981</a></li>
-                <li><strong>Website:</strong> <a href="https://www.nutribuddy.in" target="_blank">www.nutribuddy.in</a></li>
-                <li><strong>Manufactured &amp; Packed By:</strong> Calibro Nutrasciences, Shade No. 36/A, Shreenath Industrial Estate, Near Railway Crossing, S.P. Ring Road, Ranasan, Nana Chiloda, Ahmedabad &ndash; 382330, Gujarat</li>
-                <li><strong>Marketed By:</strong> Trivana Lifescience LLP, D/503, Orchid Blue, Shantipura, Ahmedabad, Gujarat &ndash; 380058</li>
-            </ul>
+        
+            <h3>9. Contact Us</h3>
+            <p>If you have any questions, concerns, complaints, or grievances regarding the Website, these Terms of Use, Products, or Services, please contact us:</p>
+            <p>
+                <strong>Trivana Lifescience LLP</strong><br>
+                D/503, Orchid Blue, Shantipura,<br>
+                Ahmedabad, Gujarat – 380058<br>
+                Email: <a href="mailto:hello@nutribuddy.in">hello@nutribuddy.in</a><br>
+                Phone: +91 9213507981<br>
+                Website: <a href="http://www.nutribuddy.in">www.nutribuddy.in</a>
+            </p>
+            <p>We will make reasonable efforts to address your query or grievance in accordance with applicable laws and our internal grievance-handling procedures.</p>
+            <p>By accessing, browsing, registering on, or using <a href="http://www.nutribuddy.in">www.nutribuddy.in</a>, you acknowledge that you have read, understood, and agreed to these Terms of Use.</p>
         </div>
     </section>
 @endsection

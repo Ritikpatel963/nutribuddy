@@ -3,6 +3,10 @@
 @section('meta_description', $product->meta_description ?? $product->short_description)
 @section('meta_keywords', $product->meta_keywords)
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}?v={{ filemtime(public_path('assets/css/product.css')) }}">
+@endpush
+
 @section('content')
     <!-- ══ PRODUCT HERO ══ -->
     <div class="pdp-hero">
@@ -120,20 +124,21 @@
             <div id="pincode-result" style="font-size:.82rem;color:var(--mn);font-weight:700;margin-bottom:14px;display:none;padding: 0 4px;">✅ Delivery by Tomorrow!</div>
 
             -->
-            <!-- Quantity Selector -->
-            <div class="pdp-qty-wrap" style="margin-bottom: 25px;">
-                <div class="variant-label">Quantity:</div>
-                <div class="pdp-qty-row" style="display: flex; align-items: center; gap: 12px; background: #f8f8f8; border: 2px solid rgba(53, 158, 111, 0.12); border-radius: 14px; padding: 6px 12px; width: fit-content;">
-                    <button type="button" class="qty-btn" id="pdpQtyMinus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">−</button>
-                    <input type="number" id="pdpQtyVal" value="1" min="1" readonly style="width: 45px; text-align: center; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; color: var(--dk); -moz-appearance: textfield;">
-                    <button type="button" class="qty-btn" id="pdpQtyPlus" style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">+</button>
+            <!-- Action Stack (Quantity, Add to Cart, Buy Now) -->
+            <div class="pdp-action-stack" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; max-width: 350px;">
+                <!-- Quantity Selector -->
+                <div class="pdp-qty-wrap">
+                    <div class="variant-label" style="margin-bottom: 8px; font-size: 0.9rem; font-weight: 800; color: #475569; letter-spacing: 1px;">QUANTITY:</div>
+                    <div class="pdp-qty-row" style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 2px solid #fce7f3; border-radius: 14px; padding: 6px 20px; width: 100%;">
+                        <button type="button" class="qty-btn" id="pdpQtyMinus" style="border:none; background:none; font-size: 1.5rem; font-weight: 900; color: #ff4d6d; cursor: pointer; outline: none;">−</button>
+                        <input type="number" id="pdpQtyVal" value="1" min="1" readonly style="width: 50px; text-align: center; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem; color: #0f172a; -moz-appearance: textfield; outline: none;">
+                        <button type="button" class="qty-btn" id="pdpQtyPlus" style="border:none; background:none; font-size: 1.5rem; font-weight: 900; color: #ff4d6d; cursor: pointer; outline: none;">+</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- CTAs -->
-            <div class="cta-row">
-                <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
-                <button class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
+                <!-- CTAs -->
+                <button class="btn-cart" id="pdpAddToCartBtn" style="width: 100%; margin: 0;" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
+                <button class="btn-buy" id="pdpBuyNowBtn" style="width: 100%; margin: 0;" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
             </div>
 
             <!-- Guarantees -->

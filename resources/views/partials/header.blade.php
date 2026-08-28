@@ -237,7 +237,6 @@
                 Main</li>
             <li><a href="{{ route('userdashboard') }}">Overview</a></li>
             <li><a href="{{ route('meal-plan') }}">Meal Plan</a></li>
-            <li><a href="{{ route('health-scores') }}">Health Scores</a></li>
             <li><a href="{{ route('supplement') }}">Supplement</a></li>
             <li><a href="{{ route('child-profile') }}">Child Profile</a></li>
             <li><a href="{{ route('growth-signal') }}">Growth Signals</a></li>

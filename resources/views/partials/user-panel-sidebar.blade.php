@@ -1,11 +1,23 @@
 @php
     $route = Route::currentRouteName();
+    $sidebarUser = Auth::user();
+    $sidebarAvatar = $sidebarUser->avatar
+        ? asset('storage/'.$sidebarUser->avatar)
+        : ($sidebarUser->google_avatar ?: null);
 @endphp
 
 <div class="profile-block">
-    <div class="avatar">{{ substr(Auth::user()->name, 0, 1) }}<div class="online-dot"></div></div>
-    <div class="profile-name">{{ Auth::user()->name }}</div>
-    <div class="profile-email">{{ Auth::user()->email }}</div>
+    <div class="avatar" style="{{ $sidebarAvatar ? 'padding:0;overflow:hidden;' : '' }}">
+        @if($sidebarAvatar)
+            <img src="{{ $sidebarAvatar }}" alt="{{ $sidebarUser->name }}"
+                 style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">
+        @else
+            {{ substr($sidebarUser->name, 0, 1) }}
+        @endif
+        <div class="online-dot"></div>
+    </div>
+    <div class="profile-name">{{ $sidebarUser->name }}</div>
+    <div class="profile-email">{{ $sidebarUser->email }}</div>
 </div>
 <div style="overflow-y:auto;flex:1">
     <div class="nav-section">
@@ -35,13 +47,7 @@
             </svg>
            Meal Plan
         </a>
-        <a href="{{ route('health-scores') }}" class="nav-item {{ request()->routeIs('health-scores') ? 'active' : '' }}" onclick="setActive(this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-            </svg>
-          Health Scores
-        </a>
+
           <a href="{{ route('supplement') }}" class="nav-item {{ request()->routeIs('supplement') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -73,7 +79,7 @@
             Quarterly Check-in
         </a>
 
-        {{-- ── Health Assessment ────────────────────────────────── --}}
+        <span class="nav-label">Health Assessment</span>
         <a href="{{ route('user.assessment.index') }}" class="nav-item {{ request()->routeIs('user.assessment.index') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M9 11l3 3L22 4"/>

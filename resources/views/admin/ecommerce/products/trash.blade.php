@@ -35,7 +35,7 @@
             <div class="d-flex justify-content-end mb-16">
                 <button type="submit" form="bulkDeleteForm" class="btn btn-sm btn-danger-600 d-inline-flex align-items-center gap-1" id="bulkDeleteBtn" disabled
                     onclick="return confirm('Permanently delete selected products? This cannot be undone.')">
-                    <iconify-icon icon="mingcute:delete-2-line"></iconify-icon> Permanent Delete Selected
+                    <i class="fas fa-trash"></i> Permanent Delete Selected
                 </button>
             </div>
             <div class="table-responsive">
@@ -103,7 +103,7 @@
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1"
                                                 onclick="return confirm('Permanently delete this product? This cannot be undone.')">
-                                                <iconify-icon icon="mingcute:delete-2-line"></iconify-icon> Permanent Delete
+                                                <i class="fas fa-trash"></i> Permanent Delete
                                             </button>
                                         </form>
                                     </div>

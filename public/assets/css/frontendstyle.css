@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════════
    NUTRIBUDDY — MAIN STYLESHEET
    Sections:
    01. CSS Variables & Reset
@@ -876,7 +876,7 @@ nav.scrolled {
 }
 
 .text-box span {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: black;
 }
@@ -1039,7 +1039,7 @@ nav.scrolled {
 }
 
 .blog-hero-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.2rem, 6vw, 3.6rem);
     color: var(--wh);
     line-height: 1.2;
@@ -1130,7 +1130,7 @@ nav.scrolled {
 
 .product-listing-hero-title {
     color: var(--wh);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 5vw, 2.8rem);
     line-height: 1.3;
     margin-bottom: 20px;
@@ -1158,7 +1158,7 @@ nav.scrolled {
 }
 
 .hero-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2rem, 4vw, 3rem);
     color: #fff;
     margin-bottom: 14px;
@@ -1230,7 +1230,7 @@ nav.scrolled {
 }
 
 .privacy-block h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.2rem, 2.2vw, 1.6rem);
     color: var(--pu);
     font-weight: 400;
@@ -1293,7 +1293,7 @@ nav.scrolled {
 }
 
 .terms-block h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.2rem, 2.2vw, 1.6rem);
     color: var(--pu);
     font-weight: 400;
@@ -1348,7 +1348,7 @@ nav.scrolled {
 }
 
 .return-block h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.2rem, 2.2vw, 1.6rem);
     color: var(--pu);
     font-weight: 400;
@@ -1579,7 +1579,7 @@ nav.scrolled {
 }
 
 h1.htitle {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 4.2vw, 3.7rem);
     line-height: 1.08;
     color: var(--dk);
@@ -1800,7 +1800,7 @@ h1.htitle {
 .jar-label {
     padding: 9px 18px;
     border-radius: 14px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: #fff;
     text-align: center;
@@ -1831,7 +1831,7 @@ h1.htitle {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: #fff;
     font-size: .9rem;
     box-shadow: 0 10px 24px rgba(0, 0, 0, .18)
@@ -2119,7 +2119,7 @@ h1.htitle {
     justify-content: center;
     transition: all .25s;
     box-shadow: 0 4px 18px rgba(0, 0, 0, .1);
-    font-family: 'Fredoka One', cursive
+    font-family: 'Nunito', sans-serif
 }
 
 .sarrow:hover {
@@ -2146,7 +2146,7 @@ h1.htitle {
     position: absolute;
     top: 24px;
     right: 20px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: rgba(0, 0, 0, .2);
     z-index: 100
@@ -2391,7 +2391,7 @@ h1.htitle {
 }
 
 .rating-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--dk);
 }
@@ -2424,7 +2424,7 @@ h1.htitle {
 }
 
 .price-now {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2.4rem;
     color: var(--pk);
 }
@@ -2564,7 +2564,7 @@ h1.htitle {
 }
 
 .ps-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.9rem, 4vw, 3rem);
     color: var(--dk);
     line-height: 1.15;
@@ -2748,7 +2748,7 @@ h1.htitle {
     color: #fff;
     border-radius: 50px;
     padding: 11px 26px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     position: relative;
     z-index: 2;
@@ -2824,7 +2824,7 @@ h1.htitle {
 }
 
 .sol-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.5rem, 2.6vw, 2.2rem);
     color: #fff;
     line-height: 1.18;
@@ -2901,7 +2901,7 @@ h1.htitle {
 }
 
 .rnum {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: var(--ye);
     font-size: 1rem;
 }
@@ -3009,7 +3009,7 @@ h1.htitle {
 }
 
 .eq-op {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.8rem;
     color: var(--border);
     padding: 0 10px;
@@ -3017,7 +3017,7 @@ h1.htitle {
 }
 
 .eq-eq {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     padding: 0 12px;
     margin-top: -14px;
@@ -3052,7 +3052,7 @@ h1.htitle {
 }
 
 .eq-res-nm {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: .95rem;
     color: var(--pk);
 }
@@ -3249,7 +3249,7 @@ h1.htitle {
 }
 
 .cta-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.5rem, 2.6vw, 2.2rem);
     color: #fff;
     margin-bottom: 9px;
@@ -3434,7 +3434,7 @@ h1.htitle {
     border: 2.5px solid #e8e8e8;
     border-radius: 50px;
     padding: 10px 20px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: .95rem;
     color: var(--dk);
     cursor: pointer;
@@ -3705,7 +3705,7 @@ h1.htitle {
 
 .compare-head .ch {
     padding: 20px 24px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: white;
     display: flex;
@@ -3849,7 +3849,7 @@ h1.htitle {
 }
 
 .ba-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: var(--dk);
 }
@@ -3945,7 +3945,7 @@ h1.htitle {
 }
 
 .feat-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 3vw, 2.6rem);
     margin-bottom: 12px;
 }
@@ -4016,7 +4016,7 @@ h1.htitle {
 }
 
 .comp-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--dk);
     margin-bottom: 20px;
@@ -4132,7 +4132,7 @@ h1.htitle {
 }
 
 .diyk-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.4rem;
     margin-bottom: 16px;
 }
@@ -4361,7 +4361,7 @@ h1.htitle {
 }
 
 .wc h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.12rem;
     color: white;
     margin-bottom: 8px
@@ -4558,7 +4558,7 @@ h1.htitle {
 }
 
 .doc-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: white;
     font-size: 1.1rem;
     margin-bottom: 3px;
@@ -4581,7 +4581,7 @@ h1.htitle {
     content: '"';
     color: var(--pk);
     font-size: 1.4rem;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
 }
 
 
@@ -4716,7 +4716,7 @@ h1.htitle {
 }
 
 .nb-ing-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.1rem, 5vw, 3.5rem);
     line-height: 1.08;
     color: white;
@@ -4841,7 +4841,7 @@ h1.htitle {
 }
 
 .nb-list-head h4 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: white;
     font-size: .98rem;
     margin-bottom: 1px;
@@ -5083,7 +5083,7 @@ h1.htitle {
 }
 
 .nb-dc-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.7rem, 2.8vw, 2.3rem);
     color: white;
     line-height: 1.08;
@@ -5148,7 +5148,7 @@ h1.htitle {
 
 .nb-dc-desc::before {
     content: '"';
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 4rem;
     color: rgba(255, 77, 143, .15);
     position: absolute;
@@ -5248,7 +5248,7 @@ h1.htitle {
 }
 
 .nb-detail-empty h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: rgba(255, 255, 255, .22);
     font-size: 1.4rem;
     margin-bottom: 8px;
@@ -5292,7 +5292,7 @@ h1.htitle {
 }
 
 .nb-stat-n {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     line-height: 1;
     margin-bottom: 3px;
@@ -5660,7 +5660,7 @@ h1.htitle {
 }
 
 .tc-n {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.8rem;
     color: var(--pk);
     line-height: 1;
@@ -5910,7 +5910,7 @@ h1.htitle {
 .nb-variant-modal__price {
     margin-top: 12px;
     color: var(--pk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.75rem;
     line-height: 1;
 }
@@ -6784,7 +6784,7 @@ h1.htitle {
 }
 
 .pc-price {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.4rem;
     color: var(--dk);
     display: flex;
@@ -6945,7 +6945,7 @@ h1.htitle {
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     color: #aaa;
     transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
     position: relative;
@@ -7120,7 +7120,7 @@ h1.htitle {
 }
 
 .age-range {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--dk);
     display: block;
@@ -7173,7 +7173,7 @@ h1.htitle {
 }
 
 .gender-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--dk);
 }
@@ -7266,7 +7266,7 @@ h1.htitle {
 }
 
 .hw-group label {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: .9rem;
     color: var(--dk);
 }
@@ -7318,7 +7318,7 @@ h1.htitle {
     color: #fff;
     border-radius: 50px;
     padding: 7px 20px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: .92rem;
     margin-bottom: 16px;
     box-shadow: 0 4px 14px rgba(255, 77, 143, .28);
@@ -7352,7 +7352,7 @@ h1.htitle {
 }
 
 .lock-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.4rem, 2.5vw, 1.9rem);
     color: #fff;
     margin-bottom: 10px;
@@ -7413,14 +7413,14 @@ h1.htitle {
 }
 
 .plan-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: #fff;
     margin-bottom: 4px;
 }
 
 .plan-price {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.6rem;
     color: var(--ye);
     margin-bottom: 8px;
@@ -7528,7 +7528,7 @@ h1.htitle {
 }
 
 .modal-h {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.6rem;
     color: var(--dk);
     margin-bottom: 6px;
@@ -7596,7 +7596,7 @@ h1.htitle {
 }
 
 .os-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.15rem;
     color: var(--pu);
 }
@@ -7627,7 +7627,7 @@ h1.htitle {
 }
 
 .success-banner h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.5rem;
     color: #00765A;
     margin-bottom: 8px;
@@ -7831,7 +7831,7 @@ h1.htitle {
 }
 
 .loading-state h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.5rem;
     color: var(--dk);
     margin-bottom: 8px;
@@ -7915,7 +7915,7 @@ h1.htitle {
 }
 
 .result-hero h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.4rem, 2.5vw, 2rem);
     margin-bottom: 8px;
     color: white;
@@ -7997,7 +7997,7 @@ h1.htitle {
 }
 
 .meal-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk);
     margin-bottom: 6px;
@@ -8029,7 +8029,7 @@ h1.htitle {
 }
 
 .nutrients-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: var(--dk);
     margin-bottom: 20px;
@@ -8067,7 +8067,7 @@ h1.htitle {
 }
 
 .n-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: .95rem;
     color: var(--dk);
     text-align: right;
@@ -8109,7 +8109,7 @@ h1.htitle {
 }
 
 .prod-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: var(--dk);
     margin-bottom: 4px;
@@ -8400,7 +8400,7 @@ h1.htitle {
 }
 
 .ing-text .ing-num {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 5rem;
     color: rgba(255, 255, 255, .05);
     line-height: 1;
@@ -8521,7 +8521,7 @@ h1.htitle {
     top: 26px;
     font-size: 1.6rem;
     color: var(--pk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
 }
 
 .step:last-child::after {
@@ -8572,7 +8572,7 @@ h1.htitle {
 }
 
 .stitle {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk);
     margin-bottom: 7px;
@@ -8783,7 +8783,7 @@ h1.htitle {
     border: none;
     cursor: pointer;
     font-size: 1.5rem;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8899,7 +8899,7 @@ testi-section {
     background: #fff;
     color: var(--dk);
     font-size: 1.4rem;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9241,7 +9241,7 @@ testi-section {
 
 .wrev-txt::before {
     content: '"';
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2.8rem;
     color: var(--pkl);
     position: absolute;
@@ -9311,7 +9311,7 @@ testi-section {
 }
 
 .rev-big-n {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 4rem;
     color: var(--pk);
     line-height: 1;
@@ -9389,7 +9389,7 @@ testi-section {
     border: none;
     text-align: left;
     padding: 22px 6px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk);
     cursor: pointer;
@@ -9578,7 +9578,7 @@ testi-section {
 
 /* Brand Column */
 .fw-brand .footer-logo-text {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.75rem;
     color: #fff;
     display: inline-flex;
@@ -10383,7 +10383,7 @@ testi-section {
 }
 
 .pdp-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 3.5vw, 2.6rem);
     color: var(--dk);
     line-height: 1.15;
@@ -10405,7 +10405,7 @@ testi-section {
 }
 
 .pdp-rating .rating-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--dk);
 }
@@ -10440,7 +10440,7 @@ testi-section {
 }
 
 .price-now {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     color: var(--pk);
 }
@@ -10742,7 +10742,7 @@ testi-section {
 }
 
 .highlights h4 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--dk);
     margin-bottom: 16px;
@@ -10838,7 +10838,7 @@ testi-section {
 }
 
 .ba-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--dk);
 }
@@ -10893,7 +10893,7 @@ testi-section {
 }
 
 .tr-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--dk);
     margin-bottom: 6px;
@@ -10938,7 +10938,7 @@ testi-section {
 }
 
 .feat-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.6rem, 3vw, 2.2rem);
     color: var(--dk);
     line-height: 1.2;
@@ -11005,7 +11005,7 @@ testi-section {
 }
 
 .comp-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: #fff;
     text-align: center;
@@ -11146,7 +11146,7 @@ testi-section {
 }
 
 .stitle {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk);
     margin-bottom: 8px;
@@ -11195,7 +11195,7 @@ testi-section {
 }
 
 .rev-big-n {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 3rem;
     color: var(--dk);
 }
@@ -11260,7 +11260,7 @@ testi-section {
 }
 
 .reels-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.15rem;
     color: var(--dk);
 }
@@ -11691,7 +11691,7 @@ testi-section {
     top: 26px;
     font-size: 1.6rem;
     color: var(--pk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
 }
 
 .step-new:last-child::after {
@@ -11742,7 +11742,7 @@ testi-section {
 }
 
 .stitle {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk);
     margin-bottom: 7px;
@@ -11876,7 +11876,7 @@ testi-section {
 }
 
 .nb-ing-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 4vw, 3rem);
     line-height: 1.15;
     color: #fff;
@@ -12027,7 +12027,7 @@ testi-section {
 }
 
 .nb-list-head h4 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: #fff;
     margin-bottom: 2px;
@@ -12136,7 +12136,7 @@ testi-section {
 }
 
 .nb-detail-empty h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.3rem;
     color: rgba(255, 255, 255, .6);
     margin-bottom: 10px;
@@ -12195,7 +12195,7 @@ testi-section {
 }
 
 .nb-detail-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.5rem;
     color: #fff;
     margin-bottom: 4px;
@@ -12278,7 +12278,7 @@ testi-section {
 }
 
 .nb-dosage-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--mn);
 }
@@ -12310,7 +12310,7 @@ testi-section {
 }
 
 .nb-stat-n {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.8rem;
 }
 
@@ -12649,7 +12649,7 @@ testi-section {
 
 .stitle {
     color: var(--dk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.18rem;
     line-height: 1.25;
     margin-bottom: 10px;
@@ -12753,7 +12753,7 @@ testi-section {
 
 .how-stats strong {
     color: var(--pk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     line-height: 1.1;
 }
@@ -13996,7 +13996,7 @@ testi-section {
     margin: 0;
     font-size: 1.25rem;
     color: var(--dk, #1e293b);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
 }
 
 .nb-ret-close {
@@ -14541,7 +14541,7 @@ testi-section {
 }
 
 .about-hero h1 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.6rem, 5vw, 4.2rem);
     line-height: 1.08;
     color: var(--dk);
@@ -14609,7 +14609,7 @@ testi-section {
 }
 
 .hstat-num {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     color: var(--pk);
     line-height: 1;
@@ -14735,7 +14735,7 @@ testi-section {
 
 /* SUBHEADING */
 .aj-trust-content .aj-trust-subtitle {
-    font-family: 'Fredoka one', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.8rem, 3.2vw, 2.2rem);
     font-weight: 700;
     margin: 2px 0 18px 0;
@@ -14822,7 +14822,7 @@ testi-section {
 }
 
 .closing-inner h2 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.2rem, 4vw, 3.4rem);
     color: var(--dk);
     line-height: 1.12;
@@ -15002,7 +15002,7 @@ testi-section {
     --ns-gold: #f5a623;
     --ns-green: #4caf50;
     --ns-font: 'DM Sans', sans-serif;
-    --ns-heading: 'Fredoka One', cursive;
+    --ns-heading: 'Nunito', sans-serif;
     --ns-hand: 'Nunito', sans-serif;
     font-family: var(--ns-font);
     background: linear-gradient(160deg, #fce4ec 0%, #fad4e4 55%, #f8bbd0 100%);
@@ -15705,7 +15705,7 @@ testi-section {
 
 /* Heading */
 .nbs-heading {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-weight: 900;
     font-size: clamp(36px, 4vw, 56px);
     line-height: 1.15;
@@ -15994,7 +15994,7 @@ testi-section {
 
 .story-card-main h2 {
     margin-bottom: 16px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.6rem, 2.5vw, 2.1rem);
     line-height: 1.25;
     color: #fff;
@@ -16068,7 +16068,7 @@ testi-section {
 
 .origin-text h2 {
     margin-bottom: 12px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2rem, 3vw, 2.75rem);
     line-height: 1.1;
     color: var(--dk);
@@ -16278,7 +16278,7 @@ testi-section {
 }
 
 .gapfix-heading {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(28px, 5vw, 52px);
     font-weight: 800;
     color: var(--dk);
@@ -16648,7 +16648,7 @@ body {
 }
 
 .nbap-head h2 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.9rem, 5vw, 3.4rem);
     line-height: 1.1;
     color: var(--nbap-wh);
@@ -16850,7 +16850,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 0.92rem;
     color: #0d0028;
     z-index: 4;
@@ -16878,7 +16878,7 @@ body {
 }
 
 .nbap-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(0.9rem, 1.25vw, 1.08rem);
     line-height: 1.3;
     margin-bottom: 8px;
@@ -17057,7 +17057,7 @@ body {
 }
 
 .contact-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.5rem, 5vw, 4rem);
     color: #fff;
     margin-bottom: 20px;
@@ -17149,7 +17149,7 @@ body {
 }
 
 .contact-info-details h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.3rem;
     color: var(--dk);
     margin-bottom: 8px;
@@ -17178,7 +17178,7 @@ body {
 }
 
 .contact-form-col h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.8rem;
     color: var(--dk);
     margin-bottom: 10px;
@@ -17278,7 +17278,7 @@ textarea.contact-form-control {
     border: none;
     padding: 18px;
     border-radius: 50px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -17391,7 +17391,7 @@ textarea.contact-form-control {
 .cart-page-item-price {
     margin: 0 0 10px;
     color: var(--pk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
 }
 
@@ -17589,7 +17589,7 @@ textarea.contact-form-control {
 
 .testimonials-title {
     color: #fff;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(2.15rem, 5vw, 4.1rem);
     letter-spacing: 0;
     line-height: 1.08;
@@ -17675,7 +17675,7 @@ textarea.contact-form-control {
     border-radius: 22px;
     color: var(--pk);
     display: inline-flex;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     height: 76px;
     justify-content: center;
@@ -17685,7 +17685,7 @@ textarea.contact-form-control {
 .score-copy strong {
     color: var(--dk);
     display: block;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.25rem;
 }
 
@@ -17772,7 +17772,7 @@ textarea.contact-form-control {
 
 .section-title {
     color: var(--dk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.9rem, 4vw, 3rem);
     line-height: 1.12;
     margin: 0;
@@ -17863,7 +17863,7 @@ textarea.contact-form-control {
 
 .featured-quote {
     color: var(--dk);
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.55rem, 3vw, 2.3rem);
     line-height: 1.25;
     margin: 18px 0;
@@ -17888,7 +17888,7 @@ textarea.contact-form-control {
     border-radius: 16px;
     color: var(--pk);
     display: inline-flex;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     height: 52px;
     justify-content: center;
     width: 52px;
@@ -17964,7 +17964,7 @@ textarea.contact-form-control {
     border-radius: 16px;
     display: inline-flex;
     flex: 0 0 46px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     height: 46px;
     justify-content: center;
     width: 46px;
@@ -18027,7 +18027,7 @@ textarea.contact-form-control {
 }
 
 .video-name {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     margin-top: 8px;
 }
@@ -18065,7 +18065,7 @@ textarea.contact-form-control {
 
 .testimonial-cta h2 {
     color: #fff;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: clamp(1.7rem, 4vw, 2.5rem);
     line-height: 1.15;
     margin-bottom: 10px;
@@ -18250,7 +18250,7 @@ textarea.contact-form-control {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--pk), var(--pkd));
     color: #fff;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     display: flex;
     align-items: center;
@@ -18794,7 +18794,7 @@ textarea.contact-form-control {
 }
 
 .emi-item .emi-months {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--dk)
 }
@@ -19041,7 +19041,7 @@ textarea.contact-form-control {
 }
 
 .ci-price {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--pk);
     text-align: right;
@@ -19245,13 +19245,13 @@ textarea.contact-form-control {
 }
 
 .pb-total-label {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.05rem;
     color: var(--dk)
 }
 
 .pb-total-val {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.4rem;
     color: var(--pk)
 }
@@ -19365,7 +19365,7 @@ textarea.contact-form-control {
 }
 
 .loyalty-box .lb-pts {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     color: var(--or)
 }
@@ -19470,7 +19470,7 @@ textarea.contact-form-control {
 }
 
 .om-header h2 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.5rem;
     color: white;
     margin-bottom: 4px;
@@ -19614,7 +19614,7 @@ textarea.contact-form-control {
     border: 2.5px solid var(--border);
     border-radius: 14px;
     text-align: center;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.6rem;
     color: var(--dk);
     outline: none;
@@ -19765,7 +19765,7 @@ textarea.contact-form-control {
 }
 
 .success-box h2 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2rem;
     color: var(--dk);
     margin-bottom: 8px
@@ -19782,7 +19782,7 @@ textarea.contact-form-control {
     background: var(--pkl);
     border-radius: 12px;
     padding: 12px 20px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.1rem;
     color: var(--pkd);
     margin-bottom: 24px
@@ -20217,7 +20217,7 @@ textarea.contact-form-control {
 }
 
 .panel-order-invoice .inv-wrap .inv-company-name {
-    font-family: 'Fredoka One', cursive !important;
+    font-family: 'Nunito', sans-serif !important;
     font-size: 1.2rem !important;
     color: var(--dk) !important;
     margin-bottom: 6px !important;
@@ -20242,7 +20242,7 @@ textarea.contact-form-control {
 }
 
 .panel-order-invoice .inv-wrap .inv-word {
-    font-family: 'Fredoka One', cursive !important;
+    font-family: 'Nunito', sans-serif !important;
     font-size: 2.2rem !important;
     color: var(--dk) !important;
     line-height: 1 !important;
@@ -20283,7 +20283,7 @@ textarea.contact-form-control {
 }
 
 .panel-order-invoice .inv-wrap .col-label {
-    font-family: 'Fredoka One', cursive !important;
+    font-family: 'Nunito', sans-serif !important;
     font-size: 0.8rem !important;
     color: var(--pk) !important;
     text-transform: uppercase !important;
@@ -20374,7 +20374,7 @@ textarea.contact-form-control {
 .panel-order-invoice .inv-wrap .inv-total-line.grand-tot {
     background: linear-gradient(135deg, #fdf2f8, #f5f3ff) !important;
     padding: 18px 20px !important;
-    font-family: 'Fredoka One', cursive !important;
+    font-family: 'Nunito', sans-serif !important;
     font-size: 1.4rem !important;
     color: var(--pu) !important;
 }
@@ -20484,7 +20484,7 @@ textarea.contact-form-control {
 }
 
 .panel-tickets-show .ticket-title {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.4rem;
     color: #1f2937;
     margin: 0 0 10px 0;
@@ -20612,7 +20612,7 @@ textarea.contact-form-control {
     border: none;
     padding: 12px 30px;
     border-radius: 12px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s;
@@ -20661,7 +20661,7 @@ textarea.contact-form-control {
 }
 
 .panel-tickets .box-head h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.15rem;
     color: #1f2937;
     margin: 0;
@@ -20701,7 +20701,7 @@ textarea.contact-form-control {
     border: none;
     padding: 12px 24px;
     border-radius: 12px;
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s;
@@ -20841,7 +20841,7 @@ textarea.contact-form-control {
 }
 
 .panel-wallet .sc-info .num {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 2.2rem;
     color: var(--dk);
     line-height: 1;
@@ -20871,7 +20871,7 @@ textarea.contact-form-control {
 }
 
 .panel-wallet .box-head h3 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.15rem;
     color: var(--dk);
     margin: 0;
@@ -20929,7 +20929,7 @@ textarea.contact-form-control {
 }
 
 .panel-wallet .info-item h4 {
-    font-family: 'Fredoka One', cursive;
+    font-family: 'Nunito', sans-serif;
     font-size: 1.2rem;
     color: var(--dk);
     margin-bottom: 12px;
@@ -21417,3 +21417,2102 @@ textarea.contact-form-control {
         transform: translateY(0);
     }
 }
+
+/* --- Diet Chart Core Styles --- */
+.diet-page-hero {
+            background: #0d0028;
+            overflow: hidden;
+            padding: 100px 5% 60px;
+            position: relative;
+        }
+
+        .diet-page-hero::before {
+            animation: blobMorph 10s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(255, 77, 143, .12), transparent 70%);
+            border-radius: 62% 38% 56% 44%/48% 62% 38% 52%;
+            content: '';
+            height: 560px;
+            pointer-events: none;
+            position: absolute;
+            right: -120px;
+            top: -160px;
+            width: 560px;
+        }
+
+        .diet-page-hero::after {
+            animation: blobMorph 14s ease-in-out infinite reverse;
+            background: radial-gradient(circle, rgba(124, 58, 237, .09), transparent 70%);
+            border-radius: 38% 62% 44% 56%/62% 38% 55% 45%;
+            bottom: -80px;
+            content: '';
+            height: 380px;
+            left: -80px;
+            pointer-events: none;
+            position: absolute;
+            width: 380px;
+        }
+
+        .diet-page-hero-inner {
+            margin: 0 auto;
+            max-width: 900px;
+            padding-top: 23px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .diet-page-breadcrumb {
+            align-items: center;
+            color: #ffffff;
+            display: flex;
+            flex-wrap: wrap;
+            font-size: .9rem;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .diet-page-breadcrumb a {
+            color: var(--pk);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .diet-page-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .diet-page-hero-badge {
+            background: var(--pkl);
+            border-radius: 50px;
+            color: var(--pk);
+            display: inline-block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .75rem;
+            font-weight: 900;
+            margin-bottom: 16px;
+            padding: 8px 16px;
+        }
+
+        .diet-page-hero-title {
+            color: var(--wh);
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        .diet-page-hero-sub {
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin: 0;
+            max-width: 650px;
+        }
+
+        /* ══ LAYOUT ══ */
+        .diet-section {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 56px 20px 80px;
+        }
+
+        /* ══ HEADER ══ */
+        .diet-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .sec-eye {
+            display: inline-block;
+            /* background: var(--mnl); */
+            color: #00a870;
+            border-radius: 50px;
+            padding: 6px 18px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .sec-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            color: var(--dk);
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .acc {
+            color: var(--pk);
+        }
+
+        .sec-sub {
+            font-size: .95rem;
+            color: #888;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ══ STEPPER ══ */
+        .stepper-wrap {
+            width: 100%;
+        }
+
+        .stepper-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            gap: 0;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .sp-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .sp-ball {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f0eaf8;
+            color: #bbb;
+            font-family: 'Fredoka One', cursive;
+            font-size: .95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s;
+        }
+
+        .sp-step.active .sp-ball {
+            background: var(--pk);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(255, 77, 143, .35);
+        }
+
+        .sp-step.done .sp-ball {
+            background: var(--mn);
+            color: #fff;
+        }
+
+        .sp-label {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .68rem;
+            color: #bbb;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .sp-step.active .sp-label {
+            color: var(--pk);
+        }
+
+        .sp-step.done .sp-label {
+            color: var(--mn);
+        }
+
+        .sp-line {
+            flex: 1;
+            height: 3px;
+            background: #f0eaf8;
+            border-radius: 4px;
+            min-width: 20px;
+            max-width: 70px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .sp-line-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--mn);
+            border-radius: 4px;
+            transition: width .5s ease;
+        }
+
+        .sp-line-fill.done {
+            width: 100%;
+        }
+
+        /* ══ DIET CARD ══ */
+        .diet-card {
+            background: var(--card);
+            border-radius: 32px;
+            padding: 36px 32px;
+            box-shadow: var(--shadow);
+            border: 1.5px solid var(--border);
+        }
+
+        /* ══ STEP PANELS ══ */
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active,
+        .loading-state.active,
+        .result-state.active {
+            display: block;
+        }
+
+        .step-head {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .step-emoji {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .step-head h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: var(--dk);
+            margin-bottom: 8px;
+        }
+
+        .step-head p {
+            font-size: .9rem;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* Name input */
+        .name-input-wrap {
+            margin-bottom: 28px;
+        }
+
+        .name-input-label {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: var(--dk);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .name-input-field {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            color: var(--dk);
+            background: #fafafa;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .name-input-field:focus {
+            border-color: var(--pk);
+            box-shadow: 0 0 0 3px rgba(255, 77, 143, .1);
+            background: #fff;
+        }
+
+        .name-input-field::placeholder {
+            color: #bbb;
+        }
+
+        /* ══ AGE GRID ══ */
+        .age-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .age-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 14px 8px;
+            border: 2px solid #f0eaf8;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all .25s;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .age-card:hover {
+            border-color: var(--pkl);
+            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .age-card.selected {
+            border-color: var(--pk);
+            background: var(--pkl);
+            box-shadow: 0 4px 14px rgba(255, 77, 143, .18);
+        }
+
+        .age-emoji {
+            font-size: 1.5rem;
+        }
+
+        .age-range {
+            font-family: 'Fredoka One', cursive;
+            font-size: .75rem;
+            color: var(--dk);
+        }
+
+        .age-label {
+            font-size: .62rem;
+            color: #aaa;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+        }
+
+        .age-card.selected .age-label {
+            color: var(--pk);
+        }
+
+        /* ══ GENDER ROW ══ */
+        .gender-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .gender-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 18px 12px;
+            border: 2px solid #f0eaf8;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all .25s;
+            background: #fafafa;
+        }
+
+        .gender-card:hover {
+            border-color: var(--pkl);
+            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .gender-card.selected {
+            border-color: var(--pk);
+            background: var(--pkl);
+            box-shadow: 0 4px 14px rgba(255, 77, 143, .18);
+        }
+
+        .gender-emoji {
+            font-size: 1.8rem;
+        }
+
+        .gender-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: .85rem;
+            color: var(--dk);
+        }
+
+        /* ══ HW ROW ══ */
+        .hw-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .hw-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hw-group label {
+            font-family: 'Fredoka One', cursive;
+            font-size: .9rem;
+            color: var(--dk);
+        }
+
+        .hw-group input {
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            color: var(--dk);
+            background: #fafafa;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            width: 100%;
+        }
+
+        .hw-group input:focus {
+            border-color: var(--pk);
+            box-shadow: 0 0 0 3px rgba(255, 77, 143, .1);
+            background: #fff;
+        }
+
+        .hw-group input::placeholder {
+            color: #bbb;
+        }
+
+        /* ══ PROBLEMS ══ */
+        .problem-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .prob-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 16px;
+            border: 2px solid #f0eaf8;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .82rem;
+            cursor: pointer;
+            transition: all .2s;
+            background: #fafafa;
+            color: var(--dk);
+        }
+
+        .prob-tag:hover {
+            border-color: var(--pk);
+            background: var(--pkl);
+        }
+
+        .prob-tag.selected {
+            border-color: var(--pk);
+            background: var(--pkl);
+            color: var(--pk);
+        }
+
+        .prob-icon {
+            font-size: 1rem;
+        }
+
+        /* ══ DIET PREF ══ */
+        .diet-pref-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .dpref {
+            padding: 14px 10px;
+            border: 2px solid #f0eaf8;
+            border-radius: 16px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .8rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all .2s;
+            background: #fafafa;
+            color: var(--dk);
+        }
+
+        .dpref:hover {
+            border-color: var(--pk);
+            background: var(--pkl);
+        }
+
+        .dpref.selected {
+            border-color: var(--pk);
+            background: var(--pkl);
+            color: var(--pk);
+        }
+
+        /* ══ ALLERGIES ══ */
+        .allergy-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .atag {
+            padding: 8px 16px;
+            border: 2px solid #f0eaf8;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .78rem;
+            cursor: pointer;
+            transition: all .2s;
+            background: #fafafa;
+            color: var(--dk);
+        }
+
+        .atag:hover {
+            border-color: var(--sk);
+            background: #e6f9ff;
+        }
+
+        .atag.selected {
+            border-color: var(--sk);
+            background: #e6f9ff;
+            color: #0088bb;
+        }
+
+        /* ══ ERROR ══ */
+        .selection-error {
+            display: none;
+            color: #e53e3e;
+            font-size: .8rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        .selection-error.show {
+            display: block;
+        }
+
+        /* ══ NAV BUTTONS ══ */
+        .step-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+            gap: 12px;
+        }
+
+        .btn-next,
+        .btn-generate {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--pk), var(--pkd));
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .92rem;
+            cursor: pointer;
+            transition: all .3s;
+            box-shadow: 0 6px 20px rgba(255, 77, 143, .3);
+            white-space: nowrap;
+        }
+
+        .btn-next:hover,
+        .btn-generate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(255, 77, 143, .4);
+        }
+
+        .btn-back {
+            background: none;
+            border: 2px solid #f0eaf8;
+            border-radius: 50px;
+            padding: 12px 22px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .88rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+
+        .btn-back:hover {
+            border-color: #ddd;
+            color: var(--dk);
+        }
+
+        .btn-restart {
+            background: none;
+            border: 2px solid #f0eaf8;
+            border-radius: 50px;
+            padding: 12px 22px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .88rem;
+            color: #aaa;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .btn-restart:hover {
+            border-color: var(--pk);
+            color: var(--pk);
+        }
+
+        /* ══ LOADING ══ */
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .loader-ring {
+            width: 64px;
+            height: 64px;
+            border: 5px solid #f0eaf8;
+            border-top-color: var(--pk);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-state h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: var(--dk);
+            margin-bottom: 8px;
+        }
+
+        .loading-state p {
+            font-size: .9rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .loading-facts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .lfact {
+            background: var(--pul);
+            color: var(--pu);
+            border-radius: 50px;
+            padding: 7px 16px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .78rem;
+        }
+
+        /* ══ RESULT ══ */
+        .result-state {
+            display: none;
+        }
+
+        .result-state.active {
+            display: block;
+        }
+
+        .result-hero {
+            background: linear-gradient(135deg, var(--dk2), #4a0090);
+            border-radius: 28px;
+            padding: 32px;
+            margin-bottom: 28px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-hero::before {
+            content: '';
+            position: absolute;
+            right: -10px;
+            bottom: -20px;
+            font-size: 8rem;
+            opacity: .06;
+            pointer-events: none;
+        }
+
+        .result-badge {
+            display: inline-block;
+            background: rgba(255, 214, 0, .18);
+            border: 1px solid rgba(255, 214, 0, .3);
+            color: var(--ye);
+            border-radius: 50px;
+            padding: 5px 16px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .72rem;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .result-hero h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.2rem, 3vw, 1.7rem);
+            margin-bottom: 8px;
+        }
+
+        .result-hero p {
+            font-size: .9rem;
+            color: rgba(255, 255, 255, .65);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .result-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .rtag {
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .15);
+            color: rgba(255, 255, 255, .8);
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .75rem;
+        }
+
+        /* ══ BMI BADGE ══ */
+        .bmi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .8rem;
+            margin-top: 12px;
+        }
+
+        /* ══ FREE PREVIEW BADGE ══ */
+        .free-preview-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--mnl);
+            color: #00a870;
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .72rem;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+        }
+
+        /* ══ DAY PILL ══ */
+        .day-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--pk), var(--pkd));
+            color: #fff;
+            border-radius: 50px;
+            padding: 7px 20px;
+            font-family: 'Fredoka One', cursive;
+            font-size: .92rem;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 14px rgba(255, 77, 143, .28);
+        }
+
+        /* ══ MEAL GRID ══ */
+        .meal-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .meal-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, .1);
+        }
+
+        .meal-time {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .meal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .meal-label {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+
+        .meal-icon {
+            font-size: 1.6rem;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .meal-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: .92rem;
+            color: var(--dk);
+            margin-bottom: 6px;
+        }
+
+        .meal-items {
+            font-size: .76rem;
+            color: #888;
+            line-height: 1.55;
+            margin-bottom: 8px;
+        }
+
+        .meal-tag {
+            display: inline-block;
+            background: var(--mnl);
+            color: #00a870;
+            border-radius: 50px;
+            padding: 3px 10px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .66rem;
+        }
+
+        /* ══ NUTRIENTS ══ */
+        .nutrients-section {
+            background: var(--pul);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .nutrients-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            color: var(--dk);
+            margin-bottom: 18px;
+        }
+
+        .n-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .n-label {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .78rem;
+            color: var(--dk);
+            min-width: 120px;
+        }
+
+        .n-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(124, 58, 237, .1);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .n-fill {
+            height: 100%;
+            border-radius: 50px;
+            width: 0%;
+            transition: width 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .n-val {
+            font-family: 'Fredoka One', cursive;
+            font-size: .85rem;
+            color: var(--pu);
+            min-width: 70px;
+            text-align: right;
+        }
+
+        /* ══ PRODUCT REC ══ */
+        .product-rec {
+            background: linear-gradient(135deg, #fff8e1, #fff3cd);
+            border: 2px solid #ffe082;
+            border-radius: 24px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .prod-tag {
+            display: inline-block;
+            background: rgba(255, 214, 0, .25);
+            color: #b8860b;
+            border-radius: 50px;
+            padding: 3px 12px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .67rem;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .prod-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            color: var(--dk);
+            margin-bottom: 4px;
+        }
+
+        .prod-why {
+            font-size: .78rem;
+            color: #888;
+            line-height: 1.55;
+        }
+
+        .prod-btn {
+            background: var(--ye);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 22px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .85rem;
+            cursor: pointer;
+            color: var(--dk);
+            white-space: nowrap;
+            transition: all .2s;
+            box-shadow: 0 4px 14px rgba(255, 214, 0, .4);
+            flex-shrink: 0;
+        }
+
+        .prod-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 214, 0, .5);
+        }
+
+        /* ══ TIPS ══ */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        .tip-card {
+            display: flex;
+            gap: 14px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .tip-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .tip-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: .9rem;
+            color: var(--dk);
+            margin-bottom: 4px;
+        }
+
+        .tip-text {
+            font-size: .78rem;
+            color: #888;
+            line-height: 1.55;
+        }
+
+        /* ══ RESULT ACTIONS ══ */
+        .result-actions {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        /* ══ LOCK BANNER ══ */
+        .lock-banner {
+            background: linear-gradient(135deg, var(--dk2), #2d0060);
+            border-radius: 28px;
+            padding: 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .lock-banner::before {
+            content: '🔒';
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 9rem;
+            opacity: .04;
+            pointer-events: none;
+        }
+
+        .lock-icon-lg {
+            font-size: 2.6rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .lock-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .lock-sub {
+            color: rgba(255, 255, 255, .55);
+            font-size: .9rem;
+            line-height: 1.65;
+            max-width: 440px;
+            margin: 0 auto 28px;
+        }
+
+        .plan-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            max-width: 480px;
+            margin: 0 auto 24px;
+        }
+
+        .plan-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1.5px solid rgba(255, 255, 255, .1);
+            border-radius: 22px;
+            padding: 22px 18px;
+            cursor: pointer;
+            transition: all .3s;
+            text-align: left;
+        }
+
+        .plan-card:hover {
+            background: rgba(255, 255, 255, .1);
+            transform: translateY(-4px);
+        }
+
+        .plan-card.active {
+            border-color: var(--ye);
+            background: rgba(255, 214, 0, .08);
+            box-shadow: 0 0 0 1px var(--ye);
+        }
+
+        .plan-pop-badge {
+            display: block;
+            background: rgba(255, 214, 0, .18);
+            border: 1px solid rgba(255, 214, 0, .3);
+            color: var(--ye);
+            border-radius: 50px;
+            padding: 3px 12px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: .65rem;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .plan-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.05rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .plan-price {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: var(--ye);
+            margin-bottom: 8px;
+        }
+
+        .plan-price span {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .4);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+        }
+
+        .plan-features {
+            font-size: .76rem;
+            color: rgba(255, 255, 255, .55);
+            line-height: 1.7;
+        }
+
+        .plan-features .pf {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .plan-features .pf::before {
+            content: '✓';
+            color: var(--mn);
+            font-weight: 900;
+            font-size: .7rem;
+        }
+
+        .btn-subscribe {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--ye);
+            color: var(--dk);
+            border: none;
+            border-radius: 50px;
+            padding: 16px 42px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .3s;
+            box-shadow: 0 8px 28px rgba(255, 214, 0, .4);
+        }
+
+        .btn-subscribe:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 16px 36px rgba(255, 214, 0, .55);
+        }
+
+        /* ══ SUCCESS BANNER ══ */
+        .success-banner {
+            display: none;
+            background: linear-gradient(135deg, var(--mnl), #b8fff0);
+            border: 2.5px solid var(--mn);
+            border-radius: 28px;
+            padding: 36px;
+            text-align: center;
+            margin-bottom: 28px;
+            animation: popIn .5s ease both;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(.92);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .success-banner h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: #00765A;
+            margin-bottom: 8px;
+        }
+
+        .success-banner p {
+            font-size: .9rem;
+            color: #007A5A;
+            margin-bottom: 18px;
+        }
+
+        /* ══ MODAL ══ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 0, 32, .6);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 36px;
+            padding: 44px 40px;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 32px 80px rgba(13, 0, 32, .35);
+            animation: stepIn .45s cubic-bezier(.34, 1.2, .64, 1) both;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes stepIn {
+            from {
+                transform: scale(.88) translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--pkl);
+            border: none;
+            cursor: pointer;
+            color: var(--pk);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--pk);
+            color: #fff;
+        }
+
+        .modal-h {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: var(--dk);
+            margin-bottom: 6px;
+        }
+
+        .modal-sub {
+            font-size: .88rem;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .mfield {
+            margin-bottom: 14px;
+        }
+
+        .mfield label {
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .78rem;
+            color: #888;
+            display: block;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mfield input {
+            width: 100%;
+            padding: 13px 18px;
+            border: 2px solid #f0f0f0;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            color: var(--dk);
+            background: #fafafa;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .mfield input:focus {
+            border-color: var(--pu);
+            background: #fff;
+        }
+
+        .order-summary-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, .05), rgba(255, 77, 143, .05));
+            border: 2px solid var(--pul);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+        }
+
+        .os-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .os-lbl {
+            font-weight: 700;
+            font-size: .88rem;
+            color: #888;
+        }
+
+        .os-val {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.15rem;
+            color: var(--pu);
+        }
+
+        .secure-note {
+            text-align: center;
+            font-size: .75rem;
+            color: #aaa;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+        }
+
+        .diet-page-hero {
+            background:
+                radial-gradient(circle at 12% 22%, rgba(255, 214, 0, .16), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(255, 77, 143, .2), transparent 34%),
+                linear-gradient(135deg, #170032 0%, #321064 52%, #0d0028 100%);
+            padding: 120px 5% 74px;
+        }
+
+        .diet-page-hero-inner {
+            align-items: center;
+            display: grid;
+            gap: 42px;
+            grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+            max-width: 1180px;
+        }
+
+        .diet-page-breadcrumb {
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, .86);
+            display: inline-flex;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            margin-bottom: 22px;
+            padding: 8px 14px;
+            width: fit-content;
+        }
+
+        .diet-page-breadcrumb a {
+            color: #fff;
+        }
+
+        .diet-page-hero-badge {
+            box-shadow: 0 12px 30px rgba(255, 77, 143, .2);
+        }
+
+        .diet-page-hero-title {
+            font-size: clamp(2.15rem, 5vw, 4.1rem);
+            letter-spacing: 0;
+            line-height: 1.08;
+            margin-bottom: 18px;
+            max-width: 720px;
+        }
+
+        .diet-page-hero-sub {
+            color: rgba(255, 255, 255, .78);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.04rem;
+            max-width: 630px;
+        }
+
+        .diet-hero-actions {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .diet-hero-btn,
+        .diet-hero-link {
+            align-items: center;
+            border-radius: 999px;
+            display: inline-flex;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+            min-height: 48px;
+            padding: 0 22px;
+            text-decoration: none;
+        }
+
+        .diet-hero-btn {
+            background: linear-gradient(135deg, var(--pk), var(--pkd));
+            box-shadow: 0 16px 34px rgba(255, 77, 143, .32);
+            color: #fff;
+        }
+
+        .diet-hero-link {
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: #fff;
+        }
+
+        .diet-hero-visual {
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid rgba(255, 255, 255, .48);
+            border-radius: 30px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, .24);
+            overflow: hidden;
+            padding: 24px;
+            position: relative;
+        }
+
+        .diet-hero-visual::before {
+            background: linear-gradient(135deg, rgba(255, 77, 143, .16), rgba(124, 58, 237, .13));
+            border-radius: 999px;
+            content: '';
+            height: 160px;
+            position: absolute;
+            right: -56px;
+            top: -56px;
+            width: 160px;
+        }
+
+        .diet-visual-top {
+            align-items: center;
+            display: flex;
+            gap: 14px;
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .diet-visual-icon {
+            align-items: center;
+            background: var(--pkl);
+            border-radius: 20px;
+            color: var(--pk);
+            display: inline-flex;
+            font-size: 1.7rem;
+            height: 58px;
+            justify-content: center;
+            width: 58px;
+        }
+
+        .diet-visual-title {
+            color: var(--dk);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.25rem;
+            line-height: 1.2;
+        }
+
+        .diet-visual-sub {
+            color: #888;
+            font-family: 'Nunito', sans-serif;
+            font-size: .82rem;
+            font-weight: 800;
+            margin-top: 3px;
+        }
+
+        .diet-visual-list {
+            display: grid;
+            gap: 12px;
+            position: relative;
+        }
+
+        .diet-visual-item {
+            align-items: center;
+            background: #fff;
+            border: 1px solid #f4e6ef;
+            border-radius: 18px;
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .diet-visual-dot {
+            align-items: center;
+            border-radius: 14px;
+            color: #fff;
+            display: inline-flex;
+            flex: 0 0 42px;
+            font-family: 'Fredoka One', cursive;
+            height: 42px;
+            justify-content: center;
+            width: 42px;
+        }
+
+        .diet-visual-item:nth-child(1) .diet-visual-dot {
+            background: var(--pk);
+        }
+
+        .diet-visual-item:nth-child(2) .diet-visual-dot {
+            background: var(--pu);
+        }
+
+        .diet-visual-item:nth-child(3) .diet-visual-dot {
+            background: var(--mn);
+        }
+
+        .diet-visual-copy strong {
+            color: var(--dk);
+            display: block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 900;
+        }
+
+        .diet-visual-copy span {
+            color: #8a8790;
+            display: block;
+            font-size: .8rem;
+            line-height: 1.45;
+            margin-top: 2px;
+        }
+
+        .diet-section {
+            background:
+                radial-gradient(circle at 0% 8%, rgba(255, 77, 143, .08), transparent 26%),
+                radial-gradient(circle at 100% 42%, rgba(0, 214, 143, .09), transparent 28%);
+            max-width: none;
+            padding: 76px 5% 92px;
+        }
+
+        .diet-section-inner {
+            margin: 0 auto;
+            max-width: 1180px;
+        }
+
+        .diet-header {
+            align-items: end;
+            display: grid;
+            gap: 22px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .sec-eye {
+            background: var(--mnl);
+            color: #009463;
+            margin-bottom: 12px;
+        }
+
+        .sec-title {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            margin-bottom: 10px;
+        }
+
+        .sec-sub {
+            margin: 0;
+            max-width: 650px;
+        }
+
+        .diet-mini-stats {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            min-width: 390px;
+        }
+
+        .diet-mini-stat {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 20px;
+            box-shadow: 0 14px 34px rgba(13, 0, 40, .06);
+            padding: 16px;
+        }
+
+        .diet-mini-stat strong {
+            color: var(--pk);
+            display: block;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .diet-mini-stat span {
+            color: #888;
+            display: block;
+            font-family: 'Nunito', sans-serif;
+            font-size: .74rem;
+            font-weight: 900;
+            line-height: 1.25;
+            margin-top: 7px;
+        }
+
+        .diet-planner-shell {
+            align-items: start;
+            display: grid;
+            gap: 28px;
+            grid-template-columns: 300px minmax(0, 1fr);
+        }
+
+        .diet-side-panel {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 28px;
+            box-shadow: 0 20px 52px rgba(13, 0, 40, .08);
+            overflow: hidden;
+            padding: 24px;
+            position: sticky;
+            top: 110px;
+        }
+
+        .diet-side-panel h3 {
+            color: var(--dk);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.35rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .diet-side-panel p {
+            color: #888;
+            font-size: .9rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+        }
+
+        .diet-check-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .diet-check-item {
+            align-items: flex-start;
+            display: flex;
+            gap: 10px;
+            color: var(--dk);
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 900;
+            line-height: 1.35;
+        }
+
+        .diet-check-item span {
+            align-items: center;
+            background: var(--mnl);
+            border-radius: 50%;
+            color: #029864;
+            display: inline-flex;
+            flex: 0 0 22px;
+            font-size: .75rem;
+            height: 22px;
+            justify-content: center;
+            margin-top: -1px;
+            width: 22px;
+        }
+
+        .diet-side-note {
+            background: linear-gradient(135deg, var(--pkl), #fff5fb);
+            border: 1px solid rgba(255, 77, 143, .16);
+            border-radius: 20px;
+            color: #777;
+            font-size: .82rem;
+            line-height: 1.55;
+            margin-top: 20px;
+            padding: 16px;
+        }
+
+        .stepper-wrap {
+            min-width: 0;
+        }
+
+        .stepper-progress {
+            background: #fff;
+            border: 1px solid #f3e5ef;
+            border-radius: 24px;
+            box-shadow: 0 14px 34px rgba(13, 0, 40, .06);
+            justify-content: stretch;
+            margin-bottom: 18px;
+            padding: 18px;
+        }
+
+        .sp-step {
+            min-width: 86px;
+        }
+
+        .sp-ball {
+            height: 42px;
+            width: 42px;
+        }
+
+        .diet-card {
+            border: 1px solid #f3e5ef;
+            border-radius: 30px;
+            box-shadow: 0 24px 64px rgba(13, 0, 40, .09);
+            padding: clamp(24px, 4vw, 42px);
+        }
+
+        .step-head {
+            margin: 0 auto 30px;
+            max-width: 620px;
+        }
+
+        .step-head h3 {
+            font-size: clamp(1.45rem, 3vw, 2rem);
+            margin-bottom: 10px;
+        }
+
+        .name-input-field,
+        .hw-group input {
+            background: #fff;
+            border-color: #efe5ef;
+            min-height: 52px;
+        }
+
+        .age-card,
+        .gender-card,
+        .prob-tag,
+        .dpref,
+        .atag {
+            background: #fff;
+            border-color: #efe5ef;
+        }
+
+        .age-card,
+        .gender-card {
+            min-height: 118px;
+            justify-content: center;
+        }
+
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .prob-tag {
+            border-radius: 18px;
+            justify-content: flex-start;
+            min-height: 54px;
+        }
+
+        .btn-next,
+        .btn-generate,
+        .btn-back,
+        .btn-restart,
+        .btn-subscribe {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            min-height: 48px;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 1040px) {
+
+            .diet-page-hero-inner,
+            .diet-header,
+            .diet-planner-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .diet-hero-visual,
+            .diet-side-panel {
+                position: relative;
+                top: auto;
+            }
+
+            .diet-mini-stats {
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .diet-mini-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 680px) {
+            .diet-page-hero {
+                padding: 90px 6% 48px;
+            }
+
+            .diet-page-hero-inner {
+                gap: 28px;
+            }
+
+            .diet-hero-visual,
+            .diet-side-panel {
+                border-radius: 24px;
+                padding: 20px;
+            }
+
+            .diet-section {
+                padding: 46px 16px 70px;
+            }
+
+            .diet-card {
+                padding: 24px 18px;
+                border-radius: 24px;
+            }
+
+            .age-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .meal-plan-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .diet-pref-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .plan-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lock-banner {
+                padding: 28px 20px;
+            }
+
+            .modal-box {
+                padding: 32px 22px;
+                border-radius: 28px;
+            }
+
+            .step-nav {
+                flex-direction: column-reverse;
+                width: 100%;
+            }
+
+            .step-nav .btn-next,
+            .step-nav .btn-generate {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .step-nav .btn-back {
+                width: 100%;
+                text-align: center;
+            }
+
+            .n-label {
+                min-width: 100px;
+                font-size: .72rem;
+            }
+
+            .product-rec {
+                flex-direction: column;
+            }
+
+            .prod-btn {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 440px) {
+            .diet-hero-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .diet-hero-btn,
+            .diet-hero-link {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .age-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .problem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .meal-plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gender-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .gender-row .gender-card:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .hw-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stepper-progress {
+                gap: 0;
+            }
+
+            .sp-label {
+                display: none;
+            }
+
+            .sp-line {
+                min-width: 14px;
+            }
+
+            .diet-section {
+                padding: 32px 14px 60px;
+            }
+
+            .n-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .n-label {
+                min-width: 100%;
+            }
+
+            .n-val {
+                text-align: left;
+            }
+        }
+/* --- Stats Bar --- */
+.stats-bar { display: flex; justify-content: center; align-items: center; gap: 40px; padding: 40px 20px; background: var(--wh); border-bottom: 1px solid #f0f0f0; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.2rem; color: var(--dk); }
+.stat-num span { color: var(--pk); }
+.stat-label { font-size: 0.85rem; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+@media (max-width: 768px) { .stats-bar { gap: 20px; padding: 20px; } .stat { width: 40%; } }
+
+/* --- How KidzNourish Works Section --- */
+.how { padding: 80px 20px; background: #fdfbfd; }
+.how .text-center { text-align: center; margin-bottom: 50px; }
+.how .section-label { color: var(--mn); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 10px; }
+.how .section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.8rem; color: var(--dk); margin-bottom: 15px; }
+.how .section-sub { color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+.steps { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; max-width: 1100px; margin: 0 auto; }
+.step { flex: 1; text-align: center; padding: 20px; position: relative; }
+.step-num { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem; margin: 0 auto 20px; }
+.step h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--dk); margin-bottom: 10px; }
+.step p { color: #666; font-size: 0.95rem; line-height: 1.5; }
+.step-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.step-num-1 { background: var(--mnl); color: var(--mn); }
+.step-num-2 { background: var(--orl); color: var(--or); }
+.step-num-3 { background: var(--pul); color: var(--pu); }
+.step-num-4 { background: var(--skl); color: var(--sk); }
+.how .step:not(:last-child)::after { content: '➔'; position: absolute; right: -20px; top: 30px; font-size: 2rem; color: #ccc; }
+@media (max-width: 768px) { .steps { flex-direction: column; align-items: center; } .how .step:not(:last-child)::after { display: none; } }
+
+/* --- KidzNourish Features Section --- */
+#features { padding: 80px 20px; background: var(--wh); max-width: 1200px; margin: 0 auto; }
+#features .text-center { text-align: center; margin-bottom: 50px; }
+#features .section-label { color: var(--mn); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 10px; }
+#features .section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.8rem; color: var(--dk); margin-bottom: 15px; }
+#features .section-sub { color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+.feature-card { background: var(--wh); border: 2px solid; border-radius: 16px; padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; display: flex; flex-direction: column; border-top-width: 4px; }
+.feature-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+.feature-icon { font-size: 2.5rem; margin-bottom: 15px; }
+.feature-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--dk); margin-bottom: 12px; }
+.feature-card p { color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+.feature-card .tag { align-self: flex-start; font-size: 0.75rem; font-weight: 800; padding: 6px 12px; border-radius: 20px; }
+.fc-1 { border-color: var(--mn); } .fc-1 .tag { background: var(--mnl); color: var(--mn); }
+.fc-2 { border-color: var(--sk); } .fc-2 .tag { background: var(--skl); color: var(--sk); }
+.fc-3 { border-color: var(--pu); } .fc-3 .tag { background: var(--pul); color: var(--pu); }
+.fc-4 { border-color: var(--or); } .fc-4 .tag { background: var(--orl); color: var(--or); }
+.fc-5 { border-color: var(--pkd); } .fc-5 .tag { background: var(--pkl); color: var(--pkd); }
+.fc-6 { border-color: var(--pk); } .fc-6 .tag { background: var(--pkl); color: var(--pk); }
+.fc-7 { border-color: #00bcd4; } .fc-7 .tag { background: #e0f7fa; color: #00838f; }
+.fc-8 { border-color: #8bc34a; } .fc-8 .tag { background: #f1f8e9; color: #558b2f; }
+
+/* --- India Zones Section --- */
+.zones-section { padding: 80px 20px; background: #f9fdfa; max-width: 1200px; margin: 0 auto; }
+.zones-section .text-center { text-align: center; margin-bottom: 50px; }
+.zones-section .section-label { color: var(--mn); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 10px; }
+.zones-section .section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.8rem; color: var(--dk); margin-bottom: 15px; }
+.zones-section .section-sub { color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+.zones-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.zone-card { border-radius: 20px; padding: 32px 24px; color: #fff; position: relative; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.06); transition: transform 0.3s ease; }
+.zone-card:hover { transform: translateY(-5px); }
+.zone-card::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none;}
+.zc-1 { background: linear-gradient(135deg, var(--or), #e67e22); }
+.zc-2 { background: linear-gradient(135deg, var(--mn), #1abc9c); }
+.zc-3 { background: linear-gradient(135deg, var(--sk), var(--pu)); }
+.zc-4 { background: linear-gradient(135deg, var(--pk), var(--pkd)); }
+.zone-flag { font-size: 2.5rem; margin-bottom: 16px; }
+.zone-name { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem; margin-bottom: 8px; }
+.zone-states { font-size: 0.85rem; opacity: 0.9; margin-bottom: 24px; line-height: 1.4; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 16px; font-weight: 600; }
+.zone-foods { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.food-chip { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(4px); }
+.zone-insight { font-size: 0.9rem; line-height: 1.5; opacity: 0.95; background: rgba(0,0,0,0.1); padding: 16px; border-radius: 12px; font-weight: 500; }
+
+/* --- Pricing Section --- */
+.pricing-section { padding: 80px 20px; background: var(--cr); max-width: 1200px; margin: 0 auto; }
+.pricing-section .text-center { text-align: center; margin-bottom: 40px; }
+.pricing-section .section-label { color: var(--mn); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 10px; }
+.pricing-section .section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.8rem; color: var(--dk); margin-bottom: 15px; }
+.pricing-section .section-sub { color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+
+.billing-toggle { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 40px; }
+.toggle-label { font-size: 0.95rem; font-weight: 800; color: var(--dk); }
+.toggle-switch { width: 56px; height: 30px; background: #ddd; border-radius: 30px; position: relative; cursor: pointer; transition: 0.3s; }
+.toggle-switch.on { background: var(--mn); }
+.toggle-knob { width: 24px; height: 24px; background: #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.toggle-switch.on .toggle-knob { left: 29px; }
+
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; align-items: start; }
+.pricing-section .plan-card { background: #fff; border-radius: 20px; padding: 40px 24px; text-align: center; position: relative; border: 2px solid var(--pkl); transition: transform 0.3s, box-shadow 0.3s; }
+.pricing-section .plan-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0,0,0,0.06); }
+.pricing-section .plan-card.popular { border-color: var(--mn); border-width: 3px; transform: scale(1.03); background: var(--mn); color: #fff; }
+.pricing-section .plan-card.popular:hover { transform: scale(1.03) translateY(-5px); }
+
+.popular-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: var(--ye); color: var(--dk); font-weight: 900; font-size: 0.75rem; padding: 6px 16px; border-radius: 20px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.pricing-section .plan-icon { font-size: 2.5rem; margin-bottom: 15px; }
+.pricing-section .plan-name { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--dk); margin-bottom: 10px; }
+.pricing-section .plan-card.popular .plan-name { color: #fff; }
+
+.pricing-section .plan-price { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.5rem; color: var(--dk); margin-bottom: 5px; }
+.pricing-section .plan-card.popular .plan-price { color: #fff; }
+
+.pricing-section .plan-period { font-size: 0.85rem; color: #888; margin-bottom: 25px; font-weight: 700; }
+.pricing-section .plan-card.popular .plan-period { color: rgba(255,255,255,0.8); }
+
+.pricing-section .plan-features { list-style: none; text-align: left; margin-bottom: 30px; }
+.pricing-section .plan-features li { padding-left: 24px; position: relative; font-size: 0.9rem; margin-bottom: 12px; color: #555; line-height: 1.4; font-weight: 600;}
+.pricing-section .plan-card.popular .plan-features li { color: #fff; }
+.pricing-section .plan-features li::before { content: '✓'; position: absolute; left: 0; color: var(--mn); font-weight: 900; }
+.pricing-section .plan-card.popular .plan-features li::before { color: var(--ye); }
+
+.pricing-section .plan-btn { width: 100%; padding: 14px; border-radius: 50px; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer; transition: 0.3s; font-family: 'Nunito', sans-serif;}
+.pb-1 { background: var(--cr); color: var(--dk); border: 2px solid var(--pkl); }
+.pb-1:hover { background: var(--pkl); color: var(--pk); }
+
+.pb-2 { background: var(--ye); color: var(--dk); }
+.pb-2:hover { background: #e6c200; transform: translateY(-2px); }
+
+.pb-3, .pb-4 { background: var(--cr); color: var(--dk); border: 2px solid var(--pkl); }
+.pb-3:hover, .pb-4:hover { background: var(--pkl); color: var(--pk); }
+
+.pricing-note { text-align: center; margin-top: 30px; color: #888; font-size: 0.88rem; font-weight: 600; }

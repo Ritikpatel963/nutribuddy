@@ -72,7 +72,7 @@
                 <textarea data-field='description' rows='2' class='form-control mb-2' maxlength='1000' placeholder='Result paragraph'></textarea>
                 <input type='text' data-field='week' class='form-control' maxlength='80' placeholder='Optional: Visible by Week 3'>
             </div>
-            <div class='col-md-1 text-end'><button type='button' class='btn btn-outline-danger-600 btn-sm' data-remove-transform-result><iconify-icon icon='lucide:trash-2'></iconify-icon></button></div>
+            <div class='col-md-1 text-end'><button type='button' class='btn btn-outline-danger-600 btn-sm' data-remove-transform-result><i class='fas fa-trash'></i></button></div>
         </div>
     </div>
 </template>

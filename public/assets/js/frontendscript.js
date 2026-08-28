@@ -2629,3 +2629,672 @@ const nbAboutCountObs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.5 });
 document.querySelectorAll('.nb-about-hstat-num').forEach(el => nbAboutCountObs.observe(el));
+
+
+/* --- Diet Chart Script --- */
+(function () {
+
+                var dcState = {
+                    childName: null,
+                    age: null,
+                    gender: null,
+                    problems: [],
+                    pref: null,
+                    allergies: [],
+                    height: null,
+                    weight: null,
+                    plan: 'pro'
+                };
+
+                /* -- Selectors -- */
+                window.dcSelectAge = function (el) {
+                    document.querySelectorAll('#ageGrid .age-card').forEach(c => c.classList.remove('selected'));
+                    el.classList.add('selected');
+                    dcState.age = el.dataset.age;
+                    document.getElementById('ageError').classList.remove('show');
+                };
+
+                window.dcSelectGender = function (el) {
+                    document.querySelectorAll('#genderRow .gender-card').forEach(c => c.classList.remove('selected'));
+                    el.classList.add('selected');
+                    dcState.gender = el.dataset.gender;
+                    document.getElementById('genderError').classList.remove('show');
+                };
+
+                window.dcToggleProb = function (el) {
+                    el.classList.toggle('selected');
+                    var p = el.dataset.prob;
+                    if (el.classList.contains('selected')) {
+                        if (!dcState.problems.includes(p)) dcState.problems.push(p);
+                    } else {
+                        dcState.problems = dcState.problems.filter(x => x !== p);
+                    }
+                    document.getElementById('probError').classList.remove('show');
+                };
+
+                window.dcSelectPref = function (el) {
+                    document.querySelectorAll('#dietPrefRow .dpref').forEach(c => c.classList.remove('selected'));
+                    el.classList.add('selected');
+                    dcState.pref = el.dataset.pref;
+                    document.getElementById('prefError').classList.remove('show');
+                };
+
+                window.dcToggleAllergy = function (el) {
+                    if (el.dataset.allergy === 'none') {
+                        document.querySelectorAll('#allergyRow .atag').forEach(a => a.classList.remove('selected'));
+                        el.classList.add('selected');
+                        dcState.allergies = ['none'];
+                        return;
+                    }
+                    var noneTag = document.querySelector('#allergyRow .atag[data-allergy="none"]');
+                    if (noneTag) noneTag.classList.remove('selected');
+                    el.classList.toggle('selected');
+                    var a = el.dataset.allergy;
+                    if (el.classList.contains('selected')) {
+                        dcState.allergies = dcState.allergies.filter(x => x !== 'none');
+                        if (!dcState.allergies.includes(a)) dcState.allergies.push(a);
+                    } else {
+                        dcState.allergies = dcState.allergies.filter(x => x !== a);
+                    }
+                };
+
+                window.dcSelectPlan = function (p) {
+                    dcState.plan = p;
+                    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('active'));
+                    document.getElementById('plan' + p.charAt(0).toUpperCase() + p.slice(1)).classList.add('active');
+                };
+
+                /* -- Step navigation -- */
+                window.dcGoStep = function (step) {
+                    if (step === 2) {
+                        // Validate name
+                        var nameVal = document.getElementById('childNameInput').value.trim();
+                        if (!nameVal) {
+                            document.getElementById('nameError').classList.add('show');
+                            return;
+                        }
+                        dcState.childName = nameVal;
+                        document.getElementById('nameError').classList.remove('show');
+
+                        if (!dcState.age) {
+                            document.getElementById('ageError').classList.add('show');
+                            return;
+                        }
+                        if (!dcState.gender) {
+                            document.getElementById('genderError').classList.add('show');
+                            return;
+                        }
+                        dcState.height = document.getElementById('heightInput').value || null;
+                        dcState.weight = document.getElementById('weightInput').value || null;
+                    }
+                    if (step === 3) {
+                        if (!dcState.problems.length) {
+                            document.getElementById('probError').classList.add('show');
+                            return;
+                        }
+                    }
+                    dcShowPanel('panel' + step);
+                    dcUpdateStepper(step);
+                    document.getElementById('diet-chart').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                };
+
+                function dcShowPanel(id) {
+                    document.querySelectorAll('.diet-card .step-panel, .loading-state, .result-state').forEach(p => {
+                        p.classList.remove('active');
+                        p.style.display = '';
+                    });
+                    var el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('active');
+                        el.style.display = 'block';
+                    }
+                }
+
+                function dcUpdateStepper(step) {
+                    for (var i = 1; i <= 4; i++) {
+                        var s = document.getElementById('sp' + i);
+                        if (!s) continue;
+                        s.classList.remove('active', 'done');
+                        if (i < step) {
+                            s.classList.add('done');
+                            s.querySelector('.sp-ball').textContent = 'OK';
+                        } else if (i === step) {
+                            s.classList.add('active');
+                            s.querySelector('.sp-ball').textContent = i;
+                        } else {
+                            s.querySelector('.sp-ball').textContent = i;
+                        }
+                    }
+                    for (var j = 1; j <= 3; j++) {
+                        var l = document.getElementById('line' + j);
+                        if (l) l.classList.toggle('done', j < step);
+                    }
+                }
+
+                /* -- Generate -- */
+                window.dcGenerateChart = function () {
+                    if (!dcState.pref) {
+                        document.getElementById('prefError').classList.add('show');
+                        return;
+                    }
+                    dcShowPanel('loadingState');
+                    dcUpdateStepper(4);
+                    setTimeout(dcBuildResult, 2400);
+                };
+
+                /* -- BMI -- */
+                function dcGetBMI() {
+                    if (!dcState.height || !dcState.weight) return null;
+                    var h = parseFloat(dcState.height) / 100,
+                        w = parseFloat(dcState.weight);
+                    if (h <= 0 || w <= 0) return null;
+                    var bmi = Math.round((w / (h * h)) * 10) / 10;
+                    var status, color;
+                    if (bmi < 14.5) {
+                        status = 'Underweight';
+                        color = '#FF6B35';
+                    } else if (bmi < 22) {
+                        status = 'Healthy Weight OK';
+                        color = '#00D68F';
+                    } else if (bmi < 25) {
+                        status = 'Slightly Overweight';
+                        color = '#FFD600';
+                    } else {
+                        status = 'High BMI  -  Focus on Healthy Weight';
+                        color = '#FF4D8F';
+                    }
+                    return {
+                        bmi: bmi,
+                        status: status,
+                        color: color
+                    };
+                }
+
+                /* -- Build result -- */
+                function dcBuildResult() {
+                    var ageMap = {
+                        '2-3': 'Toddler (2-3 yrs)',
+                        '4-6': 'Pre-Schooler (4-6 yrs)',
+                        '7-9': 'Primary Schooler (7-9 yrs)',
+                        '10-12': 'Middle Schooler (10-12 yrs)',
+                        '13-14': 'Teen (13-14 yrs)'
+                    };
+                    var pmap = {
+                        immunity: 'Immunity',
+                        brain: 'Brain Power',
+                        growth: 'Growth',
+                        sleep: 'Better Sleep',
+                        energy: 'Energy',
+                        weight: 'Healthy Weight',
+                        digestion: 'Digestion',
+                        bones: 'Strong Bones',
+                        mood: 'Mood & Calm',
+                        skin: 'Skin & Hair',
+                        appetite: 'Picky Eating',
+                        exam: 'Exam Focus'
+                    };
+
+                    // Title with child's name
+                    var cname = dcState.childName ? dcState.childName + "'s" : "Your Child's";
+                    document.getElementById('resultTitle').textContent = cname + ' 7-Day Nutrition Plan';
+                    document.getElementById('resultDesc').textContent = 'Personalized for a ' + (ageMap[dcState.age] ||
+                        dcState.age) + '  -  focused on ' + dcState.problems.slice(0, 2).map(p => pmap[p] || p).join(
+                            ' & ') + '.';
+
+                    // BMI
+                    var bmiInfo = dcGetBMI();
+                    if (bmiInfo) {
+                        document.getElementById('bmiRow').innerHTML = '<div class="bmi-badge" style="background:' + bmiInfo
+                            .color + '22;color:' + bmiInfo.color + ';border:1.5px solid ' + bmiInfo.color +
+                            '44"><span style="font-size:16px">BMI</span> BMI ' + bmiInfo.bmi + '  -  ' + bmiInfo.status +
+                            '</div>';
+                    } else {
+                        document.getElementById('bmiRow').innerHTML = '';
+                    }
+
+                    // Tags
+                    var tags = [];
+                    if (dcState.childName) tags.push(dcState.childName);
+                    if (dcState.pref) tags.push(dcState.pref.charAt(0).toUpperCase() + dcState.pref.slice(1));
+                    if (dcState.age) tags.push(dcState.age + ' yrs');
+                    if (dcState.height && dcState.weight) tags.push(dcState.height + 'cm | ' + dcState.weight + 'kg');
+                    dcState.problems.slice(0, 3).forEach(p => {
+                        if (pmap[p]) tags.push(pmap[p]);
+                    });
+                    document.getElementById('resultTags').innerHTML = tags.map(t => '<div class="rtag">' + t + '</div>')
+                        .join('');
+
+                    // Meals
+                    var meals = dcGetMeals(dcState.age, dcState.pref, dcState.problems);
+                    document.getElementById('mealGrid1').innerHTML = meals[0].map(m => dcMealCard(m)).join('');
+                    document.getElementById('mealGrid2').innerHTML = meals[1].map(m => dcMealCard(m)).join('');
+
+                    // Nutrients
+                    var nuts = dcGetNutrients(dcState.age);
+                    document.getElementById('nutrientBars').innerHTML = nuts.map(n =>
+                        '<div class="n-row"><div class="n-label">' + n.name +
+                        '</div><div class="n-track"><div class="n-fill" style="width:0%;background:' + n.color +
+                        '"></div></div><div class="n-val">' + n.val + '</div></div>'
+                    ).join('');
+                    setTimeout(() => {
+                        nuts.forEach((n, i) => {
+                            var fills = document.querySelectorAll('#nutrientBars .n-fill');
+                            if (fills[i]) fills[i].style.width = n.pct + '%';
+                        });
+                    }, 120);
+
+                    // Product rec
+                    var rec = dcGetProductRec(dcState.problems);
+                    document.getElementById('productRec').innerHTML =
+                        '<div class="prod-info"><div class="prod-tag">Recommended for ' + (dcState.childName ||
+                            'Your Child') + '</div><div class="prod-name">' + rec.name + '</div><div class="prod-why">' +
+                        rec.why + '</div></div>' +
+                        '<button class="prod-btn" type="button">Add to Cart  -  ' + rec.price +
+                        '</button>';
+
+                    // Tips
+                    var tips = dcGetTips(dcState.problems);
+                    document.getElementById('tipsGrid').innerHTML = tips.map(t =>
+                        '<div class="tip-card"><div class="tip-icon">' + t.icon + '</div><div><div class="tip-title">' +
+                        t.title + '</div><div class="tip-text">' + t.text + '</div></div></div>'
+                    ).join('');
+
+                    document.getElementById('lockBanner').style.display = 'block';
+                    document.getElementById('successBanner').style.display = 'none';
+
+                    dcShowPanel('resultState');
+                    document.getElementById('diet-chart').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+
+                function dcMealCard(m) {
+                    return '<div class="meal-card"><div class="meal-time"><div class="meal-dot" style="background:' + m
+                        .color + '"></div><div class="meal-label" style="color:' + m.color + '">' + m.time +
+                        '</div></div><span class="meal-icon">' + m.icon + '</span><div class="meal-name">' + m.name +
+                        '</div><div class="meal-items">' + m.items + '</div><div class="meal-tag"> ' + m.benefit +
+                        '</div></div>';
+                }
+
+                /* -- Meal data -- */
+                function dcGetMeals(age, pref, problems) {
+                    var isVeg = ['vegetarian', 'vegan'].includes(pref);
+                    var isEgg = pref === 'eggetarian';
+                    var isBrain = problems.includes('brain') || problems.includes('exam');
+                    var isSleep = problems.includes('sleep');
+                    var isGrowth = problems.includes('growth') || problems.includes('bones');
+
+                    var day1 = [{
+                        time: 'Wake-Up',
+                        icon: '',
+                        color: '#FF9900',
+                        name: 'Morning Boost',
+                        items: 'Warm water with lemon + 1 tsp Amla powder + 5 soaked almonds',
+                        benefit: 'Immunity + Digestion'
+                    },
+                    {
+                        time: 'Breakfast',
+                        icon: '',
+                        color: '#FF4D8F',
+                        name: isBrain ? 'Brain Power Breakfast' : 'Power Breakfast',
+                        items: isBrain ? (isVeg ? 'Moong dal chilla + Walnut chutney + Fresh fruit smoothie' :
+                            'Scrambled eggs + Multigrain toast + Walnut smoothie') : (isVeg ?
+                                'Oats upma with veggies + Banana + Milk' : (isEgg ? 'Egg paratha + Banana + Milk' :
+                                    'Chicken sandwich + Banana + Milk')),
+                        benefit: isBrain ? 'Omega-3 + Focus' : 'Iron + Protein'
+                    },
+                    {
+                        time: 'Mid-Morning',
+                        icon: '',
+                        color: '#00BFFF',
+                        name: 'Smart Snack',
+                        items: 'Seasonal fruit + Roasted chana or Makhana + Coconut water',
+                        benefit: 'Vitamins + Hydration'
+                    },
+                    {
+                        time: 'Lunch',
+                        icon: '',
+                        color: '#7C3AED',
+                        name: isGrowth ? 'Growth Power Lunch' : 'Nutrition Lunch',
+                        items: isVeg ? 'Brown rice + Dal + Paneer sabzi + Salad + Curd' : (isEgg ?
+                            'Brown rice + Dal + Egg curry + Salad + Curd' :
+                            'Brown rice + Dal + Chicken curry + Salad + Curd'),
+                        benefit: isGrowth ? 'Calcium + Protein' : 'Balanced Macros'
+                    },
+                    {
+                        time: 'Evening',
+                        icon: '',
+                        color: '#00D68F',
+                        name: 'After-School Refuel',
+                        items: isBrain ? 'Turmeric milk + Dates + Dark chocolate square' :
+                            'Banana smoothie + Roasted seeds + Whole wheat crackers',
+                        benefit: isBrain ? 'Memory + Calm' : 'Energy Refuel'
+                    },
+                    {
+                        time: 'Dinner',
+                        icon: '',
+                        color: isSleep ? '#5B21B6' : '#FF6B35',
+                        name: isSleep ? 'Sleep Calm Dinner' : 'Growth Dinner',
+                        items: isSleep ? 'Light khichdi + Ghee + Steamed veggies + Warm chamomile milk' : (isVeg ?
+                            'Roti + Sabzi + Dal + Curd' : (isEgg ? 'Roti + Sabzi + Dal + Egg bhurji' :
+                                'Roti + Sabzi + Dal + Grilled chicken')),
+                        benefit: isSleep ? 'L-Theanine + Rest' : 'Protein + Iron'
+                    }
+                    ];
+
+                    var day2 = [{
+                        time: 'Wake-Up',
+                        icon: '',
+                        color: '#FF9900',
+                        name: 'Morning Ritual',
+                        items: 'Soaked methi water + 1 tsp honey + 4 walnuts',
+                        benefit: 'Anti-Inflammatory'
+                    },
+                    {
+                        time: 'Breakfast',
+                        icon: '',
+                        color: '#FF4D8F',
+                        name: 'Wholesome Breakfast',
+                        items: isVeg ? 'Ragi dosa + Peanut chutney + Seasonal fruit + Buttermilk' : (isEgg ?
+                            'Omelette + Multigrain toast + Orange juice' : 'Chicken sandwich + Orange juice'),
+                        benefit: 'Calcium + Energy'
+                    },
+                    {
+                        time: 'Mid-Morning',
+                        icon: '',
+                        color: '#00BFFF',
+                        name: 'Power Snack',
+                        items: 'Roasted makhana + A2 milk or coconut water + Seasonal fruit',
+                        benefit: 'Protein + Hydration'
+                    },
+                    {
+                        time: 'Lunch',
+                        icon: '',
+                        color: '#7C3AED',
+                        name: 'Power Lunch',
+                        items: isVeg ? 'Wheat roti + Palak paneer + Rajma + Salad + Curd' : (isEgg ?
+                            'Wheat roti + Palak dal + Boiled eggs + Salad' :
+                            'Wheat roti + Fish curry + Sabzi + Salad'),
+                        benefit: 'Iron + Protein'
+                    },
+                    {
+                        time: 'Evening',
+                        icon: '',
+                        color: '#00D68F',
+                        name: 'Energizing Snack',
+                        items: 'Dates + Roasted chana + Coconut water + Seasonal fruit',
+                        benefit: 'Electrolytes + Fibre'
+                    },
+                    {
+                        time: 'Dinner',
+                        icon: '',
+                        color: '#5B21B6',
+                        name: 'Light Nourishing Dinner',
+                        items: isVeg ? 'Vegetable daliya + Buttermilk + Salad' : (isEgg ?
+                            'Multigrain roti + Egg curry + Sabzi' : 'Multigrain roti + Grilled fish + Sabzi'),
+                        benefit: 'Probiotics + Recovery'
+                    }
+                    ];
+
+                    return [day1, day2];
+                }
+
+                /* -- Nutrients -- */
+                function dcGetNutrients(age) {
+                    var base = {
+                        '2-3': {
+                            cal: '1,200 kcal',
+                            pro: '35g',
+                            ca: '700mg',
+                            fe: '7mg',
+                            vc: '40mg',
+                            om: '0.5g'
+                        },
+                        '4-6': {
+                            cal: '1,400 kcal',
+                            pro: '45g',
+                            ca: '1,000mg',
+                            fe: '10mg',
+                            vc: '45mg',
+                            om: '0.9g'
+                        },
+                        '7-9': {
+                            cal: '1,700 kcal',
+                            pro: '55g',
+                            ca: '1,000mg',
+                            fe: '10mg',
+                            vc: '45mg',
+                            om: '1.2g'
+                        },
+                        '10-12': {
+                            cal: '2,000 kcal',
+                            pro: '65g',
+                            ca: '1,300mg',
+                            fe: '12mg',
+                            vc: '50mg',
+                            om: '1.4g'
+                        },
+                        '13-14': {
+                            cal: '2,200 kcal',
+                            pro: '75g',
+                            ca: '1,300mg',
+                            fe: '15mg',
+                            vc: '65mg',
+                            om: '1.6g'
+                        }
+                    };
+                    var d = base[age] || base['7-9'];
+                    return [{
+                        name: ' Calories',
+                        val: d.cal,
+                        pct: 72,
+                        color: 'linear-gradient(90deg,#FF4D8F,#FFD600)'
+                    },
+                    {
+                        name: ' Protein',
+                        val: d.pro,
+                        pct: 68,
+                        color: 'linear-gradient(90deg,#7C3AED,#FF4D8F)'
+                    },
+                    {
+                        name: ' Calcium',
+                        val: d.ca,
+                        pct: 80,
+                        color: 'linear-gradient(90deg,#00BFFF,#00D68F)'
+                    },
+                    {
+                        name: ' Iron',
+                        val: d.fe,
+                        pct: 60,
+                        color: 'linear-gradient(90deg,#FF6B35,#FF4D8F)'
+                    },
+                    {
+                        name: ' Vitamin C',
+                        val: d.vc,
+                        pct: 90,
+                        color: 'linear-gradient(90deg,#FFD600,#FF6B35)'
+                    },
+                    {
+                        name: ' Omega-3 DHA',
+                        val: d.om,
+                        pct: 55,
+                        color: 'linear-gradient(90deg,#00BFFF,#7C3AED)'
+                    }
+                    ];
+                }
+
+                /* -- Product rec -- */
+                function dcGetProductRec(problems) {
+                    if (problems.includes('brain') || problems.includes('exam'))
+                        return {
+                            name: 'BrainBoost Chews',
+                            price: '₹649',
+                            why: 'Brahmi + Omega-3 DHA + Shankhpushpi  -  clinically shown to improve focus, memory, and learning scores in 8 weeks.'
+                        };
+                    if (problems.includes('sleep') || problems.includes('mood'))
+                        return {
+                            name: 'DreamCalm Drops',
+                            price: '₹549',
+                            why: 'Chamomile + L-Theanine + Jatamansi  -  helps even the most hyperactive kids sleep deeply and wake up refreshed.'
+                        };
+                    return {
+                        name: 'GrowStrong Gummies',
+                        price: '₹599',
+                        why: 'Ashwagandha + Vitamin D3 + Zinc  -  builds immunity, supports height & bone growth, and tastes amazing!'
+                    };
+                }
+
+                /* -- Tips -- */
+                function dcGetTips(problems) {
+                    var pool = [{
+                        icon: '',
+                        title: 'Hydration is Key',
+                        text: 'Ensure 6-8 glasses of water daily. Add lemon or mint for taste. Coconut water is great for electrolytes.'
+                    },
+                    {
+                        icon: 'Sun',
+                        title: 'Morning Sunlight',
+                        text: '15 mins of sunlight before 9am gives natural Vitamin D  -  crucial for bone growth and mood regulation.'
+                    },
+                    {
+                        icon: '',
+                        title: 'Consistent Meal Times',
+                        text: 'Fixed meal timings regulate hunger hormones and improve digestion and energy levels throughout the day.'
+                    },
+                    {
+                        icon: '',
+                        title: 'Avoid Ultra-Processed Foods',
+                        text: 'Chips, packaged biscuits, and sugary drinks spike blood sugar and displace nutrient-dense foods.'
+                    },
+                    {
+                        icon: '',
+                        title: 'Add Ghee Daily',
+                        text: '1 tsp of pure ghee in dal or roti boosts fat-soluble vitamin absorption and supports brain development.'
+                    },
+                    {
+                        icon: '',
+                        title: 'Sleep Schedule',
+                        text: '9-10 hours of sleep is non-negotiable for growth hormone release and memory consolidation.'
+                    }
+                    ];
+                    if (problems.includes('brain')) pool.unshift({
+                        icon: '',
+                        title: 'Breakfast Before School',
+                        text: 'Never skip breakfast! The brain uses 20% of all energy. A good breakfast improves focus by up to 35%.'
+                    });
+                    if (problems.includes('immunity')) pool.unshift({
+                        icon: '',
+                        title: 'Probiotic Power',
+                        text: 'Include one portion of curd/yogurt daily. Gut health = immune health. 70% of immunity lives in the gut.'
+                    });
+                    return pool.slice(0, 4);
+                }
+
+                /* -- Modal -- */
+                window.dcOpenModal = function () {
+                    var titles = {
+                        basic: 'Unlock 7-Day Plan ',
+                        pro: 'Start Monthly Subscription '
+                    };
+                    var subs = {
+                        basic: 'One-time payment. Receive the complete 7-day chart as a PDF instantly via email.',
+                        pro: 'Unlock new personalized plans every month, progress tracker, and priority support.'
+                    };
+                    var items = {
+                        basic: '7-Day Diet Chart (One-Time)',
+                        pro: '7-Day Diet Chart (Monthly)'
+                    };
+                    var prices = {
+                        basic: '₹99',
+                        pro: '₹199'
+                    };
+                    document.getElementById('dcModalTitle').textContent = titles[dcState.plan] || titles.pro;
+                    document.getElementById('dcModalSub').textContent = subs[dcState.plan] || subs.pro;
+                    document.getElementById('dcOrderItem').textContent = items[dcState.plan] || items.pro;
+                    document.getElementById('dcOrderPrice').textContent = prices[dcState.plan] || '₹199';
+                    document.getElementById('dcModalOverlay').classList.add('open');
+                };
+
+                window.dcCloseModal = function () {
+                    document.getElementById('dcModalOverlay').classList.remove('open');
+                };
+
+                window.dcCloseModalOutside = function (e) {
+                    if (e.target === document.getElementById('dcModalOverlay')) dcCloseModal();
+                };
+
+                window.dcProcessPayment = function () {
+                    var name = document.getElementById('dcName').value.trim();
+                    var email = document.getElementById('dcEmail').value.trim();
+                    if (!name || !email) {
+                        alert('Please enter your name and email to continue.');
+                        return;
+                    }
+                    dcCloseModal();
+                    document.getElementById('lockBanner').style.display = 'none';
+                    var sb = document.getElementById('successBanner');
+                    sb.style.display = 'block';
+                    sb.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                };
+
+                window.dcDownload = function () {
+                    var lines = [
+                        'NUTRIBUDDY  -  7-DAY PERSONALIZED DIET CHART',
+                        '='.repeat(46),
+                        'Child: ' + (dcState.childName || 'N/A') + ' | Age: ' + (dcState.age || 'N/A') +
+                        ' yrs | Diet: ' + (dcState.pref || 'N/A'),
+                        'Goals: ' + dcState.problems.join(', '),
+                        'Height: ' + (dcState.height || 'N/A') + ' cm | Weight: ' + (dcState.weight || 'N/A') +
+                        ' kg',
+                        '',
+                        'Day 1 & Day 2 shown on screen.',
+                        'Day 3-7: Personalized plan sent to your email.',
+                        '',
+                        'Thank you for choosing NutriBuddy Kids!',
+                        'Generated by NutriBuddy  -  nutribuddy.in'
+                    ].join('\n');
+                    var blob = new Blob([lines], {
+                        type: 'text/plain'
+                    });
+                    var a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'NutriBuddy_7Day_Diet_Chart.txt';
+                    a.click();
+                };
+
+                /* -- Restart -- */
+                window.dcRestart = function () {
+                    dcState = {
+                        childName: null,
+                        age: null,
+                        gender: null,
+                        problems: [],
+                        pref: null,
+                        allergies: [],
+                        height: null,
+                        weight: null,
+                        plan: 'pro'
+                    };
+                    document.querySelectorAll('.age-card, .gender-card, .prob-tag, .dpref, .atag').forEach(el => el
+                        .classList.remove('selected'));
+                    document.getElementById('childNameInput').value = '';
+                    document.getElementById('heightInput').value = '';
+                    document.getElementById('weightInput').value = '';
+                    document.getElementById('lockBanner').style.display = 'block';
+                    document.getElementById('successBanner').style.display = 'none';
+                    dcGoStep(1);
+                };
+
+                window.goStep = window.dcGoStep;
+                window.generateChart = window.dcGenerateChart;
+                window.restart = window.dcRestart;
+                window.printChart = window.dcDownload;
+
+            })();

@@ -86,6 +86,27 @@
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:health-outline" class="menu-icon"></iconify-icon>
+                    <span>Diet Chart</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="{{ route('admin.ecommerce.diet-plans.index') }}"><i
+                                class="ri-circle-fill circle-icon text-pink w-auto"></i> Diet Plans</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.nutrition.questions.index') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Questions</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.nutrition.diet-subscriptions.index') }}"><i
+                                class="ri-circle-fill circle-icon text-success-main w-auto"></i> Diet Subscriptions</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
                     <iconify-icon icon="solar:box-outline" class="menu-icon"></iconify-icon>
                     <span>Products Management</span>
                 </a>
@@ -236,6 +257,10 @@
                     <li>
                         <a href="{{ route('admin.ecommerce.settings.payment-gateways') }}"><i
                                 class="ri-circle-fill circle-icon text-warning w-auto"></i> Payment Gateways</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.ecommerce.settings.auth') }}"><i
+                                class="ri-circle-fill circle-icon text-purple w-auto"></i> Auth Settings</a>
                     </li>
                 </ul>
             </li>

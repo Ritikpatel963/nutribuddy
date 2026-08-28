@@ -134,7 +134,7 @@
 
 @media (max-width: 640px) {
     .pdp-gallery .main-img-wrap {
-        height: 348px;
+        height: auto;
         border-radius: 10px;
         min-height: 0 !important;
         overflow: hidden;
@@ -220,8 +220,9 @@
 }
 
 .pdp-variant-groups {
-    display: grid;
-    gap: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 30px;
 }
 
 .pdp-option-row {
@@ -298,50 +299,64 @@
     cursor: not-allowed;
 }
 
+.pdp-action-row {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
 .pdp-qty-wrap {
-    margin-bottom: 16px !important;
+    margin: 0 !important;
+    flex-shrink: 0;
 }
 
 .pdp-qty-row {
-    width: auto !important;
-    min-width: 132px;
-    min-height: 38px;
-    display: inline-flex !important;
+    width: 110px !important;
+    min-width: unset !important;
+    height: 50px;
+    min-height: 50px !important;
+    display: flex !important;
     align-items: center !important;
-    justify-content: center;
-    gap: 8px !important;
-    padding: 4px 10px !important;
+    justify-content: space-between !important;
+    gap: 0 !important;
+    padding: 0 12px !important;
     border-radius: 12px !important;
     background: #fff !important;
-    border: 1.5px solid var(--pkl) !important;
+    border: 2px solid #fce7f3 !important;
 }
 
 .pdp-qty-row .qty-btn {
-    width: 28px;
-    height: 28px;
+    width: auto !important;
+    height: auto !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 0 !important;
     border: 0 !important;
     background: transparent !important;
-    color: var(--pk) !important;
+    color: #ff4d6d !important;
     cursor: pointer !important;
-    font-size: 1.1rem !important;
+    font-size: 1.5rem !important;
     font-weight: 900 !important;
     line-height: 1;
+    outline: none !important;
 }
 
 #pdpQtyVal {
-    width: 34px !important;
+    width: 40px !important;
     border: 0 !important;
     background: transparent !important;
-    color: var(--dk) !important;
+    color: #0f172a !important;
     font-family: 'Nunito', sans-serif !important;
-    font-size: 0.95rem !important;
+    font-size: 1.1rem !important;
     font-weight: 900 !important;
     text-align: center !important;
     -moz-appearance: textfield;
+    outline: none !important;
+    padding: 0 !important;
 }
 
 #pdpQtyVal::-webkit-inner-spin-button,
@@ -350,10 +365,11 @@
     -webkit-appearance: none;
 }
 
-.cta-row {
+.pdp-cta-row {
     align-items: stretch;
     gap: 10px;
     margin-bottom: 18px;
+    display: flex;
 }
 
 .btn-cart,
@@ -363,6 +379,15 @@
     border-radius: 13px;
     font-size: 0.9rem;
     line-height: 1.15;
+}
+
+.pdp-action-row .btn-cart,
+.pdp-action-row .btn-buy {
+    flex: 1;
+    margin: 0;
+    min-height: 50px;
+    font-size: 1rem;
+    border-radius: 12px;
 }
 
 .feature-slider-shell {
@@ -561,7 +586,7 @@
 }
 
 .ps-problems-section {
-    padding: 88px 5% 76px;
+    padding: 88px 5% 5px;
     background:
         radial-gradient(circle at 8% 14%, rgba(255, 77, 143, 0.12), transparent 28%),
         radial-gradient(circle at 92% 8%, rgba(124, 58, 237, 0.1), transparent 30%),
@@ -750,7 +775,7 @@
 
 @media (max-width: 640px) {
     .ps-problems-section {
-        padding: 62px 4% 56px;
+        padding: 62px 4% 0px;
     }
 
     .ps-problems-section .ps-header {
@@ -998,7 +1023,7 @@
         width: 100%;
     }
 
-    .cta-row {
+    .pdp-cta-row {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
@@ -1015,23 +1040,19 @@
     }
 
     .guarantees {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 10px;
         padding: 10px;
     }
 
     .guarantee {
         align-items: center;
         display: grid;
-        gap: 1px 8px;
-        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 2px 12px;
+        grid-template-columns: 35px minmax(0, 1fr);
         min-height: 58px;
-        padding: 8px;
+        padding: 12px 16px;
         text-align: left;
-    }
-
-    .guarantee:nth-child(3) {
-        grid-column: 1 / -1;
     }
 
     .g-icon {
@@ -1394,7 +1415,7 @@
 
 @media (max-width: 1120px) {
     .nb__section {
-        padding: 36px 24px 34px;
+        padding: 36px 24px 0px;
     }
 
     .nb__main-grid {
@@ -1454,8 +1475,8 @@
     .nb__main-grid {
         grid-template-columns: 1fr;
         grid-template-areas:
-            "product"
             "ingredients"
+            "product"
             "features";
     }
 
@@ -1464,10 +1485,14 @@
         width: min(100%, 640px);
     }
 
+    .nb__feature-panel {
+        height: fit-content;
+    }
+
     .nb__product-image {
         width: min(100%, 360px);
         height: auto;
-        max-height: 120px;
+        max-height: 240px;
     }
 
     .nb__ingredient-shelf {
@@ -1477,8 +1502,8 @@
 
 @media (max-width: 640px) {
     .nb__section {
-        margin: 18px 0 28px;
-        padding: 28px 14px 26px;
+        margin: 18px 0 2px;
+        padding: 28px 14px px;
     }
 
     .nb__brand-title {
@@ -1510,6 +1535,7 @@
     }
 
     .nb__trust-strip {
+        display: none;
         grid-template-columns: 1fr 1fr;
     }
 
@@ -1606,7 +1632,7 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        margin: 4px 0 38px;
+        margin: 4px 0 15px;
     }
 
     .transform-slider-controls {
@@ -1734,5 +1760,24 @@
 
     body {
         padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Hide the inline action buttons on mobile, because the sticky bottom bar is used instead */
+    .pdp-action-row .btn-cart,
+    .pdp-action-row .btn-buy {
+        display: none !important;
+    }
+
+    /* Make the quantity selector take full width on mobile to fill the empty space */
+    .pdp-qty-wrap {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .pdp-qty-row {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 30px !important;
     }
 }

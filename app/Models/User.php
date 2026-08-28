@@ -30,6 +30,8 @@ class User extends Authenticatable
         'gender',
         'bio',
         'avatar',
+        'google_id',
+        'google_avatar',
     ];
 
     /**
@@ -94,5 +96,10 @@ class User extends Authenticatable
     public function assessmentAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(AssessmentAttempt::class);
+    }
+
+    public function dietSubscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DietSubscription::class);
     }
 }

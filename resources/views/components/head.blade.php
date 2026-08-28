@@ -39,10 +39,10 @@
 
     <link rel="stylesheet"  href="{{ asset('assets/css/lib/audioplayer.css') }}">
     <!-- main css -->
-    <link rel="stylesheet"  href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet"  href="{{ asset('assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
     <!-- Tom Select css -->
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <!-- admin custom style -->
-    <link rel="stylesheet"  href="{{ asset('assets/css/admin.css') }}">
-    <link rel="stylesheet"  href="{{ asset('assets/css/admin-nutribuddy.css') }}">
+    <link rel="stylesheet"  href="{{ asset('assets/css/admin.css') }}?v={{ filemtime(public_path('assets/css/admin.css')) }}">
+    <link rel="stylesheet"  href="{{ asset('assets/css/admin-nutribuddy.css') }}?v={{ filemtime(public_path('assets/css/admin-nutribuddy.css')) }}">
 </head>

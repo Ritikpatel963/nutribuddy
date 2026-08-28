@@ -61,6 +61,11 @@ class Product extends Model
         'transform_description',
         'transform_main_image',
         'transform_results',
+        'benefits_cards',
+        'problem_heading',
+        'problem_title',
+        'problem_subtitle',
+        'problem_cards',
     ];
 
     protected function casts(): array
@@ -80,6 +85,8 @@ class Product extends Model
             'ps_left_cards' => 'array',
             'ps_right_cards' => 'array',
             'transform_results' => 'array',
+            'benefits_cards' => 'array',
+            'problem_cards' => 'array',
         ];
     }
 

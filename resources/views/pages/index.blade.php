@@ -3,8 +3,8 @@
 
 @section('content')
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   HERO SLIDER
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       HERO SLIDER
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <!-- ── HERO ── -->
     <section class="hero">
         <!-- Slide 1 -->
@@ -98,7 +98,7 @@
                     </div>
 
                     <!-- <span class="fg fg1"></span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                                                                                                                                                                    class="fg fg4">🍊</span><span class="fg fg5">✨</span><span class="fg fg6">💊</span> -->
+                                                                                                                                                                        class="fg fg4">🍊</span><span class="fg fg5">✨</span><span class="fg fg6">💊</span> -->
                     <div class="jar-wrap">
 
                         <div class="jar-body1 for-sat">
@@ -200,12 +200,12 @@
 
                     </div>
                     <!-- <div class="bb bb1" style="border-color:var(--skl)">🎯 Laser Focus</div>
-                                                                                                                                                                <div class="bb bb2" style="border-color:var(--skl)">📚 Better Grades</div>
-                                                                                                                                                                <div class="bb bb3" style="border-color:var(--mnl)">💡 Creativity+</div>
-                                                                                                                                                                <div class="bb bb4" style="border-color:var(--skl)">🧠 Memory Up 38%</div>
-                                                                                                                                                                <div class="bb bb5" style="border-color:var(--pul)">😌 Calm Focus</div> -->
+                                                                                                                                                                    <div class="bb bb2" style="border-color:var(--skl)">📚 Better Grades</div>
+                                                                                                                                                                    <div class="bb bb3" style="border-color:var(--mnl)">💡 Creativity+</div>
+                                                                                                                                                                    <div class="bb bb4" style="border-color:var(--skl)">🧠 Memory Up 38%</div>
+                                                                                                                                                                    <div class="bb bb5" style="border-color:var(--pul)">😌 Calm Focus</div> -->
                     <!-- <span class="fg fg1">🐟</span><span class="fg fg2">🧠</span><span class="fg fg3">⭐</span><span
-                                                                                                                                                                    class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span> -->
+                                                                                                                                                                        class="fg fg4">💙</span><span class="fg fg5">✨</span><span class="fg fg6">🌊</span> -->
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
@@ -308,12 +308,12 @@
 
                     </div>
                     <!-- <div class="bb bb1" style="border-color:var(--yel)">😴 Deep Sleep</div>
-                                                                                                                                                                <div class="bb bb2" style="border-color:var(--orl)">😌 Calm Mood</div>
-                                                                                                                                                                <div class="bb bb3" style="border-color:var(--yel)">🌙 Better Nights</div>
-                                                                                                                                                                <div class="bb bb4" style="border-color:var(--mnl)">🌞 Wake Up Fresh</div>
-                                                                                                                                                                <div class="bb bb5" style="border-color:var(--orl)">🦋 Less Anxiety</div> -->
+                                                                                                                                                                    <div class="bb bb2" style="border-color:var(--orl)">😌 Calm Mood</div>
+                                                                                                                                                                    <div class="bb bb3" style="border-color:var(--yel)">🌙 Better Nights</div>
+                                                                                                                                                                    <div class="bb bb4" style="border-color:var(--mnl)">🌞 Wake Up Fresh</div>
+                                                                                                                                                                    <div class="bb bb5" style="border-color:var(--orl)">🦋 Less Anxiety</div> -->
                     <!-- <span class="fg fg1">🌙</span><span class="fg fg2">🌸</span><span class="fg fg3">⭐</span><span
-                                                                                                                                                                    class="fg fg4">🍯</span><span class="fg fg5">✨</span><span class="fg fg6">💫</span> -->
+                                                                                                                                                                        class="fg fg4">🍯</span><span class="fg fg5">✨</span><span class="fg fg6">💫</span> -->
                     <div class="jar-wrap">
 
                         <div class="jar-body1">
@@ -444,8 +444,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   TRUST BAR (Scrolling Ticker)
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       TRUST BAR (Scrolling Ticker)
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <!-- ── TRUST BAR ── -->
     <div class="tbar">
         <div class="tscroll">
@@ -469,8 +469,8 @@
     </div>
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   TRUST INDICATORS
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       TRUST INDICATORS
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <!-- ── TRUST INDICATORS ── -->
     <section class="trust-section reveal" id="trust">
         <span class="sec-eye">Why Parents Trust Us</span>
@@ -587,8 +587,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   PRODUCTS
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       PRODUCTS
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <section class="products-section reveal" id="products">
         <span class="sec-eye">Our Products</span>
         <h2 class="sec-title">Nutrition Kids <span class="acc">Actually Love</span></h2>
@@ -783,8 +783,8 @@
     </section>
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                               INGREDIENTS HIGHLIGHT
-                                                                                                                                                          ══════════════════════════════════════════ -->
+                                                                                                                                                                   INGREDIENTS HIGHLIGHT
+                                                                                                                                                              ══════════════════════════════════════════ -->
     <section class="ing-section" id="ingredients">
         <div class="stars-bg" id="starsBg"></div>
 
@@ -1049,8 +1049,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   QUIZ CTA
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       QUIZ CTA
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <div class="quiz-cta reveal" id="quiz">
         <div>
             <span class="quiz-label"> Personalized Nutrition</span>
@@ -1067,8 +1067,8 @@
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                 DIET CHART SECTION
-                                                                                                                                                            ══════════════════════════════════════════ -->
+                                                                                                                                                                     DIET CHART SECTION
+                                                                                                                                                                ══════════════════════════════════════════ -->
     <section class="diet-section" id="diet-chart">
 
         <div class="diet-header">
@@ -1168,9 +1168,9 @@
                                 <div class="gender-name">Girl</div>
                             </div>
                             <!-- <div class="gender-card" data-gender="other" onclick="dcSelectGender(this)">
-                                                                                                                                                                                <span class="gender-emoji"><img src="{{ asset('img/boyn.png') }}" alt=""></span>
-                                                                                                                                                                                <div class="gender-name">Prefer not to say</div>
-                                                                                                                                                                            </div> -->
+                                                                                                                                                                                    <span class="gender-emoji"><img src="{{ asset('img/boyn.png') }}" alt=""></span>
+                                                                                                                                                                                    <div class="gender-name">Prefer not to say</div>
+                                                                                                                                                                                </div> -->
                         </div>
                         <div class="selection-error" id="genderError">⚠️ Please select a gender to continue.</div>
                     </div>
@@ -1405,8 +1405,8 @@
         </div><!-- /stepper-wrap -->
     </section>
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                 SUBSCRIPTION MODAL
-                                                                                                                                                            ══════════════════════════════════════════ -->
+                                                                                                                                                                     SUBSCRIPTION MODAL
+                                                                                                                                                                ══════════════════════════════════════════ -->
     <div class="modal-overlay" id="dcModalOverlay" onclick="dcCloseModalOutside(event)">
         <div class="modal-box">
             <button class="modal-close-btn" onclick="dcCloseModal()">✕</button>
@@ -1451,111 +1451,111 @@
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   HOW IT WORKS
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       HOW IT WORKS
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <!-- <section class="how-section reveal">
-                                                                                                                                                    <div class="how-layout">
-                                                                                                                                                    <div class="how-head">
-                                                                                                                                                        <span class="sec-eye">Simple Process</span>
-                                                                                                                                                        <h2 class="sec-title">How It <span class="acc">Works</span></h2>
-                                                                                                                                                        <p>From a quick parent quiz to a plan you can actually follow, NutriBuddy keeps each step simple.</p>
-                                                                                                                                                        <div class="how-stats">
-                                                                                                                                                            <div><strong>2 min</strong><span>quick quiz</span></div>
-                                                                                                                                                            <div><strong>Free</strong><span>diet plan</span></div>
-                                                                                                                                                        </div>
-                                                                                                                                                    </div>
-                                                                                                                                                    <div class="steps">
-                                                                                                                                                        <div class="step-new">
-                                                                                                                                                            <div class="step-top">
-                                                                                                                                                                <div class="sball s1"><img src="{{ asset('img/quiz.png') }}" alt=""></div>
-                                                                                                                                                                <div class="snum">Step 01</div>
+                                                                                                                                                        <div class="how-layout">
+                                                                                                                                                        <div class="how-head">
+                                                                                                                                                            <span class="sec-eye">Simple Process</span>
+                                                                                                                                                            <h2 class="sec-title">How It <span class="acc">Works</span></h2>
+                                                                                                                                                            <p>From a quick parent quiz to a plan you can actually follow, NutriBuddy keeps each step simple.</p>
+                                                                                                                                                            <div class="how-stats">
+                                                                                                                                                                <div><strong>2 min</strong><span>quick quiz</span></div>
+                                                                                                                                                                <div><strong>Free</strong><span>diet plan</span></div>
                                                                                                                                                             </div>
-                                                                                                                                                            <div class="stitle">Take the Quiz</div>
-                                                                                                                                                            <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
                                                                                                                                                         </div>
-                                                                                                                                                        <div class="step-new">
-                                                                                                                                                            <div class="step-top">
-                                                                                                                                                                <div class="sball s2"><img src="{{ asset('img/plan.png') }}" alt=""></div>
-                                                                                                                                                                <div class="snum">Step 02</div>
+                                                                                                                                                        <div class="steps">
+                                                                                                                                                            <div class="step-new">
+                                                                                                                                                                <div class="step-top">
+                                                                                                                                                                    <div class="sball s1"><img src="{{ asset('img/quiz.png') }}" alt=""></div>
+                                                                                                                                                                    <div class="snum">Step 01</div>
+                                                                                                                                                                </div>
+                                                                                                                                                                <div class="stitle">Take the Quiz</div>
+                                                                                                                                                                <div class="sdesc">5 quick questions about your child's age, health goals, and diet preferences.</div>
                                                                                                                                                             </div>
-                                                                                                                                                            <div class="stitle">Get Your Plan</div>
-                                                                                                                                                            <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
-                                                                                                                                                        </div>
-                                                                                                                                                        <div class="step-new">
-                                                                                                                                                            <div class="step-top">
-                                                                                                                                                                <div class="sball s3"><img src="{{ asset('img/order.png') }}" alt=""></div>
-                                                                                                                                                                <div class="snum">Step 03</div>
+                                                                                                                                                            <div class="step-new">
+                                                                                                                                                                <div class="step-top">
+                                                                                                                                                                    <div class="sball s2"><img src="{{ asset('img/plan.png') }}" alt=""></div>
+                                                                                                                                                                    <div class="snum">Step 02</div>
+                                                                                                                                                                </div>
+                                                                                                                                                                <div class="stitle">Get Your Plan</div>
+                                                                                                                                                                <div class="sdesc">Personalized supplement plan by Ayurvedic nutritionists — completely free!</div>
                                                                                                                                                             </div>
-                                                                                                                                                            <div class="stitle">Order & Save</div>
-                                                                                                                                                            <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
-                                                                                                                                                        </div>
-                                                                                                                                                        <div class="step-new">
-                                                                                                                                                            <div class="step-top">
-                                                                                                                                                                <div class="sball s4"><img src="{{ asset('img/rising.png') }}" alt=""></div>
-                                                                                                                                                                <div class="snum">Step 04</div>
+                                                                                                                                                            <div class="step-new">
+                                                                                                                                                                <div class="step-top">
+                                                                                                                                                                    <div class="sball s3"><img src="{{ asset('img/order.png') }}" alt=""></div>
+                                                                                                                                                                    <div class="snum">Step 03</div>
+                                                                                                                                                                </div>
+                                                                                                                                                                <div class="stitle">Order & Save</div>
+                                                                                                                                                                <div class="sdesc">Subscribe & Save for up to 20% off. Delivered fresh to your doorstep.</div>
                                                                                                                                                             </div>
-                                                                                                                                                            <div class="stitle">Track Progress</div>
-                                                                                                                                                            <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                                                                                                                                                            <div class="step-new">
+                                                                                                                                                                <div class="step-top">
+                                                                                                                                                                    <div class="sball s4"><img src="{{ asset('img/rising.png') }}" alt=""></div>
+                                                                                                                                                                    <div class="snum">Step 04</div>
+                                                                                                                                                                </div>
+                                                                                                                                                                <div class="stitle">Track Progress</div>
+                                                                                                                                                                <div class="sdesc">Log milestones on your parent dashboard and chat directly with our team.</div>
+                                                                                                                                                            </div>
                                                                                                                                                         </div>
-                                                                                                                                                    </div>
-                                                                                                                                                    <div class="how-cta-row">
-                                                                                                                                                        <a href="#diet-chart" class="hbtn hbtn-main">Start Free Quiz</a>
-                                                                                                                                                        <span>No sign-up required to begin</span>
-                                                                                                                                                    </div>
-                                                                                                                                                    </div>
-                                                                                                                                                </section> -->
+                                                                                                                                                        <div class="how-cta-row">
+                                                                                                                                                            <a href="#diet-chart" class="hbtn hbtn-main">Start Free Quiz</a>
+                                                                                                                                                            <span>No sign-up required to begin</span>
+                                                                                                                                                        </div>
+                                                                                                                                                        </div>
+                                                                                                                                                    </section> -->
 
 
 
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   CERTIFICATIONS CAROUSEL
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       CERTIFICATIONS CAROUSEL
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <!-- <section class="imgcar-section reveal" id="certificates">
-                                                                                                                                                                <div class="imgcar-header">
-                                                                                                                                                                  <span class="sec-eye">Our Certifications</span>
-                                                                                                                                                                  <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
-                                                                                                                                                                  <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
-                                                                                                                                                                    recognised certifications.</p>
-                                                                                                                                                                </div>
-
-                                                                                                                                                                <div class="imgcar-wrapper">
-                                                                                                                                                                  <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
-                                                                                                                                                                  <div class="imgcar-viewport" id="imgcarViewport">
-                                                                                                                                                                    <div class="imgcar-pbar" id="imgcarPbar"></div>
-                                                                                                                                                                    <div class="imgcar-track" id="imgcarTrack">
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-fssai.png') }}" alt="FSSAI Certified"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-nabl.png') }}" alt="NABL Lab Tested"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-nongmo.png') }}" alt="Non-GMO Verified"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-iap.png') }}" alt="Pediatrician Approved"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-cruelty.png') }}" alt="Cruelty Free"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
-                                                                                                                                                                      <div class="imgcar-item"><img src="{{ asset('img/cert-iso.png') }}" alt="ISO 22000 GMP"
-                                                                                                                                                                          onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
+                                                                                                                                                                    <div class="imgcar-header">
+                                                                                                                                                                      <span class="sec-eye">Our Certifications</span>
+                                                                                                                                                                      <h2 class="sec-title">Certified, Tested &amp; <span class="acc">Trusted</span> 🔬</h2>
+                                                                                                                                                                      <p class="sec-sub" style="max-width:500px;margin:0 auto">Every product is backed by rigorous testing and globally
+                                                                                                                                                                        recognised certifications.</p>
                                                                                                                                                                     </div>
-                                                                                                                                                                  </div>
-                                                                                                                                                                  <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
-                                                                                                                                                                </div>
 
-                                                                                                                                                                <div class="imgcar-dots" id="imgcarDots"></div>
-                                                                                                                                                              </section> -->
+                                                                                                                                                                    <div class="imgcar-wrapper">
+                                                                                                                                                                      <button class="imgcar-arrow imgcar-arrow-prev" id="imgcarPrev" aria-label="Previous">‹</button>
+                                                                                                                                                                      <div class="imgcar-viewport" id="imgcarViewport">
+                                                                                                                                                                        <div class="imgcar-pbar" id="imgcarPbar"></div>
+                                                                                                                                                                        <div class="imgcar-track" id="imgcarTrack">
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-fssai.png') }}" alt="FSSAI Certified"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/FFD6E8/C0306F?text=FSSAI'"></div>
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-nabl.png') }}" alt="NABL Lab Tested"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/EDE9FE/5B21B6?text=NABL+Lab'"></div>
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-nongmo.png') }}" alt="Non-GMO Verified"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/D0FFF2/007755?text=Non-GMO'"></div>
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-iap.png') }}" alt="Pediatrician Approved"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/DCFBFF/0077AA?text=Pediatrician'"></div>
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-cruelty.png') }}" alt="Cruelty Free"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/FFFBE0/907000?text=Cruelty+Free'"></div>
+                                                                                                                                                                          <div class="imgcar-item"><img src="{{ asset('img/cert-iso.png') }}" alt="ISO 22000 GMP"
+                                                                                                                                                                              onerror="this.src='https://placehold.co/300x180/FFE8DF/A03010?text=ISO+22000'"></div>
+                                                                                                                                                                        </div>
+                                                                                                                                                                      </div>
+                                                                                                                                                                      <button class="imgcar-arrow imgcar-arrow-next" id="imgcarNext" aria-label="Next">›</button>
+                                                                                                                                                                    </div>
+
+                                                                                                                                                                    <div class="imgcar-dots" id="imgcarDots"></div>
+                                                                                                                                                                  </section> -->
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   TESTIMONIALS
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       TESTIMONIALS
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     @include('partials.parent-reviews', ['product' => null])
 
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   FAQ
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       FAQ
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     @include('partials.faq-section')
     <!-- ══════════════════════════════════════════
-                                                                                                                                                                   NEWSLETTER
-                                                                                                                                                              ══════════════════════════════════════════ -->
+                                                                                                                                                                       NEWSLETTER
+                                                                                                                                                                  ══════════════════════════════════════════ -->
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
         <h2 class="sec-title">Wellness Tips for Your Little Ones</h2>

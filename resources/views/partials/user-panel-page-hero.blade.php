@@ -250,7 +250,7 @@
     }
 @endphp
 
-@unless(request()->routeIs('userdashboard') || request()->routeIs('subscription') || request()->routeIs('personal-info'))
+@unless(request()->routeIs('userdashboard') || request()->routeIs('subscription') || request()->routeIs('personal-info') || request()->routeIs('user.assessment.*'))
     <section class="user-panel-page-hero">
         <div class="user-panel-page-hero__text">
             <h1>{{ $hero['title'] }}</h1>

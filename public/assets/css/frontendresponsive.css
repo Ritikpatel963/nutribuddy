@@ -1090,7 +1090,7 @@
     }
 
     .features-section {
-        padding: 50px 4%;
+        padding: 14px 4%;
     }
 
     .feat-item {
@@ -1177,10 +1177,6 @@
 
     .nl-form {
         flex-direction: column;
-    }
-
-    .nl-input {
-        width: 100%;
     }
 
     .doc-section {
@@ -1450,7 +1446,7 @@
     }
 
     .stepper-progress {
-        overflow-x: auto;
+
         justify-content: flex-start;
         padding-bottom: 8px;
     }
@@ -3730,7 +3726,7 @@
     }
 
     .nb__ingredient-shelf {
-        height: 76px;
+        height: 0px;
         gap: 10px;
         padding: 0 8px;
         margin-top: 2px;

@@ -60,11 +60,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/personal-info', [UserProfileController::class, 'update'])->name('personal-info.update');
 
-    Route::view('/subscription', 'pages.user-panel.subscription')->name('subscription');
+    Route::get('/subscription', function () {
+        $subscriptions = auth()->user()->dietSubscriptions()->with('child', 'product')->latest()->get();
+        return view('pages.user-panel.subscription', compact('subscriptions'));
+    })->name('subscription');
     Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
     Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
     Route::view('/meal-plan', 'pages.user-panel.meal-plan')->name('meal-plan');
-    Route::view('/health-scores', 'pages.user-panel.health-scores')->name('health-scores');
     Route::view('/supplement', 'pages.user-panel.supplement')->name('supplement');
     Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-profile');
     Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');

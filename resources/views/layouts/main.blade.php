@@ -12,11 +12,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
         rel="stylesheet">
-    @php($frontendAssetVersion = '2026072101')
     <link rel="stylesheet"
-        href="{{ asset('assets/css/frontendstyle.css') }}?v={{ $frontendAssetVersion }}">
+        href="{{ asset('assets/css/frontendstyle.css') }}?v={{ filemtime(public_path('assets/css/frontendstyle.css')) }}">
     <link rel="stylesheet"
-        href="{{ asset('assets/css/frontendresponsive.css') }}?v={{ $frontendAssetVersion }}">
+        href="{{ asset('assets/css/frontendresponsive.css') }}?v={{ filemtime(public_path('assets/css/frontendresponsive.css')) }}">
     @stack('styles')
 </head>
 

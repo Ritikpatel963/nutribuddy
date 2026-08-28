@@ -9,6 +9,7 @@
         "backpack/basset": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^11.0",
+        "laravel/socialite": "^5.29",
         "laravel/tinker": "^2.9",
         "symfony/asset": "^7.1",
         "symfony/asset-mapper": "^7.1"

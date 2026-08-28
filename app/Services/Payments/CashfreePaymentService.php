@@ -53,7 +53,7 @@ class CashfreePaymentService
             ->withHeaders(['x-idempotency-key' => (string) Str::uuid()])
             ->post($this->baseUrl() . '/orders', $payload);
 
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             Log::error('Cashfree order creation failed.', [
                 'order_id' => $order->id,
                 'status' => $response->status(),
@@ -88,7 +88,7 @@ class CashfreePaymentService
     {
         $response = $this->client()->get($this->baseUrl() . '/orders/' . urlencode($cashfreeOrderId));
 
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             throw new RuntimeException('Unable to verify Cashfree order.');
         }
 
@@ -105,8 +105,9 @@ class CashfreePaymentService
         if ($status === 'PAID') {
             $previousStatus = $order->status;
             $previousFulfillmentStatus = $order->fulfillment_status;
+            $previousPaymentStatus = $order->payment_status;
             $paymentPayload = $payment?->gateway_payload ?? [];
-            $aiSensyAlreadySent = ! empty($paymentPayload['aisensy_order_paid_sent_at']);
+            $aiSensyAlreadySent = !empty($paymentPayload['aisensy_order_paid_sent_at']);
 
             $order->forceFill([
                 'status' => $order->status === 'pending' ? 'confirmed' : $order->status,
@@ -123,7 +124,7 @@ class CashfreePaymentService
                 ])->save();
             }
 
-            if ($payment && ! $aiSensyAlreadySent && $this->aiSensy->sendOrderPaid($order->refresh())) {
+            if ($payment && !$aiSensyAlreadySent && $this->aiSensy->sendOrderPaid($order->refresh())) {
                 $payment->forceFill([
                     'gateway_payload' => array_merge($payment->gateway_payload ?? [], [
                         'aisensy_order_paid_sent_at' => now()->toIso8601String(),
@@ -140,6 +141,10 @@ class CashfreePaymentService
                     'updated_by' => $order->user_id,
                     'note' => 'Cashfree payment confirmed.',
                 ]);
+            }
+
+            if ($previousPaymentStatus !== 'paid') {
+                event(new \App\Events\OrderPaid($order->refresh()));
             }
 
             return $order->refresh();
@@ -161,7 +166,7 @@ class CashfreePaymentService
 
     public function webhookSignatureIsValid(string $rawBody, ?string $signature, ?string $timestamp): bool
     {
-        if (! $signature || ! $timestamp) {
+        if (!$signature || !$timestamp) {
             return false;
         }
 

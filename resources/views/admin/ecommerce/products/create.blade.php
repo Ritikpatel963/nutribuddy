@@ -245,6 +245,104 @@
 
                 @include('admin.ecommerce.products.partials.transform-section-fields')
 
+                <!-- 6. KIDS FACE REAL PROBLEMS -->
+                <div class="card border-0 radius-12 mb-24 shadow-sm">
+                    <div class="card-header bg-base border-bottom d-flex justify-content-between align-items-center py-16 px-24">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning-100 text-warning-600 p-2 rounded-2">
+                                <iconify-icon icon="lucide:alert-circle" class="fs-5"></iconify-icon>
+                            </span>
+                            <div>
+                                <h5 class="card-title mb-0">Kids Face Real Problems</h5>
+                                <small class="text-secondary">Headers and 4 dynamic problem cards</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Section Heading</label>
+                                <input type="text" name="problem_heading" value="{{ old('problem_heading', 'The Real Picture') }}" class="form-control" placeholder="e.g. The Real Picture">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Section Subtitle</label>
+                                <textarea name="problem_subtitle" class="form-control" rows="1" placeholder="e.g. Today's kids miss out...">{{ old('problem_subtitle', "Today's kids miss out on essential nutrition every day. We see the gap — and we've closed it.") }}</textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Main Title (HTML allowed for styling)</label>
+                                <input type="text" name="problem_title" value="{{ old('problem_title', 'Kids Face <span class=&quot;acc&quot;>Real Problems</span> <br>We Built a <span class=&quot;acc2&quot;>Real Solution</span>') }}" class="form-control" placeholder="Main big title...">
+                                <small class="text-muted">Use &lt;span class="acc"&gt; and &lt;span class="acc2"&gt; for colored text.</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            @for($i = 0; $i < 4; $i++)
+                            <div class="col-md-6">
+                                <div class="p-16 border rounded bg-light-soft">
+                                    <h6 class="mb-3">Problem Card {{ $i + 1 }}</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Title</label>
+                                        <input type="text" name="problem_cards[{{ $i }}][title]" value="{{ old('problem_cards.'.$i.'.title') }}" class="form-control" placeholder="e.g. Vitamin & Mineral Deficiency">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Description</label>
+                                        <textarea name="problem_cards[{{ $i }}][description]" class="form-control" rows="2" placeholder="e.g. Processed food strips away nutrients...">{{ old('problem_cards.'.$i.'.description') }}</textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="form-label fw-bold">Image</label>
+                                        <input type="file" name="problem_card_images[{{ $i }}]" class="form-control" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6.5. NUTRIBUDDY BENEFITS -->
+                <div class="card border-0 radius-12 mb-24">
+                    <div class="card-header bg-base border-bottom d-flex justify-content-between align-items-center py-16 px-24">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-success-100 text-success-600 p-2 rounded-2">
+                                <iconify-icon icon="lucide:heart-pulse" class="fs-5"></iconify-icon>
+                            </span>
+                            <div>
+                                <h5 class="card-title mb-0">The Nutribuddy Benefits</h5>
+                                <small class="text-secondary">4 dynamic cards shown at the bottom of the product page</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-24">
+                        <div class="row g-4">
+                            @for($i = 0; $i < 4; $i++)
+                            <div class="col-md-6">
+                                <div class="p-16 border rounded bg-light-soft">
+                                    <h6 class="mb-3">Benefit Card {{ $i + 1 }}</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Title</label>
+                                        <input type="text" name="benefits_cards[{{ $i }}][title]" value="{{ old('benefits_cards.'.$i.'.title') }}" class="form-control" placeholder="e.g. Strong Body & Healthy Growth">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Description</label>
+                                        <textarea name="benefits_cards[{{ $i }}][description]" class="form-control" rows="2" placeholder="e.g. Essential vitamins and minerals...">{{ old('benefits_cards.'.$i.'.description') }}</textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="form-label fw-bold">Icon Image</label>
+                                        <input type="file" name="benefits_card_images[{{ $i }}]" class="form-control" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 7. SEO -->
                 <div class="card border-0 radius-12 mb-24">
                     <div class="card-header bg-base border-bottom py-16 px-24">
@@ -326,7 +424,7 @@
                         placeholder="e.g. No Added Sugar" required>
                 </div>
                 <button type="button" class="admin-feature-delete remove-tag-row" title="Delete feature" aria-label="Delete feature">
-                    <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                    <i class="fas fa-trash"></i>
                 </button>
             `;
             tagsWrapper.appendChild(row);
@@ -372,7 +470,7 @@
                             <img src="${e.target.result}" class="w-100 h-100 object-fit-cover" style="aspect-ratio:1/1;">
                             <button type="button" class="btn btn-danger btn-xs position-absolute top-0 end-0 m-2 p-0 radius-circle d-flex align-items-center justify-content-center shadow-sm remove-img" 
                                 style="width:24px;height:24px; z-index: 10;" data-index="${index}">
-                                <iconify-icon icon="lucide:x" class="text-xs"></iconify-icon>
+                                <i class="fas fa-times text-xs"></i>
                             </button>
                             <div class="position-absolute bottom-0 start-0 w-100 p-1 bg-dark bg-opacity-50 text-white text-xxs text-truncate">
                                 ${file.name}
@@ -486,24 +584,21 @@
         }
 
         .admin-feature-delete {
-            width: 40px;
-            height: 40px;
-            border: 0;
-            border-radius: 12px;
-            background: #fee2e2;
-            color: #dc2626;
-            display: inline-flex;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: none;
+            background: #ffe5e5;
+            color: #dc3545;
+            border-radius: 6px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background .18s ease, color .18s ease, transform .18s ease;
+            transition: all 0.2s;
         }
-
         .admin-feature-delete:hover {
-            background: #dc2626;
-            color: #fff;
-            transform: translateY(-1px);
+            background: #dc3545;
+            color: white;
         }
 
         .min-w-0 {

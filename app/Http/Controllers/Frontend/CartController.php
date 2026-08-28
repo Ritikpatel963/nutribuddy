@@ -31,29 +31,23 @@ class CartController extends Controller
         ]);
         $pricing = $pricingService->calculate($cart->items);
 
-        // Append available_stock to each cart item
+        // Append available_stock to each cart item using null-safe logic
         $cart->items->each(function ($item) {
             $inventory = $item->product_variant_id
                 ? ($item->productVariant?->inventory ?? $item->product?->inventory)
                 : $item->product?->inventory;
 
-            if ($inventory && $inventory->track_stock) {
-                $item->available_stock = max(0, (int) $inventory->stock_qty - (int) $inventory->reserved_qty);
-            } else {
-                $item->available_stock = null; // null = unlimited
-            }
+            $item->available_stock = $inventory?->track_stock
+                ? max(0, (int) $inventory->stock_qty - (int) $inventory->reserved_qty)
+                : null; // null = unlimited
         });
 
-        return response()->json([
-            'cart' => $cart,
-            'pricing' => $pricing,
-        ]);
+        return response()->json(compact('cart', 'pricing'));
     }
 
     public function store(CartStoreRequest $request, PricingService $pricingService): JsonResponse
     {
         $validated = $request->validated();
-
         $product = Product::where('is_active', true)->findOrFail($validated['product_id']);
         $variantId = $validated['product_variant_id'] ?? null;
 
@@ -69,16 +63,18 @@ class CartController extends Controller
 
             $matchingItems = $cart->items()
                 ->where('product_id', $product->id)
-                ->when($variantId, fn ($query) => $query->where('product_variant_id', $variantId), fn ($query) => $query->whereNull('product_variant_id'))
+                ->when($variantId, fn ($q) => $q->where('product_variant_id', $variantId), fn ($q) => $q->whereNull('product_variant_id'))
                 ->lockForUpdate()
                 ->orderBy('id')
                 ->get();
             $item = $matchingItems->first();
 
-            if ($item) {
-                $newQuantity = (int) $matchingItems->sum('quantity') + (int) $validated['quantity'];
+            $qty = (int) $validated['quantity'];
 
+            if ($item) {
+                $newQuantity = (int) $matchingItems->sum('quantity') + $qty;
                 $this->assertInventoryForQuantity($product->id, $variantId, $newQuantity);
+                
                 $item->update([
                     'product_variant_id' => $variantId,
                     'quantity' => $newQuantity,
@@ -89,27 +85,18 @@ class CartController extends Controller
                     $cart->items()->whereIn('id', $duplicateIds)->delete();
                 }
             } else {
-                $this->assertInventoryForQuantity($product->id, $variantId, (int) $validated['quantity']);
+                $this->assertInventoryForQuantity($product->id, $variantId, $qty);
                 $cart->items()->create([
                     'product_id' => $product->id,
                     'product_variant_id' => $variantId,
-                    'quantity' => (int) $validated['quantity'],
+                    'quantity' => $qty,
                 ]);
             }
 
             return $cart;
         }, 3);
 
-        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
-        $pricing = $pricingService->calculate($cart->items);
-        $cartCount = (int) $cart->items->sum('quantity');
-
-        return response()->json([
-            'message' => 'Item added to cart successfully.',
-            'cart' => $cart,
-            'pricing' => $pricing,
-            'cart_count' => $cartCount,
-        ]);
+        return $this->cartResponse($cart, $pricingService, 'Item added to cart successfully.');
     }
 
     public function update(CartUpdateRequest $request, int $itemId, PricingService $pricingService): JsonResponse
@@ -120,22 +107,14 @@ class CartController extends Controller
             $cart = $this->resolveUserCart($request);
             Cart::whereKey($cart->id)->lockForUpdate()->first();
             $item = $cart->items()->lockForUpdate()->findOrFail($itemId);
+            
             $this->assertInventoryForQuantity($item->product_id, $item->product_variant_id, (int) $validated['quantity']);
             $item->update(['quantity' => (int) $validated['quantity']]);
 
             return $cart;
         }, 3);
 
-        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
-        $pricing = $pricingService->calculate($cart->items);
-        $cartCount = (int) $cart->items->sum('quantity');
-
-        return response()->json([
-            'message' => 'Cart item updated successfully.',
-            'cart' => $cart,
-            'pricing' => $pricing,
-            'cart_count' => $cartCount,
-        ]);
+        return $this->cartResponse($cart, $pricingService, 'Cart item updated successfully.');
     }
 
     public function destroy(Request $request, int $itemId, PricingService $pricingService): JsonResponse
@@ -149,24 +128,28 @@ class CartController extends Controller
             return $cart;
         }, 3);
 
-        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
-        $pricing = $pricingService->calculate($cart->items);
-        $cartCount = (int) $cart->items->sum('quantity');
+        return $this->cartResponse($cart, $pricingService, 'Cart item removed successfully.');
+    }
 
+    /**
+     * Centralized response structure for Cart modifications.
+     */
+    private function cartResponse(Cart $cart, PricingService $pricingService, string $message): JsonResponse
+    {
+        $cart->load(['items.product.taxRate', 'items.product.primaryImage', 'items.product.images', 'items.productVariant']);
+        
         return response()->json([
-            'message' => 'Cart item removed successfully.',
+            'message' => $message,
             'cart' => $cart,
-            'pricing' => $pricing,
-            'cart_count' => $cartCount,
+            'pricing' => $pricingService->calculate($cart->items),
+            'cart_count' => (int) $cart->items->sum('quantity'),
         ]);
     }
 
     private function resolveUserCart(Request $request): Cart
     {
-        $user = $request->user();
-
         return Cart::firstOrCreate(
-            ['user_id' => $user->id],
+            ['user_id' => $request->user()->id],
             ['currency' => 'INR']
         );
     }
@@ -239,14 +222,10 @@ class CartController extends Controller
 
     private function assertInventoryForQuantity(int $productId, ?int $variantId, int $requestedQuantity): void
     {
-        $inventoryQuery = Inventory::query()->where('product_id', $productId);
-        if ($variantId) {
-            $inventoryQuery->where('product_variant_id', $variantId);
-        } else {
-            $inventoryQuery->whereNull('product_variant_id');
-        }
+        $inventory = Inventory::where('product_id', $productId)
+            ->when($variantId, fn ($q) => $q->where('product_variant_id', $variantId), fn ($q) => $q->whereNull('product_variant_id'))
+            ->first();
 
-        $inventory = $inventoryQuery->first();
         if (! $inventory || ! $inventory->track_stock) {
             return;
         }
@@ -255,3 +234,4 @@ class CartController extends Controller
         abort_if($available < $requestedQuantity, 422, 'Requested quantity is not available in stock.');
     }
 }
+

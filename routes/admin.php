@@ -40,6 +40,8 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     Route::patch('products/{product}/inventory', [AdminProductController::class, 'updateInventory'])->name('products.inventory.update');
     Route::delete('products/images/{image}', [AdminProductController::class, 'deleteImage'])->name('products.images.destroy');
 
+    Route::resource('diet-plans', \App\Http\Controllers\Admin\DietPlanController::class)->only(['index', 'edit', 'update']);
+
     Route::resource('ingredients', AdminIngredientController::class);
     Route::resource('variants', AdminProductVariantController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::patch('variants/{variant}/inventory', [AdminProductVariantController::class, 'updateInventory'])->name('variants.inventory.update');
@@ -78,6 +80,8 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
         Route::post('/general', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'update'])->name('general.update');
         Route::get('/payment-gateways', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'paymentGateways'])->name('payment-gateways');
         Route::post('/payment-gateways', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'updatePaymentGateways'])->name('payment-gateways.update');
+        Route::get('/auth', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'authSettings'])->name('auth');
+        Route::post('/auth', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'updateAuthSettings'])->name('auth.update');
     });
 
     Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
@@ -107,3 +111,8 @@ Route::prefix('admin/assessment')->name('admin.assessment.')->middleware('auth:a
         ->name('sections.rename');
 });
 
+// ── Pediatric Nutrition Management ─────────────────────────────────────────────
+Route::prefix('admin/nutrition')->name('admin.nutrition.')->middleware('auth:admin')->group(function () {
+    Route::resource('questions', \App\Http\Controllers\Admin\Nutrition\QuestionnaireAdminController::class);
+    Route::resource('diet-subscriptions', \App\Http\Controllers\Admin\DietSubscriptionController::class)->only(['index', 'show', 'update']);
+});

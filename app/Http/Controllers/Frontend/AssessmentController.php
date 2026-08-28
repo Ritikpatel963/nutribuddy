@@ -20,10 +20,29 @@ class AssessmentController extends Controller
     /**
      * Show the quiz.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $questionsGrouped = $this->service->getActiveQuestionsGrouped();
-        $questions        = $this->service->getActiveQuestions();
+        $childId = $request->route('child') ?? $request->query('child_id');
+        $limit = null;
+
+        if ($childId) {
+            $child = $request->user()->children()->find($childId);
+            if ($child) {
+                $activeSub = $child->dietSubscriptions()->where('status', 'active')->first();
+                if ($activeSub) {
+                    $limit = match ($activeSub->model) {
+                        'Basic' => 12,
+                        'Plus' => 21,
+                        'Pro' => 29,
+                        'Premium' => 37,
+                        default => 12,
+                    };
+                }
+            }
+        }
+
+        $questionsGrouped = $this->service->getActiveQuestionsGrouped($limit);
+        $questions        = $this->service->getActiveQuestions($limit);
         $totalQuestions   = $questions->count();
 
         // We will no longer abort, so the view can display a friendly empty state message.

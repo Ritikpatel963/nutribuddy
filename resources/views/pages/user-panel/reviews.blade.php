@@ -110,6 +110,11 @@
             background: #fff;
             box-shadow: 0 0 0 4px #fce7f3;
         }
+        /* Lightbox mobile responsive */
+        @media (max-width: 600px) {
+            #rlbPrev { left: 4px !important; }
+            #rlbNext { right: 4px !important; }
+        }
     </style>
 
     <div class="row">
@@ -241,17 +246,16 @@
 
                             @if(!empty($review->images) || $review->image_path || $review->video_path)
                                 <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                                    
-                                    @if(!empty($review->images))
-                                        @foreach($review->images as $img)
-                                            <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;" onclick="window.open('{{ asset('storage/' . $img) }}')">
-                                                <img src="{{ asset('storage/' . $img) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @php
+                                        $histImages = !empty($review->images) ? $review->images : ($review->image_path ? [$review->image_path] : []);
+                                    @endphp
+                                    @if(count($histImages) > 0)
+                                        @foreach($histImages as $hIdx => $img)
+                                            <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;"
+                                                onclick="openReviewLightbox({{ json_encode($histImages) }}, {{ $hIdx }})">
+                                                <img src="{{ asset('storage/' . $img) }}" style="width: 100%; height: 100%; object-fit: cover;" alt="Review photo">
                                             </div>
                                         @endforeach
-                                    @elseif($review->image_path)
-                                        <div style="width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer;" onclick="window.open('{{ asset('storage/' . $review->image_path) }}')">
-                                            <img src="{{ asset('storage/' . $review->image_path) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                        </div>
                                     @endif
 
                                     @if($review->video_path)
@@ -275,7 +279,107 @@
         </div>
     </div>
 
+    {{-- ─── REVIEW PHOTO LIGHTBOX ─── --}}
+    <div id="reviewLightboxOverlay"
+        style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.92); align-items:center; justify-content:center; flex-direction:column;"
+        onclick="if(event.target===this) closeReviewLightbox()">
+
+        {{-- Close Button --}}
+        <button onclick="closeReviewLightbox()"
+            style="position:absolute; top:18px; right:24px; background:rgba(255,255,255,0.12); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:.2s;"
+            onmouseenter="this.style.background='rgba(255,255,255,0.25)'" onmouseleave="this.style.background='rgba(255,255,255,0.12)'">✕</button>
+
+        {{-- Main image area --}}
+        <div style="position:relative; max-width:92vw; max-height:75vh; display:flex; align-items:center; justify-content:center;">
+            <button id="rlbPrev"
+                style="position:absolute; left:-52px; background:rgba(255,255,255,0.12); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:.2s; z-index:2;"
+                onmouseenter="this.style.background='rgba(255,255,255,0.28)'" onmouseleave="this.style.background='rgba(255,255,255,0.12)'">‹</button>
+
+            <img id="rlbMainImg" src="" alt="Review photo"
+                style="max-width:92vw; max-height:75vh; object-fit:contain; border-radius:10px; box-shadow:0 8px 40px rgba(0,0,0,0.6); user-select:none;">
+
+            <button id="rlbNext"
+                style="position:absolute; right:-52px; background:rgba(255,255,255,0.12); border:none; color:#fff; width:44px; height:44px; border-radius:50%; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:.2s; z-index:2;"
+                onmouseenter="this.style.background='rgba(255,255,255,0.28)'" onmouseleave="this.style.background='rgba(255,255,255,0.12)'">›</button>
+        </div>
+
+        {{-- Counter --}}
+        <div id="rlbCounter" style="color:rgba(255,255,255,0.6); font-size:0.85rem; margin-top:12px; letter-spacing:0.5px;"></div>
+
+        {{-- Thumbnails --}}
+        <div id="rlbThumbs"
+            style="display:flex; gap:8px; margin-top:14px; max-width:90vw; overflow-x:auto; padding:4px 0 8px; scrollbar-width:thin;"></div>
+    </div>
+
     <script>
+        // ─── Review Lightbox Logic ───
+        let rlbImages = [];
+        let rlbIndex = 0;
+        let rlbTouchStartX = 0;
+
+        function openReviewLightbox(imagesArray, startIndex = 0) {
+            rlbImages = Array.isArray(imagesArray) ? imagesArray : JSON.parse(imagesArray);
+            if (!rlbImages.length) return;
+            rlbIndex = startIndex;
+            document.getElementById('reviewLightboxOverlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            rlbRender();
+        }
+
+        function closeReviewLightbox() {
+            document.getElementById('reviewLightboxOverlay').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function rlbRender() {
+            const mainImg = document.getElementById('rlbMainImg');
+            const thumbs = document.getElementById('rlbThumbs');
+            const counter = document.getElementById('rlbCounter');
+            const prevBtn = document.getElementById('rlbPrev');
+            const nextBtn = document.getElementById('rlbNext');
+
+            mainImg.src = '/storage/' + rlbImages[rlbIndex];
+            counter.textContent = `${rlbIndex + 1} / ${rlbImages.length}`;
+            prevBtn.style.display = rlbImages.length > 1 ? 'flex' : 'none';
+            nextBtn.style.display = rlbImages.length > 1 ? 'flex' : 'none';
+
+            thumbs.innerHTML = '';
+            rlbImages.forEach((img, idx) => {
+                const t = document.createElement('img');
+                t.src = '/storage/' + img;
+                t.alt = 'thumbnail';
+                t.style.cssText = `width:56px; height:56px; object-fit:cover; border-radius:7px; cursor:pointer; flex-shrink:0; transition:.2s; border:2px solid ${idx === rlbIndex ? '#fff' : 'transparent'}; opacity:${idx === rlbIndex ? '1' : '0.55'};`;
+                t.onclick = (e) => { e.stopPropagation(); rlbIndex = idx; rlbRender(); };
+                thumbs.appendChild(t);
+            });
+
+            // scroll active thumb into view
+            const activeThumb = thumbs.children[rlbIndex];
+            if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        document.getElementById('rlbPrev').onclick = (e) => { e.stopPropagation(); rlbIndex = (rlbIndex - 1 + rlbImages.length) % rlbImages.length; rlbRender(); };
+        document.getElementById('rlbNext').onclick = (e) => { e.stopPropagation(); rlbIndex = (rlbIndex + 1) % rlbImages.length; rlbRender(); };
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('reviewLightboxOverlay').style.display !== 'flex') return;
+            if (e.key === 'ArrowLeft') { rlbIndex = (rlbIndex - 1 + rlbImages.length) % rlbImages.length; rlbRender(); }
+            if (e.key === 'ArrowRight') { rlbIndex = (rlbIndex + 1) % rlbImages.length; rlbRender(); }
+            if (e.key === 'Escape') { document.getElementById('reviewLightboxOverlay').style.display = 'none'; document.body.style.overflow = ''; }
+        });
+
+        // Touch swipe
+        document.getElementById('reviewLightboxOverlay').addEventListener('touchstart', (e) => { rlbTouchStartX = e.touches[0].clientX; }, { passive: true });
+        document.getElementById('reviewLightboxOverlay').addEventListener('touchend', (e) => {
+            const diff = rlbTouchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) { rlbIndex = (rlbIndex + 1) % rlbImages.length; }
+                else { rlbIndex = (rlbIndex - 1 + rlbImages.length) % rlbImages.length; }
+                rlbRender();
+            }
+        }, { passive: true });
+
         // Track uploaded files per product and type (image/video)
         const fileStore = {};
 

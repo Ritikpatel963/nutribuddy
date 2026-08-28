@@ -21,8 +21,8 @@
             <textarea name="ps_{{ $side }}_cards[{{ $index }}][text]" data-name="text" rows="2" class="form-control mb-2" placeholder="Description">{{ $card['text'] ?? '' }}</textarea>
             <input type="file" name="ps_{{ $side }}_card_images[{{ $index }}]" data-name="image" class="form-control" accept="image/*">
         </div>
-        <button type="button" class="btn btn-outline-danger-600 btn-sm radius-8" data-remove-ps-row>
-            <iconify-icon icon="lucide:trash-2"></iconify-icon>
+        <button type="button" class="btn btn-outline-danger-600 btn-sm radius-8" data-remove-ps-card>
+            <i class="fas fa-trash"></i>
         </button>
     </div>
 </div>

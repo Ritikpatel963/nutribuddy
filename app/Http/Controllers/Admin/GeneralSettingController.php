@@ -84,4 +84,32 @@ class GeneralSettingController extends Controller
 
         return back()->with('success', 'Payment gateway settings updated successfully.');
     }
+
+    public function authSettings(): View
+    {
+        $settings = [
+            'phone_login_enabled'  => Setting::get('phone_login_enabled', '1'),
+            'google_login_enabled' => Setting::get('google_login_enabled', '0'),
+            'google_client_id'     => Setting::get('google_client_id', ''),
+            'google_client_secret' => Setting::get('google_client_secret', ''),
+        ];
+
+        return view('admin.settings.auth', compact('settings'));
+    }
+
+    public function updateAuthSettings(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'google_client_id'     => ['nullable', 'string', 'max:255'],
+            'google_client_secret' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        Setting::set('phone_login_enabled', $request->has('phone_login_enabled') ? '1' : '0', 'auth');
+        Setting::set('google_login_enabled', $request->has('google_login_enabled') ? '1' : '0', 'auth');
+        Setting::set('google_client_id', $validated['google_client_id'] ?? '', 'auth');
+        Setting::set('google_client_secret', $validated['google_client_secret'] ?? '', 'auth');
+
+        return back()->with('success', 'Authentication settings updated successfully.');
+    }
 }
+

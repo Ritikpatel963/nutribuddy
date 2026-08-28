@@ -193,7 +193,7 @@
                     <input type="file" data-name="image" class="form-control" accept="image/*">
                 </div>
                 <button type="button" class="btn btn-outline-danger-600 btn-sm radius-8" data-remove-ps-row>
-                    <iconify-icon icon="lucide:trash-2"></iconify-icon>
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>

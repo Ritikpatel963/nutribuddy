@@ -149,6 +149,8 @@ class ProductController extends Controller
         $product = Product::create($validated);
         $this->storeProductCardImages($request, $product);
         $this->saveTransformSectionContent($request, $product);
+        $this->saveBenefitsCardsContent($request, $product);
+        $this->saveProblemSectionContent($request, $product);
 
         $product->update(['tags' => $this->prepareProductTags($request)]);
 
@@ -383,6 +385,8 @@ class ProductController extends Controller
         $product->update(['tags' => $this->prepareProductTags($request)]);
         $this->saveProblemSolutionContent($request, $product);
         $this->saveTransformSectionContent($request, $product);
+        $this->saveBenefitsCardsContent($request, $product);
+        $this->saveProblemSectionContent($request, $product);
 
         if ($hasVariations) {
             $this->syncProductVariations($product, $variations, true);
@@ -956,6 +960,19 @@ class ProductController extends Controller
             'transform_results.*.week' => ['nullable', 'string', 'max:80'],
             'transform_result_images' => ['nullable', 'array'],
             'transform_result_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'benefits_cards' => ['nullable', 'array'],
+            'benefits_cards.*.title' => ['nullable', 'string', 'max:150'],
+            'benefits_cards.*.description' => ['nullable', 'string', 'max:1000'],
+            'benefits_card_images' => ['nullable', 'array'],
+            'benefits_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'problem_heading' => ['nullable', 'string', 'max:255'],
+            'problem_title' => ['nullable', 'string', 'max:500'],
+            'problem_subtitle' => ['nullable', 'string', 'max:1000'],
+            'problem_cards' => ['nullable', 'array'],
+            'problem_cards.*.title' => ['nullable', 'string', 'max:150'],
+            'problem_cards.*.description' => ['nullable', 'string', 'max:1000'],
+            'problem_card_images' => ['nullable', 'array'],
+            'problem_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 
@@ -1018,6 +1035,111 @@ class ProductController extends Controller
             'transform_description' => trim((string) $request->input('transform_description', '')) ?: null,
             'transform_main_image' => $mainImage,
             'transform_results' => $results,
+        ])->save();
+    }
+
+    private function saveBenefitsCardsContent(Request $request, Product $product): void
+    {
+        $cards = $request->input('benefits_cards', []);
+        $cards = is_array($cards) ? $cards : [];
+        $deletions = $request->input('delete_benefits_card_icon', []);
+
+        foreach ($deletions as $index => $shouldDelete) {
+            if ($shouldDelete == '1' && isset($cards[$index])) {
+                $cards[$index]['icon'] = '';
+            }
+        }
+
+        if ($request->hasFile('benefits_card_images')) {
+            foreach ($request->file('benefits_card_images') as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($cards[$index]) || ! is_array($cards[$index])) {
+                    $cards[$index] = [];
+                }
+
+                $cards[$index]['icon'] = $file->store('product-benefits', 'public');
+            }
+        }
+
+        $cards = collect($cards)
+            ->filter(fn ($card) => is_array($card) && (
+                trim((string) ($card['icon'] ?? '')) !== '' ||
+                trim((string) ($card['title'] ?? '')) !== '' ||
+                trim((string) ($card['description'] ?? '')) !== ''
+            ))
+            ->map(fn ($card) => [
+                'icon' => trim((string) ($card['icon'] ?? '')),
+                'title' => trim((string) ($card['title'] ?? '')),
+                'description' => trim((string) ($card['description'] ?? '')),
+            ])
+            ->values()
+            ->all();
+
+        $keptImages = collect($cards)->pluck('icon')->filter()->all();
+        collect($product->benefits_cards ?? [])
+            ->pluck('icon')
+            ->filter(fn ($path) => $path && ! in_array($path, $keptImages, true))
+            ->each(fn ($path) => $this->deleteTransformImage($path));
+
+        $product->forceFill([
+            'benefits_cards' => $cards,
+        ])->save();
+    }
+
+    private function saveProblemSectionContent(Request $request, Product $product): void
+    {
+        $cards = $request->input('problem_cards', []);
+        $cards = is_array($cards) ? $cards : [];
+        $deletions = $request->input('delete_problem_card_icon', []);
+
+        foreach ($deletions as $index => $shouldDelete) {
+            if ($shouldDelete == '1' && isset($cards[$index])) {
+                $cards[$index]['icon'] = '';
+            }
+        }
+
+        if ($request->hasFile('problem_card_images')) {
+            foreach ($request->file('problem_card_images') as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($cards[$index]) || ! is_array($cards[$index])) {
+                    $cards[$index] = [];
+                }
+
+                $cards[$index]['icon'] = $file->store('product-problems', 'public');
+            }
+        }
+
+        $cards = collect($cards)
+            ->filter(fn ($card) => is_array($card) && (
+                trim((string) ($card['icon'] ?? '')) !== '' ||
+                trim((string) ($card['title'] ?? '')) !== '' ||
+                trim((string) ($card['description'] ?? '')) !== ''
+            ))
+            ->map(fn ($card) => [
+                'icon' => trim((string) ($card['icon'] ?? '')),
+                'title' => trim((string) ($card['title'] ?? '')),
+                'description' => trim((string) ($card['description'] ?? '')),
+            ])
+            ->values()
+            ->all();
+
+        $keptImages = collect($cards)->pluck('icon')->filter()->all();
+        collect($product->problem_cards ?? [])
+            ->pluck('icon')
+            ->filter(fn ($path) => $path && ! in_array($path, $keptImages, true))
+            ->each(fn ($path) => $this->deleteTransformImage($path));
+
+        $product->forceFill([
+            'problem_heading' => $request->input('problem_heading'),
+            'problem_title' => $request->input('problem_title'),
+            'problem_subtitle' => $request->input('problem_subtitle'),
+            'problem_cards' => $cards,
         ])->save();
     }
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthenticationController;
 use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
+use App\Http\Controllers\Frontend\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('authentication')->group(function () {
@@ -21,4 +22,8 @@ Route::name('frontend.')->group(function () {
         Route::post('/verify-otp', 'verifyOtp')->middleware('throttle:otp-verify')->name('verifyOtp');
         Route::post('/logout', 'logout')->name('logout');
     });
+
+    // Google OAuth
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 });

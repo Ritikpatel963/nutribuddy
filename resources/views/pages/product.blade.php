@@ -2,7 +2,8 @@
 @section('title', "NutriBuddy – India's #1 Kids Wellness Gummy")
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/product.css') }}?v=2026070101">
+    <link rel="stylesheet"
+        href="{{ asset('assets/css/product.css') }}?v={{ filemtime(public_path('assets/css/product.css')) }}">
 @endpush
 
 @section('content')
@@ -371,38 +372,33 @@
 
             <!-- Quick Specs: Pack Size & Age -->
             <!-- <div class="pdp-specs-row" style="display:flex;gap:20px;margin: 20px 0;padding:15px;background:#f9f9f9;border-radius:12px;border:1px solid #eee;">
-                                                <div class="spec-item">
-                                                    <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
-                                                    <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
-                                                </div>
-                                                <div style="width:1px;background:#ddd"></div>
-                                                <div class="spec-item">
-                                                    <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
-                                                    <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
-                                                </div>
-                                            </div> -->
+                                                    <div class="spec-item">
+                                                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Pack Size</div>
+                                                        <div id="pdpPackSize" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defPack }}</div>
+                                                    </div>
+                                                    <div style="width:1px;background:#ddd"></div>
+                                                    <div class="spec-item">
+                                                        <div style="font-size:.72rem;color:#888;text-transform:uppercase;font-weight:800;margin-bottom:4px;letter-spacing:0.5px;">Age Group</div>
+                                                        <div id="pdpAgeGroup" style="font-size:1.05rem;color:var(--dk);font-weight:800">{{ $defAge }}</div>
+                                                    </div>
+                                                </div> -->
 
 
-            <!-- Quantity Selector -->
-            <div class="pdp-qty-wrap" style="margin-bottom: 25px;">
-                <div class="variant-label">Quantity:</div>
-                <div class="pdp-qty-row"
-                    style="display: flex; align-items: center; gap: 12px; background: #f8f8f8; border: 2px solid rgba(53, 158, 111, 0.12); border-radius: 14px; padding: 6px 12px; width: fit-content;">
-                    <button type="button" class="qty-btn" id="pdpQtyMinus"
-                        style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">−</button>
-                    <input type="number" id="pdpQtyVal" value="1" min="1" readonly
-                        style="width: 45px; text-align: center; border: none; background: transparent; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; color: var(--dk); -moz-appearance: textfield;">
-                    <button type="button" class="qty-btn" id="pdpQtyPlus"
-                        style="border:none; background:none; font-size: 1.4rem; font-weight: 900; color: var(--pk); cursor: pointer; padding: 0 5px;">+</button>
+            <!-- Action Row (Quantity, Add to Cart, Buy Now) -->
+            <div class="pdp-action-row">
+                <!-- Quantity Selector -->
+                <div class="pdp-qty-wrap">
+                    <div class="variant-label">QUANTITY:</div>
+                    <div class="pdp-qty-row">
+                        <button type="button" class="qty-btn" id="pdpQtyMinus">−</button>
+                        <input type="number" id="pdpQtyVal" value="1" min="1" readonly>
+                        <button type="button" class="qty-btn" id="pdpQtyPlus">+</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- CTAs -->
-            <div class="cta-row">
-                <button class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add
-                    to Cart</button>
-                <button class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy
-                    Now</button>
+                <!-- CTAs -->
+                <button type="button" class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
+                <button type="button" class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
             </div>
 
             <!-- Guarantees -->
@@ -452,8 +448,8 @@
         </div>
     </div>
     <!-- ════════════════════════════════════════════════
-                                             PRODUCT DESCRIPTION SECTION
-                                        ════════════════════════════════════════════════ -->
+                                                 PRODUCT DESCRIPTION SECTION
+                                            ════════════════════════════════════════════════ -->
     <!-- Product Description Section -->
     @if (!empty(trim((string) ($product->description ?? ''))))
         <section class="pdp-description-section">
@@ -466,8 +462,8 @@
         </section>
     @endif
     <!-- ════════════════════════════════════════════════
-                                             NUTRIBUDDY INGREDIENT SECTION
-                                        ════════════════════════════════════════════════ -->
+                                                 NUTRIBUDDY INGREDIENT SECTION
+                                            ════════════════════════════════════════════════ -->
     @if ($product->ingredients->isNotEmpty())
         <section id="nb-ingredients">
 
@@ -677,8 +673,8 @@
 
     <!--  -->
     <!-- ══════════════════════════════
-                                             FEATURES — NO GELATIN etc.
-                                        ══════════════════════════════ -->
+                                                 FEATURES — NO GELATIN etc.
+                                            ══════════════════════════════ -->
     <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
@@ -855,43 +851,37 @@
     <section class="ps-section ps-problems-section">
         <div class="ps-inner">
 
+            @if(!empty($product->problem_cards) && count($product->problem_cards) > 0)
             <!-- HEADER -->
             <div class="ps-header reveal">
-                <div class="eyebrow">The Real Picture</div>
-                <h2 class="ps-title">Kids Face <span class="acc">Real Problems</span> <br>We Built a <span class="acc2">Real
-                        Solution</span></h2>
-                <p class="ps-sub">Today's kids miss out on essential nutrition every day. We see the gap — and we've closed
-                    it.
-                </p>
+                <div class="eyebrow">{{ $product->problem_heading ?? 'The Real Picture' }}</div>
+                <h2 class="ps-title">{!! $product->problem_title ?? 'Kids Face <span class="acc">Real Problems</span> <br>We Built a <span class="acc2">Real Solution</span>' !!}</h2>
+                <p class="ps-sub">{{ $product->problem_subtitle ?? "Today's kids miss out on essential nutrition every day. We see the gap — and we've closed it." }}</p>
             </div>
             <div class="problem-grid">
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi1"><img src="/img/weak-boy.JPG" alt="" loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Vitamin & Mineral Deficiency</div>
-                    <p class="prob-text">Processed food strips away nutrients. 80% of Indian kids are Vitamin D deficient —
-                        affecting bones, immunity & mood.</p>
-                </div>
-                <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi2"><img src="/img/BUSY-P.jpg" alt="" loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Busy Parent, Skipped Nutrition</div>
-                    <p class="prob-text">Between work and school runs, balanced meals slip through the cracks. Convenience
-                        wins
-                        over nutrition — every single day.</p>
-                </div>
-                <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi3"><img src="/img/hungry-boy.jpg" alt="" loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Junk Food Addiction</div>
-                    <p class="prob-text">Pizza, chips, sugary drinks — kids crave them and get them. High calories, zero
-                        nutrition, and taste buds that reject healthy food.</p>
-                </div>
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi4"><img src="/img/indoor.jpg" alt="" loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Less Outdoor Play, More Screens</div>
-                    <p class="prob-text">No sunlight means no Vitamin D. No movement means weak bones and low immunity —
-                        visible
-                        on the outside, starting from within.</p>
-                </div>
+                @php
+                    // CSS classes mapped exactly to what the original design had
+                    $pcClasses = ['pc1', 'pc2', 'pc3', 'pc1'];
+                    $dClasses = ['d1', 'd2', 'd3', 'd1'];
+                @endphp
+                @foreach($product->problem_cards as $index => $card)
+                    @if(!empty($card['title']) || !empty($card['description']) || !empty($card['icon']))
+                    @php
+                        $iconUrl = !empty($card['icon']) ? (Str::startsWith($card['icon'], ['img/', 'assets/']) ? asset($card['icon']) : asset('storage/' . $card['icon'])) : '';
+                    @endphp
+                    <div class="prob-card {{ $pcClasses[$index % 4] }} reveal {{ $dClasses[$index % 4] }}">
+                        <div class="prob-icon pi{{ $index + 1 }}">
+                            @if($iconUrl)
+                                <img src="{{ $iconUrl }}" alt="{{ $card['title'] }}" loading="lazy" decoding="async">
+                            @endif
+                        </div>
+                        <div class="prob-name">{{ $card['title'] }}</div>
+                        <p class="prob-text">{{ $card['description'] }}</p>
+                    </div>
+                    @endif
+                @endforeach
             </div>
+            @endif
 
             <!-- DIVIDER -->
             <div class="ps-divider reveal">
@@ -995,6 +985,7 @@
                 </div>
             </section>
 
+            @if (!empty($product->benefits_cards))
             <!-- DIVIDER -->
             <div class="ps-divider reveal">
                 <div class="div-arrow">↓</div>
@@ -1003,42 +994,36 @@
             </div>
 
             <div class="problem-grid">
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi1"><img src="/img/st1.webp" alt="Happy, strong and active child" loading="lazy"
-                            decoding="async"></div>
-                    <div class="prob-name">Strong Body & Healthy Growth</div>
-                    <p class="prob-text">Essential vitamins and minerals support growing bones and muscles, helping kids
-                        stay strong, active and ready for every day.</p>
-                </div>
-                <div class="prob-card pc2 reveal d2">
-                    <div class="prob-icon pi2"><img src="/img/st-2.webp" alt="Support for children's natural immunity"
-                            loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Stronger Everyday Immunity</div>
-                    <p class="prob-text">A balanced blend of nutrients supports the body's natural defences, helping kids
-                        stay resilient through school, play and changing seasons.</p>
-                </div>
-                <div class="prob-card pc3 reveal d3">
-                    <div class="prob-icon pi3"><img src="/img/st-3.webp" alt="Active child with steady everyday energy"
-                            loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Active Energy & Better Focus</div>
-                    <p class="prob-text">Everyday nutritional support helps kids feel energetic and attentive, so they can
-                        learn, explore and enjoy playtime with confidence.</p>
-                </div>
-                <div class="prob-card pc1 reveal d1">
-                    <div class="prob-icon pi4"><img src="/img/st-4.webp" alt="Complete daily nutrition for a healthy child"
-                            loading="lazy" decoding="async"></div>
-                    <div class="prob-name">Complete Daily Wellness</div>
-                    <p class="prob-text">Helps fill common nutritional gaps to support digestion, mood and overall
-                        well-being for a happier, healthier child.</p>
-                </div>
+                @php
+                    $nbClasses = [
+                        ['pc' => 'pc1', 'd' => 'd1', 'pi' => 'pi1'],
+                        ['pc' => 'pc2', 'd' => 'd2', 'pi' => 'pi2'],
+                        ['pc' => 'pc3', 'd' => 'd3', 'pi' => 'pi3'],
+                        ['pc' => 'pc1', 'd' => 'd1', 'pi' => 'pi4'],
+                    ];
+                @endphp
+                @foreach($product->benefits_cards as $index => $card)
+                    @php
+                        $c = $nbClasses[$index % 4];
+                        $iconUrl = !empty($card['icon']) ? asset('storage/' . $card['icon']) : '';
+                    @endphp
+                    <div class="prob-card {{ $c['pc'] }} reveal {{ $c['d'] }}">
+                        @if($iconUrl)
+                        <div class="prob-icon {{ $c['pi'] }}"><img src="{{ $iconUrl }}" alt="{{ $card['title'] ?? '' }}" loading="lazy" decoding="async"></div>
+                        @endif
+                        <div class="prob-name">{{ $card['title'] ?? '' }}</div>
+                        <p class="prob-text">{{ $card['description'] ?? '' }}</p>
+                    </div>
+                @endforeach
             </div>
+            @endif
             <!-- SOLUTION -->
 
 
             <!-- <div class="block-label reveal">
-                                                <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
-                                                <div class="bline g"></div>
-                                            </div> -->
+                                                    <div class="blabel bl-sol">✅ NutriBuddy Solution</div>
+                                                    <div class="bline g"></div>
+                                                </div> -->
     </section>
 
 
@@ -1046,13 +1031,13 @@
 
 
     <!-- ════════════════════════════════════════════════   ══════════════════════════════════════════
-                                                 PARENT REVIEWS
-                                            ══════════════════════════════════════════ -->
+                                                     PARENT REVIEWS
+                                                ══════════════════════════════════════════ -->
     @include('partials.parent-reviews')
 
     <!-- ══════════════════════════════════════════
-                                                 FAQ
-                                            ══════════════════════════════════════════ -->
+                                                     FAQ
+                                                ══════════════════════════════════════════ -->
     @include('partials.faq-section')
 
     <div class="newsletter reveal">

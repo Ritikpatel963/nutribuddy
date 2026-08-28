@@ -39,3 +39,7 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';
 require __DIR__ . '/storefront.php';
 require __DIR__ . '/user.php';
+require __DIR__ . '/nutrition.php';
+
+Route::view('/personalized-diet-chart', 'frontend.nutrition.personalized_diet')->name('frontend.nutrition.personalized_diet');
+Route::view('/nutrition/questionnaire', 'frontend.nutrition.questionnaire')->name('frontend.nutrition.questionnaire');

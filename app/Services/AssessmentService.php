@@ -27,12 +27,17 @@ class AssessmentService
      *
      * @return Collection<string, Collection<AssessmentQuestion>>
      */
-    public function getActiveQuestionsGrouped(): Collection
+    public function getActiveQuestionsGrouped(?int $limit = null): Collection
     {
-        return AssessmentQuestion::active()
+        $query = AssessmentQuestion::active()
             ->ordered()
-            ->with(['options' => fn ($q) => $q->orderBy('sort_order')])
-            ->get()
+            ->with(['options' => fn ($q) => $q->orderBy('sort_order')]);
+            
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->get()
             ->groupBy('section')
             ->sortBy(function ($group, $section) {
                 return array_search($section, array_keys(self::SECTORS));
@@ -44,12 +49,17 @@ class AssessmentService
      *
      * @return Collection<AssessmentQuestion>
      */
-    public function getActiveQuestions(): Collection
+    public function getActiveQuestions(?int $limit = null): Collection
     {
-        return AssessmentQuestion::active()
+        $query = AssessmentQuestion::active()
             ->ordered()
-            ->with(['options' => fn ($q) => $q->orderBy('sort_order')])
-            ->get();
+            ->with(['options' => fn ($q) => $q->orderBy('sort_order')]);
+            
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
 
     // ─── Score Calculation & Storage ──────────────────────────────────────────

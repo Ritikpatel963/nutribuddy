@@ -26,7 +26,7 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('admin.ecommerce.products.trash') }}" class="btn btn-sm btn-outline-danger-600">
-                    <iconify-icon icon="lucide:trash-2"></iconify-icon> Trash
+                    <i class="fas fa-trash"></i> Trash
                     @if(($trashCount ?? 0) > 0)
                         <span class="badge bg-danger-600 text-white ms-1">{{ $trashCount }}</span>
                     @endif
@@ -108,7 +108,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger-600 radius-8 d-inline-flex align-items-center gap-1" onclick="return confirm('Move this product to trash?')">
-                                                <iconify-icon icon="mingcute:delete-2-line"></iconify-icon> Delete
+                                                <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </form>
                                     </div>

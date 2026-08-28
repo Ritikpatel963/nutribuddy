@@ -25,12 +25,12 @@
     <script src="{{ asset('assets/js/lib/audioplayer.js') }}"></script>
 
     <!-- main js -->
-    <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}?v={{ filemtime(public_path('assets/js/app.js')) }}"></script>
     
     <!-- Tom Select (for admin forms) -->
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
     <!-- Admin Panel Custom JS -->
-    <script src="{{ asset('assets/js/pages/admin.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/admin.js') }}?v={{ filemtime(public_path('assets/js/pages/admin.js')) }}"></script>
 
     <?php echo (isset($script) ? $script   : '')?>

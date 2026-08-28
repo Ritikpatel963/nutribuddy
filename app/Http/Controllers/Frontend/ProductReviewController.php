@@ -66,7 +66,7 @@ class ProductReviewController extends Controller
 
         $userReviews = ProductReview::where('user_id', $userId)
             ->with('product.primaryImage')
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return view('pages.user-panel.reviews', compact('purchasedProducts', 'userReviews'));
