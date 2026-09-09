@@ -18,7 +18,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table bordered-table mb-0" id="dataTable" data-page-length="10">
+            <table class="table bordered-table mb-0">
                 <thead>
                     <tr>
                         <th scope="col">User</th>
