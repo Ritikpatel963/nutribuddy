@@ -20,9 +20,9 @@
         <select class="form-select w-auto" name="assigned_to" required><option value="">Assign selected to…</option>@foreach($nutritionists as $nutritionist)<option value="{{ $nutritionist->id }}">{{ $nutritionist->name }}</option>@endforeach</select>
         <button class="btn btn-outline-primary" type="submit">Bulk assign</button>
       </div>
-      <div class="table-responsive"><table class="table align-middle"><thead><tr><th><input type="checkbox" data-select-all></th><th>Customer</th><th>Child / Plan</th><th>Purchased</th><th>Status</th><th>Assigned to</th><th>Assign</th></tr></thead><tbody>
+      <div class="table-responsive"><table class="table align-middle"><thead><tr><th><input class="form-check-input border-secondary" type="checkbox" data-select-all></th><th>Customer</th><th>Child / Plan</th><th>Purchased</th><th>Status</th><th>Assigned to</th><th>Assign</th></tr></thead><tbody>
       @forelse($leads as $lead)<tr>
-        <td><input type="checkbox" name="lead_ids[]" value="{{ $lead->id }}" data-lead-checkbox></td>
+        <td><input class="form-check-input border-secondary" type="checkbox" name="lead_ids[]" value="{{ $lead->id }}" data-lead-checkbox></td>
         <td><strong>{{ $lead->customer->name }}</strong><br><small>{{ $lead->customer->email }}</small></td>
         <td>{{ $lead->child?->name ?? 'Profile pending' }}<br><small>{{ $lead->subscription->subscriptionPlan?->name ?? $lead->subscription->model }}</small></td>
         <td>₹{{ number_format((float) $lead->subscription->amount_paid, 2) }}<br><small>{{ $lead->created_at->format('d M Y') }}</small></td>
