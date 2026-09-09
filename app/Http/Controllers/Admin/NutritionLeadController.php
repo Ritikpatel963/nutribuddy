@@ -40,7 +40,7 @@ class NutritionLeadController extends Controller
 
     private function nutritionists()
     {
-        return User::permission('manage diet chart', 'admin')->where('is_active', true)->orderBy('name')->get();
+        return User::where('role', 'admin')->where('is_active', true)->orderBy('name')->get();
     }
 
     private function ensureNutritionist(int $userId): void
