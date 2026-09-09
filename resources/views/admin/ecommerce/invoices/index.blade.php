@@ -8,8 +8,10 @@
     <div class="card basic-data-table">
         <div class="card-header d-flex align-items-center justify-content-between gap-3">
             <h5 class="card-title mb-0">Invoice List</h5>
-            <form action="{{ route('admin.ecommerce.invoices.index') }}" method="GET" class="d-flex gap-2">
+            <form action="{{ route('admin.ecommerce.invoices.index') }}" method="GET" class="d-flex gap-2 flex-wrap justify-content-end">
                 <input type="text" name="search" class="form-control form-control-sm w-auto" placeholder="Order #, Name..." value="{{ request('search') }}">
+                <select name="product_id" class="form-select form-select-sm w-auto"><option value="">All products / plans</option>@foreach($products as $product)<option value="{{ $product->id }}" @selected((string) request('product_id') === (string) $product->id)>{{ $product->name }}</option>@endforeach</select>
+                <select name="payment_status" class="form-select form-select-sm w-auto"><option value="">All payments</option>@foreach(['paid', 'pending', 'failed', 'refunded'] as $status)<option value="{{ $status }}" @selected(request('payment_status') === $status)>{{ ucfirst($status) }}</option>@endforeach</select>
                 <button type="submit" class="btn btn-sm btn-primary">Search</button>
             </form>
         </div>

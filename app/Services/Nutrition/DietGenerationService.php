@@ -34,7 +34,7 @@ class DietGenerationService
             ->first();
 
         // 3. Eligible food pool with Hard Filters
-        $foodsQuery = FoodMaster::where('active', true)
+        $foodsQuery = FoodMaster::query()
             ->where(function ($q) use ($ageInYears) {
                 $q->whereNull('age_min')->orWhere('age_min', '<=', $ageInYears);
             })
@@ -74,7 +74,7 @@ class DietGenerationService
         $dietPlan = DietPlan::create([
             'child_assessment_id' => $assessment->id,
             'version' => 1,
-            'status' => 'active',
+            'status' => 'pending_review',
         ]);
 
         // (TODO: Implementation details of deterministic food selection, gap analysis, and inserting DietPlanMeals/Items)

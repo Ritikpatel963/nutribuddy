@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -19,10 +20,12 @@ class InvoiceController extends Controller
                   ->orWhere('customer_name', 'like', "%{$search}%")
                   ->orWhere('customer_email', 'like', "%{$search}%");
             })
-            ->latest()
-            ->paginate(15);
+            ->when($request->filled('payment_status'), fn ($q) => $q->where('payment_status', $request->payment_status))
+            ->when($request->filled('product_id'), fn ($q) => $q->whereHas('items', fn ($items) => $items->where('product_id', $request->product_id)))
+            ->latest('placed_at')
+            ->paginate(15)->withQueryString();
 
-        return view('admin.ecommerce.invoices.index', compact('orders'));
+        return view('admin.ecommerce.invoices.index', ['orders' => $orders, 'products' => Product::where('is_active', true)->orderBy('name')->get(['id', 'name'])]);
     }
 
     /**

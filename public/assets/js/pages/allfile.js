@@ -1574,7 +1574,7 @@ window.addEventListener("DOMContentLoaded", () => {
         nbConfirm('This address will be permanently removed.', async () => {
 
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            const res = await fetch('/user/addresses/' + addressId, {
+            const res = await fetchWithCsrfRetry('/user/addresses/' + addressId, {
                 method: 'DELETE',
                 headers: {
                     'Accept': 'application/json',
@@ -1775,7 +1775,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     async function persistNewAddress(payload, options = {}) {
-        const res = await fetch(api.addressesUrl, {
+        const res = await fetchWithCsrfRetry(api.addressesUrl, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -2533,7 +2533,7 @@ window.addEventListener("DOMContentLoaded", () => {
             };
         }
 
-        const res = await fetch(api.checkoutSummaryUrl, {
+        const res = await fetchWithCsrfRetry(api.checkoutSummaryUrl, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -3025,7 +3025,7 @@ window.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const res = await fetch(api.placeOrderUrl, {
+        const res = await fetchWithCsrfRetry(api.placeOrderUrl, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -3198,7 +3198,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     async function loadAddresses() {
-        const res = await fetch(api.addressesUrl, {
+        const res = await fetchWithCsrfRetry(api.addressesUrl, {
             headers: {
                 'Accept': 'application/json'
             }

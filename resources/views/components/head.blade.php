@@ -45,4 +45,5 @@
     <!-- admin custom style -->
     <link rel="stylesheet"  href="{{ asset('assets/css/admin.css') }}?v={{ filemtime(public_path('assets/css/admin.css')) }}">
     <link rel="stylesheet"  href="{{ asset('assets/css/admin-nutribuddy.css') }}?v={{ filemtime(public_path('assets/css/admin-nutribuddy.css')) }}">
+    @stack('styles')
 </head>

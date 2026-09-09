@@ -27,6 +27,7 @@
                         <th scope="col">Status</th>
                         <th scope="col">Start Date</th>
                         <th scope="col">End Date</th>
+                        <th scope="col">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,6 +58,11 @@
                         </td>
                         <td>{{ $sub->starts_at ? \Carbon\Carbon::parse($sub->starts_at)->format('d M Y') : 'N/A' }}</td>
                         <td>{{ $sub->expires_at ? \Carbon\Carbon::parse($sub->expires_at)->format('d M Y') : 'N/A' }}</td>
+                        <td>
+                            <a href="{{ route('admin.nutrition.diet-subscriptions.show', $sub->id) }}" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                                <iconify-icon icon="lucide:eye"></iconify-icon>
+                            </a>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

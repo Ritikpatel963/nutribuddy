@@ -15,7 +15,15 @@ class DietPlanController extends Controller
     public function index(): View
     {
         $plans = SubscriptionPlan::all();
-        return view('admin.diet-plans.index', compact('plans'));
+        $totalPlans = SubscriptionPlan::count();
+        $totalPurchases = \App\Models\DietSubscription::count();
+        $totalRevenue = \App\Models\DietSubscription::where('payment_status', 'paid')->sum('amount_paid');
+        $activeSubscriptions = \App\Models\DietSubscription::where('status', 'active')->count();
+
+        // Data for chart
+        $planPurchasesData = \App\Models\SubscriptionPlan::withCount('dietSubscriptions')->get()->pluck('diet_subscriptions_count', 'name')->toArray();
+
+        return view('admin.diet-plans.index', compact('plans', 'totalPlans', 'totalPurchases', 'totalRevenue', 'activeSubscriptions', 'planPurchasesData'));
     }
 
     /**

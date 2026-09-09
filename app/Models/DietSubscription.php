@@ -62,4 +62,9 @@ class DietSubscription extends Model
     {
         return $this->hasMany(DietSubscription::class, 'renewed_from_id');
     }
+
+    public function nutritionLead(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(NutritionLead::class);
+    }
 }

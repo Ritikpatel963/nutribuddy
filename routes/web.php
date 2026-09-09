@@ -41,5 +41,32 @@ require __DIR__ . '/storefront.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/nutrition.php';
 
+use App\Http\Controllers\Frontend\Nutrition\QuestionnaireController;
+use App\Http\Controllers\Frontend\ChildProfileController;
+use App\Http\Controllers\Frontend\DietChartDisplayController;
+
 Route::view('/personalized-diet-chart', 'frontend.nutrition.personalized_diet')->name('frontend.nutrition.personalized_diet');
-Route::view('/nutrition/questionnaire', 'frontend.nutrition.questionnaire')->name('frontend.nutrition.questionnaire');
+Route::get('/nutrition/questionnaire', [QuestionnaireController::class, 'show'])->name('frontend.nutrition.questionnaire');
+
+// Debug: Authorization check (remove in production)
+Route::middleware(['auth'])->get('/debug/authorization', function () {
+    return view('debug/authorization-check');
+})->name('debug.authorization');
+
+// Diet Chart Display Routes - nested under child profile
+Route::middleware(['auth'])->prefix('/child/{child}')->group(function () {
+    Route::get('/diet-chart', [DietChartDisplayController::class, 'show'])
+        ->name('child.diet-chart.show')
+        ->where('child', '[0-9]+');
+
+    Route::post('/diet-chart/regenerate', [DietChartDisplayController::class, 'regenerate'])
+        ->name('child.diet-chart.regenerate')
+        ->where('child', '[0-9]+');
+
+    Route::get('/diet-chart/download-pdf', [DietChartDisplayController::class, 'downloadPdf'])
+        ->name('child.diet-chart.download-pdf')
+        ->where('child', '[0-9]+');
+});
+
+Route::redirect('/child-profile/{child}', '/child-profile')->name('child.profile');
+Route::redirect('/child-profile/{child}/diet-chart', '/child-profile')->name('child.diet_chart');

@@ -11,6 +11,8 @@ use App\Http\Controllers\Frontend\UserProfileController;
 use App\Http\Controllers\Frontend\UserReturnController;
 use App\Http\Controllers\Frontend\UserSupportTicketController;
 use App\Http\Controllers\Frontend\UserWalletController;
+use App\Http\Controllers\Frontend\DietSubscriptionInvoiceController;
+use App\Http\Controllers\Frontend\SupplementController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -64,12 +66,19 @@ Route::middleware('auth')->group(function () {
         $subscriptions = auth()->user()->dietSubscriptions()->with('child', 'product')->latest()->get();
         return view('pages.user-panel.subscription', compact('subscriptions'));
     })->name('subscription');
+    Route::get('/diet-subscriptions/{subscription}/invoice-download', [DietSubscriptionInvoiceController::class, 'download'])->name('diet-subscriptions.invoice-download');
     Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
     Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
-    Route::view('/meal-plan', 'pages.user-panel.meal-plan')->name('meal-plan');
-    Route::view('/supplement', 'pages.user-panel.supplement')->name('supplement');
-    Route::view('/child-profile', 'pages.user-panel.child-profile')->name('child-profile');
-    Route::view('/growth-signal', 'pages.user-panel.growth-signal')->name('growth-signal');
+    Route::get('/meal-plan', [\App\Http\Controllers\Frontend\DietChartDisplayController::class, 'mealPlan'])->name('meal-plan');
+    Route::get('/supplement', [SupplementController::class, 'index'])->name('supplement');
+    Route::get('/child-profile', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'userPanelShow'])->name('child-profile');
+    Route::get('/child-profile/create', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'create'])->name('child-profile.create');
+    Route::post('/child-profile', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'store'])->name('child-profile.store');
+    Route::get('/growth-signal', function () {
+        $child = auth()->user()->children()->latest()->first();
+        $plan = $child?->assessments()->latest()->first()?->dietPlan;
+        return view('pages.user-panel.growth-signal', compact('child', 'plan'));
+    })->name('growth-signal');
     Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
 
     Route::get('/wallet', [UserWalletController::class, 'index'])->name('wallet');

@@ -6,9 +6,15 @@ use App\Http\Controllers\Api\Nutrition\DietPlanController;
 
 Route::prefix('/api/nutrition')->name('api.nutrition.')->group(function () {
     // Dynamic Questionnaire Endpoints
+    Route::get('/questionnaire/checkout/auth', function() {
+        return redirect()->route('frontend.nutrition.questionnaire', [
+            'plan' => request('plan', 'basic'),
+            'cycle' => request('cycle', 'monthly')
+        ]);
+    })->name('questionnaire.checkout.auth')->middleware('auth');
     Route::get('/questionnaire/{childId}', [QuestionnaireController::class, 'getQuestions'])->name('questionnaire.get');
+    Route::post('/questionnaire/submit', [QuestionnaireController::class, 'submitInitialAnswers'])->name('questionnaire.submit.initial');
     Route::post('/questionnaire/{childId}', [QuestionnaireController::class, 'submitAnswers'])->name('questionnaire.submit');
-    
     // Diet Plan Generation Endpoints
     Route::post('/generate-plan/{assessmentId}', [DietPlanController::class, 'generate'])->name('plan.generate');
 });

@@ -187,7 +187,13 @@ window.startDietCheckout = async function (planSlug, btn) {
         } else {
             alert('An error occurred while starting checkout.');
         }
-        btn.innerText = originalText;
         btn.disabled = false;
     }
+}
+
+window.startQuestionnaire = function(planSlug) {
+    const activeCycleBtn = document.querySelector('.billing-btn.active');
+    const cycle = activeCycleBtn ? activeCycleBtn.dataset.cycle : 'monthly';
+    const payload = btoa(`plan=${planSlug}&cycle=${cycle}`);
+    window.location.href = `/nutrition/questionnaire?payload=${payload}`;
 }

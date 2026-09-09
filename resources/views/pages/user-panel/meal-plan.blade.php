@@ -70,92 +70,11 @@
    @push('scripts')
 <script>
 /* ── DATA ── */
-const days = {
-  mon: {
-    label: 'Monday',
-    focus: 'IMMUNITY BOOST',
-    meals: [
-      { time:'7 AM',  emoji:'🥛', name:'Turmeric milk', desc:'Curcumin + black pepper — activates anti-inflammatory pathway. Ayurvedic morning ritual.', tags:['Calcium:calcium','Vit D:vit-e'] },
-      { time:'8 AM',  emoji:'🫐', name:'Ragi porridge + banana', desc:'Calcium 344mg · Iron 3.9mg per serving. Finger millet is the best plant calcium source.', tags:['Calcium:calcium','Iron:iron'] },
-      { time:'10:30', emoji:'🍃', name:'Guava + peanut pack', desc:'Vit C from guava TRIPLES iron absorption from peanuts.', tags:['Vit C:vit-c','Iron:iron'] },
-      { time:'1 PM',  emoji:'🍛', name:'Palak dal + chapati + curd', desc:'Lemon off-heat for 3× iron. Spinach + dal = complete amino profile.', tags:['Protein:protein','Iron:iron','Calcium:calcium'] },
-      { time:'4:30',  emoji:'🫒', name:'Amla + coconut water', desc:'Amla = 20× Vit C of orange. Coconut water replenishes electrolytes in Greeshma heat.', tags:['Vit C:vit-c','Calcium:calcium'] },
-      { time:'7 PM',  emoji:'🍲', name:'Moong dal khichdi + curd', desc:'Easily digestible. Curd = probiotic immunity builder. Light for early dinner.', tags:['Protein:protein','B Vitamins:b-vit'] },
-    ]
-  },
-  tue: {
-    label: 'Tuesday',
-    focus: 'GROWTH & BONES',
-    meals: [
-      { time:'7 AM',  emoji:'🌰', name:'5 soaked almonds + warm milk', desc:'Soak overnight — removes tannins, better calcium absorption. Ayurvedic morning ritual.', tags:['Calcium:calcium','Vit E:vit-e'] },
-      { time:'8 AM',  emoji:'🧆', name:'Paneer paratha + curd', desc:'Paneer = 18g protein + 480mg calcium/100g. Best vegetarian growth food.', tags:['Protein:protein','Calcium:calcium'] },
-      { time:'10:30', emoji:'🍊', name:'Orange wedges + peanut pack', desc:'Vit C from orange TRIPLES iron absorption from peanuts.', tags:['Vit C:vit-c','Iron:iron'] },
-      { time:'1 PM',  emoji:'🍱', name:'Rajma chawal + salad', desc:'Rajma = complete protein + iron + zinc. North India growth classic.', tags:['Protein:protein','Iron:iron','Zinc:zinc'] },
-      { time:'4:30',  emoji:'🌺', name:'Til ladoo — 1 piece', desc:'Sesame = calcium 975mg/100g (higher than milk). Bone Rasayana.', tags:['Calcium:calcium','Iron:iron'] },
-      { time:'7 PM',  emoji:'🍜', name:'Vegetable upma + warm milk at 9pm', desc:'Warm milk at bedtime = calcium absorbed during sleep-phase bone growth.', tags:['Calcium:calcium','B Vitamins:b-vit'] },
-    ]
-  },
-  wed: {
-    label: 'Wednesday',
-    focus: 'BRAIN POWER',
-    meals: [
-      { time:'7 AM',  emoji:'🥜', name:'Walnut + soaked raisins', desc:'Walnuts = omega-3 DHA, the primary brain-building fat. Raisins for quick energy.', tags:['Protein:protein','Iron:iron'] },
-      { time:'8 AM',  emoji:'🥞', name:'Moong chilla + green chutney', desc:'High protein breakfast. Green chutney adds iron + Vit C combo.', tags:['Protein:protein','Vit C:vit-c'] },
-      { time:'10:30', emoji:'🍌', name:'Banana + peanut butter', desc:'Potassium + protein. Banana releases serotonin — mood and focus booster.', tags:['Protein:protein','B Vitamins:b-vit'] },
-      { time:'1 PM',  emoji:'🍛', name:'Palak paneer + roti + dal', desc:'Spinach DHA precursors + paneer protein. Iron for oxygen to the brain.', tags:['Protein:protein','Iron:iron','Calcium:calcium'] },
-      { time:'4:30',  emoji:'🌿', name:'Brahmi milk (warm)', desc:'Brahmi = adaptogen that improves memory retention and neural pathway growth.', tags:['Calcium:calcium','B Vitamins:b-vit'] },
-      { time:'7 PM',  emoji:'🥗', name:'Rice + sambar + papad', desc:'Easy digest. Tamarind in sambar = Vit C for iron. Light evening meal.', tags:['Protein:protein','Iron:iron'] },
-    ]
-  },
-  thu: {
-    label: 'Thursday',
-    focus: 'IMMUNITY',
-    meals: [
-      { time:'7 AM',  emoji:'🍋', name:'Warm lemon honey water', desc:'Kickstarts digestion. Lemon Vit C absorbed on empty stomach = maximum immunity boost.', tags:['Vit C:vit-c'] },
-      { time:'8 AM',  emoji:'🥣', name:'Oats + milk + dates', desc:'Beta-glucan in oats = immune-modulating fiber. Dates add iron + natural sugar.', tags:['Calcium:calcium','Iron:iron'] },
-      { time:'10:30', emoji:'🍎', name:'Apple + peanut butter', desc:'Quercetin in apple skin is a powerful antiviral compound.', tags:['Vit C:vit-c','Protein:protein'] },
-      { time:'1 PM',  emoji:'🍲', name:'Chole + rice + cucumber raita', desc:'Chickpeas = zinc + iron. Raita = probiotic gut immunity. Cucumber cools for Greeshma.', tags:['Protein:protein','Iron:iron','Zinc:zinc'] },
-      { time:'4:30',  emoji:'🫚', name:'Coconut water + roasted chana', desc:'Electrolytes + protein. Perfect Greeshma season snack.', tags:['Calcium:calcium','Protein:protein'] },
-      { time:'7 PM',  emoji:'🍵', name:'Khichdi + ghee + pickle', desc:'Ghee = fat-soluble vitamin carrier. Pickle = probiotic. Perfect immunity dinner.', tags:['Protein:protein','B Vitamins:b-vit'] },
-    ]
-  },
-  fri: {
-    label: 'Friday',
-    focus: 'ENERGY DAY',
-    meals: [
-      { time:'7 AM',  emoji:'🥤', name:'Banana smoothie + soaked almonds', desc:'Quick energy from banana. Almonds = sustained energy via healthy fats.', tags:['Calcium:calcium','Protein:protein'] },
-      { time:'8 AM',  emoji:'🧇', name:'Poha + peanuts + lemon', desc:'Poha = iron-fortified. Lemon Vit C triples iron absorption. Quick and light.', tags:['Iron:iron','Vit C:vit-c'] },
-      { time:'10:30', emoji:'🍇', name:'Grapes + cheese cube', desc:'Grapes = instant glucose. Cheese = protein to slow release. Sustained energy combo.', tags:['Calcium:calcium','Protein:protein'] },
-      { time:'1 PM',  emoji:'🍛', name:'Dal makhani + jeera rice + salad', desc:'High protein dal. Jeera aids digestion. Tomato salad = Vit C + iron combo.', tags:['Protein:protein','Iron:iron','B Vitamins:b-vit'] },
-      { time:'4:30',  emoji:'🍫', name:'Jaggery + peanut chikki', desc:'Jaggery = iron-rich natural sugar. Peanuts = protein. Energy Rasayana.', tags:['Iron:iron','Protein:protein'] },
-      { time:'7 PM',  emoji:'🥘', name:'Vegetable pulao + dahi', desc:'Complex carbs for overnight recovery. Dahi probiotic for gut health.', tags:['Protein:protein','Calcium:calcium'] },
-    ]
-  },
-  sat: {
-    label: 'Saturday',
-    focus: 'BONE STRENGTH',
-    meals: [
-      { time:'7 AM',  emoji:'🌰', name:'Soaked almonds + sesame balls', desc:'Sesame 975mg calcium/100g — highest plant calcium. Morning bone builder ritual.', tags:['Calcium:calcium','Iron:iron'] },
-      { time:'8 AM',  emoji:'🥞', name:'Ragi dosa + sambar + coconut chutney', desc:'Ragi = finger millet 344mg calcium. Sambar adds iron. Coconut = healthy fats.', tags:['Calcium:calcium','Protein:protein'] },
-      { time:'10:30', emoji:'🫐', name:'Amla candy + warm milk', desc:'Amla Vit C helps calcium absorption. Milk = direct bone mineral delivery.', tags:['Calcium:calcium','Vit C:vit-c'] },
-      { time:'1 PM',  emoji:'🍛', name:'Rajma + palak rice + curd', desc:'Rajma zinc supports bone cell growth. Palak iron carries oxygen to bone marrow.', tags:['Protein:protein','Iron:iron','Zinc:zinc','Calcium:calcium'] },
-      { time:'4:30',  emoji:'🌺', name:'Til ladoo — 1 piece', desc:'Sesame = calcium 975mg/100g. Traditional bone Rasayana. Jaggery adds iron.', tags:['Calcium:calcium','Iron:iron'] },
-      { time:'7 PM',  emoji:'🥛', name:'Khichdi + warm milk at bedtime', desc:'Sleep-phase is peak bone mineralisation. Warm milk delivers calcium exactly when needed.', tags:['Calcium:calcium','Protein:protein','B Vitamins:b-vit'] },
-    ]
-  },
-  sun: {
-    label: 'Sunday',
-    focus: 'REST & RESTORE',
-    meals: [
-      { time:'7 AM',  emoji:'🍵', name:'Warm ginger turmeric tea + fruit', desc:'Anti-inflammatory reset. Ginger aids digestion. Rest day = rebuild day.', tags:['Vit C:vit-c','B Vitamins:b-vit'] },
-      { time:'9 AM',  emoji:'🥞', name:'Besan chilla + mint chutney', desc:'Light protein. Late breakfast on rest day is fine. Mint cools for Greeshma.', tags:['Protein:protein','Iron:iron'] },
-      { time:'11:30', emoji:'🍊', name:'Seasonal fruits platter', desc:'Watermelon, mango, papaya. Greeshma cooling fruits. Vitamin C and natural hydration.', tags:['Vit C:vit-c','Iron:iron'] },
-      { time:'1 PM',  emoji:'🍲', name:'Dal rice + papad + pickle + ghee', desc:'Sunday comfort meal. Ghee = fat-soluble vitamin absorption. Pickle = gut probiotic.', tags:['Protein:protein','Calcium:calcium','B Vitamins:b-vit'] },
-      { time:'4:30',  emoji:'🥥', name:'Coconut water + banana', desc:'Electrolyte reset after a warm Greeshma afternoon. Potassium for muscle recovery.', tags:['Calcium:calcium','Vit C:vit-c'] },
-      { time:'7 PM',  emoji:'🥣', name:'Light moong soup + roti', desc:'Moong is the most digestible pulse. Light dinner for gut rest and overnight recovery.', tags:['Protein:protein','Iron:iron'] },
-    ]
-  }
-};
+const days = @json($jsDays ?? []);
+
+if (Object.keys(days).length === 0) {
+    document.getElementById('mealCard').innerHTML = '<div class="p-4 text-center">{{ ($reviewPending ?? false) ? 'Your diet chart is ready and awaiting admin review.' : 'No diet plan has been generated yet. Please complete the assessment to view your personalized plan.' }}</div>';
+}
 
 const focusColors = {
   'IMMUNITY BOOST':  'var(--pu)',
@@ -178,7 +97,10 @@ const focusBg = {
 };
 
 function renderCard(dayKey) {
+  if (Object.keys(days).length === 0) return;
   const d = days[dayKey];
+  if (!d) return;
+  
   const card = document.getElementById('mealCard');
   const fc = focusColors[d.focus] || 'var(--mn)';
   const fb = focusBg[d.focus]    || 'var(--mnl)';
@@ -224,7 +146,19 @@ document.getElementById('tabsTrack').addEventListener('click', e => {
 });
 
 /* ── INIT ── */
-renderCard('tue');
+const d = new Date();
+const weekdays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+const currentDayStr = weekdays[d.getDay()];
+
+document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+const activeTab = document.querySelector('.day-tab[data-day="' + currentDayStr + '"]');
+if (activeTab) {
+    activeTab.classList.add('active');
+    renderCard(currentDayStr);
+} else {
+    document.querySelector('.day-tab[data-day="mon"]').classList.add('active');
+    renderCard('mon');
+}
 </script>
 put this data in meal-plan.php in proper way like another page with header and footer
 

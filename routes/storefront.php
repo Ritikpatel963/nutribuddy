@@ -15,7 +15,14 @@ Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/diet-chart', function () {
     $plans = \App\Models\SubscriptionPlan::where('is_active', true)->get()->keyBy('slug');
-    return view('pages.diet-chart', compact('plans'));
+    $hasActivePlan = false;
+    if (auth()->check()) {
+        $hasActivePlan = \App\Models\DietSubscription::where('user_id', auth()->id())
+            ->whereIn('status', ['active', 'completed'])
+            ->whereIn('payment_status', ['paid', 'free'])
+            ->exists();
+    }
+    return view('pages.diet-chart', compact('plans', 'hasActivePlan'));
 })->name('diet_chart');
 
 Route::post('/diet-chart/payment/create', [\App\Http\Controllers\Frontend\DietPaymentController::class, 'createOrder'])->name('diet.payment.create');

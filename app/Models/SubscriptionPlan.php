@@ -26,4 +26,9 @@ class SubscriptionPlan extends Model
         'features' => 'array',
         'price' => 'decimal:2',
     ];
+
+    public function dietSubscriptions()
+    {
+        return $this->hasMany(DietSubscription::class);
+    }
 }

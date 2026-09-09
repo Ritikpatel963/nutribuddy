@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Services\Nutrition\NutritionLeadService;
 
 class ActivateDietSubscription
 {
@@ -54,7 +55,7 @@ class ActivateDietSubscription
                     // We'll set a standard 30-day for now, or use product attributes
                     $expiresAt = now()->addDays(30);
 
-                    DietSubscription::create([
+                    $subscription = DietSubscription::create([
                         'user_id' => $order->user_id,
                         'child_id' => $childId, // Might be null initially if they need to assign it later
                         'product_id' => $product->id,
@@ -64,6 +65,7 @@ class ActivateDietSubscription
                         'starts_at' => now(),
                         'expires_at' => $expiresAt,
                     ]);
+                    app(NutritionLeadService::class)->createForSubscription($subscription);
 
                     Log::info('Activated Diet Subscription for order: ' . $order->id);
                 }

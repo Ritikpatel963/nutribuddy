@@ -3,55 +3,77 @@
 namespace App\Services\Nutrition;
 
 use App\Models\Nutrition\ChildAssessment;
+use App\Models\Nutrition\FoodMaster;
+use Illuminate\Support\Collection;
 
 class FoodFilterPipeline
 {
-    /**
-     * Filters the central food database strictly based on child's safety restrictions.
-     */
-    public function getEligibleFoods(ChildAssessment $assessment, array $dislikedFoods = [], $currentSeason = 'Year-round')
+    /** Safety filters run before scoring. A rejected food never reaches selection. */
+    public function getEligibleFoods(ChildAssessment $assessment, array $dislikedFoods = [], $currentSeason = 'Year-round'): Collection
     {
-        $query = \App\Models\Nutrition\FoodMaster::where('active', true);
-        
-        // 1. Hard Filter: Diet Type
-        if ($assessment->diet_type === 'vegan') {
-            $query->where('vegan', true);
-        } elseif ($assessment->diet_type === 'jain') {
-            $query->where('jain_allowed', true);
-        } elseif ($assessment->diet_type === 'vegetarian') {
-            $query->where('veg_status', true)->where('contains_egg', false);
+        $profile = ['diet_type' => $assessment->diet_type, 'allergies' => $assessment->allergies ?? []];
+
+        return FoodMaster::query()->get()->filter(fn (FoodMaster $food) => $this->allows($food, $profile, $dislikedFoods))->values();
+    }
+
+    public function allows(FoodMaster $food, array $profile, array $dislikedFoods = []): bool
+    {
+        if (in_array(strtolower((string) $food->dish_name), array_map('strtolower', $dislikedFoods), true)) return false;
+        if (! $this->dietAllows($food, strtolower((string) ($profile['diet_type'] ?? 'vegetarian')))) return false;
+
+        foreach ((array) ($profile['allergies'] ?? []) as $allergy) {
+            if ($this->hasAllergen($food, strtolower((string) $allergy))) return false;
         }
-        
-        // 2. Hard Filter: Allergies
-        $allergies = $assessment->allergies ?? [];
-        if (in_array('dairy', $allergies)) {
-            $query->where('contains_dairy', false);
-        }
-        if (in_array('nuts', $allergies)) {
-            $query->where('contains_nuts', false);
-        }
-        if (in_array('gluten', $allergies)) {
-            $query->where('contains_gluten', false);
-        }
-        if (in_array('egg', $allergies)) {
-            $query->where('contains_egg', false);
-        }
-        
-        // 3. Disliked Foods
-        if (!empty($dislikedFoods)) {
-            $query->whereNotIn('food_name', $dislikedFoods);
-        }
-        
-        // 4. Season Filter (keep year-round and current season)
-        $query->whereIn('season', ['Year-round', $currentSeason]);
-        
-        // 5. Budget Filtering
-        if ($assessment->budget === 'economy') {
-            $query->whereIn('cost_band', ['economy']);
-        } elseif ($assessment->budget === 'moderate') {
-            $query->whereIn('cost_band', ['economy', 'moderate']);
-        }
-        
-        return $query->get();
+
+        return true;
+    }
+
+    public function forSlot(Collection $foods, string $slot): Collection
+    {
+        $wanted = strtolower(str_contains($slot, 'Snack') ? 'snack' : $slot);
+
+        return $foods->filter(function (FoodMaster $food) use ($wanted) {
+            $slots = collect([$food->slot, $food->also_suitable_for])
+                ->filter()->flatMap(fn ($value) => preg_split('/[,|\/]+/', strtolower((string) $value)))
+                ->map(fn ($value) => trim($value));
+            return $slots->contains($wanted);
+        })->values();
+    }
+
+    private function dietAllows(FoodMaster $food, string $diet): bool
+    {
+        return match ($diet) {
+            'vegan' => $this->flag($food, 'is_vegan') && ! $this->flag($food, 'contains_dairy') && ! $this->flag($food, 'contains_egg') && ! $this->flag($food, 'contains_honey'),
+            'jain' => $this->flag($food, 'is_jain_ok'),
+            'eggetarian' => ! $this->isMeatOrFish($food),
+            'non-vegetarian' => true,
+            default => $this->flag($food, 'is_veg') && ! $this->flag($food, 'contains_egg'),
+        };
+    }
+
+    private function hasAllergen(FoodMaster $food, string $allergy): bool
+    {
+        return match ($allergy) {
+            'dairy' => $this->flag($food, 'contains_dairy'), 'nuts' => $this->flag($food, 'contains_nuts'),
+            'gluten' => $this->flag($food, 'contains_gluten'), 'egg' => $this->flag($food, 'contains_egg'),
+            // The schema has no lactose-specific flag. Do not treat all dairy as lactose by assumption.
+            default => false,
+        };
+    }
+
+    private function isMeatOrFish(FoodMaster $food): bool
+    {
+        return str_contains(strtolower((string) $food->diet_type), 'non')
+            || in_array(strtolower((string) $food->food_group), ['meat', 'fish', 'poultry'], true);
+    }
+
+    private function yes(mixed $value): bool
+    {
+        return in_array(strtolower(trim((string) $value)), ['1', 'yes', 'true'], true);
+    }
+
+    private function flag(FoodMaster $food, string $field): bool
+    {
+        return $this->yes($food->getAttributes()[$field] ?? null);
     }
 }

@@ -29,4 +29,14 @@ class Child extends Model
     {
         return $this->hasMany(\App\Models\DietSubscription::class);
     }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(\App\Models\DietSubscription::class);
+    }
+
+    public function assessments()
+    {
+        return $this->hasMany(ChildAssessment::class);
+    }
 }

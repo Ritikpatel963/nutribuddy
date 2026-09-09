@@ -20,6 +20,14 @@
 {{-- ══ PAGE ══ --}}
 <div class="gs-page">
 
+    @if($plan)
+    <div class="gs-how-card gs-anim-1" style="margin-bottom:20px">
+        <div class="gs-how-header"><span class="gs-how-title">{{ $child?->name }}’s current plan</span></div>
+        <p class="gs-how-body">{{ $plan->ai_summary ?: 'Your personalised diet plan is active and being monitored for growth changes.' }}</p>
+        <a class="gs-update-btn" href="{{ route('child-profile') }}">View diet chart</a>
+    </div>
+    @endif
+
     {{-- ── Page Header ── --}}
     <div class="gs-header gs-anim-1">
         <div class="gs-header-left">

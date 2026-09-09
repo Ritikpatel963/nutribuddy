@@ -71,19 +71,25 @@
                     </li>
                 </ul>
             </li> --}}
+            @canany(['view dashboard', 'manage dashboard'])
             <li>
                 <a href="{{ route('admin.index') }}">
                     <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
                     <span>Dashboard</span>
                 </a>
             </li>
+            @endcan
+
+            @canany(['view analytics', 'manage analytics'])
             <li>
                 <a href="{{ route('admin.analytics') }}">
                     <iconify-icon icon="solar:chart-2-outline" class="menu-icon"></iconify-icon>
                     <span>Analytics</span>
                 </a>
             </li>
+            @endcan
 
+            @canany(['view diet chart', 'manage diet chart'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:health-outline" class="menu-icon"></iconify-icon>
@@ -102,9 +108,25 @@
                         <a href="{{ route('admin.nutrition.diet-subscriptions.index') }}"><i
                                 class="ri-circle-fill circle-icon text-success-main w-auto"></i> Diet Subscriptions</a>
                     </li>
+                    @can('manage diet chart')
+                    <li>
+                        <a href="{{ route('admin.nutrition.leads.index') }}"><i
+                                class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Nutrition Leads</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.nutrition.lead-queue.index') }}"><i
+                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> My Lead Queue</a>
+                    </li>
+                    @endcan
+                    <li>
+                        <a href="{{ route('admin.nutrition.foods.index') }}"><i
+                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Master Food Data</a>
+                    </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view products', 'manage products'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:box-outline" class="menu-icon"></iconify-icon>
@@ -139,7 +161,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view orders', 'manage orders'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:cart-large-minimalistic-outline" class="menu-icon"></iconify-icon>
@@ -160,7 +184,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view customers', 'manage customers'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:users-group-two-rounded-outline" class="menu-icon"></iconify-icon>
@@ -173,10 +199,12 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
 
 
 
+            @canany(['view promotions', 'manage promotions'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:tag-outline" class="menu-icon"></iconify-icon>
@@ -193,7 +221,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view loyalty', 'manage loyalty'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:medal-ribbon-star-outline" class="menu-icon"></iconify-icon>
@@ -210,7 +240,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view moderation', 'manage moderation'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:star-outline" class="menu-icon"></iconify-icon>
@@ -227,7 +259,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view administration', 'manage administration'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:tuning-square-2-outline" class="menu-icon"></iconify-icon>
@@ -264,7 +298,9 @@
                     </li>
                 </ul>
             </li>
+            @endcan
 
+            @canany(['view content', 'manage content'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:document-text-outline" class="menu-icon"></iconify-icon>
@@ -289,6 +325,8 @@
                     </li>
                 </ul>
             </li>
+            @endcan
+            @canany(['view assessment', 'manage assessment'])
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:clipboard-list-outline" class="menu-icon"></iconify-icon>
@@ -301,6 +339,16 @@
                     </li>
                 </ul>
             </li>
+            @endcan
+
+            @canany(['view users', 'manage users', 'view roles', 'manage roles'])
+            <li>
+                <a href="{{ route('admin.access-control.index') }}">
+                    <iconify-icon icon="solar:shield-user-outline" class="menu-icon"></iconify-icon>
+                    <span>Access Control</span>
+                </a>
+            </li>
+            @endcan
 
             {{-- <li class="sidebar-menu-group-title">Application</li>
             <li>
@@ -522,42 +570,6 @@
                     <span>Widgets</span>
                 </a>
             </li>
-            <li class="dropdown">
-                <a  href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
-                    <span>Users</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li>
-                        <a  href="{{ route('usersList') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Users List</a>
-                    </li>
-                    <li>
-                        <a  href="{{ route('usersGrid') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Users Grid</a>
-                    </li>
-                    <li>
-                        <a  href="{{ route('addUser') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add User</a>
-                    </li>
-                    <li>
-                        <a  href="{{ route('viewProfile') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> View Profile</a>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="dropdown">
-                <a  href="javascript:void(0)">
-                    <i class="ri-user-settings-line text-xl me-6 d-flex w-auto"></i>
-                    <span>Role & Access</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li>
-                        <a  href="{{ route('roleAaccess') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Role & Access</a>
-                    </li>
-                    <li>
-                        <a  href="{{ route('assignRole') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Assign Role</a>
-                    </li>
-                </ul>
-            </li>
-
             <li class="sidebar-menu-group-title">Application</li>
 
             <li class="dropdown">

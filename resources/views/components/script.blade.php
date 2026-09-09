@@ -34,3 +34,4 @@
     <script src="{{ asset('assets/js/pages/admin.js') }}?v={{ filemtime(public_path('assets/js/pages/admin.js')) }}"></script>
 
     <?php echo (isset($script) ? $script   : '')?>
+    @stack('scripts')
