@@ -122,6 +122,10 @@
                         <a href="{{ route('admin.nutrition.foods.index') }}"><i
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Master Food Data</a>
                     </li>
+                    <li>
+                        <a href="{{ route('admin.nutrition.diet-rules.index') }}"><i
+                                class="ri-circle-fill circle-icon text-lilac-600 w-auto"></i> Diet Generation Rules</a>
+                    </li>
                 </ul>
             </li>
             @endcan

@@ -231,6 +231,7 @@ Route::prefix('admin/nutrition')->name('admin.nutrition.')->middleware('auth:adm
         Route::resource('diet-subscriptions', \App\Http\Controllers\Admin\DietSubscriptionController::class)->only(['index', 'show']);
         Route::get('foods/data', [\App\Http\Controllers\Admin\Nutrition\FoodController::class, 'data'])->name('foods.data');
         Route::get('foods', [\App\Http\Controllers\Admin\Nutrition\FoodController::class, 'index'])->name('foods.index');
+        Route::get('diet-rules', [\App\Http\Controllers\Admin\Nutrition\DietRuleController::class, 'index'])->name('diet-rules.index');
     });
     
     Route::middleware('permission:manage diet chart,admin')->group(function () {
