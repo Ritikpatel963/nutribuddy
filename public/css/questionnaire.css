@@ -2,6 +2,11 @@
         box-sizing: border-box;
     }
 
+    /* Hide Main Navbar for Questionnaire Flow */
+    #mainNav {
+        display: none !important;
+    }
+
     /* Hero */
     .qz-hero {
         background: linear-gradient(135deg, #fdf6ff 0%, #ece8ff 50%, #fde8f4 100%);

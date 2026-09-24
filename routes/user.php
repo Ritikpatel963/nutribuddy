@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/diet-subscriptions/{subscription}/invoice-download', [DietSubscriptionInvoiceController::class, 'download'])->name('diet-subscriptions.invoice-download');
     Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
     Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
+    Route::view('/nutrition', 'pages.user-panel.nutrition')->name('nutrition.index');
     Route::get('/meal-plan', [\App\Http\Controllers\Frontend\DietChartDisplayController::class, 'mealPlan'])->name('meal-plan');
     Route::get('/supplement', [SupplementController::class, 'index'])->name('supplement');
     Route::get('/child-profile', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'userPanelShow'])->name('child-profile');

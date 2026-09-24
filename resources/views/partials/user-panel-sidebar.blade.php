@@ -48,6 +48,14 @@
            Meal Plan
         </a>
 
+          <a href="{{ route('nutrition.index') }}" class="nav-item {{ request()->routeIs('nutrition.index') ? 'active' : '' }}" onclick="setActive(this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+           Nutrition
+        </a>
+
           <a href="{{ route('supplement') }}" class="nav-item {{ request()->routeIs('supplement') ? 'active' : '' }}" onclick="setActive(this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />

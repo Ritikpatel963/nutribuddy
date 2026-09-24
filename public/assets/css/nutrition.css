@@ -1,0 +1,476 @@
+/* Nutrition Module CSS */
+
+.nutrition-container {
+    font-family: 'Nunito', sans-serif;
+    color: var(--dk);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Date Selector */
+.nutri-date-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    overflow-x: auto;
+}
+
+.nutri-date-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 60px;
+}
+
+.nutri-date-item:hover {
+    background: var(--cr);
+}
+
+.nutri-date-item.active {
+    background: linear-gradient(135deg, var(--pk), var(--pu));
+    color: #fff;
+    box-shadow: 0 8px 16px rgba(255, 77, 143, 0.2);
+}
+
+.nutri-date-day {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.nutri-date-num {
+    font-size: 1.2rem;
+    font-family: 'Fredoka One', cursive;
+}
+
+/* Tabs */
+.nutri-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.nutri-tab {
+    padding: 12px 24px;
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.nutri-tab.active {
+    background: var(--pkl);
+    color: var(--pk);
+    border-color: var(--pk);
+}
+
+/* Tab Content */
+.nutri-tab-content {
+    display: none;
+    animation: fadeUp 0.3s ease forwards;
+}
+
+.nutri-tab-content.active {
+    display: block;
+}
+
+/* Cards */
+.nutri-card {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1.5px solid var(--border);
+}
+
+.nutri-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.nutri-card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--dk);
+}
+
+/* Calorie Summary */
+.cal-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .cal-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cal-ring-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.cal-ring-svg {
+    transform: rotate(-90deg);
+}
+
+.cal-ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 8;
+}
+
+.cal-ring-progress {
+    fill: none;
+    stroke: var(--pk);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease;
+}
+
+.cal-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.cal-ring-val {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--dk);
+}
+
+.cal-ring-lbl {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.macro-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.macro-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.macro-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.macro-name { color: var(--dk); }
+.macro-val { color: var(--muted); }
+
+.macro-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.macro-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+.macro-fill.protein { background: var(--pu); }
+.macro-fill.carbs { background: var(--or); }
+.macro-fill.fats { background: var(--ye); }
+
+/* Meals */
+.meal-section {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.meal-info h3 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    margin: 0 0 4px 0;
+}
+
+.meal-meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.meal-add-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--pkl);
+    color: var(--pk);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.meal-add-btn:hover {
+    background: var(--pk);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.food-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--cr);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+}
+
+.sup-item:hover {
+    border-color: var(--pu);
+    background: var(--pul);
+}
+
+.sup-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sup-taken .sup-check {
+    background: var(--pu);
+    border-color: var(--pu);
+}
+
+.sup-taken .sup-check::after {
+    content: '✓';
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+.sup-taken .food-name {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.sup-taken .food-details {
+    opacity: 0.5;
+}
+
+.food-name {
+    font-weight: 800;
+    color: var(--dk);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.food-details {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.food-cal {
+    font-family: 'Fredoka One', cursive;
+    color: var(--pu);
+    font-size: 0.9rem;
+}
+
+/* Nutri View */
+.nutrient-group {
+    margin-bottom: 24px;
+}
+
+.nutrient-group-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+}
+
+.nutrient-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.nutrient-row-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.nutrient-row-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.nutrient-row-fill {
+    height: 100%;
+    background: var(--pk);
+    border-radius: 3px;
+}
+
+/* Modal / Sheet */
+.nutri-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.nutri-modal-overlay.active {
+    display: flex;
+}
+
+.nutri-modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 24px 24px 0 0;
+    padding: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.nutri-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.nutri-modal-header h2 {
+    font-family: 'Fredoka One', cursive;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.food-search-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.food-search-input:focus {
+    border-color: var(--pk);
+    box-shadow: 0 0 0 4px rgba(255, 77, 143, 0.1);
+}
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.search-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.search-result-item:hover {
+    border-color: var(--pu);
+    background: var(--pul);
+}
+
+.search-result-add {
+    background: var(--pu);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: 800;
+    cursor: pointer;
+}

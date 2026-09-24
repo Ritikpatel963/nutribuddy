@@ -98,19 +98,25 @@
                                 {{ $isHeight ? '📏' : '⚖️' }} {{ $q->question }}
                                 <span style="font-size:.72rem;color:#aaa;font-weight:500;margin-left:4px">(Optional)</span>
                             </label>
-                            <input type="number"
+                            
+                            <input type="text"
                                    class="qz-text-input qz-form-field"
                                    data-qid="{{ $q->id }}"
-                                   placeholder="{{ $isHeight ? 'e.g. 115' : 'e.g. 22' }}">
+                                   placeholder="{{ $isHeight ? 'e.g. 115 cm or 4 ft 2 in' : 'e.g. 22 kg or 48 lbs' }}">
                         @else
+                            @php
+                                $qLower = strtolower($q->question);
+                                $isH = str_contains($qLower, 'height');
+                                $isW = str_contains($qLower, 'weight');
+                            @endphp
                             <label class="qz-field-label">
                                 @if($isName)👦 @endif{{ $q->question }}
                                 <span style="color:#e84040">*</span>
                             </label>
-                            <input type="{{ $q->answer_type === 'Date' ? 'date' : ($q->answer_type === 'Number' ? 'number' : 'text') }}"
+                            <input type="{{ $q->answer_type === 'Date' ? 'date' : 'text' }}"
                                    class="qz-text-input qz-form-field"
                                    data-qid="{{ $q->id }}"
-                                   placeholder="{{ $isName ? 'e.g. Aarav Sharma' : '' }}"
+                                   placeholder="{{ $isName ? 'e.g. Aarav Sharma' : ($isH ? 'e.g. 115 cm or 4 ft 2 in' : ($isW ? 'e.g. 22 kg or 48 lbs' : '')) }}"
                                    required>
                         @endif
 
@@ -162,8 +168,15 @@
                         @endif
 
                     @else
+                        @php
+                            $qLowerStr = strtolower($q->question);
+                            $isH2 = str_contains($qLowerStr, 'height');
+                            $isW2 = str_contains($qLowerStr, 'weight');
+                        @endphp
                         <label class="qz-field-label">{{ $q->question }} <span style="color:#e84040">*</span></label>
-                        <input type="text" class="qz-text-input qz-form-field" data-qid="{{ $q->id }}" required>
+                        <input type="text" class="qz-text-input qz-form-field" data-qid="{{ $q->id }}" 
+                               placeholder="{{ $isH2 ? 'e.g. 115 cm or 4 ft 2 in' : ($isW2 ? 'e.g. 22 kg or 48 lbs' : '') }}" 
+                               required>
                     @endif
 
                     <div class="qz-error" id="qzErr_{{ $q->id }}">&#9888;&#xFE0F; This field is required.</div>
