@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\DietSubscription;
 use App\Models\Nutrition\Child;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Services\Nutrition\DietPaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -91,5 +93,118 @@ class DietPaymentControllerRegressionTest extends TestCase
         ])->assertNotFound();
 
         $this->assertDatabaseCount('diet_subscriptions', 0);
+    }
+
+    public function test_razorpay_subscription_requires_a_matching_captured_payment_and_starts_term_on_payment(): void
+    {
+        config([
+            'services.razorpay.key_id' => 'test-key',
+            'services.razorpay.key_secret' => 'test-secret',
+        ]);
+        Http::fake(['https://api.razorpay.com/v1/payments/pay_diet_123' => Http::response([
+            'order_id' => 'order_diet_123',
+            'amount' => 10000,
+            'currency' => 'INR',
+            'status' => 'captured',
+        ])]);
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        $subscription = DietSubscription::create([
+            'user_id' => $parent->id,
+            'child_id' => $child->id,
+            'model' => 'Monthly (Monthly)',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'amount_paid' => 100,
+            'razorpay_order_id' => 'order_diet_123',
+            'starts_at' => now()->subDays(35),
+            'expires_at' => now()->subDays(5),
+        ]);
+        $signature = hash_hmac('sha256', 'order_diet_123|pay_diet_123', 'test-secret');
+        $payload = [
+            'subscription_id' => $subscription->id,
+            'razorpay_order_id' => 'order_diet_123',
+            'razorpay_payment_id' => 'pay_diet_123',
+            'razorpay_signature' => $signature,
+        ];
+
+        $this->actingAs($parent)->postJson(route('diet.payment.verify'), $payload)
+            ->assertOk()->assertJsonPath('success', true);
+
+        $subscription->refresh();
+        $this->assertSame('active', $subscription->status);
+        $this->assertSame('paid', $subscription->payment_status);
+        $this->assertTrue($subscription->starts_at->greaterThan(now()->subMinute()));
+        $this->assertEquals(30, $subscription->starts_at->diffInDays($subscription->expires_at));
+        $initialExpiry = $subscription->expires_at->toDateTimeString();
+
+        $this->actingAs($parent)->postJson(route('diet.payment.verify'), $payload)->assertOk();
+        $this->assertSame($initialExpiry, $subscription->fresh()->expires_at->toDateTimeString());
+    }
+
+    public function test_authorized_but_uncaptured_razorpay_payment_does_not_activate_subscription(): void
+    {
+        config([
+            'services.razorpay.key_id' => 'test-key',
+            'services.razorpay.key_secret' => 'test-secret',
+        ]);
+        Http::fake(['https://api.razorpay.com/v1/payments/pay_diet_456' => Http::response([
+            'order_id' => 'order_diet_456',
+            'amount' => 10000,
+            'currency' => 'INR',
+            'status' => 'authorized',
+        ])]);
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        $subscription = DietSubscription::create([
+            'user_id' => $parent->id,
+            'child_id' => $child->id,
+            'model' => 'Monthly (Monthly)',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'amount_paid' => 100,
+            'razorpay_order_id' => 'order_diet_456',
+        ]);
+
+        $this->actingAs($parent)->postJson(route('diet.payment.verify'), [
+            'subscription_id' => $subscription->id,
+            'razorpay_order_id' => 'order_diet_456',
+            'razorpay_payment_id' => 'pay_diet_456',
+            'razorpay_signature' => hash_hmac('sha256', 'order_diet_456|pay_diet_456', 'test-secret'),
+        ])->assertBadRequest();
+
+        $this->assertSame('pending', $subscription->fresh()->status);
+        $this->assertSame('pending', $subscription->fresh()->payment_status);
+    }
+
+    public function test_cashfree_return_rejects_paid_order_with_mismatched_amount(): void
+    {
+        config([
+            'services.cashfree.app_id' => 'test-app',
+            'services.cashfree.secret_key' => 'test-secret',
+        ]);
+        Http::fake(['https://sandbox.cashfree.com/pg/orders/cashfree_diet_123' => Http::response([
+            'order_id' => 'cashfree_diet_123',
+            'order_amount' => 1,
+            'order_currency' => 'INR',
+            'order_status' => 'PAID',
+        ])]);
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        $subscription = DietSubscription::create([
+            'user_id' => $parent->id,
+            'child_id' => $child->id,
+            'model' => 'Monthly (Monthly)',
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'amount_paid' => 100,
+            'razorpay_order_id' => 'cashfree_diet_123',
+        ]);
+
+        $result = app(DietPaymentService::class)->confirmCashfreeReturn('cashfree_diet_123', (string) $subscription->id);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('pending', $subscription->fresh()->status);
+        $this->assertSame('pending', $subscription->fresh()->payment_status);
     }
 }

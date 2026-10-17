@@ -5,6 +5,7 @@ namespace App\Services\Nutrition;
 use App\Models\DietSubscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -77,11 +78,21 @@ class DietPaymentService
             return ['success' => false, 'message' => 'Invalid payment signature', '_status' => 400];
         }
 
-        $subscription->update([
-            'status' => 'active',
-            'payment_status' => 'paid',
-            'razorpay_payment_id' => $data['razorpay_payment_id'],
-        ]);
+        $paymentResponse = Http::withBasicAuth(
+            (string) config('services.razorpay.key_id'),
+            (string) config('services.razorpay.key_secret'),
+        )->get('https://api.razorpay.com/v1/payments/'.urlencode($data['razorpay_payment_id']));
+
+        $payment = $paymentResponse->json() ?? [];
+        if (! $paymentResponse->successful()
+            || ($payment['order_id'] ?? null) !== $subscription->razorpay_order_id
+            || (int) ($payment['amount'] ?? 0) !== (int) round((float) $subscription->amount_paid * 100)
+            || strtoupper((string) ($payment['currency'] ?? '')) !== 'INR'
+            || strtolower((string) ($payment['status'] ?? '')) !== 'captured') {
+            return ['success' => false, 'message' => 'Payment is not captured or does not match this subscription.', '_status' => 400];
+        }
+
+        $subscription = $this->markPaid($subscription, $data['razorpay_payment_id']);
         $this->activateRelatedServices($subscription);
 
         return ['success' => true, 'message' => 'Subscription activated successfully!'];
@@ -110,17 +121,14 @@ class DietPaymentService
                 return ['success' => false, 'message' => 'Payment was not successful or was cancelled.'];
             }
             $order = $response->json();
-            if (($order['order_id'] ?? null) !== $orderId || strtoupper($order['order_status'] ?? '') !== 'PAID') {
+            if (($order['order_id'] ?? null) !== $orderId
+                || round((float) ($order['order_amount'] ?? -1), 2) !== round((float) $subscription->amount_paid, 2)
+                || strtoupper((string) ($order['order_currency'] ?? '')) !== 'INR'
+                || strtoupper((string) ($order['order_status'] ?? '')) !== 'PAID') {
                 return ['success' => false, 'message' => 'Payment was not successful or was cancelled.'];
             }
 
-            if ($subscription->status !== 'active' || $subscription->payment_status !== 'paid') {
-                $subscription->update([
-                    'status' => 'active',
-                    'payment_status' => 'paid',
-                    'razorpay_payment_id' => $order['cf_order_id'] ?? null,
-                ]);
-            }
+            $subscription = $this->markPaid($subscription, $order['cf_order_id'] ?? null);
             $this->activateRelatedServices($subscription);
 
             return ['success' => true, 'child_id' => $subscription->child_id];
@@ -190,8 +198,33 @@ class DietPaymentService
 
     private function activate(DietSubscription $subscription): void
     {
-        $subscription->update(['status' => 'active', 'payment_status' => 'paid']);
+        $subscription = $this->markPaid($subscription);
         $this->activateRelatedServices($subscription);
+    }
+
+    private function markPaid(DietSubscription $subscription, ?string $paymentId = null): DietSubscription
+    {
+        return DB::transaction(function () use ($subscription, $paymentId): DietSubscription {
+            $subscription = DietSubscription::query()->whereKey($subscription->id)->lockForUpdate()->firstOrFail();
+            if ($subscription->payment_status === 'paid') {
+                return $subscription;
+            }
+
+            $termSeconds = $subscription->starts_at && $subscription->expires_at
+                ? $subscription->starts_at->diffInSeconds($subscription->expires_at)
+                : 0;
+            $startsAt = now();
+
+            $subscription->update([
+                'status' => 'active',
+                'payment_status' => 'paid',
+                'razorpay_payment_id' => $paymentId,
+                'starts_at' => $startsAt,
+                'expires_at' => $termSeconds > 0 ? $startsAt->copy()->addSeconds($termSeconds) : null,
+            ]);
+
+            return $subscription->fresh();
+        });
     }
 
     private function activateRelatedServices(DietSubscription $subscription): void
