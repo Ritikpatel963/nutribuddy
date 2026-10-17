@@ -22,7 +22,7 @@ class BlogController extends Controller
         $backendBlogPosts = $query->paginate(10);
         $categories = \App\Models\BlogCategory::all();
 
-        return view('pages.blog', compact('backendBlogPosts', 'categories'));
+        return view('frontend.storefront.blog.index', compact('backendBlogPosts', 'categories'));
     }
 
     public function show($id)
@@ -51,21 +51,7 @@ class BlogController extends Controller
             ->take(4)
             ->get();
             
-        return view('pages.blog-show', compact('blogPost', 'relatedBlogs', 'recentBlogs', 'popularBlogs'));
+        return view('frontend.storefront.blog.show', compact('blogPost', 'relatedBlogs', 'recentBlogs', 'popularBlogs'));
     }
 
-    public function addBlog()
-    {
-        return view('blog/addBlog');
-    }
-    
-    public function blog()
-    {
-        return view('blog/blog');
-    }
-    
-    public function blogDetails()
-    {
-        return view('blog/blogDetails');
-    }
 }

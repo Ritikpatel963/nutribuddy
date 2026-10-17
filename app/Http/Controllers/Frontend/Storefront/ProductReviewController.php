@@ -49,6 +49,6 @@ class ProductReviewController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('pages.user-panel.reviews', compact('purchasedProducts', 'userReviews'));
+        return view('frontend.account.reviews', compact('purchasedProducts', 'userReviews'));
     }
 }

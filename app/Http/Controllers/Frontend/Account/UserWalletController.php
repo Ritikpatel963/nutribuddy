@@ -14,6 +14,6 @@ class UserWalletController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('pages.user-panel.wallet', compact('user', 'transactions'));
+        return view('frontend.account.wallet', compact('user', 'transactions'));
     }
 }

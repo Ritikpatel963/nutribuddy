@@ -20,18 +20,18 @@ class UserAddressController extends Controller
             ->latest()
             ->get();
 
-        return view('pages.user-panel.personal-info', ['savedAddresses' => $addresses]);
+        return view('frontend.account.profile', ['savedAddresses' => $addresses]);
     }
 
     public function create()
     {
-        return view('pages.user-panel.address-create');
+        return view('frontend.account.address-create');
     }
 
     public function edit(Request $request, CustomerAddress $address)
     {
         abort_unless((int) $address->user_id === (int) $request->user()->id, 403);
-        return view('pages.user-panel.address-edit', compact('address'));
+        return view('frontend.account.address-edit', compact('address'));
     }
 
     public function update(UpdateAddressRequest $request, CustomerAddress $address): JsonResponse

@@ -27,7 +27,7 @@ class ChildProfileController extends Controller
         $subscription = DietSubscription::with('subscriptionPlan')
             ->where('child_id', $child->id)->where('payment_status', 'paid')->latest()->first();
 
-        return view('pages.user-panel.child-profile', compact('child', 'dietPlan', 'assessment', 'subscription'));
+        return view('frontend.nutrition.child-profile.profile', compact('child', 'dietPlan', 'assessment', 'subscription'));
     }
 
     public function create()
@@ -36,7 +36,7 @@ class ChildProfileController extends Controller
             return redirect()->route('child-profile');
         }
 
-        return view('pages.user-panel.child-profile-create');
+        return view('frontend.nutrition.child-profile.create');
     }
 
     public function store(CreateChildProfileRequest $request, ChildProfileService $profiles): JsonResponse

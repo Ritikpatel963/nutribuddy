@@ -27,7 +27,7 @@ class UserOrderController extends Controller
             'returns',
         ]);
 
-        return view('pages.user-panel.order-details', [
+        return view('frontend.account.orders.show', [
             'order' => $order,
         ]);
     }

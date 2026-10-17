@@ -16,7 +16,7 @@ class DietSubscriptionController extends Controller
             ->latest()
             ->paginate(15);
             
-        return view('admin.diet-subscriptions.index', compact('subscriptions'));
+        return view('admin.nutrition.diet-subscriptions.index', compact('subscriptions'));
     }
 
     public function show($id)
@@ -27,6 +27,6 @@ class DietSubscriptionController extends Controller
             'child.assessments.answers.question'
         ])->findOrFail($id);
 
-        return view('admin.diet-subscriptions.show', compact('subscription'));
+        return view('admin.nutrition.diet-subscriptions.show', compact('subscription'));
     }
 }

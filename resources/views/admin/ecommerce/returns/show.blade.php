@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Return Details';
     $subTitle = 'Ecommerce / Returns / #'.$orderReturn->return_number;

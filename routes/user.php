@@ -60,19 +60,19 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/my-coupons', [UserCouponController::class, 'index'])->name('my-coupons');
 
-    Route::view('/change-password', 'pages.user-panel.change-password')->name('change-password');
-    Route::view('/order', 'pages.user-panel.order')->name('order');
+    Route::view('/change-password', 'frontend.account.change-password')->name('change-password');
+    Route::view('/order', 'frontend.account.orders.index')->name('order');
     Route::get('/personal-info', [UserAddressController::class, 'index'])->name('personal-info');
 
     Route::post('/personal-info', [UserProfileController::class, 'update'])->name('personal-info.update');
 
     Route::get('/subscription', function () {
         $subscriptions = auth()->user()->dietSubscriptions()->with('child', 'product')->latest()->get();
-        return view('pages.user-panel.subscription', compact('subscriptions'));
+        return view('frontend.account.subscriptions', compact('subscriptions'));
     })->name('subscription');
     Route::get('/diet-subscriptions/{subscription}/invoice-download', [DietSubscriptionInvoiceController::class, 'download'])->name('diet-subscriptions.invoice-download');
-    Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
-    Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
+    Route::view('/user-return', 'frontend.account.returns.show')->name('user-return');
+    Route::view('/userdashboard', 'frontend.account.dashboard')->name('userdashboard');
     Route::get('/nutrition', [NutritionController::class, 'nutrition'])->name('nutrition.index');
     Route::get('/nutrition-backup', [NutritionBackupController::class, 'nutritionBackup'])->name('nutrition.backup');
     Route::get('/meal-plan', [MealPlanController::class, 'mealPlan'])->name('meal-plan');
@@ -83,9 +83,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/growth-signal', function () {
         $child = auth()->user()->children()->latest()->first();
         $plan = $child?->assessments()->latest()->first()?->dietPlan;
-        return view('pages.user-panel.growth-signal', compact('child', 'plan'));
+        return view('frontend.nutrition.growth-signal', compact('child', 'plan'));
     })->name('growth-signal');
-    Route::view('/check-in', 'pages.user-panel.check-in')->name('check-in');
+    Route::view('/check-in', 'frontend.nutrition.check-in')->name('check-in');
 
     Route::get('/wallet', [UserWalletController::class, 'index'])->name('wallet');
     Route::get('/support-tickets', [UserSupportTicketController::class, 'index'])->name('user.support-tickets');

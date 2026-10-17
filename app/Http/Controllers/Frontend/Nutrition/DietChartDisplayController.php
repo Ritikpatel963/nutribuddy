@@ -24,7 +24,7 @@ class DietChartDisplayController extends Controller
             $assessment = $child->assessments()->latest()->first();
 
             if (!$assessment) {
-                return view('child-profile.no-assessment', [
+                return view('frontend.nutrition.child-profile.no-assessment', [
                     'child' => $child,
                     'message' => 'No health assessment found. Please complete the questionnaire first.'
                 ]);

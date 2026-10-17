@@ -38,7 +38,7 @@ class CheckoutController extends Controller
                 ->get();
         }
 
-        return view('pages.checkout', compact('savedAddresses', 'states', 'stateCityMap', 'allCities'));
+        return view('frontend.storefront.checkout.checkout', compact('savedAddresses', 'states', 'stateCityMap', 'allCities'));
     }
 
     public function getCities(string $stateCode, StateCityService $stateCityService): JsonResponse

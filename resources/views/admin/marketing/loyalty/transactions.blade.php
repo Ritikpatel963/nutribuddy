@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Coin Transactions';
     $subTitle = 'Monitor all NB Coins earning and spending history';

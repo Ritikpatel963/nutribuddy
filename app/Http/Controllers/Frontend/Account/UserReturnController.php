@@ -26,7 +26,7 @@ class UserReturnController extends Controller
             return response()->json($returns);
         }
 
-        return view('pages.user-panel.returns', compact('returns'));
+        return view('frontend.account.returns.index', compact('returns'));
     }
     public function store(ReturnStoreRequest $request, Order $order, OrderReturnService $returns)
     {

@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php($title = $isSuperAdmin ? 'All Nutrition Leads' : 'My Nutrition Leads')
 @php($subTitle = $isSuperAdmin ? 'All customers awaiting diet-chart review' : 'Assigned customers awaiting diet-chart review')
 @push('styles')<link rel="stylesheet" href="{{ asset('css/nutrition-leads.css') }}">@endpush

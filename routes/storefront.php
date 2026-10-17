@@ -9,8 +9,8 @@ use App\Http\Controllers\Frontend\Storefront\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::view('/about', 'pages.about-us')->name('about');
-Route::view('/ingredients', 'pages.ingredients')->name('ingredients');
+Route::view('/about', 'frontend.storefront.pages.about-us')->name('about');
+Route::view('/ingredients', 'frontend.storefront.pages.ingredients')->name('ingredients');
 Route::get('/product', [ProductController::class, 'index'])->name('product');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/diet-chart', function () {
@@ -22,7 +22,7 @@ Route::get('/diet-chart', function () {
             ->whereIn('payment_status', ['paid', 'free'])
             ->exists();
     }
-    return view('pages.diet-chart', compact('plans', 'hasActivePlan'));
+    return view('frontend.nutrition.plan-selection', compact('plans', 'hasActivePlan'));
 })->name('diet_chart');
 
 Route::middleware('auth')->group(function () {
@@ -32,13 +32,13 @@ Route::middleware('auth')->group(function () {
 Route::get('/diet-chart/payment/cashfree/return', [\App\Http\Controllers\Frontend\Nutrition\DietPaymentController::class, 'handleCashfreeReturn'])->name('diet.payment.cashfree.return');
 
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
-Route::view('/testimonials', 'pages.testimonials')->name('testimonials');
+Route::view('/testimonials', 'frontend.storefront.pages.testimonials')->name('testimonials');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
-Route::view('/privacy', 'pages.privacy')->name('privacy');
-Route::view('/cookies', 'pages.cookies')->name('cookies');
-Route::view('/return-policy', 'pages.return-policy')->name('return-policy');
-Route::view('/terms', 'pages.terms')->name('terms');
-Route::view('/cart', 'pages.cart')->name('cart.page');
+Route::view('/privacy', 'frontend.storefront.pages.privacy')->name('privacy');
+Route::view('/cookies', 'frontend.storefront.pages.cookies')->name('cookies');
+Route::view('/return-policy', 'frontend.storefront.pages.return-policy')->name('return-policy');
+Route::view('/terms', 'frontend.storefront.pages.terms')->name('terms');
+Route::view('/cart', 'frontend.storefront.checkout.cart')->name('cart.page');
 
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
 Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:form-submit')->name('contact.store');

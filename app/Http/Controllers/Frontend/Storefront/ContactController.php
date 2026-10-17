@@ -10,7 +10,7 @@ class ContactController extends Controller
 {
     public function index()
     {
-        return view('pages.contact');
+        return view('frontend.storefront.pages.contact');
     }
 
     public function store(StoreContactLeadRequest $request)

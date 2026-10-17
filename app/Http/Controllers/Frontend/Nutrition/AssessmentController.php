@@ -47,7 +47,7 @@ class AssessmentController extends Controller
 
         // We will no longer abort, so the view can display a friendly empty state message.
 
-        return view('pages.user-panel.assessment.index', compact(
+        return view('frontend.nutrition.assessment.index', compact(
             'questionsGrouped',
             'questions',
             'totalQuestions',
@@ -87,7 +87,7 @@ class AssessmentController extends Controller
             ->latest()
             ->first();
 
-        return view('pages.user-panel.assessment.result', compact('attempt', 'previousAttempt'));
+        return view('frontend.nutrition.assessment.result', compact('attempt', 'previousAttempt'));
     }
 
     // ─── History ──────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@ class AssessmentController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('pages.user-panel.assessment.history', compact('attempts'));
+        return view('frontend.nutrition.assessment.history', compact('attempts'));
     }
 
     // ─── Comparison ───────────────────────────────────────────────────────────
@@ -117,7 +117,7 @@ class AssessmentController extends Controller
 
         $comparison = $this->service->compareAttempts($latest, $previous);
 
-        return view('pages.user-panel.assessment.compare', compact(
+        return view('frontend.nutrition.assessment.compare', compact(
             'latest',
             'previous',
             'comparison',
@@ -139,6 +139,6 @@ class AssessmentController extends Controller
         // Group answers by section for display.
         $answersBySection = $attempt->answers->groupBy(fn ($a) => $a->question->section);
 
-        return view('pages.user-panel.assessment.detail', compact('attempt', 'answersBySection'));
+        return view('frontend.nutrition.assessment.detail', compact('attempt', 'answersBySection'));
     }
 }

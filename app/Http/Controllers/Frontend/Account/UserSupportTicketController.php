@@ -14,7 +14,7 @@ class UserSupportTicketController extends Controller
     {
         $tickets = SupportTicket::where('user_id', auth()->id())->latest()->get();
 
-        return view('pages.user-panel.support-tickets', compact('tickets'));
+        return view('frontend.account.support-tickets.index', compact('tickets'));
     }
 
     public function store(StoreSupportTicketRequest $request)
@@ -51,7 +51,7 @@ class UserSupportTicketController extends Controller
 
         $ticket->load('messages.user');
 
-        return view('pages.user-panel.support-tickets-show', compact('ticket'));
+        return view('frontend.account.support-tickets.show', compact('ticket'));
     }
 
     public function reply(ReplySupportTicketRequest $request, SupportTicket $ticket)

@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Invoice #INV-' . $order->order_number;
     $subTitle = 'Ecommerce / Invoices / INV-' . $order->order_number;

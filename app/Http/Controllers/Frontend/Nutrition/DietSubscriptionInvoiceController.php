@@ -14,6 +14,6 @@ class DietSubscriptionInvoiceController extends Controller
         abort_unless($subscription->user_id === $request->user()->id, 403);
         $subscription->load(['user', 'child', 'subscriptionPlan']);
 
-        return Pdf::loadView('invoices.diet-subscription', compact('subscription'))->setPaper('a4')->download('NB-DIET-' . $subscription->id . '.pdf');
+        return Pdf::loadView('pdf.invoices.diet-subscription', compact('subscription'))->setPaper('a4')->download('NB-DIET-' . $subscription->id . '.pdf');
     }
 }

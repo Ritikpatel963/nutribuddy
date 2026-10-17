@@ -11,7 +11,7 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = \Illuminate\Notifications\DatabaseNotification::orderBy('created_at', 'desc')->get();
-        return view('admin.notifications.index', compact('notifications'));
+        return view('admin.system.notifications.index', compact('notifications'));
     }
 
     public function markAsRead($id)

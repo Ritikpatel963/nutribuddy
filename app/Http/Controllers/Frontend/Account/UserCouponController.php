@@ -14,6 +14,6 @@ class UserCouponController extends Controller
             ->latest()
             ->get();
 
-        return view('pages.user-panel.my-coupons', compact('couponUsages'));
+        return view('frontend.account.coupons', compact('couponUsages'));
     }
 }

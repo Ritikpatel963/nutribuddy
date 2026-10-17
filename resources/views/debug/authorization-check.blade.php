@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
 <div style="padding: 40px; font-family: monospace; background: #f5f5f5;">
@@ -12,7 +12,7 @@
             <p><strong>Status:</strong> ✅ Logged In</p>
         @else
             <p><strong>Status:</strong> ❌ Not Logged In</p>
-            <p><a href="{{ route('login') }}">→ Login</a></p>
+            <p><a href="{{ route('frontend.login') }}">→ Login</a></p>
         @endauth
     </div>
 
@@ -83,7 +83,7 @@
                     </a>
                 </li>
                 <li style="margin-bottom: 10px;">
-                    <a href="{{ route('logout') }}" style="color: #D81C7F; text-decoration: none;">
+                    <a href="{{ route('frontend.logout') }}" style="color: #D81C7F; text-decoration: none;">
                         → Logout
                     </a>
                 </li>

@@ -28,8 +28,8 @@ Route::middleware(['auth'])->prefix('nutrition')->name('nutrition.')->group(func
 Route::get('/nutrition/questionnaire', [QuestionnaireController::class, 'show'])
     ->name('frontend.nutrition.questionnaire');
 
-Route::view('/personalized-diet-chart', 'frontend.nutrition.personalized_diet')
-    ->name('frontend.nutrition.personalized_diet');
+Route::view('/personalized-diet-chart', 'frontend.nutrition.diet-chart-overview')
+    ->name('frontend.nutrition.diet-chart-overview');
 
 Route::prefix('api/nutrition/questionnaire')->group(function () {
     Route::post('/submit', [QuestionnaireApiController::class, 'submitInitialAnswers'])

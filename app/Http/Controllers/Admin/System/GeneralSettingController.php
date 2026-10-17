@@ -24,7 +24,7 @@ class GeneralSettingController extends Controller
             'gst_number' => Setting::get('gst_number', 'Not Specified'),
         ];
 
-        return view('admin.settings.general', compact('settings'));
+        return view('admin.system.settings.general', compact('settings'));
     }
 
     public function update(UpdateGeneralSettingsRequest $request): RedirectResponse
@@ -48,7 +48,7 @@ class GeneralSettingController extends Controller
             'cod_enabled' => Setting::get('cod_enabled', '0'),
         ];
 
-        return view('admin.settings.payment_gateways', compact('settings'));
+        return view('admin.system.settings.payment-gateways', compact('settings'));
     }
 
     public function updatePaymentGateways(UpdatePaymentGatewaySettingsRequest $request): RedirectResponse
@@ -84,7 +84,7 @@ class GeneralSettingController extends Controller
             'google_client_secret' => Setting::get('google_client_secret', ''),
         ];
 
-        return view('admin.settings.auth', compact('settings'));
+        return view('admin.system.settings.auth', compact('settings'));
     }
 
     public function updateAuthSettings(UpdateAuthSettingsRequest $request): RedirectResponse

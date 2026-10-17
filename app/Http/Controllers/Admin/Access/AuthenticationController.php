@@ -12,12 +12,12 @@ class AuthenticationController extends Controller
 {
     public function forgotPassword()
     {
-        return view('authentication/forgotPassword');
+        return view('frontend.auth.forgot-password');
     }
 
     public function signIn()
     {
-        return view('authentication/signin');
+        return view('frontend.auth.signin');
     }
 
     public function login(AdminLoginRequest $request)
@@ -56,6 +56,6 @@ class AuthenticationController extends Controller
 
     public function signUp()
     {
-        return view('authentication/signUp');
+        return view('frontend.auth.signup');
     }
 }

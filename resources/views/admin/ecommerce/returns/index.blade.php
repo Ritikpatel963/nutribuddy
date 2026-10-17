@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Order Returns';
     $subTitle = 'Ecommerce / Returns';

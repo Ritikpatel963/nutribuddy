@@ -13,12 +13,12 @@ class DashboardController extends Controller
 
     public function index(): View
     {
-        return view('dashboard/index3', $this->overview->stats());
+        return view('admin.dashboard.overview', $this->overview->stats());
     }
 
     public function analytics(): View
     {
-        return view('dashboard.analytics', $this->analytics->build());
+        return view('admin.dashboard.analytics', $this->analytics->build());
     }
 
 }

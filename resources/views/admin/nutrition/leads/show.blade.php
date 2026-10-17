@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php($title = 'Review Diet Chart')
 @php($subTitle = 'Counsellor workspace')
 @push('styles')<link rel="stylesheet" href="{{ asset('css/nutrition-leads.css') }}">@endpush

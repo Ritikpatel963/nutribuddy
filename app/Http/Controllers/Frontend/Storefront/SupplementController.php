@@ -15,6 +15,6 @@ class SupplementController extends Controller
         $ids = $plan?->plan_data['supplement_product_ids'] ?? [];
         $products = Product::with('primaryImage')->where('is_active', true)->when($ids, fn ($query) => $query->whereIn('id', $ids))->latest()->get();
 
-        return view('pages.user-panel.supplement', compact('child', 'products'));
+        return view('frontend.account.supplements', compact('child', 'products'));
     }
 }

@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Loyalty Settings';
     $subTitle = 'Manage NB Coins earning and redemption rules';

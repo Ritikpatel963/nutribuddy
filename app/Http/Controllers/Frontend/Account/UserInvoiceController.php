@@ -18,7 +18,7 @@ class UserInvoiceController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('pages.user-panel.invoices', compact('orders'));
+        return view('frontend.account.invoices', compact('orders'));
     }
 
     public function page(Request $request, Order $order): View
@@ -26,7 +26,7 @@ class UserInvoiceController extends Controller
         $this->authorizeOrder($request, $order);
         $order->load(['items.product', 'items.productVariant', 'payments']);
 
-        return view('pages.user-panel.order-invoice', [
+        return view('frontend.account.orders.invoice', [
             'order' => $order,
             'invoiceNumber' => 'INV-' . $order->order_number,
         ]);
@@ -38,7 +38,7 @@ class UserInvoiceController extends Controller
         $order->load(['items.product', 'items.productVariant', 'payments']);
         $invoiceNumber = 'INV-' . $order->order_number;
 
-        return Pdf::loadView('invoices.printable', [
+        return Pdf::loadView('pdf.invoices.order', [
             'order' => $order,
             'invoiceNumber' => $invoiceNumber,
         ])->setPaper('a4')->download($invoiceNumber . '.pdf');

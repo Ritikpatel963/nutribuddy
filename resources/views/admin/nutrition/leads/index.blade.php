@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php($title = 'Nutrition Leads')
 @php($subTitle = 'Assign purchased diet plans to nutritionists')
 @push('styles')

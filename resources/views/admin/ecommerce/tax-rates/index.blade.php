@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.admin')
 @php
     $title = 'Tax Rates';
     $subTitle = 'Ecommerce / Tax Rates';

@@ -17,7 +17,7 @@ class SubscriptionPlanController extends Controller
     /** Display a listing of the diet service plans. */
     public function index(): View
     {
-        return view('admin.diet-plans.index', $this->subscriptionPlans->listingData());
+        return view('admin.nutrition.subscription-plans.index', $this->subscriptionPlans->listingData());
     }
 
     public function create(): View
@@ -46,7 +46,7 @@ class SubscriptionPlanController extends Controller
     /** Show the form for editing the specified plan. */
     public function edit(int $diet_plan): View
     {
-        return view('admin.diet-plans.edit', ['diet_plan' => $this->subscriptionPlans->find($diet_plan)]);
+        return view('admin.nutrition.subscription-plans.edit', ['diet_plan' => $this->subscriptionPlans->find($diet_plan)]);
     }
 
     /** Update the specified plan in storage. */
