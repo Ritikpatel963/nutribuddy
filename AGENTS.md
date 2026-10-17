@@ -76,3 +76,8 @@ When refactoring or creating controllers, follow the strict guidelines in `.agen
 - **Thin Controllers (150-Line Rule):** Controllers must strictly orchestrate HTTP requests. Move validation to Form Requests (`App\Http\Requests\<Domain>\...`) and business logic to Services (`App\Services\<Domain>\...`).
 - **Regression Testing:** Always run dedicated feature regression tests (`php artisan test`) before and after any controller modifications.
 
+
+
+## 7. Critical Product, Nutrition, Assessment, Subscription & Authentication Review
+
+Before modifying Products/checkout/coins, Nutrition/diet charts, Assessments, subscriptions/renewals, or customer/admin login, roles, sessions, or tokens, follow `.agent/rules/critical-domain-review.md` in addition to the relevant focused rules above. It defines the zero-breakage contracts, security and lifecycle checks, regression coverage, and staged migration boundaries for these domains.

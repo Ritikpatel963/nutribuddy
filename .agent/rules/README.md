@@ -18,3 +18,5 @@ This folder contains modular rules that guide AI assistants operating within the
    - Windows PowerShell standards, non-interactive artisan commands, cache clearing, and code integrity guidelines.
 7. [controller-optimization-and-refactor.md](file:///e:/website-project/Nutribuddy/.agent/rules/controller-optimization-and-refactor.md)
    - Zero-breakage invariants, domain directory organization, thin controller (150-line rule), form requests, and regression testing standards.
+8. [critical-domain-review.md](file:///e:/website-project/Nutribuddy/.agent/rules/critical-domain-review.md)
+   - Review and regression standards for Products/checkout/coins, Nutrition/diet charts, Assessments, subscription lifecycle/renewals, and customer/admin authentication, sessions, tokens, and permissions.
