@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Models\DietSubscription;
 use App\Models\Nutrition\Child;
 use App\Models\Nutrition\ChildAssessment;
+use App\Models\Nutrition\DeficiencyRule;
 use App\Models\Nutrition\DietPlan;
 use App\Models\NutritionLead;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\Nutrition\ChildProfileService;
 use App\Services\Nutrition\DietChartGeneratorService;
+use App\Services\Nutrition\RiskFlaggingEngine;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -126,6 +128,33 @@ class DietChartPipelineRegressionTest extends TestCase
         $this->assertSame('vegan', $assessment->diet_type);
         $this->assertSame('nuts', $assessment->allergies);
         $this->assertSame('South India', $assessment->region);
+    }
+
+    public function test_visible_signs_are_normalized_and_create_repeat_safe_clinical_flags(): void
+    {
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        $assessment = ChildAssessment::create([
+            'child_id' => $child->id,
+            'model_level' => 'basic',
+            'current_weight_kg' => 20,
+            'current_height_cm' => 110,
+            'diet_type' => 'vegetarian',
+        ]);
+        DeficiencyRule::create(['sign' => 'Pale eyes/skin', 'likely_gap' => 'Iron risk']);
+
+        $profile = app(ChildProfileService::class)->normalize($assessment, [
+            26 => ['Pale eyes/skin', 'None', 'Pale eyes/skin'],
+        ]);
+
+        $this->assertSame(['Pale eyes/skin'], $profile['visible_signs']);
+        $engine = app(RiskFlaggingEngine::class);
+        $first = $engine->generateFlags($assessment, $profile);
+        $second = $engine->generateFlags($assessment, $profile);
+
+        $this->assertCount(1, $first);
+        $this->assertCount(1, $second);
+        $this->assertDatabaseCount('clinical_flags', 1);
     }
 
     public function test_guest_cannot_submit_a_questionnaire(): void

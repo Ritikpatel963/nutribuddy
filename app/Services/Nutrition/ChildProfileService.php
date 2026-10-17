@@ -61,6 +61,7 @@ class ChildProfileService
         $height = $this->heightInCentimeters($answers[5] ?? $assessment->current_height_cm) ?? 0;
         $bmi = $height > 0 ? round($weight / (($height / 100) ** 2), 2) : null;
         $medicalCondition = $this->text($answers[12] ?? null);
+        $visibleSigns = $this->visibleSigns($answers[26] ?? []);
         $profile = [
             'age_years' => $child?->dob ? Carbon::parse($child->dob)->age : null,
             'age_months' => $child?->dob ? Carbon::parse($child->dob)->diffInMonths(now()) : null,
@@ -75,6 +76,7 @@ class ChildProfileService
             'dairy_glasses' => $this->dairyGlasses($answers[10] ?? $assessment->dairy_glasses),
             'cooking_medium' => $this->text($answers[11] ?? $assessment->cooking_medium),
             'medical_condition' => $medicalCondition,
+            'visible_signs' => $visibleSigns,
             // No growth reference table exists yet, so no medical threshold is inferred.
             'growth_profile' => 'unknown',
             'professional_review_required' => $this->requiresReview($medicalCondition),
@@ -96,15 +98,19 @@ class ChildProfileService
     {
         if (is_numeric($value)) {
             $height = (float) $value;
+
             return $height > 0 ? $height : null;
         }
 
         $value = trim((string) $value);
-        if ($value === '') return null;
+        if ($value === '') {
+            return null;
+        }
 
         if (preg_match('/\(\s*(\d+(?:\.\d+)?)\s*cm\s*\)/i', $value, $matches)
             || preg_match('/^\s*(\d+(?:\.\d+)?)\s*cm\s*$/i', $value, $matches)) {
             $height = (float) $matches[1];
+
             return $height > 0 ? $height : null;
         }
 
@@ -112,6 +118,7 @@ class ChildProfileService
             $feet = (float) $matches[1];
             $inches = isset($matches[2]) ? (float) $matches[2] : 0;
             $height = ($feet * 30.48) + ($inches * 2.54);
+
             return $height > 0 ? $height : null;
         }
 
@@ -134,9 +141,14 @@ class ChildProfileService
     private function byQuestionOrder(array $answers): array
     {
         $ids = array_filter(array_keys($answers), 'is_numeric');
-        if ($ids === []) return $answers;
+        if ($ids === []) {
+            return $answers;
+        }
         $orders = QuestionnaireQuestion::whereIn('id', $ids)->pluck('sort_order', 'id');
-        foreach ($orders as $id => $order) $answers[$order] = $answers[$id];
+        foreach ($orders as $id => $order) {
+            $answers[$order] = $answers[$id];
+        }
+
         return $answers;
     }
 
@@ -151,6 +163,7 @@ class ChildProfileService
     private function allergies(mixed $value): array
     {
         $values = is_array($value) ? $value : preg_split('/[,|]/', (string) $value);
+
         return collect($values)->map(fn ($item) => strtolower(trim((string) $item)))->map(function ($item) {
             return match (true) {
                 str_contains($item, 'lactose') => 'lactose', str_contains($item, 'dairy') => 'dairy',
@@ -181,12 +194,26 @@ class ChildProfileService
 
     private function requiresReview(?string $condition): bool
     {
-        return $condition !== null && !in_array(strtolower($condition), ['none', 'no', 'n/a', 'nil'], true);
+        return $condition !== null && ! in_array(strtolower($condition), ['none', 'no', 'n/a', 'nil'], true);
+    }
+
+    /** @return list<string> */
+    private function visibleSigns(mixed $value): array
+    {
+        $signs = is_array($value) ? $value : preg_split('/[,|]/', (string) $value);
+
+        return collect($signs)
+            ->map(fn ($sign) => trim((string) $sign))
+            ->reject(fn ($sign) => $sign === '' || strtolower($sign) === 'none')
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function text(mixed $value): ?string
     {
         $value = is_array($value) ? implode(', ', $value) : trim((string) $value);
+
         return $value === '' ? null : $value;
     }
 }
