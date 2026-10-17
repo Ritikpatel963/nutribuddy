@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AssessmentAttempt;
 use App\Models\Nutrition\Child;
 use App\Models\Nutrition\ChildAssessment;
 use App\Models\Nutrition\MealItemLog;
@@ -32,10 +33,65 @@ class NutritionOwnershipRegressionTest extends TestCase
 
         foreach (['/nutrition', '/nutrition-backup', '/meal-plan'] as $path) {
             $this->actingAs($owner)
-                ->get($path . '?child_id=' . $child->id)
+                ->get($path.'?child_id='.$child->id)
                 ->assertOk()
                 ->assertViewMissing('child');
         }
+    }
+
+    public function test_child_path_is_clean_and_scoped_to_the_authenticated_parent(): void
+    {
+        $owner = User::factory()->create();
+        $otherParent = User::factory()->create();
+        $child = Child::create([
+            'user_id' => $owner->id,
+            'name' => 'Owned child',
+            'sex' => 'girl',
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('nutrition.child', $child))
+            ->assertOk()
+            ->assertViewHas('child', fn ($viewChild) => $viewChild->is($child));
+
+        $this->actingAs($otherParent)
+            ->get(route('nutrition.child', $child))
+            ->assertNotFound();
+    }
+
+    public function test_parent_cannot_read_or_regenerate_another_users_diet_chart(): void
+    {
+        $owner = User::factory()->create();
+        $otherParent = User::factory()->create();
+        $child = Child::create([
+            'user_id' => $owner->id,
+            'name' => 'Private child',
+            'sex' => 'girl',
+        ]);
+
+        $this->actingAs($otherParent)
+            ->get(route('child.diet-chart.show', $child))
+            ->assertNotFound();
+
+        $this->get(route('child.diet-chart.download-pdf', $child))
+            ->assertNotFound();
+
+        $this->post(route('child.diet-chart.regenerate', $child))
+            ->assertNotFound();
+    }
+
+    public function test_parent_cannot_read_another_users_assessment_attempt(): void
+    {
+        $owner = User::factory()->create();
+        $otherParent = User::factory()->create();
+        $attempt = AssessmentAttempt::create(['user_id' => $owner->id]);
+
+        $this->actingAs($otherParent)
+            ->get(route('user.assessment.result', $attempt))
+            ->assertNotFound();
+
+        $this->get(route('user.assessment.detail', $attempt))
+            ->assertNotFound();
     }
 
     public function test_owned_child_without_an_assessment_keeps_existing_nutrition_view_data(): void

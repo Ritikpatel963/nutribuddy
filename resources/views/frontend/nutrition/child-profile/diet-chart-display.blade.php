@@ -974,7 +974,7 @@
 
         // Generate New Plan
         document.getElementById('generateNewPlan')?.addEventListener('click', function() {
-            window.location.href = '{{ route("frontend.nutrition.questionnaire", ["child_id" => $child->id]) }}';
+            window.location.href = '{{ route("frontend.nutrition.questionnaire.child", $child) }}';
         });
     </script>
 @endsection

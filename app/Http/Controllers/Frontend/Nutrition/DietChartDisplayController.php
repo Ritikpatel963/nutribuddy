@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Nutrition\Child;
 use App\Services\Nutrition\DietChartDisplayService;
 use App\Services\Nutrition\DietChartGeneratorService;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -16,24 +18,26 @@ class DietChartDisplayController extends Controller
         private readonly DietChartGeneratorService $dietChartGenerator,
     ) {}
 
-    public function show(Child $child)
+    public function show(Request $request, Child $child)
     {
+        $child = $request->user()->children()->findOrFail($child->id);
+
         try {
             $this->chartDisplay->authorizeChildAccess($child);
 
             $assessment = $child->assessments()->latest()->first();
 
-            if (!$assessment) {
+            if (! $assessment) {
                 return view('frontend.nutrition.child-profile.no-assessment', [
                     'child' => $child,
-                    'message' => 'No health assessment found. Please complete the questionnaire first.'
+                    'message' => 'No health assessment found. Please complete the questionnaire first.',
                 ]);
             }
 
             $dietPlan = $assessment->dietPlans()->where('status', 'active')->where('review_status', 'approved')->latest()->first();
             $purchasedPlans = $this->chartDisplay->getUserPurchasedPlansCount($child);
 
-            if (!$dietPlan) {
+            if (! $dietPlan) {
                 return view('child-profile.diet-chart-display', [
                     'child' => $child,
                     'assessment' => $assessment,
@@ -41,7 +45,7 @@ class DietChartDisplayController extends Controller
                     'purchasedPlans' => $purchasedPlans,
                     'sevenDayPlan' => [],
                     'nutrientGaps' => [],
-                    'clinicalTips' => []
+                    'clinicalTips' => [],
                 ]);
             }
 
@@ -49,7 +53,7 @@ class DietChartDisplayController extends Controller
             if (is_string($planData)) {
                 $planData = json_decode($planData, true) ?? [];
             }
-            if (!is_array($planData)) {
+            if (! is_array($planData)) {
                 $planData = [];
             }
 
@@ -66,34 +70,38 @@ class DietChartDisplayController extends Controller
                 'sevenDayPlan' => $sevenDayPlan,
                 'nutrientGaps' => $nutrientGaps,
                 'clinicalTips' => $clinicalTips,
-                'dailyNutrients' => $planData['daily_nutrients'] ?? []
+                'dailyNutrients' => $planData['daily_nutrients'] ?? [],
             ]);
 
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (AuthorizationException $e) {
             Log::warning('Unauthorized diet chart access attempt', [
                 'user_id' => Auth::id(),
                 'child_id' => $child->id ?? null,
                 'child_user_id' => $child->user_id ?? null,
             ]);
+
             return redirect()->route('child-profile')->with('error', 'Unauthorized access. This child profile does not belong to you.');
         } catch (\Exception $e) {
-            Log::error('Diet Chart Display Error: ' . $e->getMessage(), [
+            Log::error('Diet Chart Display Error: '.$e->getMessage(), [
                 'user_id' => Auth::id(),
                 'child_id' => $child->id ?? null,
                 'exception' => get_class($e),
             ]);
+
             return redirect()->route('child-profile')->with('error', 'Error loading diet plan');
         }
     }
 
-    public function regenerate(Child $child)
+    public function regenerate(Request $request, Child $child)
     {
+        $child = $request->user()->children()->findOrFail($child->id);
+
         try {
             $this->chartDisplay->authorizeChildAccess($child);
 
             $assessment = $child->assessments()->latest()->first();
 
-            if (!$assessment) {
+            if (! $assessment) {
                 return redirect()->route('child-profile')->with('error', 'No assessment found');
             }
 
@@ -112,7 +120,7 @@ class DietChartDisplayController extends Controller
                 ->toArray();
 
             $consumedSubscriptionId = $this->chartDisplay->decrementPurchasedPlans($child);
-            if (!$consumedSubscriptionId) {
+            if (! $consumedSubscriptionId) {
                 return redirect()->route('child-profile')
                     ->with('error', 'No plans remaining. Purchase more plans to regenerate.');
             }
@@ -122,23 +130,25 @@ class DietChartDisplayController extends Controller
 
             if ($result['success']) {
                 $quotaConsumed = false;
+
                 return redirect()->route('child-profile')
                     ->with('success', 'Diet plan regenerated successfully!');
             } else {
                 $this->chartDisplay->restorePurchasedPlan($consumedSubscriptionId);
                 $quotaConsumed = false;
+
                 return redirect()->route('child-profile')
-                    ->with('error', 'Failed to regenerate diet plan: ' . ($result['message'] ?? 'Unknown error'));
+                    ->with('error', 'Failed to regenerate diet plan: '.($result['message'] ?? 'Unknown error'));
             }
 
         } catch (\Exception $e) {
             if (isset($consumedSubscriptionId) && ($quotaConsumed ?? false)) {
                 $this->chartDisplay->restorePurchasedPlan($consumedSubscriptionId);
             }
-            Log::error('Diet Chart Regeneration Error: ' . $e->getMessage());
+            Log::error('Diet Chart Regeneration Error: '.$e->getMessage());
+
             return redirect()->route('child-profile')
                 ->with('error', 'Error regenerating diet plan');
         }
     }
-
 }

@@ -11,9 +11,7 @@ use Illuminate\View\View;
 
 class AssessmentController extends Controller
 {
-    public function __construct(private readonly AssessmentService $service)
-    {
-    }
+    public function __construct(private readonly AssessmentService $service) {}
 
     // ─── Quiz Page ────────────────────────────────────────────────────────────
 
@@ -42,8 +40,8 @@ class AssessmentController extends Controller
         }
 
         $questionsGrouped = $this->service->getActiveQuestionsGrouped($limit);
-        $questions        = $this->service->getActiveQuestions($limit);
-        $totalQuestions   = $questions->count();
+        $questions = $this->service->getActiveQuestions($limit);
+        $totalQuestions = $questions->count();
 
         // We will no longer abort, so the view can display a friendly empty state message.
 
@@ -75,9 +73,9 @@ class AssessmentController extends Controller
 
     // ─── Result Page ──────────────────────────────────────────────────────────
 
-    public function result(AssessmentAttempt $attempt): View
+    public function result(Request $request, AssessmentAttempt $attempt): View
     {
-        abort_unless((int) $attempt->user_id === (int) auth()->id(), 403);
+        $attempt = $request->user()->assessmentAttempts()->findOrFail($attempt->id);
 
         $attempt->load(['sectionScores', 'answers.question', 'answers.option']);
 
@@ -126,9 +124,9 @@ class AssessmentController extends Controller
 
     // ─── Detail / Breakdown ───────────────────────────────────────────────────
 
-    public function detail(AssessmentAttempt $attempt): View
+    public function detail(Request $request, AssessmentAttempt $attempt): View
     {
-        abort_unless((int) $attempt->user_id === (int) auth()->id(), 403);
+        $attempt = $request->user()->assessmentAttempts()->findOrFail($attempt->id);
 
         $attempt->load([
             'answers.question.options',

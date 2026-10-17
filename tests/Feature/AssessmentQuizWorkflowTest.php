@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\AssessmentOption;
 use App\Models\AssessmentQuestion;
+use App\Models\Nutrition\Child;
+use App\Models\Nutrition\ChildAssessment;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\AssessmentService;
@@ -48,6 +50,35 @@ class AssessmentQuizWorkflowTest extends TestCase
 
         $response->assertRedirect(route('diet_chart'));
         $response->assertSessionHas('error');
+    }
+
+    public function test_child_questionnaire_uses_a_path_parameter_and_checks_ownership(): void
+    {
+        SubscriptionPlan::create([
+            'name' => 'Basic Assessment',
+            'slug' => 'basic',
+            'price' => 499,
+            'is_active' => true,
+        ]);
+        $owner = User::factory()->create();
+        $otherParent = User::factory()->create();
+        $child = Child::create(['user_id' => $owner->id, 'name' => 'Owned child', 'sex' => 'girl']);
+        ChildAssessment::create([
+            'child_id' => $child->id,
+            'model_level' => 'basic',
+            'current_weight_kg' => 15,
+            'current_height_cm' => 95,
+            'diet_type' => 'vegetarian',
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('frontend.nutrition.questionnaire.child', $child))
+            ->assertOk()
+            ->assertViewHas('child', fn ($viewChild) => $viewChild->is($child));
+
+        $this->actingAs($otherParent)
+            ->get(route('frontend.nutrition.questionnaire.child', $child))
+            ->assertNotFound();
     }
 
     public function test_admin_with_permission_can_view_assessment_questions(): void

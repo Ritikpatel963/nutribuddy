@@ -74,6 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::view('/user-return', 'frontend.account.returns.show')->name('user-return');
     Route::view('/userdashboard', 'frontend.account.dashboard')->name('userdashboard');
     Route::get('/nutrition', [NutritionController::class, 'nutrition'])->name('nutrition.index');
+    Route::get('/nutrition/child/{child}', [NutritionController::class, 'nutrition'])
+        ->whereNumber('child')
+        ->name('nutrition.child');
     Route::get('/nutrition-backup', [NutritionBackupController::class, 'nutritionBackup'])->name('nutrition.backup');
     Route::get('/meal-plan', [MealPlanController::class, 'mealPlan'])->name('meal-plan');
     Route::get('/supplement', [SupplementController::class, 'index'])->name('supplement');

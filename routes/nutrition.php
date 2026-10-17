@@ -28,6 +28,11 @@ Route::middleware(['auth'])->prefix('nutrition')->name('nutrition.')->group(func
 Route::get('/nutrition/questionnaire', [QuestionnaireController::class, 'show'])
     ->name('frontend.nutrition.questionnaire');
 
+Route::get('/nutrition/questionnaire/child/{child}', [QuestionnaireController::class, 'showForChild'])
+    ->middleware('auth')
+    ->whereNumber('child')
+    ->name('frontend.nutrition.questionnaire.child');
+
 Route::view('/personalized-diet-chart', 'frontend.nutrition.diet-chart-overview')
     ->name('frontend.nutrition.diet-chart-overview');
 
