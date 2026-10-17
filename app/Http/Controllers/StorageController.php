@@ -20,7 +20,7 @@ class StorageController extends Controller
 
         abort_unless($disk->exists($normalizedPath), 404);
 
-        return response()->file($disk->path($normalizedPath), [
+        return $disk->response($normalizedPath, null, [
             'Cache-Control' => 'public, max-age=31536000',
         ]);
     }
