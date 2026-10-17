@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Frontend\Account;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Account\SendOtpRequest;
 use App\Http\Requests\Frontend\Account\VerifyOtpRequest;
+use App\Models\User;
+use App\Services\Notifications\AiSensyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -20,36 +20,42 @@ class AuthController extends Controller
         return redirect()->route('home', ['login' => 1]);
     }
 
-    public function sendOtp(SendOtpRequest $request)
+    public function sendOtp(SendOtpRequest $request, AiSensyService $aiSensy)
     {
         $phone = $request->phone;
-        $otp = '123456';
+        $isDevelopment = app()->environment(['local', 'testing']);
+        $otp = $isDevelopment ? '123456' : (string) random_int(100000, 999999);
         $expiresAt = now()->addMinutes(10);
 
         $user = User::where('phone', $phone)->first();
         if ($user && $user->role !== 'customer') {
             return response()->json([
                 'success' => false,
-                'message' => 'Admin accounts cannot login via OTP. Please use the admin portal.'
+                'message' => 'Admin accounts cannot login via OTP. Please use the admin portal.',
             ], 403);
         }
 
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
-                'name' => 'Customer ' . substr($phone, -4),
+                'name' => 'Customer '.substr($phone, -4),
                 'phone' => $phone,
-                'email' => $phone . '@nutribuddy.com',
+                'email' => $phone.'@nutribuddy.com',
                 'password' => Hash::make(Str::random(16)),
                 'role' => 'customer',
             ]);
         }
 
-        $user->otp = $otp;
+        $user->otp = Hash::make($otp);
         $user->otp_expires_at = $expiresAt;
         $user->save();
 
-        if (app()->environment('local')) {
-            Log::info("Frontend OTP for {$phone}: {$otp}");
+        if (! $isDevelopment && ! $aiSensy->sendOtp($phone, $otp)) {
+            $user->forceFill(['otp' => null, 'otp_expires_at' => null])->save();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to send a verification code right now. Please try again later.',
+            ], 503);
         }
 
         $payload = [
@@ -57,7 +63,7 @@ class AuthController extends Controller
             'message' => 'OTP sent successfully. Use 123456.',
         ];
 
-        if (app()->environment('local')) {
+        if ($isDevelopment && app()->environment('local')) {
             $payload['otp'] = $otp;
         }
 
@@ -67,22 +73,21 @@ class AuthController extends Controller
     public function verifyOtp(VerifyOtpRequest $request)
     {
         $user = User::where('phone', $request->phone)
-            ->where('otp', $request->otp)
             ->where('otp_expires_at', '>', now())
             ->first();
 
-        if ($user) {
+        if ($user && $user->otp && Hash::check($request->otp, $user->otp)) {
             if ($user->role !== 'customer') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Admin accounts cannot login via OTP.'
+                    'message' => 'Admin accounts cannot login via OTP.',
                 ], 403);
             }
 
-            if (!$user->is_active) {
+            if (! $user->is_active) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Your account has been deactivated. Please contact support.'
+                    'message' => 'Your account has been deactivated. Please contact support.',
                 ], 403);
             }
 
@@ -105,7 +110,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'Invalid or expired OTP.'
+            'message' => 'Invalid or expired OTP.',
         ], 422);
     }
 

@@ -8,6 +8,39 @@ use Illuminate\Support\Facades\Log;
 
 class AiSensyService
 {
+    public function sendOtp(string $phone, string $otp): bool
+    {
+        $apiKey = (string) config('services.aisensy.api_key');
+        $campaignName = (string) config('services.aisensy.otp_campaign');
+        $destination = $this->normalizePhone($phone);
+
+        if (! (bool) config('services.aisensy.enabled', true) || $apiKey === '' || $campaignName === '' || $destination === '') {
+            return false;
+        }
+
+        try {
+            $response = Http::acceptJson()
+                ->asJson()
+                ->withOptions(['proxy' => ''])
+                ->timeout(20)
+                ->post((string) config('services.aisensy.endpoint'), [
+                    'apiKey' => $apiKey,
+                    'campaignName' => $campaignName,
+                    'destination' => $destination,
+                    'userName' => 'Customer',
+                    'templateParams' => [$otp],
+                    'tags' => ['authentication', 'otp'],
+                    'attributes' => [],
+                ]);
+
+            return $response->successful();
+        } catch (\Throwable $exception) {
+            Log::error('AiSensy OTP delivery failed.', ['message' => $exception->getMessage()]);
+
+            return false;
+        }
+    }
+
     public function sendOrderPaid(Order $order): bool
     {
         return $this->sendCampaign(
@@ -16,7 +49,7 @@ class AiSensyService
             [
                 $order->customer_name ?: 'Customer',
                 $order->order_number,
-                'Rs. ' . number_format((float) $order->grand_total, 0),
+                'Rs. '.number_format((float) $order->grand_total, 0),
                 route('user.orders.detail-page', $order),
             ],
             ['order_paid', 'cashfree']
@@ -92,7 +125,7 @@ class AiSensyService
         }
 
         if (strlen($digits) === 10) {
-            return '91' . $digits;
+            return '91'.$digits;
         }
 
         if (strlen($digits) === 12 && str_starts_with($digits, '91')) {

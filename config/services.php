@@ -49,6 +49,7 @@ return [
         'api_key' => env('AISENSY_API_KEY'),
         'endpoint' => env('AISENSY_ENDPOINT', 'https://backend.aisensy.com/campaign/t1/api/v2'),
         'order_paid_campaign' => env('AISENSY_ORDER_PAID_CAMPAIGN'),
+        'otp_campaign' => env('AISENSY_OTP_CAMPAIGN'),
         'webhook_secret' => env('AISENSY_WEBHOOK_SECRET'),
     ],
 
@@ -66,10 +67,9 @@ return [
     |--------------------------------------------------------------------------
     */
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID', ''),
+        'client_id' => env('GOOGLE_CLIENT_ID', ''),
         'client_secret' => env('GOOGLE_CLIENT_SECRET', ''),
-        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
     ],
 
 ];
-
