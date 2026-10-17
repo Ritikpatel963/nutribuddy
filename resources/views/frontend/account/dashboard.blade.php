@@ -240,7 +240,7 @@
           </p>
         </div>
         <div>
-          <a href="/check-in">
+          <a href="{{ route('check-in') }}">
           <button class="btn-quarterly">Quarterly check-in</button>
         </a></div>
       </div>

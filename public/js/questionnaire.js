@@ -136,7 +136,7 @@ async function qzInitiatePayment(planSlug, cycle, childId, btn) {
             alert(cd.message || 'Failed to initialize payment.');
             btn.textContent = 'Submit & Pay'; btn.disabled = false; return;
         }
-        if (cd.gateway === 'free') { window.location.href = '/nutrition/child/' + encodeURIComponent(childId); return; }
+        if (cd.gateway === 'free') { window.location.href = '/user/pages/nutrition/child/' + encodeURIComponent(childId); return; }
 
         if (cd.gateway === 'cashfree') {
             btn.textContent = 'Redirecting...';

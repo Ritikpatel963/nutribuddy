@@ -16,7 +16,7 @@ class NutritionOwnershipRegressionTest extends TestCase
 
     public function test_guest_cannot_open_authenticated_nutrition_pages(): void
     {
-        foreach (['/nutrition', '/nutrition-backup', '/meal-plan'] as $path) {
+        foreach ([route('nutrition.index'), route('nutrition.backup'), route('meal-plan')] as $path) {
             $this->get($path)->assertRedirect(route('frontend.login'));
         }
     }
@@ -31,7 +31,7 @@ class NutritionOwnershipRegressionTest extends TestCase
             'sex' => 'girl',
         ]);
 
-        foreach (['/nutrition', '/nutrition-backup', '/meal-plan'] as $path) {
+        foreach ([route('nutrition.index'), route('nutrition.backup'), route('meal-plan')] as $path) {
             $this->actingAs($owner)
                 ->get($path.'?child_id='.$child->id)
                 ->assertOk()
@@ -104,17 +104,17 @@ class NutritionOwnershipRegressionTest extends TestCase
         ]);
 
         $this->actingAs($parent)
-            ->get('/nutrition')
+            ->get(route('nutrition.index'))
             ->assertOk()
             ->assertViewIs('pages.user-panel.nutrition')
             ->assertViewHas('child', fn ($viewChild) => $viewChild->is($child));
 
-        $this->get('/nutrition-backup')
+        $this->get(route('nutrition.backup'))
             ->assertOk()
             ->assertViewIs('pages.user-panel.nutrition_backup')
             ->assertViewHas('child', fn ($viewChild) => $viewChild->is($child));
 
-        $this->get('/meal-plan')
+        $this->get(route('meal-plan'))
             ->assertOk()
             ->assertViewIs('pages.user-panel.meal-plan')
             ->assertViewMissing('jsDays');
@@ -137,17 +137,17 @@ class NutritionOwnershipRegressionTest extends TestCase
         ]);
 
         $this->actingAs($parent)
-            ->get('/nutrition')
+            ->get(route('nutrition.index'))
             ->assertOk()
             ->assertViewHas('latestPlan', null)
             ->assertViewHas('todayTarget', ['energy_kcal' => 2100, 'protein_g' => 152, 'fat_g' => 61]);
 
-        $this->get('/nutrition-backup')
+        $this->get(route('nutrition.backup'))
             ->assertOk()
             ->assertViewHas('latestPlan', null)
             ->assertViewMissing('dailyTargets');
 
-        $this->get('/meal-plan')
+        $this->get(route('meal-plan'))
             ->assertOk()
             ->assertViewHas('reviewPending', false);
     }
