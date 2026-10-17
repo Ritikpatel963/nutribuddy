@@ -52,7 +52,7 @@ class AuthenticationController extends Controller
     {
         Auth::guard('admin')->logout();
 
-        $request->session()->invalidate();
+        $request->session()->regenerate();
         $request->session()->regenerateToken();
 
         return redirect()->route('signin')

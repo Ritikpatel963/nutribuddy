@@ -2,12 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request as HttpRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
 use Tests\TestCase;
 
 class FrontendAuthSecurityTest extends TestCase
@@ -91,6 +94,68 @@ class FrontendAuthSecurityTest extends TestCase
 
         $this->assertNotSame($sessionId, session()->getId());
         $this->assertGuest('web');
-        $this->get(route('admin.index'))->assertOk();
+        $this->assertAuthenticatedAs($admin, 'admin');
+        $this->get(route('admin.index'))->assertForbidden();
+    }
+
+    public function test_admin_logout_rotates_the_session_and_preserves_web_guard(): void
+    {
+        $customer = User::factory()->create(['role' => 'customer', 'is_active' => true]);
+        $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+
+        $this->actingAs($customer, 'web')->actingAs($admin, 'admin');
+        $sessionId = session()->getId();
+
+        $this->post(route('admin.logout'))->assertRedirect(route('signin'));
+
+        $this->assertNotSame($sessionId, session()->getId());
+        $this->assertGuest('admin');
+        $this->assertAuthenticatedAs($customer, 'web');
+    }
+
+    public function test_user_serialization_never_exposes_otp_or_expiration(): void
+    {
+        $user = User::factory()->create([
+            'otp' => Hash::make('123456'),
+            'otp_expires_at' => now()->addMinutes(5),
+        ]);
+
+        $this->assertArrayNotHasKey('otp', $user->toArray());
+        $this->assertArrayNotHasKey('otp_expires_at', $user->toArray());
+    }
+
+    public function test_google_login_rejects_external_return_urls(): void
+    {
+        Setting::set('google_login_enabled', '1', 'auth');
+        $provider = \Mockery::mock();
+        $provider->shouldReceive('redirect')->once()->andReturn(redirect('/oauth-started'));
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        $this->get(route('frontend.google.redirect', ['redirect' => 'https://example.net/phishing']))
+            ->assertRedirect('/oauth-started')
+            ->assertSessionHas('url.intended', route('userdashboard'));
+    }
+
+    public function test_google_oauth_errors_are_logged_without_request_parameters_or_returned_details(): void
+    {
+        Setting::set('google_login_enabled', '1', 'auth');
+        Log::spy();
+        $provider = \Mockery::mock();
+        $provider->shouldReceive('user')->once()->andThrow(new \RuntimeException('provider-secret-detail'));
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($provider);
+
+        $this->get('/auth/google/callback?code=private-code&state=private-state')
+            ->assertRedirect(route('home'))
+            ->assertSessionHas('error', 'Google login failed. Please try again later.')
+            ->assertSessionMissing('url.intended');
+
+        Log::shouldHaveReceived('error')->once()->with('Google OAuth callback failed', [
+            'exception' => \RuntimeException::class,
+        ]);
+    }
+
+    public function test_debug_authorization_page_is_not_registered_outside_local_environment(): void
+    {
+        $this->get('/debug/authorization')->assertNotFound();
     }
 }

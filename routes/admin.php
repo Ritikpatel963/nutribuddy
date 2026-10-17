@@ -21,7 +21,7 @@ use App\Http\Controllers\Frontend\Account\UserInvoiceController;
 use Illuminate\Support\Facades\Route;
 
 // ── Dashboard & Analytics ─────────────────────────────────────────────────────
-Route::middleware('auth:admin')->controller(DashboardController::class)->group(function () {
+Route::middleware(['auth:admin', 'permission:view dashboard|manage dashboard,admin'])->controller(DashboardController::class)->group(function () {
     Route::get('/admin', 'index')->name('admin.index');
 
     Route::middleware('permission:view analytics|manage analytics,admin')->group(function () {

@@ -39,7 +39,12 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\OrderItem::observe(\App\Observers\OrderItemObserver::class);
 
         RateLimiter::for('admin-login', function (Request $request) {
-            return Limit::perMinute(10)->by('admin-login:' . $request->ip());
+            $email = Str::lower(trim((string) $request->input('email')));
+
+            return [
+                Limit::perMinute(10)->by('admin-login:ip:' . $request->ip()),
+                Limit::perMinute(5)->by('admin-login:email:' . ($email ?: $request->ip())),
+            ];
         });
 
         RateLimiter::for('otp-send', function (Request $request) {

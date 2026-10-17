@@ -41,9 +41,10 @@ require __DIR__ . '/storefront.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/nutrition.php';
 
-// Debug: Authorization check (remove in production)
-Route::middleware(['auth'])->get('/debug/authorization', function () {
-    return view('debug/authorization-check');
-})->name('debug.authorization');
+if (app()->environment('local')) {
+    Route::middleware(['auth'])->get('/debug/authorization', function () {
+        return view('debug/authorization-check');
+    })->name('debug.authorization');
+}
 
 require __DIR__ . '/frontend-diet-chart.php';

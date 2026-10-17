@@ -150,4 +150,11 @@ class RolePermissionTest extends TestCase
         // Sidebar should NOT contain Products Management (because lacks view products perm)
         $response->assertDontSee('Products Management');
     }
+
+    public function test_admin_without_dashboard_permission_cannot_view_dashboard(): void
+    {
+        $this->actingAs($this->unauthorizedUser, 'admin')
+            ->get(route('admin.index'))
+            ->assertForbidden();
+    }
 }
