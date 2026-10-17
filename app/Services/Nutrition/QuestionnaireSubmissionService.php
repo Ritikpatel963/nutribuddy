@@ -5,6 +5,7 @@ namespace App\Services\Nutrition;
 use App\Models\Nutrition\Child;
 use App\Models\Nutrition\ChildAssessment;
 use App\Models\Nutrition\QuestionnaireAnswer;
+use App\Models\Nutrition\QuestionnaireQuestion;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +20,22 @@ class QuestionnaireSubmissionService
                 ? $user->children()->findOrFail($validated['child_id'])
                 : null;
 
-            $name = $validated['q_1'] ?? $child?->name ?? 'Child';
-            $dobInput = $validated['q_2'] ?? null;
+            $answers = collect($validated)
+                ->filter(fn ($value, $key) => preg_match('/^q_[1-9]\d*$/', (string) $key))
+                ->mapWithKeys(fn ($value, $key) => [(int) substr($key, 2) => $value]);
+            $sortOrders = QuestionnaireQuestion::query()
+                ->whereIn('id', $answers->keys())
+                ->pluck('sort_order', 'id');
+            $answersByOrder = $answers->mapWithKeys(fn ($value, $questionId) => [
+                $sortOrders[$questionId] ?? $questionId => $value,
+            ]);
+
+            $name = $answersByOrder->get(1) ?? $child?->name ?? 'Child';
+            $dobInput = $answersByOrder->get(2);
             $dob = is_string($dobInput) && strlen($dobInput) > 5 && strtotime($dobInput) !== false
                 ? Carbon::parse($dobInput)
                 : null;
-            $sexInput = $validated['q_3'] ?? 'boy';
+            $sexInput = $answersByOrder->get(3, 'boy');
             $sex = strtolower((string) (is_array($sexInput) ? ($sexInput[0] ?? 'boy') : $sexInput));
             $sex = in_array($sex, ['boy', 'girl'], true) ? $sex : 'boy';
 
@@ -36,22 +47,18 @@ class QuestionnaireSubmissionService
             ]);
 
             $previousAssessment = $child->assessments()->with('answers')->latest()->first();
-            $answers = collect($validated)
-                ->filter(fn ($value, $key) => preg_match('/^q_[1-9]\d*$/', (string) $key))
-                ->mapWithKeys(fn ($value, $key) => [(int) substr($key, 2) => $value]);
-
             $assessment = ChildAssessment::create([
                 'child_id' => $child->id,
                 'model_level' => $validated['plan_slug'] ?? 'basic',
-                'current_weight_kg' => (float) ($answers->get(4) ?? 0) ?: null,
-                'current_height_cm' => app(ChildProfileService::class)->heightInCentimeters($answers->get(5)),
-                'diet_type' => $this->answerText($answers->get(6), 'vegetarian'),
-                'allergies' => $this->answerText($answers->get(7), 'None'),
-                'region' => $this->answerText($answers->get(8), 'Pan India'),
-                'activity_level' => $this->answerText($answers->get(13)),
-                'main_goal' => $this->answerText($answers->get(22)),
-                'budget' => $this->answerText($answers->get(35)),
-                'picky_level' => $this->answerText($answers->get(16)),
+                'current_weight_kg' => (float) ($answersByOrder->get(4) ?? 0) ?: null,
+                'current_height_cm' => app(ChildProfileService::class)->heightInCentimeters($answersByOrder->get(5)),
+                'diet_type' => $this->answerText($answersByOrder->get(6), 'vegetarian'),
+                'allergies' => $this->answerText($answersByOrder->get(7), 'None'),
+                'region' => $this->answerText($answersByOrder->get(8), 'Pan India'),
+                'activity_level' => $this->answerText($answersByOrder->get(13)),
+                'main_goal' => $this->answerText($answersByOrder->get(22)),
+                'budget' => $this->answerText($answersByOrder->get(35)),
+                'picky_level' => $this->answerText($answersByOrder->get(16)),
                 'current_season' => $this->currentIndianSeason(),
             ]);
 

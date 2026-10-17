@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\DietSubscription;
 use App\Models\Nutrition\Child;
-use App\Services\Nutrition\ChildProfileService;
-use App\Services\Nutrition\DietChartGeneratorService;
 use App\Models\Nutrition\ChildAssessment;
 use App\Models\Nutrition\DietPlan;
 use App\Models\NutritionLead;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Services\Nutrition\ChildProfileService;
+use App\Services\Nutrition\DietChartGeneratorService;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +32,7 @@ class DietChartPipelineRegressionTest extends TestCase
         for ($i = 1; $i <= 35; $i++) {
             DB::table('questionnaire_questions')->insertOrIgnore([
                 'id' => $i,
-                'question' => 'Question ' . $i,
+                'question' => 'Question '.$i,
                 'model' => 'basic',
                 'section' => 'basic',
                 'answer_type' => 'text',
@@ -74,6 +74,58 @@ class DietChartPipelineRegressionTest extends TestCase
             'sex' => 'boy',
             'user_id' => $parent->id,
         ]);
+    }
+
+    public function test_questionnaire_profile_fields_follow_question_order_not_database_ids(): void
+    {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $parent = User::factory()->create();
+        $questions = [
+            101 => [1, 'Child name'],
+            102 => [2, 'Date of birth'],
+            103 => [3, 'Sex'],
+            104 => [4, 'Weight'],
+            105 => [5, 'Height'],
+            106 => [6, 'Diet type'],
+            107 => [7, 'Allergies'],
+            108 => [8, 'Region'],
+        ];
+        foreach ($questions as $id => [$sortOrder, $label]) {
+            DB::table('questionnaire_questions')->insert([
+                'id' => $id,
+                'question' => $label,
+                'model' => '3 Pro',
+                'section' => 'profile',
+                'answer_type' => 'text',
+                'sort_order' => $sortOrder,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        $this->actingAs($parent)->postJson(route('api.nutrition.questionnaire.submit'), [
+            'q_101' => 'Mira Sharma',
+            'q_102' => '2018-04-12',
+            'q_103' => 'girl',
+            'q_104' => '21.5',
+            'q_105' => '118 cm',
+            'q_106' => 'vegan',
+            'q_107' => 'nuts',
+            'q_108' => 'South India',
+            'plan_slug' => 'pro',
+        ])->assertOk();
+
+        $child = Child::where('user_id', $parent->id)->firstOrFail();
+        $assessment = ChildAssessment::where('child_id', $child->id)->firstOrFail();
+
+        $this->assertSame('Mira Sharma', $child->name);
+        $this->assertSame('girl', $child->sex);
+        $this->assertSame('2018-04-12', $child->dob->toDateString());
+        $this->assertSame(21.5, (float) $assessment->current_weight_kg);
+        $this->assertSame(118.0, (float) $assessment->current_height_cm);
+        $this->assertSame('vegan', $assessment->diet_type);
+        $this->assertSame('nuts', $assessment->allergies);
+        $this->assertSame('South India', $assessment->region);
     }
 
     public function test_guest_cannot_submit_a_questionnaire(): void
@@ -439,7 +491,7 @@ class DietChartPipelineRegressionTest extends TestCase
         ]);
         $plan = SubscriptionPlan::create([
             'name' => 'Regeneration Plan',
-            'slug' => 'regeneration-plan-' . $quota,
+            'slug' => 'regeneration-plan-'.$quota,
             'price' => 100,
             'monthly_price' => 100,
             'is_active' => true,
