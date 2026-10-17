@@ -76,6 +76,30 @@ class AccessControlRegressionTest extends TestCase
         $this->assertDatabaseMissing('users', ['email' => 'invalid-role@example.test']);
     }
 
+    public function test_deactivated_admin_cannot_login_or_keep_an_admin_session(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'is_active' => false,
+            'email' => 'disabled-admin@example.test',
+        ]);
+
+        $this->post(route('admin.login.post'), [
+            'email' => $admin->email,
+            'password' => 'password',
+        ])->assertSessionHasErrors('email');
+
+        $this->assertGuest('admin');
+
+        $customer = User::factory()->create(['is_active' => true]);
+        $this->actingAs($customer, 'web')->actingAs($admin, 'admin')
+            ->get(route('admin.index'))
+            ->assertRedirect(route('signin'));
+
+        $this->assertGuest('admin');
+        $this->assertAuthenticatedAs($customer, 'web');
+    }
+
     private function adminWithUserManagementPermission(): User
     {
         Permission::create(['name' => 'manage users', 'guard_name' => 'admin']);

@@ -77,4 +77,20 @@ class FrontendAuthSecurityTest extends TestCase
             ->assertOk()
             ->assertJsonPath('redirect', route('userdashboard'));
     }
+
+    public function test_customer_logout_rotates_the_session_and_preserves_admin_guard(): void
+    {
+        $customer = User::factory()->create(['role' => 'customer']);
+        $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
+
+        $this->actingAs($customer, 'web')->actingAs($admin, 'admin');
+        $sessionId = session()->getId();
+
+        $this->post(route('frontend.logout'))
+            ->assertRedirect(route('home'));
+
+        $this->assertNotSame($sessionId, session()->getId());
+        $this->assertGuest('web');
+        $this->get(route('admin.index'))->assertOk();
+    }
 }

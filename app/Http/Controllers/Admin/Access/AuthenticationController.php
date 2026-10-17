@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Access;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Access\AdminLoginRequest;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,10 +24,16 @@ class AuthenticationController extends Controller
         $credentials = $request->validated();
 
         if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
-            if (Auth::guard('admin')->user()->role !== 'admin') {
+            $admin = Auth::guard('admin')->user();
+            if ($admin->role !== 'admin' || ! $admin->is_active) {
                 Auth::guard('admin')->logout();
+                $request->session()->regenerate();
+                $request->session()->regenerateToken();
+
                 return back()->withErrors([
-                    'email' => 'Unauthorized access. Only admins can login here.',
+                    'email' => $admin->is_active
+                        ? 'Unauthorized access. Only admins can login here.'
+                        : 'This admin account has been deactivated.',
                 ])->onlyInput('email');
             }
 

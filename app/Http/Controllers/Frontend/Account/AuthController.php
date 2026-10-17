@@ -121,6 +121,8 @@ class AuthController extends Controller
         // destroys the ENTIRE session (including the admin guard session),
         // which would log the admin out of the backend panel too.
         Auth::guard('web')->logout();
+        $request->session()->regenerate();
+        $request->session()->regenerateToken();
 
         return redirect()->route('home')->with('success', 'Logged out successfully.');
     }

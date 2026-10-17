@@ -11,14 +11,24 @@ class CheckUserIsActive
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->guard('web')->check() && !auth()->guard('web')->user()->is_active) {
-            auth()->guard('web')->logout();
+        foreach (['admin' => 'signin', 'web' => 'home'] as $guard => $loginRoute) {
+            $user = auth()->guard($guard)->user();
+            if (! $user || $user->is_active) {
+                continue;
+            }
 
-            return redirect()->route('home', ['login' => 1])->with('error', 'Your account has been deactivated. Please contact support.');
+            auth()->guard($guard)->logout();
+            $request->session()->regenerate();
+            $request->session()->regenerateToken();
+
+            $routeParameters = $guard === 'web' ? ['login' => 1] : [];
+
+            return redirect()->route($loginRoute, $routeParameters)
+                ->with('error', 'Your account has been deactivated. Please contact support.');
         }
 
         return $next($request);
