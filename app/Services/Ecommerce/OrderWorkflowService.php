@@ -2,9 +2,11 @@
 
 namespace App\Services\Ecommerce;
 
+use App\Events\OrderPaid;
 use App\Models\Order;
 use App\Support\OrderFlow;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 /** Coordinates order state changes, payment effects, and audit history. */
 class OrderWorkflowService
@@ -12,7 +14,8 @@ class OrderWorkflowService
     /** @param array{status: string, fulfillment_status?: string|null, payment_status?: string|null, admin_note?: string|null} $data */
     public function updateStatusByAdmin(Order $order, array $data, int $adminId): bool
     {
-        $updated = DB::transaction(function () use ($order, $data, $adminId): bool {
+        $orderBecamePaid = false;
+        $updated = DB::transaction(function () use ($order, $data, $adminId, &$orderBecamePaid): bool {
             $order = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
             $data['fulfillment_status'] = $data['fulfillment_status'] ?? $order->fulfillment_status;
             $data['payment_status'] = $data['payment_status'] ?? $order->payment_status;
@@ -23,6 +26,7 @@ class OrderWorkflowService
 
             $previousStatus = $order->status;
             $previousFulfillmentStatus = $order->fulfillment_status;
+            $previousPaymentStatus = $order->payment_status;
             $order->update($data);
 
             if ($order->status === 'delivered' && $order->payment_method === 'cod' && $order->payment_status === 'pending') {
@@ -31,9 +35,11 @@ class OrderWorkflowService
                 $latestPayment?->update([
                     'status' => 'paid',
                     'paid_at' => now(),
-                    'notes' => trim(($latestPayment->notes ?? '') . ' | Marked paid on delivery by admin'),
+                    'notes' => trim(($latestPayment->notes ?? '').' | Marked paid on delivery by admin'),
                 ]);
             }
+
+            $orderBecamePaid = $previousPaymentStatus !== 'paid' && $order->payment_status === 'paid';
 
             $order->statusHistories()->create([
                 'from_status' => $previousStatus,
@@ -49,6 +55,10 @@ class OrderWorkflowService
 
         if ($updated) {
             $order->refresh();
+        }
+
+        if ($orderBecamePaid) {
+            Event::dispatch(new OrderPaid($order));
         }
 
         return $updated;

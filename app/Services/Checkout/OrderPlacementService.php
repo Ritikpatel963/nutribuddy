@@ -24,8 +24,7 @@ class OrderPlacementService
     public function __construct(
         private readonly CheckoutSummaryService $checkoutSummaryService,
         private readonly PricingService $pricingService
-    ) {
-    }
+    ) {}
 
     public function place(User $user, array $validated, ?callable $paymentCallback = null): array
     {
@@ -53,13 +52,12 @@ class OrderPlacementService
             // Always use the user's full balance — PricingService caps it to the allowed % automatically.
             $coinsToRedeem = (int) $user->coins_balance;
 
-
             $pricing = $this->pricingService->calculate($cart->items, $coupon, $coinsToRedeem);
             $this->validateCouponRules($coupon, (float) $pricing['subtotal'], $user->id);
             $this->validateInventory($cart);
 
             $order = $this->createOrder($user, $address, $coupon, $pricing, $validated, $checkoutToken);
-            $this->recordCoinTransactions($order, $user, $pricing);
+            $this->recordRedeemedCoins($order, $user);
             $this->createOrderItems($order, $pricing['line_items']);
             $this->createPayment($order);
             $this->recordCouponUsage($order, $coupon, $user);
@@ -178,7 +176,7 @@ class OrderPlacementService
         ]);
     }
 
-    private function recordCoinTransactions(Order $order, User $user, array $pricing): void
+    private function recordRedeemedCoins(Order $order, User $user): void
     {
         if ($order->coins_redeemed > 0) {
             $user->decrement('coins_balance', $order->coins_redeemed);
@@ -188,18 +186,6 @@ class OrderPlacementService
                 'type' => 'spent',
                 'amount' => $order->coins_redeemed,
                 'description' => "Coins redeemed for discount on order #{$order->order_number}",
-            ]);
-        }
-
-        $coinsToEarn = (int) $pricing['total_coins_earned'];
-        if ($coinsToEarn > 0) {
-            $user->increment('coins_balance', $coinsToEarn);
-            CoinTransaction::create([
-                'user_id' => $user->id,
-                'order_id' => $order->id,
-                'type' => 'earned',
-                'amount' => $coinsToEarn,
-                'description' => "Coins earned from purchase on order #{$order->order_number}",
             ]);
         }
     }
@@ -244,7 +230,7 @@ class OrderPlacementService
             'status' => in_array($provider, ['cashfree', 'razorpay'], true) ? 'initiated' : 'pending',
             'currency' => 'INR',
             'amount' => $order->grand_total,
-            'notes' => $provider === 'cod' ? 'Cash on Delivery' : ucfirst($provider) . ' payment initiated',
+            'notes' => $provider === 'cod' ? 'Cash on Delivery' : ucfirst($provider).' payment initiated',
         ]);
     }
 
@@ -276,7 +262,7 @@ class OrderPlacementService
 
     private function generateOrderNumber(): string
     {
-        return 'NB' . now()->format('Ymd') . strtoupper(Str::random(6));
+        return 'NB'.now()->format('Ymd').strtoupper(Str::random(6));
     }
 
     private function sendOrderMails(Order $order): void

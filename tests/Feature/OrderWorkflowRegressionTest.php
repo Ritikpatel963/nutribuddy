@@ -2,14 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Events\OrderPaid;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderReturn;
 use App\Models\OrderReturnItem;
 use App\Models\Payment;
 use App\Models\User;
-use App\Mail\OrderStatusUpdatedMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -29,6 +31,7 @@ class OrderWorkflowRegressionTest extends TestCase
 
     public function test_admin_delivery_marks_cod_payment_paid_and_records_history(): void
     {
+        Event::fake([OrderPaid::class]);
         $admin = $this->adminWithPermission('manage orders');
         $order = Order::factory()->create([
             'status' => 'shipped',
@@ -61,6 +64,7 @@ class OrderWorkflowRegressionTest extends TestCase
             'to_status' => 'delivered',
             'updated_by' => $admin->id,
         ]);
+        Event::assertDispatchedTimes(OrderPaid::class, 1);
         Mail::assertQueued(OrderStatusUpdatedMail::class, fn (OrderStatusUpdatedMail $mail) => $mail->order->status === 'delivered');
     }
 
@@ -151,7 +155,7 @@ class OrderWorkflowRegressionTest extends TestCase
     private function adminWithPermission(string $permission): User
     {
         Permission::create(['name' => $permission, 'guard_name' => 'admin']);
-        $role = Role::create(['name' => 'Order Manager ' . $permission, 'guard_name' => 'admin']);
+        $role = Role::create(['name' => 'Order Manager '.$permission, 'guard_name' => 'admin']);
         $role->givePermissionTo($permission);
         $admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
         $admin->assignRole($role);

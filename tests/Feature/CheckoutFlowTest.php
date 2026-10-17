@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\CustomerAddress;
 use App\Models\Inventory;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\TaxRate;
 use App\Models\User;
@@ -28,6 +29,7 @@ class CheckoutFlowTest extends TestCase
             'category_id' => $category->id,
             'tax_rate_id' => $taxRate->id,
             'base_price' => 500,
+            'coins_reward' => 100,
             'shipping_price' => 50,
             'is_active' => true,
         ]);
@@ -91,6 +93,11 @@ class CheckoutFlowTest extends TestCase
 
         $this->assertDatabaseCount('orders', 1);
         $this->assertSame(9, (int) $product->inventory()->first()->stock_qty);
+        $this->assertSame(0, (int) $user->fresh()->coins_balance);
+        $this->assertDatabaseMissing('coin_transactions', [
+            'order_id' => Order::query()->value('id'),
+            'type' => 'earned',
+        ]);
 
         $this->postJson(route('user.checkout.place-order'), $placePayload)
             ->assertOk()
