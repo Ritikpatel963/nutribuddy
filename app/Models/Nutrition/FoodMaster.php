@@ -47,19 +47,34 @@ class FoodMaster extends Model
      * getNutrientsAttribute — returns a simple object with ALL expected
      * nutrient keys mapped to the real column names in `foods` table.
      *
-     * The generator code does: $food->nutrients->energy_kcal, ->protein_g, etc.
+     * Uses new column names (carb_g, fibre_total_g, sfa_g, mufa_g, pufa_g,
+     * free_sugar_g, vit_c_mg, vit_d_ug, b1_mg..b12_ug) AND keeps backwards-
+     * compatible aliases (fiber_g, vitamin_c_mg, vitamin_d_mcg, thiamin_b1_mg, etc.)
+     * so the generator and other services continue to work.
      */
     public function getNutrientsAttribute()
     {
         return (object) [
-            // Macros
+            // ==================== Macros ====================
             'energy_kcal'    => (float) ($this->attributes['energy_kcal']   ?? 0),
             'protein_g'      => (float) ($this->attributes['protein_g']     ?? 0),
             'fat_g'          => (float) ($this->attributes['fat_g']         ?? 0),
-            'fiber_g'        => (float) ($this->attributes['fibre_total_g'] ?? 0),
             'carb_g'         => (float) ($this->attributes['carb_g']        ?? 0),
 
-            // Minerals
+            // ==================== Fat breakdown ====================
+            'sfa_g'          => (float) ($this->attributes['sfa_g']         ?? 0),
+            'mufa_g'         => (float) ($this->attributes['mufa_g']        ?? 0),
+            'pufa_g'         => (float) ($this->attributes['pufa_g']        ?? 0),
+
+            // ==================== Fiber & Sugar ====================
+            'fibre_total_g'  => (float) ($this->attributes['fibre_total_g'] ?? 0),
+            'fibre_sol_g'    => (float) ($this->attributes['fibre_sol_g']   ?? 0),
+            'free_sugar_g'   => (float) ($this->attributes['free_sugar_g']  ?? 0),
+
+            // Purana alias (backwards-compatible)
+            'fiber_g'        => (float) ($this->attributes['fibre_total_g'] ?? 0),
+
+            // ==================== Minerals ====================
             'calcium_mg'     => (float) ($this->attributes['calcium_mg']    ?? 0),
             'iron_mg'        => (float) ($this->attributes['iron_mg']       ?? 0),
             'zinc_mg'        => (float) ($this->attributes['zinc_mg']       ?? 0),
@@ -69,24 +84,36 @@ class FoodMaster extends Model
             'sodium_mg'      => (float) ($this->attributes['sodium_mg']     ?? 0),
             'selenium_ug'    => (float) ($this->attributes['selenium_ug']   ?? 0),
 
-            // Vitamins
+            // ==================== Vitamins ====================
             'vitamin_a_mcg'  => (float) ($this->attributes['vit_a_rae_ug']  ?? 0),
+            'vit_c_mg'       => (float) ($this->attributes['vit_c_mg']      ?? 0),
+            'vit_d_ug'       => (float) ($this->attributes['vit_d_ug']      ?? 0),
+            'vit_e_mg'       => (float) ($this->attributes['vit_e_mg']      ?? 0),
+
+            // Purane aliases (backwards-compatible)
             'vitamin_c_mg'   => (float) ($this->attributes['vit_c_mg']      ?? 0),
             'vitamin_d_mcg'  => (float) ($this->attributes['vit_d_ug']      ?? 0),
-            'vitamin_e_mg'   => (float) ($this->attributes['vit_e_mg']      ?? 0),
 
-            // B-vitamins
-            'thiamin_b1_mg'      => (float) ($this->attributes['b1_mg']      ?? 0),
-            'riboflavin_b2_mg'   => (float) ($this->attributes['b2_mg']      ?? 0),
-            'niacin_b3_mg'       => (float) ($this->attributes['b3_mg']      ?? 0),
-            'vitamin_b6_mg'      => (float) ($this->attributes['b6_mg']      ?? 0),
-            'folate_mcg'         => (float) ($this->attributes['folate_ug']  ?? 0),
-            'vitamin_b12_mcg'    => (float) ($this->attributes['b12_ug']     ?? 0),
+            // ==================== B-vitamins ====================
+            'b1_mg'          => (float) ($this->attributes['b1_mg']         ?? 0),
+            'b2_mg'          => (float) ($this->attributes['b2_mg']         ?? 0),
+            'b3_mg'          => (float) ($this->attributes['b3_mg']         ?? 0),
+            'b6_mg'          => (float) ($this->attributes['b6_mg']         ?? 0),
+            'folate_ug'      => (float) ($this->attributes['folate_ug']     ?? 0),
+            'b12_ug'         => (float) ($this->attributes['b12_ug']        ?? 0),
+
+            // Purane aliases (backwards-compatible)
+            'thiamin_b1_mg'      => (float) ($this->attributes['b1_mg']     ?? 0),
+            'riboflavin_b2_mg'   => (float) ($this->attributes['b2_mg']     ?? 0),
+            'niacin_b3_mg'       => (float) ($this->attributes['b3_mg']     ?? 0),
+            'vitamin_b6_mg'      => (float) ($this->attributes['b6_mg']     ?? 0),
+            'folate_mcg'         => (float) ($this->attributes['folate_ug'] ?? 0),
+            'vitamin_b12_mcg'    => (float) ($this->attributes['b12_ug']    ?? 0),
         ];
     }
 
     // ---------------------------------------------------------------
-    // Scopes
+    // Scopes (unchanged)
     // ---------------------------------------------------------------
 
     public function scopeForAge($query, int $age)

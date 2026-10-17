@@ -20,4 +20,13 @@
         el.classList.add('active');
         if (window.innerWidth <= 900) closeSidebar();
     }
+
+    document.querySelectorAll('[data-sidebar-group-toggle]').forEach(button => {
+        button.addEventListener('click', function () {
+            const expanded = this.getAttribute('aria-expanded') === 'true';
+            const group = document.getElementById(this.getAttribute('aria-controls'));
+            this.setAttribute('aria-expanded', String(!expanded));
+            if (group) group.hidden = expanded;
+        });
+    });
 </script>

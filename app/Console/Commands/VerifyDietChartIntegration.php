@@ -126,7 +126,7 @@ class VerifyDietChartIntegration extends Command
         // Check 5: Controller class exists and is loadable
         $this->check('Controller class exists and is loadable');
         try {
-            $controller = new \App\Http\Controllers\Frontend\DietChartDisplayController();
+            $controller = app(\App\Http\Controllers\Frontend\Nutrition\DietChartDisplayController::class);
             $this->completeCheck();
         } catch (\Exception $e) {
             $this->failCheck("Controller loading failed: " . $e->getMessage());

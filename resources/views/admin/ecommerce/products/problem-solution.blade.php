@@ -21,7 +21,7 @@
 @endphp
 
 @section('content')
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     @if (!$product)
         <div class="card border-0 radius-12">

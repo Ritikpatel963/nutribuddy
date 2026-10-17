@@ -23,7 +23,7 @@
                     <p class="diet-page-hero-sub">Answer a few simple questions and get a nutrition plan shaped around your
                         child's age, goals, diet preference, and daily routine.</p>
                     <div class="diet-hero-actions">
-                        <a class="diet-hero-btn" href="#diet-chart">Start Free Plan</a>
+                        <a class="diet-hero-btn" href="#pricing">View Plans</a>
                         <a class="diet-hero-link" href="{{ route('product') }}">Shop Wellness Gummies</a>
                     </div>
                 </div>
@@ -277,8 +277,7 @@
 
 
 
-            <!-- Pricing toggle hidden for demo -->
-            <div style="text-align: center; margin-bottom: 40px; margin-top: 20px; display: none;">
+            <div style="text-align: center; margin-bottom: 40px; margin-top: 20px;">
                 <div class="billing-toggle"
                     style="display: inline-flex; background: #f0f4f8; padding: 4px; border-radius: 30px;">
                     <button class="billing-btn active" data-cycle="monthly"
@@ -296,10 +295,10 @@
                     <div class="plan-card pc-1">
                         <div class="plan-icon">🥉</div>
                         <div class="plan-name">{{ $basic->name }}</div>
-                        <div class="plan-price" style="display: none;" data-monthly="{{ $basic->monthly_price }}"
+                        <div class="plan-price" data-monthly="{{ $basic->monthly_price }}"
                             data-quarterly="{{ $basic->quarterly_price }}" data-annually="{{ $basic->annual_price }}">
                             ₹{{ number_format((float) $basic->monthly_price) }}</div>
-                        <div class="plan-period" style="display: none;">per month</div>
+                        <div class="plan-period">per month</div>
                         <ul class="plan-features">
                             <li><strong>12 Questions</strong> analyzed</li>
                             <li>Basic personalized diet chart</li>
@@ -315,10 +314,10 @@
                         <div class="popular-badge">⭐ POPULAR</div>
                         <div class="plan-icon">🥈</div>
                         <div class="plan-name">{{ $plus->name }}</div>
-                        <div class="plan-price" style="display: none;" data-monthly="{{ $plus->monthly_price }}"
+                        <div class="plan-price" data-monthly="{{ $plus->monthly_price }}"
                             data-quarterly="{{ $plus->quarterly_price }}" data-annually="{{ $plus->annual_price }}">
                             ₹{{ number_format((float) $plus->monthly_price) }}</div>
-                        <div class="plan-period" style="display: none;">per month</div>
+                        <div class="plan-period">per month</div>
                         <ul class="plan-features">
                             <li><strong>21 Questions</strong> (cumulative)</li>
                             <li>Everything in Basic, plus:</li>
@@ -335,10 +334,10 @@
                     <div class="plan-card pc-3">
                         <div class="plan-icon">🥇</div>
                         <div class="plan-name">{{ $pro->name }}</div>
-                        <div class="plan-price" style="display: none;" data-monthly="{{ $pro->monthly_price }}"
+                        <div class="plan-price" data-monthly="{{ $pro->monthly_price }}"
                             data-quarterly="{{ $pro->quarterly_price }}" data-annually="{{ $pro->annual_price }}">
                             ₹{{ number_format((float) $pro->monthly_price) }}</div>
-                        <div class="plan-period" style="display: none;">per month</div>
+                        <div class="plan-period">per month</div>
                         <ul class="plan-features">
                             <li><strong>29 Questions</strong> (cumulative)</li>
                             <li>Everything in Plus, plus:</li>
@@ -357,10 +356,10 @@
                     <div class="plan-card pc-4">
                         <div class="plan-icon">🏆</div>
                         <div class="plan-name">{{ $premium->name }}</div>
-                        <div class="plan-price" style="display: none;" data-monthly="{{ $premium->monthly_price }}"
+                        <div class="plan-price" data-monthly="{{ $premium->monthly_price }}"
                             data-quarterly="{{ $premium->quarterly_price }}" data-annually="{{ $premium->annual_price }}">
                             ₹{{ number_format((float) $premium->monthly_price) }}</div>
-                        <div class="plan-period" style="display: none;">per month</div>
+                        <div class="plan-period">per month</div>
                         <ul class="plan-features">
                             <li><strong>37 Questions</strong> (cumulative)</li>
                             <li>Everything in Pro, plus:</li>
@@ -377,7 +376,7 @@
 
             <p class="pricing-note">🔒 7-day free trial · No credit card required · Cancel anytime</p>
         </section>
-        @if(!$hasActivePlan)
+        @if(false)
             <section class="diet-section" id="diet-chart">
                 <div class="diet-section-inner">
                     <div class="diet-header">
@@ -769,7 +768,7 @@
                     </div><!-- /diet-planner-shell -->
                 </div><!-- /diet-section-inner -->
             </section>
-        @else
+        @elseif($hasActivePlan)
             {{-- ── Enrolled Banner (shown when user already has an active plan) ── --}}
             <section id="diet-chart" style="padding: 60px 20px; text-align: center;">
                 <div

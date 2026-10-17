@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.main')
 
 @section('content')
     <div class="diet-chart-container">
@@ -265,7 +265,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('products') }}" class="btn btn-main btn-lg">
+                        <a href="{{ route('product') }}" class="btn btn-main btn-lg">
                             Browse Plans & Pricing →
                         </a>
                     </div>
@@ -968,13 +968,13 @@
         // Regenerate Plan
         document.getElementById('updatePlan')?.addEventListener('click', function() {
             if (confirm('Generate a new personalized plan?')) {
-                window.location.href = '{{ route("diet-chart.regenerate", $child->id) }}';
+                window.location.href = '{{ route("child.diet-chart.regenerate", $child->id) }}';
             }
         });
 
         // Generate New Plan
         document.getElementById('generateNewPlan')?.addEventListener('click', function() {
-            window.location.href = '{{ route("questionnaire.start", $child->id) }}';
+            window.location.href = '{{ route("frontend.nutrition.questionnaire", ["child_id" => $child->id]) }}';
         });
     </script>
 @endsection

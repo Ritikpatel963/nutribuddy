@@ -24,6 +24,9 @@ class TargetEngine
         }
         
         // Fallback to 'all' (usually for younger kids)
-        return $query->where('sex', 'all')->first();
+        $target = $query->where('sex', 'all')->first();
+        if ($target) return $target;
+
+        return IcmrNutritionTarget::first();
     }
 }

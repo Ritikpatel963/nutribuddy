@@ -22,6 +22,7 @@ class DietSubscription extends Model
         'razorpay_order_id',
         'razorpay_payment_id',
         'amount_paid',
+        'plans_remaining',
         'starts_at',
         'expires_at',
         'cancelled_at',
@@ -35,6 +36,7 @@ class DietSubscription extends Model
             'expires_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'amount_paid' => 'decimal:2',
+            'plans_remaining' => 'integer',
         ];
     }
 

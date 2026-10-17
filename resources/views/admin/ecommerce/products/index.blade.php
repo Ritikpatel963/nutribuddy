@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
 
 

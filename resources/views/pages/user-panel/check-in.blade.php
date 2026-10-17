@@ -128,7 +128,7 @@
         <div class="ci-success-title">Plan regenerated!</div>
         <p class="ci-success-body">Arjun's meal plan, health scores, and supplement schedule have been updated based on your answers.</p>
         <div class="ci-success-actions">
-            <a href="{{ route('health-scores') }}" class="ci-goto-btn">View Health Scores →</a>
+            <a href="{{ route('growth-signal') }}" class="ci-goto-btn">View Health Scores →</a>
             <a href="{{ route('meal-plan') }}" class="ci-goto-btn ci-goto-outline">See New Meal Plan →</a>
         </div>
     </div>

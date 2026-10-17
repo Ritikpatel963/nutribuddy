@@ -78,7 +78,7 @@
 
     <div class="row g-4">
         <div class="col-lg-12">
-            @include('admin.ecommerce._messages')
+            @include('admin.partials.messages')
 
             <div class="card basic-data-table notification-feed-card">
                 <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">

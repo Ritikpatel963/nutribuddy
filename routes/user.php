@@ -1,18 +1,22 @@
 <?php
 
-use App\Http\Controllers\Frontend\AssessmentController;
-use App\Http\Controllers\Frontend\CartController as FrontendCartController;
-use App\Http\Controllers\Frontend\CheckoutController as FrontendCheckoutController;
-use App\Http\Controllers\Frontend\ProductReviewController;
-use App\Http\Controllers\Frontend\UserAddressController;
-use App\Http\Controllers\Frontend\UserCouponController;
-use App\Http\Controllers\Frontend\UserOrderController;
-use App\Http\Controllers\Frontend\UserProfileController;
-use App\Http\Controllers\Frontend\UserReturnController;
-use App\Http\Controllers\Frontend\UserSupportTicketController;
-use App\Http\Controllers\Frontend\UserWalletController;
-use App\Http\Controllers\Frontend\DietSubscriptionInvoiceController;
-use App\Http\Controllers\Frontend\SupplementController;
+use App\Http\Controllers\Frontend\Nutrition\AssessmentController;
+use App\Http\Controllers\Frontend\Checkout\CartController as FrontendCartController;
+use App\Http\Controllers\Frontend\Checkout\CheckoutController as FrontendCheckoutController;
+use App\Http\Controllers\Frontend\Storefront\ProductReviewController;
+use App\Http\Controllers\Frontend\Account\UserAddressController;
+use App\Http\Controllers\Frontend\Account\UserCouponController;
+use App\Http\Controllers\Frontend\Account\UserOrderController;
+use App\Http\Controllers\Frontend\Account\UserInvoiceController;
+use App\Http\Controllers\Frontend\Account\UserProfileController;
+use App\Http\Controllers\Frontend\Account\UserReturnController;
+use App\Http\Controllers\Frontend\Account\UserSupportTicketController;
+use App\Http\Controllers\Frontend\Account\UserWalletController;
+use App\Http\Controllers\Frontend\Nutrition\DietSubscriptionInvoiceController;
+use App\Http\Controllers\Frontend\Nutrition\NutritionController;
+use App\Http\Controllers\Frontend\Nutrition\NutritionBackupController;
+use App\Http\Controllers\Frontend\Nutrition\MealPlanController;
+use App\Http\Controllers\Frontend\Storefront\SupplementController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -42,16 +46,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [UserOrderController::class, 'index'])->name('index');
         Route::get('/returns', [UserReturnController::class, 'index'])->name('returns.index');
         Route::get('/{order}/detail', [UserOrderController::class, 'detailPage'])->name('detail-page');
-        Route::get('/{order}/invoice-page', [UserOrderController::class, 'invoicePage'])->name('invoice-page');
-        Route::get('/{order}/invoice-download', [UserOrderController::class, 'invoiceDownload'])->name('invoice-download');
+        Route::get('/{order}/invoice-page', [UserInvoiceController::class, 'page'])->name('invoice-page');
+        Route::get('/{order}/invoice-download', [UserInvoiceController::class, 'download'])->name('invoice-download');
         Route::get('/{order}', [UserOrderController::class, 'show'])->name('show');
-        Route::get('/{order}/invoice', [UserOrderController::class, 'invoice'])->name('invoice');
+        Route::get('/{order}/invoice', [UserInvoiceController::class, 'show'])->name('invoice');
         Route::patch('/{order}/cancel', [UserOrderController::class, 'cancel'])->name('cancel');
         Route::post('/{order}/returns', [UserReturnController::class, 'store'])->name('returns.store');
     });
 
     Route::prefix('/user/invoices')->name('user.invoices.')->group(function () {
-        Route::get('/', [UserOrderController::class, 'invoicesIndex'])->name('index');
+        Route::get('/', [UserInvoiceController::class, 'index'])->name('index');
     });
 
     Route::get('/my-coupons', [UserCouponController::class, 'index'])->name('my-coupons');
@@ -69,12 +73,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/diet-subscriptions/{subscription}/invoice-download', [DietSubscriptionInvoiceController::class, 'download'])->name('diet-subscriptions.invoice-download');
     Route::view('/user-return', 'pages.user-panel.user-return')->name('user-return');
     Route::view('/userdashboard', 'pages.user-panel.userdashboard')->name('userdashboard');
-    Route::view('/nutrition', 'pages.user-panel.nutrition')->name('nutrition.index');
-    Route::get('/meal-plan', [\App\Http\Controllers\Frontend\DietChartDisplayController::class, 'mealPlan'])->name('meal-plan');
+    Route::get('/nutrition', [NutritionController::class, 'nutrition'])->name('nutrition.index');
+    Route::get('/nutrition-backup', [NutritionBackupController::class, 'nutritionBackup'])->name('nutrition.backup');
+    Route::get('/meal-plan', [MealPlanController::class, 'mealPlan'])->name('meal-plan');
     Route::get('/supplement', [SupplementController::class, 'index'])->name('supplement');
-    Route::get('/child-profile', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'userPanelShow'])->name('child-profile');
-    Route::get('/child-profile/create', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'create'])->name('child-profile.create');
-    Route::post('/child-profile', [\App\Http\Controllers\Frontend\ChildProfileController::class, 'store'])->name('child-profile.store');
+    Route::get('/child-profile', [\App\Http\Controllers\Frontend\Nutrition\ChildProfileController::class, 'userPanelShow'])->name('child-profile');
+    Route::get('/child-profile/create', [\App\Http\Controllers\Frontend\Nutrition\ChildProfileController::class, 'create'])->name('child-profile.create');
+    Route::post('/child-profile', [\App\Http\Controllers\Frontend\Nutrition\ChildProfileController::class, 'store'])->name('child-profile.store');
     Route::get('/growth-signal', function () {
         $child = auth()->user()->children()->latest()->first();
         $plan = $child?->assessments()->latest()->first()?->dietPlan;

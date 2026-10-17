@@ -1,20 +1,43 @@
 <?php
 
+use App\Http\Controllers\Frontend\Nutrition\QuestionnaireController;
+use App\Http\Controllers\Frontend\Nutrition\NutritionController;
+use App\Http\Controllers\Frontend\Nutrition\MealItemController;
+use App\Http\Controllers\Frontend\Nutrition\ChildCheckInController;
+use App\Http\Controllers\Api\Nutrition\QuestionnaireController as QuestionnaireApiController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Nutrition\QuestionnaireController;
-use App\Http\Controllers\Api\Nutrition\DietPlanController;
 
-Route::prefix('/api/nutrition')->name('api.nutrition.')->group(function () {
-    // Dynamic Questionnaire Endpoints
-    Route::get('/questionnaire/checkout/auth', function() {
-        return redirect()->route('frontend.nutrition.questionnaire', [
-            'plan' => request('plan', 'basic'),
-            'cycle' => request('cycle', 'monthly')
-        ]);
-    })->name('questionnaire.checkout.auth')->middleware('auth');
-    Route::get('/questionnaire/{childId}', [QuestionnaireController::class, 'getQuestions'])->name('questionnaire.get');
-    Route::post('/questionnaire/submit', [QuestionnaireController::class, 'submitInitialAnswers'])->name('questionnaire.submit.initial');
-    Route::post('/questionnaire/{childId}', [QuestionnaireController::class, 'submitAnswers'])->name('questionnaire.submit');
-    // Diet Plan Generation Endpoints
-    Route::post('/generate-plan/{assessmentId}', [DietPlanController::class, 'generate'])->name('plan.generate');
+/*
+|--------------------------------------------------------------------------
+| Nutrition Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->prefix('nutrition')->name('nutrition.')->group(function () {
+    // Nutrition page
+    Route::get('/', [NutritionController::class, 'nutrition'])->name('index');
+
+    // Toggle food item (tick/untick)
+    Route::post('/toggle-item', [MealItemController::class, 'toggleItem'])->name('toggle-item');
+
+    // Quarterly check-in
+    Route::post('/check-in', [ChildCheckInController::class, 'saveCheckIn'])->name('check-in');
 });
+
+// Questionnaire
+Route::get('/nutrition/questionnaire', [QuestionnaireController::class, 'show'])
+    ->name('frontend.nutrition.questionnaire');
+
+Route::view('/personalized-diet-chart', 'frontend.nutrition.personalized_diet')
+    ->name('frontend.nutrition.personalized_diet');
+
+Route::prefix('api/nutrition/questionnaire')->group(function () {
+    Route::post('/submit', [QuestionnaireApiController::class, 'submitInitialAnswers'])
+        ->name('api.nutrition.questionnaire.submit');
+    Route::get('/checkout/auth', function (\Illuminate\Http\Request $request) {
+        return redirect()->route('frontend.login', $request->query());
+    })->name('api.nutrition.questionnaire.checkout.auth');
+});
+
+Route::redirect('/child-profile/{child}', '/child-profile')->name('child.profile');
+Route::redirect('/child-profile/{child}/diet-chart', '/child-profile')->name('child.diet_chart');

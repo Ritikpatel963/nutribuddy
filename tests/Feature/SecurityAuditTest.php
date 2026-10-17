@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\CustomerAddress;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\User;
@@ -87,5 +88,29 @@ class SecurityAuditTest extends TestCase
         ])->assertNotFound();
 
         $this->assertSame(1, (int) $owner->cart()->first()->items()->first()->quantity);
+    }
+
+    public function test_user_cannot_delete_or_set_default_another_users_address(): void
+    {
+        $owner = User::factory()->create();
+        $attacker = User::factory()->create();
+        $address = CustomerAddress::create([
+            'user_id' => $owner->id,
+            'full_name' => 'Address Owner',
+            'phone' => '9876543210',
+            'address_line_1' => '1 Main Road',
+            'city' => 'Delhi',
+            'state' => 'Delhi',
+            'postal_code' => '110001',
+        ]);
+
+        $this->actingAs($attacker)
+            ->patchJson(route('user.addresses.set-default', $address))
+            ->assertForbidden();
+
+        $this->deleteJson(route('user.addresses.destroy', $address))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('customer_addresses', ['id' => $address->id, 'user_id' => $owner->id]);
     }
 }

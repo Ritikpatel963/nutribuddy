@@ -3,88 +3,64 @@
 namespace App\Http\Controllers\Admin\Nutrition;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Nutrition\FoodBulkUploadRequest;
+use App\Http\Requests\Admin\Nutrition\FoodDataRequest;
 use App\Models\Food;
-use Illuminate\Http\Request;
+use App\Services\Nutrition\FoodImportService;
+use App\Services\Nutrition\FoodTableDataService;
+use Illuminate\Http\JsonResponse;
 
 class FoodController extends Controller
 {
+    public function __construct(
+        private readonly FoodTableDataService $foodTable,
+        private readonly FoodImportService $foodImporter,
+    ) {}
+
     public function index()
     {
         return view('admin.nutrition.foods.index');
     }
 
-    public function data(Request $request)
+    public function data(FoodDataRequest $request): JsonResponse
     {
-        $columns = [
-            0 => 'dish_id',
-            1 => 'dish_name',
-            2 => 'food_group',
-            3 => 'slot',
-            4 => 'diet_type',
-            5 => 'is_veg',
-            6 => 'region',
-            7 => 'energy_kcal',
-        ];
+        return response()->json($this->foodTable->response($request));
+    }
 
-        $totalData = Food::count();
-        $totalFiltered = $totalData;
+    /**
+     * Delete a food record.
+     */
+    public function destroy($id)
+    {
+        try {
+            $food = Food::findOrFail($id);
+            $food->delete();
 
-        $limit = $request->input('length') ?? 10;
-        $start = $request->input('start') ?? 0;
-        $orderColumnIndex = $request->input('order.0.column');
-        $order = $orderColumnIndex !== null ? $columns[$orderColumnIndex] : 'dish_name';
-        $dir = $request->input('order.0.dir') ?? 'asc';
-
-        $query = Food::query();
-
-        $search = $request->input('search.value');
-        if (!empty($search)) {
-            $query->where(function($q) use ($search) {
-                $q->where('dish_id', 'LIKE', "%{$search}%")
-                  ->orWhere('dish_name', 'LIKE', "%{$search}%")
-                  ->orWhere('food_group', 'LIKE', "%{$search}%")
-                  ->orWhere('slot', 'LIKE', "%{$search}%")
-                  ->orWhere('diet_type', 'LIKE', "%{$search}%")
-                  ->orWhere('is_veg', 'LIKE', "%{$search}%")
-                  ->orWhere('region', 'LIKE', "%{$search}%");
-            });
-
-            $totalFiltered = $query->count();
+            return response()->json([
+                'success' => true,
+                'message' => 'Food deleted successfully.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Food not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete food.',
+            ], 500);
         }
+    }
 
-        $foods = $query->offset($start)
-                       ->limit($limit)
-                       ->orderBy($order, $dir)
-                       ->get();
+    /**
+     * Process the uploaded Excel/CSV file (AJAX).
+     */
+    public function bulkUploadStore(FoodBulkUploadRequest $request): JsonResponse
+    {
+        $result = $this->foodImporter->import($request->file('file'));
 
-        $data = [];
-        foreach ($foods as $food) {
-            $nestedData = [];
-            $nestedData['dish_id'] = $food->dish_id;
-            $nestedData['dish_name'] = $food->dish_name;
-            $nestedData['food_group'] = $food->food_group;
-            $nestedData['slot'] = $food->slot;
-            $nestedData['diet_type'] = $food->diet_type;
-            
-            // Format is_veg badge
-            $isVegBadge = $food->is_veg == 'Yes' 
-                ? '<span class="badge bg-success">Yes</span>' 
-                : ($food->is_veg == 'No' ? '<span class="badge bg-danger">No</span>' : $food->is_veg);
-            $nestedData['is_veg'] = $isVegBadge;
-            
-            $nestedData['region'] = $food->region;
-            $nestedData['energy_kcal'] = $food->energy_kcal;
-
-            $data[] = $nestedData;
-        }
-
-        $json_data = [
-            "draw"            => intval($request->input('draw')),
-            "recordsTotal"    => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data"            => $data
-        ];
-
-        return response()->json($json_data);
+        return response()->json($result, $result['success'] ? 200 : 500);
     }
 }

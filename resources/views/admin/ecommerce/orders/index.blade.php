@@ -28,7 +28,7 @@
         }
     </style>
 
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     <div class="card border-0 radius-12 mb-24">
         <div class="card-body p-24">

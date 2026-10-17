@@ -2,18 +2,63 @@
 
 namespace App\Services\Nutrition;
 
+use App\Models\Nutrition\Child;
 use App\Models\Nutrition\ChildAssessment;
 use App\Models\Nutrition\QuestionnaireQuestion;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChildProfileService
 {
+    public function createProfile(User $user, array $data): array
+    {
+        return DB::transaction(function () use ($user, $data) {
+            $child = Child::create([
+                'user_id' => $user->id,
+                'name' => $data['name'],
+                'dob' => now()->subYears($data['age']),
+                'sex' => $data['sex'] === 'other' ? 'boy' : $data['sex'],
+            ]);
+
+            $assessment = ChildAssessment::create([
+                'child_id' => $child->id,
+                'model_level' => 'champion',
+                'current_weight_kg' => (float) $data['weight'],
+                'current_height_cm' => (float) $data['height'],
+                'diet_type' => $data['diet'],
+                'picky_level' => $data['picky'],
+                'activity_level' => $data['activity'] ?? 'Moderately active',
+                'allergies' => ($data['allergies'] ?? '') ?: null,
+                'region' => $data['region'],
+                'current_season' => $this->currentIndianSeason(),
+            ]);
+
+            try {
+                $answers = [
+                    1 => $data['age'], 2 => $data['sex'], 3 => $data['weight'],
+                    4 => $data['height'], 5 => $data['diet'], 6 => $data['allergies'] ?? '',
+                    7 => $data['region'], 8 => $data['picky'],
+                ];
+                app(DietChartGeneratorService::class)->generateDietChart($assessment, $answers);
+            } catch (\Throwable $exception) {
+                Log::warning('Diet chart generation failed during child profile creation.', [
+                    'child_id' => $child->id,
+                    'exception' => $exception,
+                ]);
+            }
+
+            return compact('child', 'assessment');
+        });
+    }
+
     public function normalize(ChildAssessment $assessment, array $answers = []): array
     {
         $answers = $this->byQuestionOrder($answers);
         $child = $assessment->child;
         $weight = (float) ($answers[4] ?? $assessment->current_weight_kg ?? 0);
-        $height = (float) ($answers[5] ?? $assessment->current_height_cm ?? 0);
+        $height = $this->heightInCentimeters($answers[5] ?? $assessment->current_height_cm) ?? 0;
         $bmi = $height > 0 ? round($weight / (($height / 100) ** 2), 2) : null;
         $medicalCondition = $this->text($answers[12] ?? null);
         $profile = [
@@ -45,6 +90,45 @@ class ChildProfileService
         ])->save();
 
         return $profile;
+    }
+
+    public function heightInCentimeters(mixed $value): ?float
+    {
+        if (is_numeric($value)) {
+            $height = (float) $value;
+            return $height > 0 ? $height : null;
+        }
+
+        $value = trim((string) $value);
+        if ($value === '') return null;
+
+        if (preg_match('/\(\s*(\d+(?:\.\d+)?)\s*cm\s*\)/i', $value, $matches)
+            || preg_match('/^\s*(\d+(?:\.\d+)?)\s*cm\s*$/i', $value, $matches)) {
+            $height = (float) $matches[1];
+            return $height > 0 ? $height : null;
+        }
+
+        if (preg_match('/^\s*(\d+(?:\.\d+)?)\s*ft\s*(\d+(?:\.\d+)?)?\s*(?:in|inches?)?\s*$/i', $value, $matches)) {
+            $feet = (float) $matches[1];
+            $inches = isset($matches[2]) ? (float) $matches[2] : 0;
+            $height = ($feet * 30.48) + ($inches * 2.54);
+            return $height > 0 ? $height : null;
+        }
+
+        return null;
+    }
+
+    private function currentIndianSeason(): string
+    {
+        return match (now()->month) {
+            3, 4 => 'Vasant (Spring)',
+            5, 6 => 'Greeshma (Summer)',
+            7, 8, 9 => 'Varsha (Monsoon)',
+            10, 11 => 'Sharad (Autumn)',
+            12, 1 => 'Hemant (Pre-winter)',
+            2 => 'Shishir (Winter)',
+            default => 'Year-round',
+        };
     }
 
     private function byQuestionOrder(array $answers): array

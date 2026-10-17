@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Frontend\CheckoutController as FrontendCheckoutController;
-use App\Http\Controllers\Frontend\BlogController;
-use App\Http\Controllers\Frontend\ContactController as FrontendContactController;
-use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Frontend\NewsletterSubscriberController as FrontendNewsletterSubscriberController;
-use App\Http\Controllers\Frontend\ProductController;
+use App\Http\Controllers\Frontend\Checkout\CheckoutController as FrontendCheckoutController;
+use App\Http\Controllers\Frontend\Storefront\BlogController;
+use App\Http\Controllers\Frontend\Storefront\ContactController as FrontendContactController;
+use App\Http\Controllers\Frontend\Storefront\HomeController;
+use App\Http\Controllers\Frontend\Storefront\NewsletterSubscriberController as FrontendNewsletterSubscriberController;
+use App\Http\Controllers\Frontend\Storefront\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -25,9 +25,11 @@ Route::get('/diet-chart', function () {
     return view('pages.diet-chart', compact('plans', 'hasActivePlan'));
 })->name('diet_chart');
 
-Route::post('/diet-chart/payment/create', [\App\Http\Controllers\Frontend\DietPaymentController::class, 'createOrder'])->name('diet.payment.create');
-Route::post('/diet-chart/payment/verify', [\App\Http\Controllers\Frontend\DietPaymentController::class, 'verifyPayment'])->name('diet.payment.verify');
-Route::get('/diet-chart/payment/cashfree/return', [\App\Http\Controllers\Frontend\DietPaymentController::class, 'handleCashfreeReturn'])->name('diet.payment.cashfree.return');
+Route::middleware('auth')->group(function () {
+    Route::post('/diet-chart/payment/create', [\App\Http\Controllers\Frontend\Nutrition\DietPaymentController::class, 'createOrder'])->name('diet.payment.create');
+    Route::post('/diet-chart/payment/verify', [\App\Http\Controllers\Frontend\Nutrition\DietPaymentController::class, 'verifyPayment'])->name('diet.payment.verify');
+});
+Route::get('/diet-chart/payment/cashfree/return', [\App\Http\Controllers\Frontend\Nutrition\DietPaymentController::class, 'handleCashfreeReturn'])->name('diet.payment.cashfree.return');
 
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
 Route::view('/testimonials', 'pages.testimonials')->name('testimonials');

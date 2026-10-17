@@ -14,6 +14,8 @@ class ChildAssessment extends Model
         'model_level',
         'current_weight_kg',
         'current_height_cm',
+        'initial_weight_kg',
+'initial_height_cm',
         'main_goal',
         'diet_type',
         'picky_level',
@@ -29,12 +31,15 @@ class ChildAssessment extends Model
         'bmi',
         'growth_profile',
         'professional_review_required',
+        
     ];
 
     protected $casts = [
         'allergies' => 'json',
         'current_weight_kg' => 'float',
         'current_height_cm' => 'float',
+        'initial_weight_kg' => 'float',
+'initial_height_cm' => 'float',
         'bmi' => 'float',
         'professional_review_required' => 'boolean',
     ];

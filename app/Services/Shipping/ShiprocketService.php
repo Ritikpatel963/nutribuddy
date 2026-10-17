@@ -17,8 +17,8 @@ class ShiprocketService
     public function __construct()
     {
         $this->baseUrl = config('services.shiprocket.base_url', 'https://apiv2.shiprocket.in');
-        $this->email = config('services.shiprocket.email', '');
-        $this->password = config('services.shiprocket.password', '');
+        $this->email = (string) (config('services.shiprocket.email') ?? '');
+        $this->password = (string) (config('services.shiprocket.password') ?? '');
     }
 
     /**

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin\Nutrition;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Admin\Nutrition\StoreQuestionnaireQuestionRequest;
+use App\Http\Requests\Admin\Nutrition\UpdateQuestionnaireQuestionRequest;
 use App\Models\Nutrition\QuestionnaireQuestion;
 
 class QuestionnaireAdminController extends Controller
 {
+    use \App\Http\Controllers\Admin\ResourceIndexFallbacks;
     public function index()
     {
         $questions = QuestionnaireQuestion::orderBy('sort_order')->get();
@@ -24,21 +26,9 @@ class QuestionnaireAdminController extends Controller
         return view('admin.nutrition.questions.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreQuestionnaireQuestionRequest $request)
     {
-        $validated = $request->validate([
-            'model' => 'required|string',
-            'section' => 'nullable|string',
-            'question' => 'required|string',
-            'answer_type' => 'required|string',
-            'options_scale' => 'nullable|string',
-            'clinical_reason' => 'nullable|string',
-            'chart_effect' => 'nullable|string',
-            'only_ask_if' => 'nullable|string',
-            'sort_order' => 'required|integer',
-        ]);
-
-        QuestionnaireQuestion::create($validated);
+        QuestionnaireQuestion::create($request->validated());
         return redirect()->route('admin.nutrition.questions.index')->with('success', 'Question created successfully.');
     }
 
@@ -47,14 +37,9 @@ class QuestionnaireAdminController extends Controller
         return view('admin.nutrition.questions.edit', compact('question'));
     }
 
-    public function update(Request $request, QuestionnaireQuestion $question)
+    public function update(UpdateQuestionnaireQuestionRequest $request, QuestionnaireQuestion $question)
     {
-        $validated = $request->validate([
-            'question' => 'required|string',
-            'sort_order' => 'required|integer',
-        ]);
-
-        $question->update($validated);
+        $question->update($request->validated());
         return redirect()->route('admin.nutrition.questions.index')->with('success', 'Question updated successfully.');
     }
 

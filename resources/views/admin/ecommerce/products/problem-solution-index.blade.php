@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     <div class="card basic-data-table border-0 radius-12 mb-24">
         <div class="card-header bg-base border-bottom py-16 px-24 d-flex flex-wrap align-items-center justify-content-between gap-3">

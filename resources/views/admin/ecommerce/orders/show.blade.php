@@ -89,7 +89,7 @@
         }
     </style>
 
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     <div class="row g-4">
         <div class="col-xl-4">

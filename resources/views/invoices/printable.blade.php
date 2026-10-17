@@ -215,7 +215,7 @@
         {{-- ── HEADER ── --}}
         <div class="header">
             <div class="company-block">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="{{ config('company.name') }}">
+                <img src="{{ asset('img/logo.png') }}" alt="{{ config('company.name') }}">
                 <div class="company-name">{{ config('company.name') }}</div>
                 <p>{{ config('company.address') }}</p>
                 <p>{{ config('company.city') }}</p>

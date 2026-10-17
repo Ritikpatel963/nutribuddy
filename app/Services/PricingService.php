@@ -104,7 +104,10 @@ class PricingService
         // ══ COIN REDEMPTION LOGIC ══
         $coinDiscount = 0.0;
         $coinsRedeemed = 0;
-        $discountPercent = (int) Setting::get('loyalty_discount_percentage', 10);
+        $discountPercent = (int) Setting::get(
+            'loyalty_max_redemption_percent',
+            Setting::get('loyalty_discount_percentage', 10),
+        );
         $coinToCashRate = max(1, (int) Setting::get('loyalty_conversion_rate', 10));
         $isLoyaltyEnabled = (bool) Setting::get('loyalty_enabled', 1);
 
@@ -113,6 +116,10 @@ class PricingService
         // After coupon is applied, remaining order value
         $remainingBalance = ($subtotal + $taxTotal) - $discountTotal;
         $maxRedeemableCoins = (int) floor(max(0, min($maxAllowedCoinDiscount, $remainingBalance)) * $coinToCashRate);
+        $adminCoinCap = (int) Setting::get('loyalty_max_redeemable_coins', 0);
+        if ($adminCoinCap > 0) {
+            $maxRedeemableCoins = min($maxRedeemableCoins, $adminCoinCap);
+        }
 
         if ($isLoyaltyEnabled && $coinsToRedeem > 0) {
             $coinsRedeemed = min($coinsToRedeem, $maxRedeemableCoins);

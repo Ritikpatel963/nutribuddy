@@ -41,7 +41,7 @@
                 ['value' => 'Active', 'label' => 'Plan'],
             ],
         ];
-    } elseif (request()->routeIs('health-scores')) {
+    } elseif (request()->routeIs('growth-signal')) {
         $hero = [
             'title' => 'Health Scores',
             'subtitle' => 'Review growth, nutrition, immunity, and focus progress.',
@@ -60,12 +60,15 @@
             ],
         ];
     } elseif (request()->routeIs('child-profile')) {
+        $child = auth()->user()->children()->latest()->first();
+        $assessment = $child ? $child->assessments()->latest()->first() : null;
+        
         $hero = [
             'title' => 'Child Profile',
             'subtitle' => 'Keep your child details, preferences, and care context updated.',
             'stats' => [
-                ['value' => '5', 'label' => 'Years'],
-                ['value' => 'Veg', 'label' => 'Diet'],
+                ['value' => $child ? \Carbon\Carbon::parse($child->dob)->age : '0', 'label' => 'Years'],
+                ['value' => $assessment ? ucfirst($assessment->diet_type) : 'Veg', 'label' => 'Diet'],
             ],
         ];
     } elseif (request()->routeIs('growth-signal')) {

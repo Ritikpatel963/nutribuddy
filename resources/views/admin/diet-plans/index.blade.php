@@ -27,7 +27,7 @@ SCRIPT;
 @endphp
 
 @section('content')
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     <div class="row gy-4 mb-24">
         <!-- Total Plans -->

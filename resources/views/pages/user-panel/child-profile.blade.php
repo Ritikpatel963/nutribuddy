@@ -36,7 +36,6 @@
   <div class="a1">
     <div class="ph">
       <h1 class="ph-title" id="profTitle">{{ $child->name }}'s Profile</h1>
-      <button class="btn-edit" onclick="openEdit()">✏️ Edit Profile</button>
     </div>
     <p class="ph-meta" id="profMeta">
       {{ \Carbon\Carbon::parse($child->dob)->age }} years <span class="ph-meta-dot">·</span>
@@ -48,15 +47,14 @@
 
   <!-- METRICS -->
   <div class="tiles a2">
-    <div class="tile"><div class="tv cg" id="scoreVal">0</div><div class="tl">Health Score</div><span class="tb up">↑ 21 pts</span></div>
-    <div class="tile"><div class="tv co" id="weightTile">{{ $assessment->current_weight_kg ?? '18' }} <span class="tu">kg</span></div><div class="tl">Weight</div><span class="tb up">↑ 1 kg</span></div>
-    <div class="tile"><div class="tv cp" id="heightTile">{{ $assessment->current_height_cm ?? '106' }} <span class="tu">cm</span></div><div class="tl">Height</div><span class="tb up">↑ 2 cm</span></div>
-    <div class="tile"><div class="tv cr">1<span class="tu">×</span></div><div class="tl">Sick This Qtr</div><span class="tb dn">↓ from 4×</span></div>
+    <div class="tile"><div class="tv cg" id="scoreVal">{{ $assessment->health_score ?? 0 }}</div><div class="tl">Health Score</div></div>
+    <div class="tile"><div class="tv co" id="weightTile">{{ $assessment->current_weight_kg ?? '0' }} <span class="tu">kg</span></div><div class="tl">Weight</div></div>
+    <div class="tile"><div class="tv cp" id="heightTile">{{ $assessment->current_height_cm ?? '0' }} <span class="tu">cm</span></div><div class="tl">Height</div></div>
+    <div class="tile"><div class="tv cr">{{ $assessment->times_sick_last_quarter ?? '0' }}<span class="tu">×</span></div><div class="tl">Sick This Qtr</div></div>
   </div>
 
   <div class="tab-bar a3">
     <button class="tab-btn on" onclick="switchTab(this,'tProfile')">Profile</button>
-    <button class="tab-btn" onclick="switchTab(this,'tDietChart')" style="color:var(--gdk); font-weight:800; background:var(--glt); border-radius:12px 12px 0 0; padding-left:14px; padding-right:14px; border:none; margin-left:8px; border-bottom: 2.5px solid var(--gdk);">🥗 7-Day Diet Chart</button>
   </div>
 
   <!-- Profile tab -->
@@ -107,74 +105,13 @@
             <div class="gap-row"><span class="gn">Vitamin C</span><span class="gb met">Met ✓</span></div>
           @endif
         </div>
-        <button class="btn-ci" id="ciBtn" onclick="doCheckin()">Quarterly Check-in <span class="arr">→</span></button>
       </div>
     </div>
   </div>
 
 
 
-  <!-- Diet Chart tab -->
-  <div id="tDietChart" class="tp">
-    <div style="background:linear-gradient(135deg, var(--gdk), var(--ghov)); border-radius:var(--rl); padding:24px; color:#fff; margin-bottom:20px; box-shadow:var(--shh);">
-        <h2 style="font-family:var(--fh); font-size:1.8rem; font-weight:900; margin-bottom:8px;">Your Personalized 7-Day Plan</h2>
-        <p style="font-size:0.9rem; opacity:0.9; margin: 0;">Curated specifically for {{ $child->name }}'s growth, immunity, and dietary preferences.</p>
-    </div>
 
-    <!-- Inner Day Tabs for Diet Chart -->
-    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:12px; margin-bottom:16px; scrollbar-width:none;">
-        @foreach($days as $index => $day)
-            <button onclick="switchDietDay('day-{{ $day }}', this)" class="diet-day-btn {{ $index === 0 ? 'active' : '' }}" style="background:{{ $index === 0 ? 'var(--pk)' : 'var(--wh)' }}; color:{{ $index === 0 ? '#fff' : 'var(--mu)' }}; border:1.5px solid {{ $index === 0 ? 'var(--pk)' : 'var(--br)' }}; border-radius:99px; padding:8px 18px; font-family:var(--fh); font-weight:700; font-size:0.85rem; white-space:nowrap; transition:all 0.2s; cursor:pointer;">
-                {{ $day }}
-            </button>
-        @endforeach
-    </div>
-
-    <!-- Day Contents -->
-    <div>
-        @if($mealsByDay->isNotEmpty())
-            @foreach($days as $index => $day)
-                <div id="day-{{ $day }}" class="diet-day-pane" style="display: {{ $index === 0 ? 'block' : 'none' }};">
-                    <h4 style="font-family:var(--fh); color:var(--dk); font-weight:800; margin-bottom:16px; font-size:1.1rem;">{{ $day }}'s Menu</h4>
-                    <div style="display:flex; flex-direction:column; gap:12px;">
-                        @if($meals = $mealsByDay->get($index))
-                            @foreach($meals as $meal)
-                                @php($time = $meal->meal_slot)
-                                <div class="diet-meal-card" style="background:var(--wh); border:1px solid var(--br); border-radius:var(--rl); padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:var(--sh); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">
-                                    <div style="display:flex; align-items:center; gap:16px; flex-wrap: wrap;">
-                                        <div style="background:var(--gbg); color:var(--gdk); padding:8px 14px; border-radius:12px; font-weight:800; font-size:0.8rem; width:135px; text-align:center; font-family:var(--fh); flex-shrink: 0;">
-                                            @if(str_contains($time, 'Breakfast')) 🍳 
-                                            @elseif(str_contains($time, 'Lunch')) 🥗 
-                                            @elseif(str_contains($time, 'Dinner')) 🍲 
-                                            @else 🍎 @endif
-                                            {{ $meal->meal_slot }}
-                                        </div>
-                                        <div>
-                                            <div style="font-family:var(--fh); font-weight:800; color:var(--dk); font-size:1rem; margin-bottom:2px;">{{ $meal->items->first()?->food?->dish_name ?? 'Meal being finalised' }}</div>
-                                            <div style="font-size:0.75rem; color:var(--mu); display:flex; gap:12px;">
-                                                <span>🔥 <strong>{{ $meal['calories'] ?? 0 }}</strong> kcal</span>
-                                                <span>💪 <strong>{{ $meal['protein'] ?? 0 }}g</strong> Protein</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button style="background:none; border:1.5px solid var(--gdk); color:var(--gdk); font-weight:700; border-radius:99px; padding:6px 14px; font-size:0.75rem; transition:all 0.2s; white-space:nowrap; cursor:pointer;" onmouseover="this.style.background='var(--gdk)'; this.style.color='#fff';" onmouseout="this.style.background='none'; this.style.color='var(--gdk)';">
-                                        Mark Done
-                                    </button>
-                                </div>
-                            @endforeach
-                        @else
-                            <p>No meals generated for {{ $day }}</p>
-                        @endif
-                    </div>
-                </div>
-            @endforeach
-        @else
-            <div style="padding: 24px; text-align: center; color: var(--mu);">
-                <p>Generating diet chart... If you haven't run the AI yet, please complete an assessment to generate your personalized plan!</p>
-            </div>
-        @endif
-    </div>
-  </div>
 
 </main>
 </div>

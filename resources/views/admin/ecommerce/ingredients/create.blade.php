@@ -5,7 +5,7 @@
 @endphp
 
 @section('content')
-    @include('admin.ecommerce._messages')
+    @include('admin.partials.messages')
 
     @include('admin.ecommerce.ingredients._form', [
         'formAction' => route('admin.ecommerce.ingredients.store'),

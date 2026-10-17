@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\Access\RolePermissionSyncService;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -93,6 +94,19 @@ class RolePermissionTest extends TestCase
         // Testing dynamic assignment programmatically
         $this->unauthorizedRole->givePermissionTo('view products');
         $this->assertTrue($this->unauthorizedUser->hasPermissionTo('view products', 'admin'));
+    }
+
+    /** @test */
+    public function role_permission_sync_service_preserves_manage_implies_view(): void
+    {
+        $role = Role::create(['name' => 'Sync Test', 'guard_name' => 'admin']);
+
+        app(RolePermissionSyncService::class)->sync($role, [
+            'products' => ['manage' => '1'],
+        ]);
+
+        $this->assertTrue($role->fresh()->hasPermissionTo('manage products', 'admin'));
+        $this->assertTrue($role->fresh()->hasPermissionTo('view products', 'admin'));
     }
 
     /** @test */

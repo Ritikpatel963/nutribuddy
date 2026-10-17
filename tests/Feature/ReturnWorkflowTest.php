@@ -102,4 +102,36 @@ class ReturnWorkflowTest extends TestCase
             'quantity' => 1,
         ]);
     }
+
+    public function test_return_cannot_include_an_item_from_another_order(): void
+    {
+        $user = User::factory()->create();
+        $order = Order::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'delivered',
+        ]);
+        $otherOrder = Order::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'delivered',
+        ]);
+        $otherItem = OrderItem::factory()->create([
+            'order_id' => $otherOrder->id,
+            'product_name' => 'Other order item',
+            'sku' => 'OTHER-001',
+            'quantity' => 1,
+            'line_total' => 100,
+        ]);
+
+        $this->actingAs($user)
+            ->postJson(route('user.orders.returns.store', $order), [
+                'reason' => 'Returning wrong order item.',
+                'items' => [['order_item_id' => $otherItem->id, 'quantity' => 1]],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Invalid item selected.')
+            ->assertJsonPath('errors.items.0', 'Invalid item selected.');
+
+        $this->assertDatabaseCount('order_returns', 0);
+        $this->assertDatabaseCount('order_return_items', 0);
+    }
 }

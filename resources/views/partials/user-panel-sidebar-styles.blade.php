@@ -74,6 +74,33 @@
     padding: 18px 14px 4px;
 }
 
+.sidebar-nav-scroll { display: flex !important; flex: 1; flex-direction: column !important; overflow-y: auto; }
+.nav-group { box-sizing: border-box; width: 100%; padding-top: 12px; }
+.nav-group-toggle {
+    width: 100%;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 8px 6px !important;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+.nav-group-toggle .nav-label { flex: 1; margin: 0 !important; padding: 0 !important; line-height: 1; text-align: left; }
+.nav-group-toggle:hover .nav-label { color: var(--dk); }
+.nav-group-toggle.is-active .nav-label { color: var(--pk); }
+.nav-group-chevron { width: 14px; height: 14px; flex: 0 0 auto; transition: transform .2s ease; }
+.nav-group-toggle[aria-expanded="true"] .nav-group-chevron { transform: rotate(180deg); }
+.nav-group-toggle:focus-visible { outline: none; box-shadow: inset 0 -2px 0 rgba(255, 77, 143, .45); }
+.nav-group-links[hidden] { display: none; }
+
 .nav-label {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;

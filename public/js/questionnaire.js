@@ -29,7 +29,7 @@ function qzUpdateStepper(to) {
     const QZ_STEPS = getQZSteps();
     for (let i = 1; i <= QZ_STEPS; i++) {
         const sp = document.getElementById('qzSp' + i);
-        if (sp) { sp.classList.remove('active','done'); if (i < to) sp.classList.add('done'); else if (i === to) sp.classList.add('active'); }
+        if (sp) { sp.classList.remove('active', 'done'); if (i < to) sp.classList.add('done'); else if (i === to) sp.classList.add('active'); }
         const ln = document.getElementById('qzLine' + i);
         if (ln) ln.style.width = i < to ? '100%' : '0%';
     }
@@ -85,14 +85,14 @@ async function qzSubmit(btn) {
         }
     });
     if (!valid) return;
-    
+
     const data = qzCollect();
-    
+
     if (window.isUserLoggedIn === false) {
         if (typeof openLoginModal === 'function') {
             document.getElementById('loginModalTitle').textContent = 'Account Required';
             document.getElementById('loginModalSub').textContent = 'Please log in to save your child\'s profile and complete the purchase.';
-            openLoginModal(function(data) {
+            openLoginModal(function (data) {
                 window.isUserLoggedIn = true;
                 // Re-trigger the submit now that user is logged in
                 qzSubmit(btn);
@@ -117,7 +117,7 @@ async function qzSubmit(btn) {
             alert(result.message || 'Error submitting questionnaire');
             btn.disabled = false; btn.textContent = 'Submit & Pay';
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e); alert('An error occurred.');
         btn.disabled = false; btn.textContent = 'Submit & Pay';
     }
@@ -136,8 +136,8 @@ async function qzInitiatePayment(planSlug, cycle, childId, btn) {
             alert(cd.message || 'Failed to initialize payment.');
             btn.textContent = 'Submit & Pay'; btn.disabled = false; return;
         }
-        if (cd.gateway === 'free') { window.location.href = '/meal-plan?child_id=' + childId; return; }
-        
+        if (cd.gateway === 'free') { window.location.href = '/nutrition?child_id=' + childId; return; }
+
         if (cd.gateway === 'cashfree') {
             btn.textContent = 'Redirecting...';
             const loadCF = () => {
@@ -155,7 +155,7 @@ async function qzInitiatePayment(planSlug, cycle, childId, btn) {
                 loadCF();
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e); alert('An error occurred during payment init.');
         btn.textContent = 'Submit & Pay'; btn.disabled = false;
     }
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lastPanel = document.getElementById('qzPanel' + QZ_STEPS);
                 if (lastPanel) lastPanel.classList.add('active');
                 qzUpdateStepper(QZ_STEPS);
-                
+
                 // Trigger submission with restored data
                 qzSubmitPending(btn, data);
             }
@@ -201,7 +201,7 @@ async function qzSubmitPending(btn, data) {
             alert(result.message || 'Error submitting questionnaire');
             btn.disabled = false; btn.textContent = 'Submit & Pay';
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e); alert('An error occurred.');
         btn.disabled = false; btn.textContent = 'Submit & Pay';
     }

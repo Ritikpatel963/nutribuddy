@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\AuthenticationController;
-use App\Http\Controllers\Frontend\AuthController as FrontendAuthController;
-use App\Http\Controllers\Frontend\GoogleAuthController;
+use App\Http\Controllers\Admin\Access\AuthenticationController;
+use App\Http\Controllers\Frontend\Account\AuthController as FrontendAuthController;
+use App\Http\Controllers\Frontend\Account\GoogleAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('authentication')->group(function () {

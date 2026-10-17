@@ -2,14 +2,20 @@
 
 namespace App\Services\Payments;
 
+use App\Events\OrderPaid;
 use App\Models\Order;
-use App\Models\Setting;
+use App\Models\Payment;
+use App\Services\Notifications\AiSensyService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class RazorpayPaymentService
 {
+    public function __construct(private readonly AiSensyService $aiSensy) {}
+
     public function createOrder(Order $order): array
     {
         $payload = [
@@ -65,6 +71,137 @@ class RazorpayPaymentService
         $expected = hash_hmac('sha256', $razorpayOrderId . '|' . $razorpayPaymentId, $this->keySecret());
 
         return hash_equals($expected, $razorpaySignature);
+    }
+
+    public function belongsToOrder(int $orderId, string $razorpayOrderId): bool
+    {
+        return Payment::query()
+            ->where('order_id', $orderId)
+            ->where('provider', 'razorpay')
+            ->where('gateway_order_id', $razorpayOrderId)
+            ->exists();
+    }
+
+    /** Confirm a payment only after its gateway order has been matched to this local order. */
+    public function confirmVerifiedPayment(Order $order, array $data): void
+    {
+        $payment = Payment::query()
+            ->where('order_id', $order->id)
+            ->where('provider', 'razorpay')
+            ->where('gateway_order_id', $data['razorpay_order_id'])
+            ->latest()
+            ->firstOrFail();
+
+        $result = $this->persistConfirmation(
+            $order,
+            $payment,
+            $data['razorpay_payment_id'],
+            'Razorpay payment successful',
+            ['verification_response' => $data],
+            false,
+        );
+
+        $this->dispatchPaidEvent($result);
+
+        if (! $result['notificationAlreadySent'] && $this->aiSensy->sendOrderPaid($result['order'])) {
+            $payment = $result['payment'];
+            $payment->forceFill([
+                'gateway_payload' => array_merge($payment->gateway_payload ?? [], [
+                    'aisensy_order_paid_sent_at' => now()->toIso8601String(),
+                ]),
+            ])->save();
+        }
+    }
+
+    /** Apply a signed webhook payment event once per local order. */
+    public function confirmWebhookPayment(Payment $payment, ?string $razorpayPaymentId): void
+    {
+        $result = $this->persistConfirmation(
+            $payment->order,
+            $payment,
+            $razorpayPaymentId,
+            'Razorpay webhook confirmation',
+            [],
+            true,
+        );
+
+        $this->dispatchPaidEvent($result);
+    }
+
+    /** @return array{order: Order, payment: Payment, wasUnpaid: bool, notificationAlreadySent: bool} */
+    private function persistConfirmation(
+        Order $order,
+        Payment $payment,
+        ?string $gatewayPaymentId,
+        string $notes,
+        array $payloadAdditions,
+        bool $skipIfAlreadyPaid,
+    ): array {
+        return DB::transaction(function () use ($order, $payment, $gatewayPaymentId, $notes, $payloadAdditions, $skipIfAlreadyPaid): array {
+            $lockedOrder = Order::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
+            $lockedPayment = Payment::query()
+                ->whereKey($payment->id)
+                ->where('order_id', $lockedOrder->id)
+                ->where('provider', 'razorpay')
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $previousStatus = $lockedOrder->status;
+            $previousFulfillmentStatus = $lockedOrder->fulfillment_status;
+            $wasUnpaid = $lockedOrder->payment_status !== 'paid';
+            $paymentPayload = $lockedPayment->gateway_payload ?? [];
+
+            if ($skipIfAlreadyPaid && ! $wasUnpaid) {
+                return [
+                    'order' => $lockedOrder,
+                    'payment' => $lockedPayment,
+                    'wasUnpaid' => false,
+                    'notificationAlreadySent' => ! empty($paymentPayload['aisensy_order_paid_sent_at']),
+                ];
+            }
+
+            $lockedOrder->forceFill([
+                'status' => $lockedOrder->status === 'pending' ? 'confirmed' : $lockedOrder->status,
+                'payment_status' => 'paid',
+                'payment_method' => 'razorpay',
+            ])->save();
+
+            $lockedPayment->forceFill([
+                'status' => 'success',
+                'gateway_payment_id' => $gatewayPaymentId ?: $lockedPayment->gateway_payment_id,
+                'gateway_payload' => array_merge($paymentPayload, $payloadAdditions),
+                'paid_at' => now(),
+                'notes' => $notes,
+            ])->save();
+
+            if ($previousStatus !== $lockedOrder->status) {
+                $lockedOrder->statusHistories()->create([
+                    'from_status' => $previousStatus,
+                    'to_status' => $lockedOrder->status,
+                    'from_fulfillment_status' => $previousFulfillmentStatus,
+                    'to_fulfillment_status' => $lockedOrder->fulfillment_status,
+                    'updated_by' => $lockedOrder->user_id,
+                    'note' => $skipIfAlreadyPaid
+                        ? 'Razorpay payment confirmed via webhook.'
+                        : 'Razorpay payment confirmed.',
+                ]);
+            }
+
+            return [
+                'order' => $lockedOrder->fresh(),
+                'payment' => $lockedPayment->fresh(),
+                'wasUnpaid' => $wasUnpaid,
+                'notificationAlreadySent' => ! empty($paymentPayload['aisensy_order_paid_sent_at']),
+            ];
+        });
+    }
+
+    /** @param array{order: Order, payment: Payment, wasUnpaid: bool, notificationAlreadySent: bool} $result */
+    private function dispatchPaidEvent(array $result): void
+    {
+        if ($result['wasUnpaid']) {
+            Event::dispatch(new OrderPaid($result['order']));
+        }
     }
 
     private function keyId(): string
