@@ -12,12 +12,18 @@ class DietPaymentService
 {
     public function createOrder(User $user, array $data): array
     {
-        $plan = SubscriptionPlan::where('slug', $data['plan_slug'])->firstOrFail();
-        [$price, $days] = match ($data['cycle']) {
-            'monthly' => [$plan->monthly_price, 30],
-            'quarterly' => [$plan->quarterly_price, 90],
-            'annually' => [$plan->annual_price, 365],
+        $plan = SubscriptionPlan::where('slug', $data['plan_slug'])
+            ->where('is_active', true)
+            ->firstOrFail();
+        [$priceColumn, $days] = match ($data['cycle']) {
+            'monthly' => ['monthly_price', 30],
+            'quarterly' => ['quarterly_price', 90],
+            'annually' => ['annual_price', 365],
         };
+        $price = $plan->{$priceColumn};
+        if ($price === null) {
+            return ['success' => false, 'message' => 'This billing cycle is not available for the selected plan.', '_status' => 422];
+        }
         $amountInPaise = (int) round((float) $price * 100);
         $amountInRupees = round((float) $price, 2);
 
@@ -25,7 +31,7 @@ class DietPaymentService
             'user_id' => $user->id,
             'child_id' => $data['child_id'],
             'subscription_plan_id' => $plan->id,
-            'model' => $plan->name . ' (' . ucfirst($data['cycle']) . ')',
+            'model' => $plan->name.' ('.ucfirst($data['cycle']).')',
             'status' => 'pending',
             'payment_status' => 'pending',
             'amount_paid' => $amountInRupees,
@@ -64,7 +70,7 @@ class DietPaymentService
 
         $expected = hash_hmac(
             'sha256',
-            $data['razorpay_order_id'] . '|' . $data['razorpay_payment_id'],
+            $data['razorpay_order_id'].'|'.$data['razorpay_payment_id'],
             config('services.razorpay.key_secret')
         );
         if (! hash_equals($expected, $data['razorpay_signature'])) {
@@ -98,7 +104,7 @@ class DietPaymentService
                 ? 'https://api.cashfree.com/pg/orders/'
                 : 'https://sandbox.cashfree.com/pg/orders/';
             $response = Http::acceptJson()->withHeaders($this->cashfreeHeaders())
-                ->get($baseUrl . urlencode($orderId));
+                ->get($baseUrl.urlencode($orderId));
 
             if (! $response->successful()) {
                 return ['success' => false, 'message' => 'Payment was not successful or was cancelled.'];
@@ -131,7 +137,7 @@ class DietPaymentService
             ->post('https://api.razorpay.com/v1/orders', [
                 'amount' => $amount,
                 'currency' => 'INR',
-                'receipt' => 'diet_' . $subscription->id . '_' . uniqid(),
+                'receipt' => 'diet_'.$subscription->id.'_'.uniqid(),
                 'notes' => ['plan_id' => $plan->id, 'user_id' => $user->id, 'subscription_id' => $subscription->id],
             ]);
         if (! $response->successful()) {
@@ -150,7 +156,7 @@ class DietPaymentService
 
     private function createCashfreeOrder(User $user, SubscriptionPlan $plan, DietSubscription $subscription, float $amount): array
     {
-        $orderId = 'diet_sub_' . $subscription->id . '_' . uniqid();
+        $orderId = 'diet_sub_'.$subscription->id.'_'.uniqid();
         $baseUrl = config('services.cashfree.env') === 'production'
             ? 'https://api.cashfree.com/pg/orders'
             : 'https://sandbox.cashfree.com/pg/orders';
@@ -159,16 +165,16 @@ class DietPaymentService
             'order_amount' => $amount,
             'order_currency' => 'INR',
             'customer_details' => [
-                'customer_id' => 'user_' . $user->id,
+                'customer_id' => 'user_'.$user->id,
                 'customer_name' => $user->name,
                 'customer_email' => $user->email,
                 'customer_phone' => '9999999999',
             ],
             'order_meta' => [
                 'return_url' => str_replace('http://', 'https://', route('diet.payment.cashfree.return'))
-                    . '?order_id={order_id}&subscription_id=' . $subscription->id,
+                    .'?order_id={order_id}&subscription_id='.$subscription->id,
             ],
-            'order_note' => 'Diet Subscription ' . $plan->name,
+            'order_note' => 'Diet Subscription '.$plan->name,
         ]);
         if (! $response->successful()) {
             throw new \RuntimeException('Cashfree order creation failed.');

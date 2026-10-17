@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\DietSubscription;
 use App\Models\Nutrition\Child;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
@@ -60,5 +59,37 @@ class DietPaymentControllerRegressionTest extends TestCase
             'status' => 'pending',
             'payment_status' => 'pending',
         ]);
+    }
+
+    public function test_missing_cycle_price_cannot_create_a_free_subscription(): void
+    {
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        SubscriptionPlan::create([
+            'name' => 'Monthly', 'slug' => 'monthly', 'price' => 100,
+            'monthly_price' => null, 'is_active' => true,
+        ]);
+
+        $this->actingAs($parent)->postJson(route('diet.payment.create'), [
+            'plan_slug' => 'monthly', 'gateway' => 'razorpay', 'cycle' => 'monthly', 'child_id' => $child->id,
+        ])->assertUnprocessable()->assertJsonPath('success', false);
+
+        $this->assertDatabaseCount('diet_subscriptions', 0);
+    }
+
+    public function test_inactive_subscription_plan_cannot_be_purchased_directly(): void
+    {
+        $parent = User::factory()->create();
+        $child = Child::create(['user_id' => $parent->id, 'name' => 'Mira', 'sex' => 'girl']);
+        SubscriptionPlan::create([
+            'name' => 'Monthly', 'slug' => 'monthly', 'price' => 100,
+            'monthly_price' => 100, 'is_active' => false,
+        ]);
+
+        $this->actingAs($parent)->postJson(route('diet.payment.create'), [
+            'plan_slug' => 'monthly', 'gateway' => 'razorpay', 'cycle' => 'monthly', 'child_id' => $child->id,
+        ])->assertNotFound();
+
+        $this->assertDatabaseCount('diet_subscriptions', 0);
     }
 }
