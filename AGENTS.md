@@ -76,6 +76,10 @@ When refactoring or creating controllers, follow the strict guidelines in `.agen
 - **Thin Controllers (150-Line Rule):** Controllers must strictly orchestrate HTTP requests. Move validation to Form Requests (`App\Http\Requests\<Domain>\...`) and business logic to Services (`App\Services\<Domain>\...`).
 - **Regression Testing:** Always run dedicated feature regression tests (`php artisan test`) before and after any controller modifications.
 
+## 7. Frontend CSS & JavaScript Standards
+
+Follow `.agent/rules/frontend-assets.md` when auditing or changing CSS, Sass, JavaScript, or Blade asset loading. In particular, preserve existing asset URLs and DOM hooks, keep product/payment decisions server-authoritative, and verify that edited assets are part of the actual Blade or Vite loading path.
+
 
 
 ## 7. Critical Product, Nutrition, Assessment, Subscription & Authentication Review

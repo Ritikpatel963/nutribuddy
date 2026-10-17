@@ -20,3 +20,5 @@ This folder contains modular rules that guide AI assistants operating within the
    - Zero-breakage invariants, domain directory organization, thin controller (150-line rule), form requests, and regression testing standards.
 8. [critical-domain-review.md](file:///e:/website-project/Nutribuddy/.agent/rules/critical-domain-review.md)
    - Review and regression standards for Products/checkout/coins, Nutrition/diet charts, Assessments, subscription lifecycle/renewals, and customer/admin authentication, sessions, tokens, and permissions.
+9. [frontend-assets.md](file:///e:/website-project/Nutribuddy/.agent/rules/frontend-assets.md)
+   - CSS/JavaScript asset layout, Blade loading contracts, safe DOM updates, browser/server boundaries, and frontend verification.
