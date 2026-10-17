@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\AssessmentOption;
 use App\Models\AssessmentQuestion;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Services\AssessmentService;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -130,6 +134,37 @@ class AssessmentQuizWorkflowTest extends TestCase
         $this->assertSame('Once', $question->options->firstWhere('id', $rarely->id)->option_text);
         $this->assertFalse($question->options->contains('id', $daily->id));
         $this->assertTrue($question->options->contains('option_text', 'Several times'));
+    }
+
+    public function test_failed_assessment_score_write_rolls_back_the_attempt_and_answers(): void
+    {
+        if (DB::getDriverName() !== 'sqlite') {
+            $this->markTestSkipped('The rollback assertion uses a SQLite trigger.');
+        }
+
+        $user = User::factory()->create();
+        $question = AssessmentQuestion::create([
+            'title' => 'How often does your child exercise?',
+            'section' => 'Growth & Physical Development',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+        $option = AssessmentOption::create([
+            'question_id' => $question->id,
+            'option_text' => 'Daily',
+            'score' => 5,
+            'sort_order' => 1,
+        ]);
+        DB::unprepared("CREATE TRIGGER fail_assessment_scores BEFORE INSERT ON assessment_section_scores BEGIN SELECT RAISE(ABORT, 'score write failed'); END");
+
+        try {
+            app(AssessmentService::class)->calculateAndStore($user, [$question->id => $option->id]);
+            $this->fail('The assessment score insert should fail.');
+        } catch (QueryException) {
+            $this->assertDatabaseCount('assessment_attempts', 0);
+            $this->assertDatabaseCount('assessment_answers', 0);
+            $this->assertDatabaseCount('assessment_section_scores', 0);
+        }
     }
 
     public function test_admin_with_permission_can_view_nutrition_questions_list(): void

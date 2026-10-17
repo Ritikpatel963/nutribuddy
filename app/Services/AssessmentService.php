@@ -8,6 +8,7 @@ use App\Models\AssessmentQuestion;
 use App\Models\AssessmentSectionScore;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AssessmentService
 {
@@ -32,7 +33,7 @@ class AssessmentService
         $query = AssessmentQuestion::active()
             ->ordered()
             ->with(['options' => fn ($q) => $q->orderBy('sort_order')]);
-            
+
         if ($limit) {
             $query->limit($limit);
         }
@@ -54,7 +55,7 @@ class AssessmentService
         $query = AssessmentQuestion::active()
             ->ordered()
             ->with(['options' => fn ($q) => $q->orderBy('sort_order')]);
-            
+
         if ($limit) {
             $query->limit($limit);
         }
@@ -67,9 +68,7 @@ class AssessmentService
     /**
      * Calculate scores from submitted answers and persist the attempt.
      *
-     * @param  User   $user
      * @param  array  $answers  [ question_id => option_id, … ]
-     * @return AssessmentAttempt
      */
     public function calculateAndStore(User $user, array $answers): AssessmentAttempt
     {
@@ -80,8 +79,8 @@ class AssessmentService
             ->get()
             ->keyBy('id');
 
-        $totalScore  = 0;
-        $maxScore    = 0;
+        $totalScore = 0;
+        $maxScore = 0;
         $sectionData = []; // section => ['score' => 0, 'max' => 0]
 
         $answersToInsert = [];
@@ -97,22 +96,22 @@ class AssessmentService
                 continue;
             }
 
-            $obtained  = (int) $option->score;
-            $maxForQ   = (int) $question->options->max('score');
-            $section   = $question->section;
+            $obtained = (int) $option->score;
+            $maxForQ = (int) $question->options->max('score');
+            $section = $question->section;
 
             $totalScore += $obtained;
-            $maxScore   += $maxForQ;
+            $maxScore += $maxForQ;
 
             $sectionData[$section]['score'] = ($sectionData[$section]['score'] ?? 0) + $obtained;
-            $sectionData[$section]['max']   = ($sectionData[$section]['max']   ?? 0) + $maxForQ;
+            $sectionData[$section]['max'] = ($sectionData[$section]['max'] ?? 0) + $maxForQ;
 
             $answersToInsert[] = [
-                'question_id'    => $questionId,
-                'option_id'      => $optionId,
+                'question_id' => $questionId,
+                'option_id' => $optionId,
                 'obtained_score' => $obtained,
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
         }
 
@@ -126,39 +125,38 @@ class AssessmentService
 
         $resultLevel = $this->getResultLevel($percentage);
 
-        // Create the attempt record.
-        $attempt = AssessmentAttempt::create([
-            'user_id'      => $user->id,
-            'total_score'  => $totalScore,
-            'max_score'    => $maxScore,
-            'percentage'   => $percentage,
-            'result_level' => $resultLevel,
-            'completed_at' => now(),
-        ]);
+        return DB::transaction(function () use ($user, $totalScore, $maxScore, $percentage, $resultLevel, $answersToInsert, $sectionData): AssessmentAttempt {
+            $attempt = AssessmentAttempt::create([
+                'user_id' => $user->id,
+                'total_score' => $totalScore,
+                'max_score' => $maxScore,
+                'percentage' => $percentage,
+                'result_level' => $resultLevel,
+                'completed_at' => now(),
+            ]);
 
-        // Bulk-insert answers.
-        foreach ($answersToInsert as &$row) {
-            $row['attempt_id'] = $attempt->id;
-        }
-        AssessmentAnswer::insert($answersToInsert);
+            foreach ($answersToInsert as &$row) {
+                $row['attempt_id'] = $attempt->id;
+            }
+            AssessmentAnswer::insert($answersToInsert);
 
-        // Bulk-insert section scores.
-        $sectionRows = [];
-        foreach ($sectionData as $section => $data) {
-            $sectionPct    = $data['max'] > 0 ? round(($data['score'] / $data['max']) * 100, 2) : 0;
-            $sectionRows[] = [
-                'attempt_id' => $attempt->id,
-                'section'    => $section,
-                'score'      => $data['score'],
-                'max_score'  => $data['max'],
-                'percentage' => $sectionPct,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-        AssessmentSectionScore::insert($sectionRows);
+            $sectionRows = [];
+            foreach ($sectionData as $section => $data) {
+                $sectionPct = $data['max'] > 0 ? round(($data['score'] / $data['max']) * 100, 2) : 0;
+                $sectionRows[] = [
+                    'attempt_id' => $attempt->id,
+                    'section' => $section,
+                    'score' => $data['score'],
+                    'max_score' => $data['max'],
+                    'percentage' => $sectionPct,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+            AssessmentSectionScore::insert($sectionRows);
 
-        return $attempt->fresh(['sectionScores', 'answers']);
+            return $attempt->fresh(['sectionScores', 'answers']);
+        });
     }
 
     // ─── Result Level ─────────────────────────────────────────────────────────
@@ -169,7 +167,7 @@ class AssessmentService
             $percentage >= 80 => 'Excellent',
             $percentage >= 60 => 'Good',
             $percentage >= 40 => 'Average',
-            default           => 'Needs Improvement',
+            default => 'Needs Improvement',
         };
     }
 
@@ -183,35 +181,35 @@ class AssessmentService
     public function compareAttempts(AssessmentAttempt $latest, AssessmentAttempt $previous): array
     {
         $overall = [
-            'previous_score'      => $previous->total_score,
-            'current_score'       => $latest->total_score,
+            'previous_score' => $previous->total_score,
+            'current_score' => $latest->total_score,
             'previous_percentage' => $previous->percentage,
-            'current_percentage'  => $latest->percentage,
-            'diff_score'          => $latest->total_score - $previous->total_score,
-            'diff_percentage'     => round($latest->percentage - $previous->percentage, 2),
+            'current_percentage' => $latest->percentage,
+            'diff_score' => $latest->total_score - $previous->total_score,
+            'diff_percentage' => round($latest->percentage - $previous->percentage, 2),
         ];
 
         // Build a map of section name => data for each attempt.
-        $prevMap   = $previous->sectionScores->keyBy('section');
+        $prevMap = $previous->sectionScores->keyBy('section');
         $latestMap = $latest->sectionScores->keyBy('section');
-        $sections  = $latestMap->keys()->merge($prevMap->keys())->unique();
+        $sections = $latestMap->keys()->merge($prevMap->keys())->unique();
 
         $sectionComparisons = [];
         foreach ($sections as $section) {
-            $prevSec   = $prevMap->get($section);
-            $latSec    = $latestMap->get($section);
+            $prevSec = $prevMap->get($section);
+            $latSec = $latestMap->get($section);
             $sectionComparisons[$section] = [
-                'previous_score'      => $prevSec?->score      ?? 0,
-                'current_score'       => $latSec?->score       ?? 0,
+                'previous_score' => $prevSec?->score ?? 0,
+                'current_score' => $latSec?->score ?? 0,
                 'previous_percentage' => $prevSec?->percentage ?? 0,
-                'current_percentage'  => $latSec?->percentage  ?? 0,
-                'max_score'           => $latSec?->max_score   ?? ($prevSec?->max_score ?? 0),
-                'diff'                => ($latSec?->score ?? 0) - ($prevSec?->score ?? 0),
+                'current_percentage' => $latSec?->percentage ?? 0,
+                'max_score' => $latSec?->max_score ?? ($prevSec?->max_score ?? 0),
+                'diff' => ($latSec?->score ?? 0) - ($prevSec?->score ?? 0),
             ];
         }
 
         return [
-            'overall'  => $overall,
+            'overall' => $overall,
             'sections' => $sectionComparisons,
         ];
     }
