@@ -5,7 +5,8 @@
             <div class="blob b1"></div>
             <div class="blob b2"></div>
             <div class="slide-text">
-                <div class="slide-badge badge-pk">India's #1 Kids Wellness Gummy</div>
+                <div class="slide-badge badge-pk">AYURVEDA MEETS MODERN BRAIN NUTRITION
+</div>
                 <h1 class="htitle">Big Dreams Begin <br>With <span class="pop">Healthy Mind</span></h1>
                 <p class="slide-desc">With Brahmi, Ashwagandha, Flaxseed oil, Vitamin D3 and essential nutrients, these
                     delicious gummies help support focus, memory and healthy brain development.</p>

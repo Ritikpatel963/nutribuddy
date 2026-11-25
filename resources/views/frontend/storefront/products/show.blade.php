@@ -220,6 +220,14 @@
 
 
     <div class="pdp-hero">
+        <nav class="pdp-breadcrumb" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ route('product') }}">Products</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ $product->name }}</span>
+        </nav>
+
         <!-- LEFT: Gallery -->
         <div class="pdp-gallery">
             <div class="main-img-wrap">
@@ -622,6 +630,10 @@
                 <button type="button" class="btn-cart" id="pdpAddToCartBtn" onclick="handleAddToCart('{{ $product->id }}', this)">Add to Cart</button>
                 <button type="button" class="btn-buy" id="pdpBuyNowBtn" onclick="handleBuyNow('{{ $product->id }}', this)">Buy Now</button>
             </div>
+
+            <button type="button" class="pdp-subscription-cta" id="pdpSubscriptionCta" hidden>
+                Start my subscription · ₹649 today
+            </button>
 
             <div class="pdp-offers-delivery">
                 <div class="pdp-multi-buy-offer">
@@ -1187,7 +1199,7 @@
                 <div class="div-badge"> The Nutribuddy Benefits</div>
             </div>
 
-            <div class="problem-grid">
+            <div class="problem-grid benefits-grid">
                 @php
                     $nbClasses = [
                         ['pc' => 'pc1', 'd' => 'd1', 'pi' => 'pi1'],
@@ -1274,18 +1286,19 @@
                                     @endif
                                 </div>
                                 <a class="pdp-family-link" href="{{ route('product.show', $familyProduct->slug) }}">View product <span aria-hidden="true">→</span></a>
+                                <button type="button" class="pdp-family-cart" onclick="handleAddToCart('{{ $familyProduct->id }}', this)">
+                                    Add to cart <span aria-hidden="true">+</span>
+                                </button>
                             </div>
                         </article>
                     @endforeach
                 </div>
                 <div class="pdp-family-carousel-footer">
-                    <div class="pdp-family-dots" data-family-dots aria-label="Product slides"></div>
                     <div class="pdp-family-arrows">
                         <button type="button" data-family-move="-1" aria-label="Previous product">‹</button>
                         <button type="button" data-family-move="1" aria-label="Next product">›</button>
                     </div>
                 </div>
-                <p class="pdp-family-note">Buy 2 individual items: save 5%. Buy 3+: save 10%. The best eligible offer is applied in your cart.</p>
             </div>
 
             <div class="pdp-family-panel" id="pdp-family-panel-combos" role="tabpanel" aria-labelledby="pdp-family-tab-combos" data-family-panel="combos" hidden>
@@ -1317,13 +1330,11 @@
                     @endforeach
                 </div>
                 <div class="pdp-family-carousel-footer">
-                    <div class="pdp-family-dots" data-family-dots aria-label="Combo pack slides"></div>
                     <div class="pdp-family-arrows">
                         <button type="button" data-family-move="-1" aria-label="Previous combo pack">‹</button>
                         <button type="button" data-family-move="1" aria-label="Next combo pack">›</button>
                     </div>
                 </div>
-                <p class="pdp-family-note">Combo packs are thoughtful product suggestions. Check current product availability and pricing before ordering.</p>
             </div>
         </div>
     </section>
@@ -1451,12 +1462,16 @@
             const subscriptionOption = document.querySelector('.pdp-subscription-option');
             const subscriptionPanel = document.getElementById('pdpSubscriptionPanel');
             const subscriptionToggle = document.getElementById('pdpSubscriptionToggle');
+            const actionRow = document.querySelector('.pdp-action-row');
+            const subscriptionCta = document.getElementById('pdpSubscriptionCta');
 
             if (subscriptionOption && subscriptionPanel && subscriptionToggle) {
                 function setSubscriptionPanel(open) {
                     subscriptionPanel.hidden = !open;
                     subscriptionOption.classList.toggle('is-open', open);
                     subscriptionToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    if (actionRow) actionRow.hidden = open;
+                    if (subscriptionCta) subscriptionCta.hidden = !open;
                 }
 
                 purchaseInputs.forEach(function (input) {

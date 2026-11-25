@@ -1062,7 +1062,7 @@
     .g-icon {
         font-size: 1.25rem;
         grid-row: span 2;
-        margin: 0;
+        margin: 0 -16px;
         text-align: center;
     }
 
@@ -1171,7 +1171,7 @@
 
     .eq-op,
     .eq-eq {
-        margin: 0;
+        margin: 0 -16px;
         padding: 0;
         text-align: center;
     }
@@ -1358,6 +1358,28 @@
     border-color: rgba(0, 214, 143, 0.22);
     background: var(--mnl);
     box-shadow: none;
+}
+
+.pdp-subscription-cta {
+    display: block;
+    width: 100%;
+    min-height: 58px;
+    margin: 8px 0 25px;
+    padding: 12px 22px;
+    border: 0;
+    border-radius: 30px;
+    background: #672ca0;
+    color: #fff;
+    font: 800 1.05rem 'Nunito', sans-serif;
+    cursor: pointer;
+}
+
+.pdp-subscription-cta[hidden] {
+    display: none;
+}
+
+.pdp-action-row[hidden] {
+    display: none !important;
 }
 
 .nb__feature-card:nth-child(3) .nb__feature-icon {
@@ -1580,6 +1602,7 @@
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
     }
 
     .transform-list::-webkit-scrollbar {
@@ -1604,12 +1627,12 @@
         display: flex !important;
         grid-template-columns: none !important;
         gap: 14px;
-        margin: 0 -16px 0;
+        margin: 0 -16px;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: 4px 16px 14px;
+        padding: 4px 7vw 14px;
         scroll-behavior: smooth;
-        scroll-padding-left: 16px;
+        scroll-padding-left: 7vw;
         scroll-snap-type: x mandatory;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
@@ -1629,6 +1652,14 @@
 
     .ps-problems-section .problem-grid .prob-card:hover {
         transform: none;
+    }
+
+    .ps-problems-section .benefits-grid {
+        margin-right: -16px;
+        margin-left: -16px;
+        padding-right: 7vw;
+        padding-left: 7vw;
+        scroll-padding-left: 7vw;
     }
 
     .problem-slider-controls {
@@ -1926,6 +1957,15 @@
     }
 }
 /* Product hero styling follows the standalone Brain Booster product page. */
+body:has(.pdp-hero),
+body:has(.pdp-hero) main {
+    background: #fffcf8;
+}
+
+body:has(.pdp-hero) #mainNav {
+    background: #fffcf8;
+}
+
 .pdp-hero {
     --pdp-ink: #281638;
     --pdp-muted: #6b5879;
@@ -1936,11 +1976,44 @@
 
     grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
     gap: clamp(32px, 5vw, 70px);
+    row-gap: 0;
     max-width: 1320px;
     /* Keep the product title and review summary below the fixed site header. */
     padding: 115px 24px 60px;
     background: #fffcf8;
     color: var(--pdp-ink);
+}
+
+.pdp-hero .pdp-breadcrumb {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0 0 18px;
+    justify-content: flex-start;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: #6b5879;
+    font-size: .9rem;
+}
+
+.pdp-hero .pdp-breadcrumb a {
+    color: #65338a;
+    text-decoration: none;
+}
+
+.pdp-hero .pdp-breadcrumb a:hover {
+    text-decoration: underline;
 }
 
 .pdp-hero .pdp-gallery {
@@ -3911,7 +3984,7 @@
 }
 
 .pdp-family-shell {
-    width: min(100%, 1680px);
+    width: min(100%, 1320px);
     margin: 0 auto;
 }
 
@@ -4022,6 +4095,8 @@
 }
 
 .pdp-family-card {
+    display: flex;
+    flex-direction: column;
     min-width: 0;
     overflow: hidden;
     border: 1px solid #f4cce3;
@@ -4072,6 +4147,9 @@
 }
 
 .pdp-family-card-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     padding: 22px 24px 24px;
 }
 
@@ -4127,6 +4205,10 @@
     margin: 0 0 15px;
 }
 
+.pdp-family-card-copy > .pdp-family-price {
+    margin-top: auto;
+}
+
 .pdp-family-price strong {
     color: #64289b;
     font-size: 24px;
@@ -4170,6 +4252,48 @@
 .pdp-family-link:hover {
     border-color: #64289b;
     background: #faf5ff;
+}
+
+.pdp-family-cart {
+    display: flex;
+    width: 100%;
+    min-height: 58px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    border: 1px solid #ff408c;
+    border-radius: 18px;
+    background: #ffe6f0;
+    color: #b72668;
+    font: 900 1rem 'Nunito', sans-serif;
+    cursor: pointer;
+}
+
+.pdp-family-cart:hover {
+    background: #ffd6e7;
+}
+
+.show-all-reviews-btn {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    border: 1px solid #e3c8ee;
+    border-radius: 999px;
+    background: #fff;
+    color: #64289b;
+    font: 800 .95rem 'Nunito', sans-serif;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.show-all-reviews-btn:hover {
+    border-color: #64289b;
+    background: #64289b;
+    color: #fff;
+    transform: translateY(-2px);
 }
 
 .pdp-family-carousel-footer {
@@ -4460,5 +4584,22 @@
     .pdp-subscribe-story-cta {
         margin-top: 22px;
         font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ps-problems-section .problem-grid {
+        display: grid !important;
+        grid-auto-flow: column !important;
+        grid-auto-columns: min(86vw, 360px) !important;
+        grid-template-columns: none !important;
+        grid-template-rows: 1fr !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+
+    .ps-problems-section .problem-grid .prob-card {
+        width: auto !important;
+        min-width: 0 !important;
     }
 }
