@@ -48,6 +48,47 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertViewHas('categoryCounts');
     }
 
+    public function test_product_detail_shows_suitable_age_after_size_when_age_is_not_configured(): void
+    {
+        $category = Category::factory()->create(['is_active' => true]);
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'name' => 'Kids Lemon Gummies',
+            'slug' => 'kids-lemon-gummies',
+            'is_active' => true,
+            'product_type' => 'variable',
+            'is_variant_enabled' => true,
+            'age_group' => null,
+            'variant_types' => [
+                'Flavour' => ['Lemon Ginger'],
+                'Size' => ['15pcs'],
+            ],
+        ]);
+
+        ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => '15 Piece Pack',
+            'sku' => 'KIDS-GUMMY-15',
+            'price' => 399.00,
+            'attributes' => [
+                'Flavour' => 'Lemon Ginger',
+                'Size' => '15pcs',
+            ],
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $response = $this->get(route('product.show', 'kids-lemon-gummies'));
+
+        $response->assertStatus(200);
+        $response->assertSeeInOrder([
+            'data-attribute-group="Size"',
+            'pdp-suitable-age',
+            'Suitable Age',
+            '4+',
+        ]);
+    }
+
     public function test_product_detail_page_loads_with_variants_and_inventory(): void
     {
         $category = Category::factory()->create(['is_active' => true]);
@@ -58,6 +99,11 @@ class ProductSectionRegressionTest extends TestCase
             'is_active' => true,
             'product_type' => 'variable',
             'is_variant_enabled' => true,
+            'variant_types' => [
+                'Flavour' => ['Lemon Ginger', 'Orange'],
+                'Size' => ['15pcs', '30pcs'],
+                'Age Group' => [],
+            ],
             'problem_subtitle' => 'Algal DHA, Brahmi & Shankhpushpi, with essential nutrients.',
             'coins_reward' => 91,
         ]);
@@ -75,8 +121,34 @@ class ProductSectionRegressionTest extends TestCase
             'sku' => 'GUMMY-60',
             'price' => 649.00,
             'compare_at_price' => 699.00,
+            'attributes' => [
+                'Flavour' => 'Lemon Ginger',
+                'Size' => '15pcs',
+            ],
             'is_active' => true,
             'is_default' => true,
+        ]);
+
+        $secondVariant = ProductVariant::create([
+            'product_id' => $product->id,
+            'name' => '30 Gummies Pack',
+            'sku' => 'GUMMY-30',
+            'price' => 399.00,
+            'compare_at_price' => 449.00,
+            'attributes' => [
+                'Flavour' => 'Orange',
+                'Size' => '30pcs',
+            ],
+            'is_active' => true,
+            'is_default' => false,
+        ]);
+
+        Inventory::create([
+            'product_id' => $product->id,
+            'product_variant_id' => $secondVariant->id,
+            'stock_qty' => 20,
+            'track_stock' => true,
+            'is_in_stock' => true,
         ]);
 
         Inventory::create([
@@ -109,6 +181,11 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertSee('assets/brain/routine-after.webp');
         $response->assertSee('Reveal before and after routine images');
         $response->assertSee('pdp-formula-reveal');
+        $response->assertSeeInOrder([
+            'pdp-hero',
+            'Expert Endorsement',
+            'pdp-world-nutrition',
+        ]);
         $response->assertSee('Meet your nutrition buddy');
         $response->assertSee('Little gummy.');
         $response->assertSee('Thoughtful formula.');
@@ -126,16 +203,59 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertSee('What’s inside');
         $response->assertSee('nb-ingredient-nav', false);
         $response->assertSee('role="tablist"', false);
+        $ingredientCss = file_get_contents(public_path('assets/css/frontendstyle.css'));
+        $this->assertMatchesRegularExpression(
+            '/#nb-ingredients \.nb-detail-photo-wrap::before,\s*#nb-ingredients \.nb-detail-photo-wrap::after \{[^}]*border-radius: 50%;/s',
+            $ingredientCss
+        );
+        $this->assertStringContainsString('width: min(74%, 220px);', $ingredientCss);
+        $this->assertMatchesRegularExpression('/#nb-ingredients \.nb-mob-card-emoji \{[^}]*border-radius: 50%;/s', $ingredientCss);
+        $this->assertMatchesRegularExpression(
+            '/#nb-ingredients \.nb-mob-read-more \{[^}]*min-height: 44px;[^}]*white-space: nowrap;/s',
+            $ingredientCss
+        );
+        $ingredientScript = file_get_contents(public_path('assets/js/frontendscript.js'));
+        $this->assertStringContainsString('class="nb-mob-read-more-label">Read more</span>', $ingredientScript);
+        $this->assertStringContainsString("label.textContent = expanded ? 'Read more' : 'Read less';", $ingredientScript);
         $mapDocument = file_get_contents(public_path('assets/research/world-nutrition-map.html'));
         $this->assertStringContainsString('Math.min(500,w*.4)', $mapDocument);
         $this->assertStringContainsString('max-width:1400px', $mapDocument);
         $this->assertStringContainsString('Published study location', $mapDocument);
         $this->assertStringContainsString('nb-map-legend', $mapDocument);
+        $productCss = file_get_contents(public_path('assets/css/product.css'));
+        $this->assertMatchesRegularExpression(
+            '/\.pdp-formula-heading h2 \{[^}]*font-family: \'Nunito\', sans-serif;[^}]*font-weight: 800;/s',
+            $productCss
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.pdp-formula-actions a \{[^}]*font-family: \'Nunito\', sans-serif;[^}]*font-weight: 800;/s',
+            $productCss
+        );
+        $this->assertStringContainsString(
+            '.pdp-formula-actions .pdp-formula-primary { background: var(--product-purple); color: #fff; }',
+            $productCss
+        );
+        $this->assertMatchesRegularExpression(
+            '/@media \(max-width: 767px\) \{\s*\.pdp-hero \.pdp-info \.pdp-offers-delivery \{\s*margin-bottom: 0px;\s*\}\s*\.pdp-accordion-section \{\s*padding-top: 0;\s*\}\s*\}/s',
+            $productCss
+        );
+        $this->assertStringContainsString('padding: clamp(16px, 2vw, 24px) 24px clamp(32px, 4vw, 48px)', $productCss);
+        $this->assertStringContainsString('grid-template-columns: repeat(5, minmax(0, 1fr))', $productCss);
+        $this->assertMatchesRegularExpression(
+            '/@media \(max-width: 767px\) \{\s*\.pdp-reference-features \{\s*grid-template-columns: repeat\(5, minmax\(0, 1fr\)\);/',
+            $productCss
+        );
         $response->assertSee('Children’s supplement use around the world');
         $response->assertSee('data-gallery-count', false);
         $response->assertSee('data-gallery-prev', false);
         $response->assertSee('data-gallery-next', false);
         $response->assertSee('data-gallery-zoom', false);
+        $zoomScript = file_get_contents(public_path('assets/js/pages/allfile.js'));
+        $this->assertStringContainsString("window.matchMedia('(max-width: 768px)').matches", $zoomScript);
+        $this->assertStringContainsString('thumbRow.scrollTo({', $zoomScript);
+        $this->assertStringNotContainsString('el.scrollIntoView({', $zoomScript);
+        $this->assertStringContainsString("select.addEventListener('change'", $zoomScript);
+        $this->assertStringContainsString('option.disabled = !possible', $zoomScript);
         $response->assertSee('data-pdp-sticky-purchase', false);
         $response->assertSee('pdpStickyPrice', false);
         $response->assertSee('Red grape · 30 gummies · Ages 4+');
@@ -182,6 +302,26 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertSee('₹699');
         $response->assertSee('pdp-price-line');
         $response->assertSee('pdp-coins-strip');
+        $response->assertSeeInOrder([
+            'pdp-price-line',
+            'pdpVariantPanel',
+            'How do you want to buy?',
+        ]);
+        $response->assertSeeInOrder([
+            'data-attribute-group="Flavour"',
+            'data-attribute-group="Size"',
+            'pdp-suitable-age',
+            'Suitable Age',
+            '4+',
+        ]);
+        $response->assertDontSee('data-attribute-group="Age Group"', false);
+        $response->assertSee('data-pdp-variant-select', false);
+        $response->assertSee('value="Lemon Ginger"', false);
+        $response->assertSee('value="Orange"', false);
+        $response->assertSee('value="15pcs"', false);
+        $response->assertSee('value="30pcs"', false);
+        $response->assertSee('id="pdpSuitableAge"', false);
+        $response->assertSee('value="4+"', false);
         $response->assertSee('pdpCoinsModal');
         $response->assertSee('A little thank-you from NutriBuddy');
         $response->assertSee('How do you want to buy?');
@@ -208,7 +348,8 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertSee('Free shipping on ₹1,000+');
         $response->assertSee('Free shipping ₹1000+');
         $response->assertSee('COD Available');
-        $response->assertSee('Extra 5% OFF on Prepaid orders');
+        $productCss = file_get_contents(public_path('assets/css/product.css'));
+        $this->assertStringContainsString('grid-template-columns: repeat(2, minmax(0, 1fr))', $productCss);
         $response->assertSee('Estimated delivery between');
         $response->assertSee('17 November – 19 November.');
         $response->assertDontSee('Why Parents Love Brain Booster Gummies');
