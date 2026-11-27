@@ -39,4 +39,9 @@ class Child extends Model
     {
         return $this->hasMany(ChildAssessment::class);
     }
+
+    public function checkIns()
+    {
+        return $this->hasMany(ChildCheckIn::class);
+    }
 }

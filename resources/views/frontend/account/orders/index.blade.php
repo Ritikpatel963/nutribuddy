@@ -60,32 +60,37 @@
 
          <div class="summary-strip fade-in d1">
             <div class="sum-card">
-                <div class="sum-icon" style="background:var(--mnl)">📦</div>
-                <div>
-                    <div class="s-num" id="totalOrdersCount">0</div>
-                    <div class="s-lbl">Total Orders</div>
+                <div class="sum-icon" style="background:var(--mnl); color:var(--purple, #7c3aed)">
+                    <svg class="order-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <path d="m3 7 9-4 9 4-9 4-9-4Z" />
+                        <path d="M3 7v10l9 4 9-4V7M12 11v10" />
+                    </svg>
                 </div>
+                <div><div class="s-num" id="totalOrdersCount">0</div><div class="s-lbl">Total Orders</div></div>
             </div>
             <div class="sum-card">
-                <div class="sum-icon" style="background:var(--yel)">⏳</div>
-                <div>
-                    <div class="s-num" id="pendingOrdersCount">0</div>
-                    <div class="s-lbl">Pending</div>
+                <div class="sum-icon" style="background:var(--yel); color:#b7791f">
+                    <svg class="order-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                    </svg>
                 </div>
+                <div><div class="s-num" id="pendingOrdersCount">0</div><div class="s-lbl">Pending</div></div>
             </div>
             <div class="sum-card">
-                <div class="sum-icon" style="background:var(--mnl)">✅</div>
-                <div>
-                    <div class="s-num" id="deliveredOrdersCount">0</div>
-                    <div class="s-lbl">Delivered</div>
+                <div class="sum-icon" style="background:var(--mnl); color:#16a36a">
+                    <svg class="order-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="9" /><path d="m7.5 12.5 3 3 6-7" />
+                    </svg>
                 </div>
+                <div><div class="s-num" id="deliveredOrdersCount">0</div><div class="s-lbl">Delivered</div></div>
             </div>
             <div class="sum-card">
-                <div class="sum-icon" style="background:#ffe4e6">❌</div>
-                <div>
-                    <div class="s-num" id="cancelledOrdersCount">0</div>
-                    <div class="s-lbl">Cancelled</div>
+                <div class="sum-icon" style="background:#ffe4e6; color:#e11d48">
+                    <svg class="order-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="9" /><path d="m9 9 6 6m0-6-6 6" />
+                    </svg>
                 </div>
+                <div><div class="s-num" id="cancelledOrdersCount">0</div><div class="s-lbl">Cancelled</div></div>
             </div>
         </div>
 

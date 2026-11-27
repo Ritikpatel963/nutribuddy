@@ -99,7 +99,7 @@
             </svg>
           </div>
           <div class="sc-info">
-            <div class="num">{{ \App\Models\ProductReview::where('user_id', auth()->id())->count() }}</div>
+            <div class="num">{{ $reviewCount }}</div>
             <div class="lbl">Reviews</div>
           </div>
         </div>
@@ -108,19 +108,40 @@
       <!-- QUICK ACTIONS -->
       <div class="qa-grid">
         <a href="{{ route('product') }}" class="qa-btn d3">
-          <div class="qi" style="background:var(--pkl)">🛒</div>
+          <div class="qi" style="background:var(--pkl);color:var(--pk)">
+            <svg class="qa-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6L23 6H6" />
+            </svg>
+          </div>
           <span>Shop Now</span>
         </a>
         <a href="{{ route('order') }}" class="qa-btn d4">
-          <div class="qi" style="background:var(--mnl)">📦</div>
+          <div class="qi" style="background:var(--mnl);color:var(--mn)">
+            <svg class="qa-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+              <path d="M3 8v9l9 5 9-5V8M12 13v9M7.5 5.5l9 5" />
+            </svg>
+          </div>
           <span>Track Order</span>
         </a>
         <a href="{{ route('my-coupons') }}" class="qa-btn d5">
-          <div class="qi" style="background:var(--pul)">🎟️</div>
+          <div class="qi" style="background:var(--pul);color:var(--pu)">
+            <svg class="qa-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M3 5h18v4a3 3 0 0 0 0 6v4H3v-4a3 3 0 0 0 0-6V5Z" />
+              <path d="M13 5v2m0 4v2m0 4v2" />
+            </svg>
+          </div>
           <span>My Coupons</span>
         </a>
-        <a href="#" class="qa-btn d6">
-          <div class="qi" style="background:var(--yel)"></div>
+        <a href="{{ route('meal-plan') }}" class="qa-btn d6">
+          <div class="qi" style="background:var(--yel);color:#ca8a04">
+            <svg class="qa-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+            </svg>
+          </div>
           <span>Diet Chart</span>
         </a>
       </div>
@@ -168,6 +189,7 @@
                     Not Taken Yet
                 </div>
                 <p style="font-size: 0.8rem; color: var(--text-light);">Take your first assessment now!</p>
+                <a href="{{ route('user.assessment.index') }}" class="assessment-cta">Take Assessment <span aria-hidden="true">&rarr;</span></a>
             @endif
           </div>
           <!-- Loyalty -->
@@ -186,197 +208,37 @@
           <div class="box" style="flex:1">
             <div class="box-head">
               <h3>Recent Reviews</h3>
-              <a href="#" class="view-all">See All</a>
+              <a href="{{ route('user.reviews.index') }}" class="view-all">See All</a>
             </div>
             <div class="reviews-list">
-              <div class="review-item">
-                <div class="review-avatar" style="background:var(--mnl)"></div>
-                <div>
-                  <div class="rp">Immunity Gummies</div>
-                  <div class="stars">★★★★★</div>
-                  <div class="rtxt">My son loves them! Noticeable difference in 3 weeks.</div>
+              @forelse($recentReviews as $review)
+                <div class="review-item">
+                  <div class="review-avatar" style="background:{{ $loop->odd ? 'var(--mnl)' : 'var(--skl)' }}">
+                    @if($review->product?->primaryImage)
+                      <img src="{{ asset('storage/' . $review->product->primaryImage->image_path) }}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+                    @else
+                      {{ strtoupper(substr($review->product?->name ?? 'P', 0, 1)) }}
+                    @endif
+                  </div>
+                  <div>
+                    <div class="rp">{{ $review->product?->name ?? 'Product unavailable' }}</div>
+                    <div class="stars" role="img" aria-label="{{ $review->rating }} out of 5 stars">@for($star = 1; $star <= 5; $star++)@if($star <= $review->rating)&#9733;@else&#9734;@endif @endfor</div>
+                    @if($review->comment)
+                      <div class="rtxt">{{ $review->comment }}</div>
+                    @endif
+                  </div>
                 </div>
-              </div>
-              <div class="review-item">
-                <div class="review-avatar" style="background:var(--skl)">🧠</div>
-                <div>
-                  <div class="rp">Brain Boost Chews</div>
-                  <div class="stars">★★★★☆</div>
-                  <div class="rtxt">Great taste, my daughter asks for it daily!</div>
+              @empty
+                <div style="padding:16px 20px;text-align:center;font-size:.82rem;color:var(--muted)">
+                  You have not reviewed a product from your orders yet.
+                  <a href="{{ route('user.reviews.index') }}" style="color:var(--pk);font-weight:700">Review an ordered product</a>
                 </div>
-              </div>
-              <div style="padding:14px 20px;text-align:center;font-size:.78rem;color:var(--muted)">
-                No more reviews yet — <a href="#" style="color:var(--pk);font-weight:700">write one!</a>
-              </div>
+              @endforelse
             </div>
           </div>
         </div>
 
       </div><!-- /bottom-grid -->
-
-      <!-- add new diet section -->
-      <!-- Header -->
-      <div class="header">
-        <div>
-          <h1 class="greeting">Good morning, Priya </h1>
-          <p class="sub-info">
-            Thursday
-            <span class="sep">·</span>
-            🌤️ Greeshma season
-            <span class="sep">·</span>
-            Summer cooling plan active
-          </p>
-        </div>
-        <div>
-          <a href="{{ route('check-in') }}">
-          <button class="btn-quarterly">Quarterly check-in</button>
-        </a></div>
-      </div>
-
-      <!-- Season Banner -->
-      <div class="season-banner">
-        <div class="season-icon">☀️</div>
-        <div>
-          <div class="season-label">Greeshma — Summer Season Plan (May–June)</div>
-          <div class="season-tags">
-            <span class="season-tag">🥥 Cooling foods</span>
-            <span class="season-tag">🥤 Coconut water 2× daily</span>
-            <span class="season-tag">🍚 Curd rice</span>
-            <span class="season-tag">🥗 Light meals</span>
-            <span class="season-tag">🌙 Early dinner</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Grid -->
-      <div class="grid">
-
-        <!-- Left: Today's Meals -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Today's meals</span>
-            <a href="#" class="card-link">Full week →</a>
-          </div>
-          <ul class="meal-list" style="list-style:none;">
-            <li class="meal-item">
-              <div class="time-chip">7 AM</div>
-              <div class="meal-icon">🥛</div>
-              <div class="meal-info">
-                <div class="meal-name">Turmeric milk</div>
-                <div class="meal-meta">Calcium · Vit D · Curcumin</div>
-              </div>
-            </li>
-            <li class="meal-item">
-              <div class="time-chip">8 AM</div>
-              <div class="meal-icon">🫐</div>
-              <div class="meal-info">
-                <div class="meal-name">Ragi porridge + banana</div>
-                <div class="meal-meta">Calcium 344 mg · Iron 3.9 mg</div>
-              </div>
-            </li>
-            <li class="meal-item">
-              <div class="time-chip">10:30</div>
-              <div class="meal-icon">🍃</div>
-              <div class="meal-info">
-                <div class="meal-name">Guava + peanut pack</div>
-                <div class="meal-meta">Vit C 228 mg — triples iron</div>
-              </div>
-            </li>
-            <li class="meal-item">
-              <div class="time-chip">1 PM</div>
-              <div class="meal-icon">🍛</div>
-              <div class="meal-info">
-                <div class="meal-name">Palak dal + chapati + curd</div>
-                <div class="meal-meta">Lemon off-heat for 3× iron</div>
-              </div>
-            </li>
-          </ul>
-          <div class="see-all-wrap">
-            <a href="{{ route('meal-plan') }}">
-              <button class="btn-see-all" style="cursor: pointer;">See all 6 meals + full week →</button>
-            </a>
-          </div>
-        </div>
-
-        <!-- Right: Health Score -->
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Arjun's Health Score</span>
-            <a href="#" class="card-link">Details →</a>
-          </div>
-          <div class="score-body">
-            <div class="score-top">
-              <!-- Ring -->
-              <div class="score-ring-wrap">
-                <svg viewBox="0 0 100 100" width="100" height="100">
-                  <defs>
-                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stop-color="var(--pu)" />
-                      <stop offset="100%" stop-color="var(--pk)" />
-                    </linearGradient>
-                  </defs>
-                  <circle class="ring-bg" cx="50" cy="50" r="40" />
-                  <circle class="ring-fill" cx="50" cy="50" r="40" />
-                </svg>
-                <div class="score-number">
-                  <span class="score-val">75</span>
-                  <span class="score-denom">/100</span>
-                </div>
-              </div>
-
-              <!-- Labels -->
-              <div class="score-info">
-                <div class="score-progress-label">
-                  <span class="up-arrow">↑</span>
-                  Great progress! <strong>+21 pts</strong> in 90 days
-                </div>
-                <div class="bar-group">
-                  <!-- Immunity -->
-                  <div class="bar-row">
-                    <div class="bar-label-row">
-                      <span class="bar-name">Immunity</span>
-                      <span class="bar-pct immunity">87%</span>
-                    </div>
-                    <div class="bar-track">
-                      <div class="bar-fill immunity" style="width:87%"></div>
-                    </div>
-                  </div>
-                  <!-- Growth -->
-                  <div class="bar-row">
-                    <div class="bar-label-row">
-                      <span class="bar-name">Growth</span>
-                      <span class="bar-pct growth">79%</span>
-                    </div>
-                    <div class="bar-track">
-                      <div class="bar-fill growth" style="width:79%"></div>
-                    </div>
-                  </div>
-                  <!-- Brain -->
-                  <div class="bar-row">
-                    <div class="bar-label-row">
-                      <span class="bar-name">Brain</span>
-                      <span class="bar-pct brain">72%</span>
-                    </div>
-                    <div class="bar-track">
-                      <div class="bar-fill brain" style="width:72%"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Check-in notice -->
-            <div class="checkin-notice">
-              <div class="notice-icon">📋</div>
-              <div>
-                <div class="notice-title">Check-in due</div>
-                <div class="notice-desc">Update Arjun's weight &amp; height to refresh scores.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /grid -->
 
     </div><!-- /page -->
   </div><!-- /ud-main -->

@@ -24,14 +24,16 @@
         <li><a href="{{ route('ingredients') }}">Ingredients</a></li>
         @auth
             @if(request()->is('user/*') || request()->routeIs('userdashboard', 'meal-plan', 'supplement', 'child-profile', 'growth-signal', 'check-in', 'order', 'wallet', 'nutrition.index', 'user.assessment.*', 'user.orders.*', 'user.invoices.*', 'user.reviews.*', 'user.support-tickets', 'personal-info', 'change-password', 'subscription', 'my-coupons'))
-            <li class="divider">|</li>
-            <li><a href="{{ route('userdashboard') }}">Overview</a></li>
-            <li><a href="{{ route('meal-plan') }}">Meal Plan</a></li>
-            <li><a href="{{ route('supplement') }}">Supplement</a></li>
-            <li><a href="{{ route('child-profile') }}">Child Profile</a></li>
-            <li><a href="{{ route('growth-signal') }}">Growth Signals</a></li>
-            <li><a href="{{ route('check-in') }}">Quarterly Check-in</a></li>
-            <li><a href="{{ route('order') }}">Order</a></li>
+            @unless(isset($isUserPanel) && $isUserPanel)
+                <li class="divider">|</li>
+                <li><a href="{{ route('userdashboard') }}">Overview</a></li>
+                <li><a href="{{ route('meal-plan') }}">Meal Plan</a></li>
+                <li><a href="{{ route('supplement') }}">Supplement</a></li>
+                <li><a href="{{ route('child-profile') }}">Child Profile</a></li>
+                <li><a href="{{ route('growth-signal') }}">Growth Signals</a></li>
+                <li><a href="{{ route('check-in') }}">Quarterly Check-in</a></li>
+                <li><a href="{{ route('order') }}">Order</a></li>
+            @endunless
             @endif
         @endauth
     </ul>

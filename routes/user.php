@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Frontend\Account\UserAddressController;
 use App\Http\Controllers\Frontend\Account\UserCouponController;
+use App\Http\Controllers\Frontend\Account\UserDashboardController;
 use App\Http\Controllers\Frontend\Account\UserInvoiceController;
 use App\Http\Controllers\Frontend\Account\UserOrderController;
 use App\Http\Controllers\Frontend\Account\UserProfileController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Frontend\Account\UserWalletController;
 use App\Http\Controllers\Frontend\Checkout\CartController as FrontendCartController;
 use App\Http\Controllers\Frontend\Checkout\CheckoutController as FrontendCheckoutController;
 use App\Http\Controllers\Frontend\Nutrition\AssessmentController;
+use App\Http\Controllers\Frontend\Nutrition\ChildCheckInController;
 use App\Http\Controllers\Frontend\Nutrition\ChildProfileController;
 use App\Http\Controllers\Frontend\Nutrition\DietSubscriptionInvoiceController;
 use App\Http\Controllers\Frontend\Nutrition\MealPlanController;
@@ -76,7 +78,7 @@ Route::middleware('auth')->group(function () {
             return view('frontend.account.subscriptions', compact('subscriptions', 'pendingQuestionnaires'));
         })->name('subscription');
         Route::view('/returns', 'frontend.account.returns.show')->name('user-return');
-        Route::view('/dashboard', 'frontend.account.dashboard')->name('userdashboard');
+        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('userdashboard');
         Route::get('/nutrition', [NutritionController::class, 'nutrition'])->name('nutrition.index');
         Route::get('/nutrition/child/{child}', [NutritionController::class, 'nutrition'])->whereNumber('child')->name('nutrition.child');
         Route::get('/nutrition-backup', [NutritionBackupController::class, 'nutritionBackup'])->name('nutrition.backup');
@@ -90,7 +92,7 @@ Route::middleware('auth')->group(function () {
 
             return view('frontend.nutrition.growth-signal', compact('child', 'plan'));
         })->name('growth-signal');
-        Route::view('/check-in', 'frontend.nutrition.check-in')->name('check-in');
+        Route::get('/check-in', [ChildCheckInController::class, 'create'])->name('check-in');
         Route::get('/wallet', [UserWalletController::class, 'index'])->name('wallet');
         Route::get('/support-tickets', [UserSupportTicketController::class, 'index'])->name('user.support-tickets');
         Route::get('/support-tickets/{ticket}', [UserSupportTicketController::class, 'show'])->name('user.support-tickets.show');

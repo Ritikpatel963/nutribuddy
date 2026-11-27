@@ -8,10 +8,33 @@ use App\Models\Nutrition\Child;
 use App\Services\Nutrition\MealLoggingService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ChildCheckInController extends Controller
 {
     public function __construct(private readonly MealLoggingService $mealLogging) {}
+
+    public function create(Request $request): View
+    {
+        $children = Child::where('user_id', $request->user()->id)->latest()->get();
+        $requestedChildId = $request->query('child_id');
+
+        if ($requestedChildId !== null) {
+            $child = $children->firstWhere('id', (int) $requestedChildId);
+            abort_unless($child, 404);
+        } else {
+            $child = $children->first();
+        }
+
+        $latestAssessment = $child?->assessments()->latest()->first();
+        $checkIns = $child
+            ? $child->checkIns()->with('assessment')->latest()->limit(10)->get()
+            : collect();
+        $latestCheckIn = $checkIns->first();
+
+        return view('frontend.nutrition.check-in', compact('children', 'child', 'latestAssessment', 'checkIns', 'latestCheckIn'));
+    }
 
     public function saveCheckIn(StoreChildCheckInRequest $request)
     {
@@ -37,14 +60,17 @@ class ChildCheckInController extends Controller
                 return response()->json(['success' => false, 'message' => 'No previous assessment found'], 404);
             }
 
-            $newAssessment = $this->mealLogging->saveCheckIn($lastAssessment, $data);
+            $checkIn = $this->mealLogging->saveCheckIn($lastAssessment, $data);
+            $newAssessment = $checkIn->assessment;
 
             return response()->json([
                 'success' => true,
                 'message' => 'Check-in saved successfully!',
                 'assessment_id' => $newAssessment->id,
+                'check_in_id' => $checkIn->id,
                 'current_weight' => $newAssessment->current_weight_kg,
                 'current_height' => $newAssessment->current_height_cm,
+                'bmi' => $newAssessment->bmi,
             ]);
 
         } catch (\Exception $e) {

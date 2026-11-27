@@ -333,8 +333,10 @@ class CoinLedgerTest extends TestCase
         $user = User::factory()->create(['coins_balance' => 12]);
         $this->paidOrder($user, 40);
 
-        $this->actingAs($user)->get(route('wallet'))
-            ->assertOk()->assertSee('Available Coins')->assertSee('Pending Coins')->assertSee('PENDING');
+        $response = $this->actingAs($user)->get(route('wallet'));
+        $response->assertOk()->assertSee('Available Coins')->assertSee('Pending Coins')->assertSee('PENDING');
+
+        $this->assertSame(4, substr_count($response->getContent(), 'class="wallet-stat-icon"'));
     }
 
     public function test_admin_transactions_page_shows_liability(): void

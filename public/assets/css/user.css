@@ -192,7 +192,6 @@
 .panel-wallet > .ud-main > .page,
 .panel-tickets > .ud-main > .page,
 .panel-tickets-show > .ud-main > .page {
-  max-width: 1180px;
   width: 100%;
   padding-top: 0;
   padding-left: 32px;
@@ -1471,9 +1470,13 @@
 
 .panel-userdashboard .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 22px;
+}
+
+.panel-wallet .stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .panel-userdashboard .stat-card {
@@ -1732,6 +1735,30 @@
   margin-bottom: 12px
 }
 
+.panel-userdashboard .assessment-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--pu);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background .2s, transform .2s;
+}
+
+.panel-userdashboard .assessment-cta:hover {
+  background: #6020d5;
+  transform: translateY(-1px);
+}
+
+.panel-userdashboard .assessment-cta:focus-visible {
+  outline: 3px solid rgba(124, 58, 237, .35);
+  outline-offset: 3px;
+}
+
 .panel-userdashboard .progress-bar {
   background: rgba(255, 255, 255, .6);
   border-radius: 50px;
@@ -1878,6 +1905,12 @@
 
 
 
+
+@media(max-width:1300px) {
+  .panel-userdashboard .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+  }
+}
 
 @media(max-width:1100px) {
   .panel-userdashboard .stats-grid {
@@ -7811,6 +7844,107 @@
   font-weight: 900;
   margin: 8px 0 0;
   padding: 0;
+}
+
+/* Quarterly check-in persistence and progress history */
+.panel-check-in .ci-page {
+  max-width: 1200px;
+}
+
+.ci-child-picker {
+  max-width: 420px;
+  margin: 0 0 18px;
+}
+
+.ci-form-error {
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #991b1b;
+  background: #fef2f2;
+  font-size: .9rem;
+}
+
+.ci-history-card,
+.ci-empty-state {
+  margin-top: 24px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  background: #fff;
+}
+
+.ci-history-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ci-history-head h2,
+.ci-empty-state h2 {
+  color: var(--dk);
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.ci-history-head p,
+.ci-empty-state p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.ci-history-scroll {
+  overflow-x: auto;
+}
+
+.ci-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px;
+  text-align: left;
+}
+
+.ci-history-table th,
+.ci-history-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--dk);
+  font-size: .82rem;
+  vertical-align: top;
+}
+
+.ci-history-table th {
+  color: var(--muted);
+  background: var(--cr);
+  font-size: .7rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.ci-history-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ci-history-note {
+  margin-top: 5px;
+  color: var(--muted);
+  white-space: normal;
+  min-width: 150px;
+}
+
+.ci-empty-state {
+  padding: 28px;
+}
+
+.ci-empty-state .ci-goto-btn {
+  display: inline-flex;
+  margin-top: 18px;
+}
+
+.gs-checkin-btn,
+.gs-update-btn {
+  text-decoration: none;
 }
 
 .panel-wallet > .user-panel-page-hero,

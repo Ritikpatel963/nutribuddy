@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\AssessmentAttempt;
 use App\Models\Nutrition\Child;
 use App\Models\Nutrition\ChildAssessment;
+use App\Models\Nutrition\ChildCheckIn;
 use App\Models\Nutrition\IcmrNutritionTarget;
 use App\Models\Nutrition\MealItemLog;
 use App\Models\User;
@@ -205,6 +206,11 @@ class NutritionOwnershipRegressionTest extends TestCase
                 'child_id' => $child->id,
                 'weight_kg' => 16,
                 'height_cm' => 100,
+                'illness_count' => 2,
+                'focus_level' => 'slightly-better',
+                'energy_level' => 'high',
+                'life_events' => ['sport', 'exams'],
+                'food_changes' => 'Started eating breakfast regularly.',
             ])
             ->assertOk()
             ->assertJsonPath('success', true)
@@ -219,6 +225,59 @@ class NutritionOwnershipRegressionTest extends TestCase
         $this->assertSame(16.0, $checkIn->current_weight_kg);
         $this->assertSame(100.0, $checkIn->current_height_cm);
         $this->assertSame(16.0, $checkIn->bmi);
+
+        $savedCheckIn = ChildCheckIn::query()->where('child_id', $child->id)->firstOrFail();
+        $this->assertSame($checkIn->id, $savedCheckIn->child_assessment_id);
+        $this->assertSame(16.0, $savedCheckIn->weight_kg);
+        $this->assertSame(100.0, $savedCheckIn->height_cm);
+        $this->assertSame(2, $savedCheckIn->illness_count);
+        $this->assertSame('slightly-better', $savedCheckIn->focus_level);
+        $this->assertSame('high', $savedCheckIn->energy_level);
+        $this->assertSame(['sport', 'exams'], $savedCheckIn->life_events);
+        $this->assertSame('Started eating breakfast regularly.', $savedCheckIn->food_changes);
+    }
+
+    public function test_check_in_page_shows_owned_child_history_and_rejects_other_parents_child(): void
+    {
+        $parent = User::factory()->create();
+        $otherParent = User::factory()->create();
+        $child = Child::create([
+            'user_id' => $parent->id,
+            'name' => 'Growing child',
+            'sex' => 'girl',
+        ]);
+        $assessment = ChildAssessment::create([
+            'child_id' => $child->id,
+            'model_level' => 'basic',
+            'initial_weight_kg' => 15,
+            'initial_height_cm' => 95,
+            'current_weight_kg' => 16,
+            'current_height_cm' => 100,
+            'diet_type' => 'vegetarian',
+        ]);
+        ChildCheckIn::create([
+            'child_id' => $child->id,
+            'child_assessment_id' => $assessment->id,
+            'weight_kg' => 16,
+            'height_cm' => 100,
+            'illness_count' => 1,
+            'focus_level' => 'same',
+            'energy_level' => 'high',
+            'life_events' => ['sport'],
+        ]);
+
+        $this->actingAs($parent)
+            ->get(route('check-in', ['child_id' => $child->id]))
+            ->assertOk()
+            ->assertViewHas('checkIns', fn ($checkIns) => $checkIns->count() === 1)
+            ->assertSee('Growing child')
+            ->assertSee('Progress History')
+            ->assertSee('+1.0 kg')
+            ->assertSee('+5.0 cm');
+
+        $this->actingAs($otherParent)
+            ->get(route('check-in', ['child_id' => $child->id]))
+            ->assertNotFound();
     }
 
     public function test_meal_item_toggle_preserves_json_contract_and_switches_consumed_state(): void

@@ -3,8 +3,6 @@
 @section("title", "Order Details NutriBuddy Kids")
 @section("panel-page-class", "panel-order")
 @section("panel-content")
-    </div>
-
     <div class="page">
         <div class="orders-card fade-in d1 order-detail-card mb-24">
             <div class="order-detail-head mb-20">

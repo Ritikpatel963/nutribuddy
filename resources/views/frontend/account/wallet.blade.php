@@ -12,28 +12,48 @@
             <!-- QUICK INFO -->
             <div class="stats-grid">
                 <div class="stat-card" style="background: #fff; border: 2px solid var(--border);">
-                    <div class="sc-icon" style="background: var(--mnl)">✅</div>
+                    <div class="sc-icon" style="background: var(--mnl); color: #16a36a">
+                        <svg class="wallet-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="m7.5 12.5 3 3 6-7" />
+                        </svg>
+                    </div>
                     <div class="sc-info">
                         <div class="num" id="wallet-available">{{ $availableCoins }}</div>
                         <div class="lbl">Available Coins</div>
                     </div>
                 </div>
                 <div class="stat-card" style="background: #fff; border: 2px solid var(--border);">
-                    <div class="sc-icon" style="background: #fef3c7">⏳</div>
+                    <div class="sc-icon" style="background: #fef3c7; color: #b7791f">
+                        <svg class="wallet-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M12 7v5l3 2" />
+                        </svg>
+                    </div>
                     <div class="sc-info">
                         <div class="num" id="wallet-pending">{{ $pendingCoins }}</div>
                         <div class="lbl">Pending Coins (unlock 7 days after delivery)</div>
                     </div>
                 </div>
                 <div class="stat-card" style="background: #fff; border: 2px solid var(--border);">
-                    <div class="sc-icon" style="background: var(--mnl)">🪙</div>
+                    <div class="sc-icon" style="background: var(--mnl); color: var(--or)">
+                        <svg class="wallet-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <ellipse cx="12" cy="6" rx="8" ry="3" />
+                            <path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3" />
+                        </svg>
+                    </div>
                     <div class="sc-info">
                         <div class="num">{{ $transactions->where('type', 'earned')->where('status', '!=', 'cancelled')->sum('amount') }}</div>
                         <div class="lbl">Total Earned</div>
                     </div>
                 </div>
                 <div class="stat-card" style="background: #fff; border: 2px solid var(--border);">
-                    <div class="sc-icon" style="background: #ffe4e6">💸</div>
+                    <div class="sc-icon" style="background: #ffe4e6; color: #e11d48">
+                        <svg class="wallet-stat-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <rect x="3" y="6" width="18" height="15" rx="2" />
+                            <path d="M3 10h18m-9 3 3 3m0 0-3 3m3-3h-5" />
+                        </svg>
+                    </div>
                     <div class="sc-info">
                         <div class="num">{{ $transactions->where('type', 'spent')->sum('amount') }}</div>
                         <div class="lbl">Total Spent</div>

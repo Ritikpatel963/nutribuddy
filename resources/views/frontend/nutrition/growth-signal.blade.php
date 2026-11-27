@@ -4,10 +4,6 @@
 
 @section('panel-content')
 
-{{-- ══ MOBILE TOPBAR ══ --}}
-</div>
-
-{{-- ══ PAGE ══ --}}
 <div class="gs-page">
 
     @if($plan)
@@ -28,13 +24,13 @@
             </p>
         </div>
         <div class="gs-header-right">
-            <button class="gs-checkin-btn" onclick="handleGsCheckin()">
+            <a class="gs-checkin-btn" href="{{ route('check-in', $child ? ['child_id' => $child->id] : []) }}">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
                     <polyline points="9 11 12 14 22 4"></polyline>
                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>
                 Quarterly Check-in
-            </button>
+            </a>
         </div>
     </div>
 
@@ -186,10 +182,10 @@
             <div class="gs-status-label">Total Tracked</div>
         </div>
         <div class="gs-status-cta">
-            <button class="gs-update-btn" onclick="handleGsCheckin()">
+            <a class="gs-update-btn" href="{{ route('check-in', $child ? ['child_id' => $child->id] : []) }}">
                 Update Signals
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -198,30 +194,6 @@
 @push('scripts')
 <script>
 /* ── Sidebar toggle ── */
-/* ── Quarterly check-in CTA ── */
-function handleGsCheckin() {
-    const btns = document.querySelectorAll('.gs-checkin-btn, .gs-update-btn');
-    btns.forEach(btn => {
-        btn.textContent = '✓ Check-in initiated…';
-        btn.style.opacity = '.7';
-        btn.disabled = true;
-    });
-    setTimeout(() => {
-        btns.forEach(btn => {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-        });
-        document.querySelector('.gs-checkin-btn').innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-                <polyline points="9 11 12 14 22 4"></polyline>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            Quarterly Check-in`;
-        document.querySelector('.gs-update-btn').innerHTML = `Update Signals
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>`;
-    }, 2800);
-}
-
 /* ── Stagger animation observer ── */
 const gsObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {

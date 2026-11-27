@@ -9,7 +9,7 @@
     $sideSectionLogoExists = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
     $logoUrl = $sideSectionLogoExists
         ? asset('storage/' . $sideSectionLogo)
-        : asset('assets/images/logo.png');
+        : asset('img/logo.png');
 
     $companyName = \App\Models\Setting::get('company_name') ?: \App\Models\Setting::get('site_name', 'NutriBuddy');
     $companyAddress = \App\Models\Setting::get('address', '');
@@ -48,8 +48,6 @@
     $totalTax = collect($taxSummary)->sum('tax_amount');
 @endphp
 
-    </div>
-
     <div class="page">
         <div class="inv-wrap fade-in">
             <div class="inv-card">
@@ -60,7 +58,7 @@
                     <div class="inv-header">
                         <div class="inv-company-left">
                             <div class="inv-company-logo">
-                                <img src="{{ $logoUrl }}" alt="{{ $companyName }}" style="max-height: 80px; max-width: 280px; width: auto; height: auto; object-fit: contain; margin-bottom: 10px;">
+                                <img src="{{ $logoUrl }}" alt="{{ $companyName }}" style="max-height: 120px; max-width: 320px; width: auto; height: auto; object-fit: contain; margin-bottom: 10px;">
                             </div>
                             <div class="inv-company-name">{{ $companyName }}</div>
                             <div class="inv-company-meta">
