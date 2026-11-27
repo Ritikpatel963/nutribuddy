@@ -1623,7 +1623,7 @@
 /* ── Mobile responsive for Ingredient Section ── */
 @media (max-width: 900px) {
     #nb-ingredients {
-        padding: 0px 4% 0px;
+    padding: 7px 3% 43px !important;
     }
 
     .nb-cat-row {

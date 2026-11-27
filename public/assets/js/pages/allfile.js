@@ -44,11 +44,23 @@
         thumbs.forEach(t => t.classList.remove('active'));
         if (el) {
             el.classList.add('active');
-            el.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest',
-                inline: window.matchMedia('(max-width: 900px)').matches ? 'center' : 'nearest'
-            });
+            const thumbRow = el.closest('.thumb-row');
+            if (thumbRow) {
+                const rowRect = thumbRow.getBoundingClientRect();
+                const thumbRect = el.getBoundingClientRect();
+
+                if (window.matchMedia('(max-width: 900px)').matches) {
+                    thumbRow.scrollTo({
+                        left: thumbRow.scrollLeft + thumbRect.left - rowRect.left - (thumbRow.clientWidth - thumbRect.width) / 2,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    thumbRow.scrollTo({
+                        top: thumbRow.scrollTop + thumbRect.top - rowRect.top - (thumbRow.clientHeight - thumbRect.height) / 2,
+                        behavior: 'smooth'
+                    });
+                }
+            }
         }
         const index = imageNumber || thumbs.indexOf(el) + 1;
         const count = document.querySelector('[data-gallery-count]');
@@ -56,6 +68,10 @@
     }
 
     function initPdpImageZoom() {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            return;
+        }
+
         const gallery = document.querySelector('.pdp-gallery');
         const source = document.querySelector('.pdp-zoom-source');
         const mainImage = document.getElementById('mainPdpImage');
@@ -373,38 +389,40 @@
         return pdpVariants.find(variant => sameAttributes(variant, pdpSelectedAttributes)) || null;
     }
 
-    function syncPdpOptionButtons() {
-        document.querySelectorAll('.pdp-option-btn').forEach(item => {
-            const attr = item.dataset.attribute;
-            const val = item.dataset.value;
-            const selVal = getAttrValue(pdpSelectedAttributes, attr);
-            const isActive = selVal !== undefined && String(selVal).toLowerCase().trim() === String(val).toLowerCase().trim();
-            item.classList.toggle('active', isActive);
+    function syncPdpOptionSelects() {
+        document.querySelectorAll('[data-pdp-variant-select]').forEach(select => {
+            const selectedValue = getAttrValue(pdpSelectedAttributes, select.dataset.attribute);
+            if (selectedValue !== undefined) {
+                select.value = String(selectedValue);
+            }
         });
     }
 
     function updateVariantAvailability() {
-        document.querySelectorAll('.pdp-option-btn').forEach(button => {
-            const attribute = button.dataset.attribute;
-            const value = button.dataset.value;
+        document.querySelectorAll('[data-pdp-variant-select]').forEach(select => {
+            const attribute = select.dataset.attribute;
 
-            const possible = pdpVariants.some(variant => {
-                const vAttrs = variant.attributes || {};
-                const vVal = getAttrValue(vAttrs, attribute);
-                if (vVal === undefined) return false;
+            Array.from(select.options).forEach(option => {
+                const value = option.value;
+                const possible = pdpVariants.some(variant => {
+                    const vAttrs = variant.attributes || {};
+                    const vVal = getAttrValue(vAttrs, attribute);
+                    if (vVal === undefined) return false;
 
-                return Object.keys(vAttrs).every(key => {
-                    if (key.toLowerCase().trim() === String(attribute).toLowerCase().trim()) {
-                        return String(vAttrs[key] ?? '').toLowerCase().trim() === String(value).toLowerCase().trim();
-                    }
-                    const selVal = getAttrValue(pdpSelectedAttributes, key);
-                    if (selVal === undefined) {
-                        return true;
-                    }
-                    return String(vAttrs[key] ?? '').toLowerCase().trim() === String(selVal).toLowerCase().trim();
+                    return Object.keys(vAttrs).every(key => {
+                        if (key.toLowerCase().trim() === String(attribute).toLowerCase().trim()) {
+                            return String(vAttrs[key] ?? '').toLowerCase().trim() === String(value).toLowerCase().trim();
+                        }
+                        const selVal = getAttrValue(pdpSelectedAttributes, key);
+                        if (selVal === undefined) {
+                            return true;
+                        }
+                        return String(vAttrs[key] ?? '').toLowerCase().trim() === String(selVal).toLowerCase().trim();
+                    });
                 });
+
+                option.disabled = !possible;
             });
-            button.disabled = !possible;
         });
     }
 
@@ -538,9 +556,7 @@
         return true;
     }
 
-    function selectPdpOption(button) {
-        const attribute = button.dataset.attribute;
-        const value = button.dataset.value;
+    function selectPdpOption(attribute, value) {
         pdpSelectedAttributes[attribute] = value;
 
         const candidateVariants = pdpVariants.filter(variant => {
@@ -571,7 +587,7 @@
             Object.assign(pdpSelectedAttributes, bestVariant.attributes);
         }
 
-        syncPdpOptionButtons();
+        syncPdpOptionSelects();
         updateVariantAvailability();
         applyVariantToPage(bestVariant || candidateVariants[0] || null);
     }
@@ -942,14 +958,14 @@
             });
         }
 
-        document.querySelectorAll('.pdp-option-btn').forEach(button => {
-            button.addEventListener('click', () => selectPdpOption(button));
+        document.querySelectorAll('[data-pdp-variant-select]').forEach(select => {
+            select.addEventListener('change', () => selectPdpOption(select.dataset.attribute, select.value));
         });
         const initialVariant = findMatchingVariant() || pdpVariants[0] || null;
         if (initialVariant && initialVariant.attributes) {
             Object.assign(pdpSelectedAttributes, initialVariant.attributes);
         }
-        syncPdpOptionButtons();
+        syncPdpOptionSelects();
         updateVariantAvailability();
         if (pdpVariants.length) {
             applyVariantToPage(initialVariant);

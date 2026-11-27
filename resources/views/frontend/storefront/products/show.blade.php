@@ -3,8 +3,6 @@
 
 @push('styles')
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet"
         href="{{ asset('assets/css/product.css') }}?v={{ filemtime(public_path('assets/css/product.css')) }}">
 @endpush
 
@@ -12,6 +10,9 @@
     @php
         $isKadhaProduct = str_contains(strtolower($product->name ?? ''), 'kadha') || str_contains(strtolower($product->slug ?? ''), 'kadha');
         $isBrainBoosterProduct = str_contains(strtolower($product->name ?? ''), 'brain booster') || str_contains(strtolower($product->slug ?? ''), 'brain-booster');
+        $isAgeAttribute = static fn($attributeName) => str_contains(strtolower(trim((string) $attributeName)), 'age')
+            || str_contains(strtolower(trim((string) $attributeName)), 'suitable');
+        $isSizeAttribute = static fn($attributeName) => in_array(strtolower(trim((string) $attributeName)), ['size', 'pack size'], true);
 
         $variantProducts = $product->variants
             ->filter(fn($variant) => $variant->is_active && !empty($variant->attributes))
@@ -44,7 +45,10 @@
                 ARRAY_FILTER_USE_KEY
             );
         }
-        $defAge = $product->age_group ?: $defVariantAttributes['Age Group'] ?? '';
+        $variantAge = collect($defVariantAttributes)->first(
+            fn($value, $key) => $isAgeAttribute($key) && trim((string) $value) !== ''
+        );
+        $defAge = $product->age_group ?: ($variantAge ?: '4+');
         $defPack = $product->pack_size ?: $defVariantAttributes['Pack Size'] ?? '';
         $defFlavour = $product->flavor ?: $defVariantAttributes['Flavour'] ?? '';
         $purchaseUnitLabel = '1 box (30 gummies)';
@@ -145,6 +149,51 @@
                 fn($key) => strtolower(trim((string) $key)) !== 'color',
                 ARRAY_FILTER_USE_KEY
             );
+        }
+        $ageVariantAttributeName = null;
+        $ageVariantValues = [];
+        foreach ($variantProducts as $variant) {
+            foreach ($variant->attributes ?? [] as $attributeName => $value) {
+                if (!$isAgeAttribute($attributeName) || trim((string) $value) === '') {
+                    continue;
+                }
+
+                $ageVariantAttributeName ??= $attributeName;
+                if (
+                    strcasecmp(trim((string) $ageVariantAttributeName), trim((string) $attributeName)) === 0 &&
+                    !in_array($value, $ageVariantValues, true)
+                ) {
+                    $ageVariantValues[] = $value;
+                }
+            }
+        }
+        foreach (array_keys($variantAttributeGroups) as $attributeName) {
+            if ($isAgeAttribute($attributeName)) {
+                unset($variantAttributeGroups[$attributeName]);
+            }
+        }
+        $hasAgeVariantGroup = $ageVariantAttributeName !== null && !empty($ageVariantValues);
+        if ($hasAgeVariantGroup) {
+            $variantAttributeGroups[$ageVariantAttributeName] = $ageVariantValues;
+        }
+        $ageDisplayGroup = $hasAgeVariantGroup
+            ? ['attribute' => $ageVariantAttributeName, 'values' => $ageVariantValues, 'is_static_age' => false]
+            : ($defAge ? ['attribute' => null, 'values' => [$defAge], 'is_static_age' => true] : null);
+        $variantDisplayGroups = [];
+        $ageDisplayGroupInserted = false;
+        foreach ($variantAttributeGroups as $attributeName => $values) {
+            if ($isAgeAttribute($attributeName)) {
+                continue;
+            }
+
+            $variantDisplayGroups[] = ['attribute' => $attributeName, 'values' => $values, 'is_static_age' => false];
+            if ($isSizeAttribute($attributeName) && $ageDisplayGroup) {
+                $variantDisplayGroups[] = $ageDisplayGroup;
+                $ageDisplayGroupInserted = true;
+            }
+        }
+        if (!$ageDisplayGroupInserted && $ageDisplayGroup) {
+            $variantDisplayGroups[] = $ageDisplayGroup;
         }
         $initialSelectedAttributes = $defVariantAttributes;
         foreach ($variantAttributeGroups as $attrName => $values) {
@@ -285,7 +334,7 @@
         <!-- RIGHT: Info -->
         <div class="pdp-info">
             <div class="pdp-title-line">
-                <h1 class="pdp-name">{{ $isBrainBoosterProduct ? 'Brain Booster Gummies' : $product->name }}</h1>
+                <h1 class=".pdp-family-heading h2">{{ $isBrainBoosterProduct ? 'Brain Booster Gummies' : $product->name }}</h1>
                 <a href="#reviews" class="pdp-rating" style="text-decoration: none;">
                     @if ($isBrainBoosterProduct)
                         <span class="pdp-rating-summary">
@@ -348,6 +397,123 @@
                     </svg>
                 </button>
             </div>
+
+            @if (!empty($variantAttributeGroups))
+                <div class="pdp-variant-panel" id="pdpVariantPanel">
+                    <div class="pdp-variant-head">
+                        <div>
+                            <h3 class="pdp-variant-title">Choose Your Option</h3>
+                            <div class="pdp-variant-sub">Choose the flavour, size, and suitable age before adding to cart.</div>
+                        </div>
+                    </div>
+
+                    <div class="pdp-variant-groups">
+                        @foreach ($variantDisplayGroups as $group)
+                            @if ($group['is_static_age'])
+                                <div class="variant-block pdp-suitable-age">
+                                    <label class="variant-label" for="pdpSuitableAge">Suitable Age</label>
+                                    <div class="pdp-variant-select-wrap">
+                                        <select id="pdpSuitableAge" class="pdp-variant-select" aria-label="Suitable Age">
+                                            <option value="{{ $group['values'][0] }}" selected>{{ $group['values'][0] }}</option>
+                                        </select>
+                                        <span class="pdp-variant-select-chevron" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            @else
+                            @php
+                                $attributeName = $group['attribute'];
+                                $values = $group['values'];
+                                $variantSelectId = 'pdpVariant' . $loop->index;
+                                $displayAttributeName = $isAgeAttribute($attributeName)
+                                    ? 'Suitable Age'
+                                    : $attributeName;
+                            @endphp
+                            <div class="variant-block {{ $isAgeAttribute($attributeName) ? 'pdp-suitable-age' : '' }}">
+                                <label class="variant-label" for="{{ $variantSelectId }}">{{ $displayAttributeName }}</label>
+                                <div class="pdp-variant-select-wrap">
+                                    <select id="{{ $variantSelectId }}" class="pdp-variant-select"
+                                        data-pdp-variant-select data-attribute-group="{{ $attributeName }}"
+                                        data-attribute="{{ $attributeName }}">
+                                        @foreach ($values as $value)
+                                            @php
+                                                $isSelected = false;
+                                                foreach ($initialSelectedAttributes as $k => $v) {
+                                                    if (strcasecmp(trim((string) $k), trim((string) $attributeName)) === 0 && strcasecmp(trim((string) $v), trim((string) $value)) === 0) {
+                                                        $isSelected = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (!$isSelected && $loop->first) {
+                                                    $hasGroupSelection = false;
+                                                    foreach ($initialSelectedAttributes as $k => $v) {
+                                                        if (strcasecmp(trim((string) $k), trim((string) $attributeName)) === 0) {
+                                                            $hasGroupSelection = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (!$hasGroupSelection) {
+                                                        $isSelected = true;
+                                                    }
+                                                }
+                                            @endphp
+                                            <option value="{{ $value }}" @selected($isSelected)>{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="pdp-variant-select-chevron" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <div class="variant-container">
+                    @if ($defFlavour)
+                        <div class="variant-block pdp-static-variant">
+                            <label class="variant-label" for="pdpStaticFlavour">Flavour</label>
+                            <div class="pdp-variant-select-wrap">
+                                <select id="pdpStaticFlavour" class="pdp-variant-select" aria-label="Flavour">
+                                    <option value="{{ $defFlavour }}" selected>{{ $defFlavour }}</option>
+                                </select>
+                                <span class="pdp-variant-select-chevron" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($defPack)
+                        <div class="variant-block pdp-static-variant">
+                            <label class="variant-label" for="pdpStaticSize">Size</label>
+                            <div class="pdp-variant-select-wrap">
+                                <select id="pdpStaticSize" class="pdp-variant-select" aria-label="Size">
+                                    <option value="{{ $defPack }}" selected>{{ $defPack }}</option>
+                                </select>
+                                <span class="pdp-variant-select-chevron" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($defAge)
+                        <div class="variant-block pdp-static-variant">
+                            <label class="variant-label" for="pdpStaticAge">Suitable Age</label>
+                            <div class="pdp-variant-select-wrap">
+                                <select id="pdpStaticAge" class="pdp-variant-select" aria-label="Suitable Age">
+                                    <option value="{{ $defAge }}" selected>{{ $defAge }}</option>
+                                </select>
+                                <span class="pdp-variant-select-chevron" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($product->dosage)
+                        <div class="variant-block">
+                            <div class="variant-label">Dosage:</div>
+                            <div class="variant-row">
+                                <div class="vopt active">{{ $product->dosage }}</div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
 
             <div class="pdp-coins-modal" id="pdpCoinsModal" hidden aria-hidden="true">
                 <div class="pdp-coins-backdrop" data-close-coins-modal></div>
@@ -454,92 +620,6 @@
                     </div>
                 </div>
             </fieldset>
-
-            @if (!empty($variantAttributeGroups))
-                <div class="pdp-variant-panel" id="pdpVariantPanel">
-                    <div class="pdp-variant-head">
-                        <div>
-                            <h3 class="pdp-variant-title">Choose Your Option</h3>
-                            <div class="pdp-variant-sub">Pick the exact flavour, pack, or size before adding to cart.</div>
-                        </div>
-                    </div>
-
-                    <div class="pdp-variant-groups">
-                        @foreach ($variantAttributeGroups as $attributeName => $values)
-                            <div class="variant-block">
-                                <div class="variant-label">{{ $attributeName }}</div>
-                                <div class="pdp-option-row" data-attribute-group="{{ $attributeName }}">
-                                    @foreach ($values as $value)
-                                        @php
-                                            $isSelected = false;
-                                            foreach ($initialSelectedAttributes as $k => $v) {
-                                                if (strcasecmp(trim((string) $k), trim((string) $attributeName)) === 0 && strcasecmp(trim((string) $v), trim((string) $value)) === 0) {
-                                                    $isSelected = true;
-                                                    break;
-                                                }
-                                            }
-                                            if (!$isSelected && $loop->first) {
-                                                $hasGroupSelection = false;
-                                                foreach ($initialSelectedAttributes as $k => $v) {
-                                                    if (strcasecmp(trim((string) $k), trim((string) $attributeName)) === 0) {
-                                                        $hasGroupSelection = true;
-                                                        break;
-                                                    }
-                                                }
-                                                if (!$hasGroupSelection) {
-                                                    $isSelected = true;
-                                                }
-                                            }
-                                        @endphp
-                                        <button type="button" class="pdp-option-btn {{ $isSelected ? 'active' : '' }}"
-                                            data-attribute="{{ $attributeName }}" data-value="{{ $value }}">
-                                            {{ $value }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @else
-                <div class="variant-container">
-                    @if ($defFlavour)
-                        <div class="variant-block">
-                            <div class="variant-label">Flavour:</div>
-                            <div class="variant-row">
-                                <div class="vopt active">{{ $defFlavour }}</div>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($defPack)
-                        <div class="variant-block">
-                            <div class="variant-label">Pack Size:</div>
-                            <div class="variant-row">
-                                <div class="vopt active">{{ $defPack }}</div>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($defAge)
-                        <div class="variant-block">
-                            <div class="variant-label">Age Group:</div>
-                            <div class="variant-row">
-                                <div class="vopt active">{{ $defAge }}</div>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($product->dosage)
-                        <div class="variant-block">
-                            <div class="variant-label">Dosage:</div>
-                            <div class="variant-row">
-                                <div class="vopt active">{{ $product->dosage }}</div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @endif
 
             <section class="pdp-reference-features" aria-label="Product features">
                 <div class="pdp-reference-feature">
@@ -669,7 +749,6 @@
                         Free shipping ₹1000+
                     </span>
                     <span>COD Available</span>
-                    <span>Extra 5% OFF on Prepaid orders</span>
                 </div>
 
                 <p class="pdp-delivery-estimate">
@@ -768,6 +847,66 @@
 
         </div>
     </div>
+    <!-- ══ PEDIATRICIAN VIDEO ══ -->
+    <section class="doc-section reveal">
+        <div style="max-width:1100px;margin:0 auto;">
+            <span class="sec-eye">Expert Endorsement</span>
+            <h2 class="sec-title">What <span class="acc">Pediatricians</span> Say</h2>
+            <p class="sec-sub" style="color:rgba(255,255,255,.5)">50+ certified pediatricians and nutritionists recommend
+                NutriBuddy to their own patients and families.</p>
+            <div class="doc-grid">
+                <div>
+                    <div class="doc-video-wrap">
+                        <div class="doc-play">▶</div>
+                        <div class="doc-video-label">Dr. Anita Nair — Pediatrician, Bangalore<br>Watch her recommendation
+                            (2 min)
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--pk)">50+</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Pediatricians</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ye)">3 Yrs</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">R&D Per Product</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--mn)">10K+</div>
+                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Happy Families</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="doc-info">
+                    <div class="doc-card">
+                        <div class="doc-name">Dr. Anita Nair</div>
+                        <div class="doc-cred">MBBS, DCH · Pediatrician, Bangalore · 18 yrs experience</div>
+                        <div class="doc-quote">As a pediatrician, I'm very selective about what I recommend. NutriBuddy's
+                            completely
+                            transparent formulas and third-party testing give me total confidence to recommend it to my
+                            patients.
+                        </div>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-name">Dr. Rajesh Kapoor</div>
+                        <div class="doc-cred">MD Pediatrics · AIIMS Alumni · Delhi</div>
+                        <div class="doc-quote">The KSM-66® Ashwagandha dosage is clinically appropriate and the
+                            bioavailability of
+                            their Zinc Bisglycinate is genuinely impressive. This is science-backed, not just marketing.
+                        </div>
+                    </div>
+                    <div class="doc-card">
+                        <div class="doc-name">Dt. Meena Iyer</div>
+                        <div class="doc-cred">Certified Pediatric Nutritionist · Chennai</div>
+                        <div class="doc-quote">I give it to my own children. The natural fruit extracts, zero artificial
+                            additives,
+                            and the Ayurvedic formulation align perfectly with what I recommend to every family I counsel.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <section class="pdp-world-nutrition" aria-label="Children’s nutrition research around the world">
         <iframe
             class="pdp-world-nutrition-frame"
@@ -779,6 +918,50 @@
     <!-- ════════════════════════════════════════════════
                                                  PRODUCT DESCRIPTION SECTION
                                             ════════════════════════════════════════════════ -->
+    @php
+        $initialResearchCard = [
+            'country' => 'United States',
+            'year' => '2021–2023',
+            'number' => 42,
+            'copy' => 'Children aged 2–11 used a dietary supplement in the previous 30 days.',
+            'source' => 'CDC / NCHS',
+            'url' => 'https://www.cdc.gov/nchs/products/databriefs/db561.htm',
+        ];
+    @endphp
+    <section class="pdp-parent-question" aria-label="Children's supplement use research">
+        <div class="pdp-parent-question-shell">
+            <article class="pdp-research-card" data-pdp-research-card>
+                <div class="pdp-research-stat" aria-label="{{ $initialResearchCard['number'] }} out of 100">
+                    <span class="pdp-research-stat-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="9" cy="7" r="3"></circle>
+                            <circle cx="17" cy="8" r="2.5"></circle>
+                            <path d="M3.5 19c.3-3.2 2.2-5 5.5-5s5.2 1.8 5.5 5M14 14.5c2.8-.4 5.1 1.1 5.5 4.5"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <strong data-research-number>{{ $initialResearchCard['number'] }}</strong><span>/ 100</span>
+                        <b>children reported use</b>
+                    </div>
+                    <div class="pdp-research-progress" aria-hidden="true">
+                        <span data-research-progress style="width: {{ $initialResearchCard['number'] }}%"></span>
+                        <em data-research-percent>{{ $initialResearchCard['number'] }}%</em>
+                    </div>
+                </div>
+                <div class="pdp-research-copy">
+                    <div class="pdp-research-location">
+                        <h3 data-research-country>{{ $initialResearchCard['country'] }}</h3>
+                        <span data-research-year>{{ $initialResearchCard['year'] }}</span>
+                    </div>
+                    <p data-research-summary>{{ $initialResearchCard['copy'] }}</p>
+                    <a data-research-source href="{{ $initialResearchCard['url'] }}" target="_blank" rel="noreferrer noopener">
+                        {{ $initialResearchCard['source'] }} <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </section>
+
     <!-- Product Description Section -->
 
     <!-- ════════════════════════════════════════════════
@@ -1026,69 +1209,6 @@
             </div>
         </div>
     </section>
-    <!-- ══ PEDIATRICIAN VIDEO ══ -->
-    <section class="doc-section reveal">
-        <div style="max-width:1100px;margin:0 auto;">
-            <span class="sec-eye">Expert Endorsement</span>
-            <h2 class="sec-title">What <span class="acc">Pediatricians</span> Say</h2>
-            <p class="sec-sub" style="color:rgba(255,255,255,.5)">50+ certified pediatricians and nutritionists recommend
-                NutriBuddy to their own patients and families.</p>
-            <div class="doc-grid">
-                <div>
-                    <div class="doc-video-wrap">
-                        <div class="doc-play">▶</div>
-                        <div class="doc-video-label">Dr. Anita Nair — Pediatrician, Bangalore<br>Watch her recommendation
-                            (2 min)
-                        </div>
-                    </div>
-                    <div style="margin-top:16px;display:flex;gap:20px;justify-content:center;">
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--pk)">50+</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Pediatricians</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--ye)">3 Yrs</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">R&D Per Product</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--mn)">10K+</div>
-                            <div style="color:rgba(255,255,255,.5);font-size:.78rem">Happy Families</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="doc-info">
-                    <div class="doc-card">
-                        <div class="doc-name">Dr. Anita Nair</div>
-                        <div class="doc-cred">MBBS, DCH · Pediatrician, Bangalore · 18 yrs experience</div>
-                        <div class="doc-quote">As a pediatrician, I'm very selective about what I recommend. NutriBuddy's
-                            completely
-                            transparent formulas and third-party testing give me total confidence to recommend it to my
-                            patients.
-                        </div>
-                    </div>
-                    <div class="doc-card">
-                        <div class="doc-name">Dr. Rajesh Kapoor</div>
-                        <div class="doc-cred">MD Pediatrics · AIIMS Alumni · Delhi</div>
-                        <div class="doc-quote">The KSM-66® Ashwagandha dosage is clinically appropriate and the
-                            bioavailability of
-                            their Zinc Bisglycinate is genuinely impressive. This is science-backed, not just marketing.
-                        </div>
-                    </div>
-                    <div class="doc-card">
-                        <div class="doc-name">Dt. Meena Iyer</div>
-                        <div class="doc-cred">Certified Pediatric Nutritionist · Chennai</div>
-                        <div class="doc-quote">I give it to my own children. The natural fruit extracts, zero artificial
-                            additives,
-                            and the Ayurvedic formulation align perfectly with what I recommend to every family I counsel.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
 
     <!-- SECTION -->
     <section class="ps-section ps-problems-section">
@@ -1144,7 +1264,7 @@
                 <div class="pdp-formula-shell">
                     <header class="pdp-formula-heading section-heading center">
                         <p class="pdp-formula-eyebrow eyebrow">Meet your nutrition buddy</p>
-                        <h2 id="pdp-formula-title">Little gummy. <em>Thoughtful formula.</em></h2>
+                        <h2 id=".pdp-family-heading h2">Little gummy. <em>Thoughtful formula.</em></h2>
                     </header>
                     <h3 class="pdp-formula-product-name">Brain Booster Gummies</h3>
                     <div class="pdp-ayurveda-pill">
@@ -1450,6 +1570,41 @@
     @endphp
 
     <script id="nbPdpConfig" type="application/json">@json($nbPdpConfig)</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mapFrame = document.querySelector('.pdp-world-nutrition-frame');
+            const card = document.querySelector('[data-pdp-research-card]');
+
+            if (!mapFrame || !card) return;
+
+            const number = card.querySelector('[data-research-number]');
+            const progress = card.querySelector('[data-research-progress]');
+            const percent = card.querySelector('[data-research-percent]');
+            const country = card.querySelector('[data-research-country]');
+            const year = card.querySelector('[data-research-year]');
+            const summary = card.querySelector('[data-research-summary]');
+            const source = card.querySelector('[data-research-source]');
+
+            window.addEventListener('message', function (event) {
+                if (event.source !== mapFrame.contentWindow || event.data?.type !== 'nb-world-location-selected') return;
+
+                const location = event.data.location;
+                if (!location || !Number.isFinite(Number(location.number))) return;
+
+                const value = Math.max(0, Math.min(100, Number(location.number)));
+                number.textContent = value;
+                number.parentElement.parentElement.setAttribute('aria-label', value + ' out of 100');
+                progress.style.width = value + '%';
+                percent.textContent = value + '%';
+                country.textContent = location.country || '';
+                year.textContent = location.year || '';
+                summary.textContent = location.copy || '';
+                source.textContent = (location.source || 'Read the study') + ' ↗';
+                source.href = location.url || '#';
+            });
+        });
+    </script>
 
     <script>
 

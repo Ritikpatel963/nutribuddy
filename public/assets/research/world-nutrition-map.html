@@ -176,6 +176,7 @@
     root.querySelector('.nb-summary').textContent=meta[id].copy;
     root.querySelector('.nb-method-title').textContent=data[id].label;
     root.querySelector('.nb-method-text').textContent=data[id].text;
+    window.parent.postMessage({type:'nb-world-location-selected',location:{country:meta[id].country,number:meta[id].number,year:meta[id].year,copy:meta[id].copy,source:data[id].source,url:data[id].url}},window.location.origin);
     const a=root.querySelector('.nb-source');a.textContent=data[id].source+' ↗';a.href=data[id].url;
     draw();
   }

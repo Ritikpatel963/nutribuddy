@@ -44,7 +44,7 @@
             @if($product->category)
             <div class="pdp-cat">{{ $product->category->name }} · Kids 2–14 yrs</div>
             @endif
-            <h1 class="pdp-name">{{ $product->name }}</h1>
+            <h1 class="htitle">{{ $product->name }}</h1>
             @if($product->reviews->count() > 0)
             <div class="pdp-rating">
                 <div class="stars">

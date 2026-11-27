@@ -3652,7 +3652,7 @@ h1.htitle {
 
 /* ── SECTION COMMONS ── */
 .section-wrap {
-    padding: 20px 5%;
+        padding: 55px 20px 0%;
 }
 
 .sec-eye {
@@ -9464,7 +9464,7 @@ testi-section {
    16. NEWSLETTER
 ══════════════════════════════════════════ */
 .newsletter {
-    margin: 80px 5% 80px;
+    margin: 55px 5% 55px;
     background: linear-gradient(135deg, var(--pu) 0%, #4c1d95 50%, #1e1b4b 100%);
     border-radius: var(--rL);
     padding: 56px;
@@ -11175,7 +11175,7 @@ testi-section {
 }
 
 .testi-section-new {
-    padding: 60px 5%;
+    padding: 15px 5%;
     background: var(--cr);
 }
 
@@ -12233,9 +12233,6 @@ testi-section {
     margin-bottom: 24px;
 }
 
-.nb-detail-benefits {
-    margin-bottom: 24px;
-}
 
 .nb-detail-benefits h5 {
     font-family: 'Nunito', sans-serif;
@@ -23532,7 +23529,7 @@ textarea.contact-form-control {
 @media (max-width: 768px) { .steps { flex-direction: column; align-items: center; } .how .step:not(:last-child)::after { display: none; } }
 
 /* --- nutribuddy Features Section --- */
-#features { padding: 80px 20px; background: var(--wh); max-width: 1200px; margin: 0 auto; }
+#features { padding: 45px 20px; background: var(--wh); max-width: 1200px; margin: 0 auto; }
 #features .text-center { text-align: center; margin-bottom: 50px; }
 #features .section-label { color: var(--mn); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-bottom: 10px; }
 #features .section-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.8rem; color: var(--dk); margin-bottom: 15px; }
@@ -24627,15 +24624,59 @@ textarea.contact-form-control {
     to { opacity: 1; transform: translateY(0); }
 }
 
-#nb-ingredients .nb-detail-photo-wrap { min-width: 0; }
+#nb-ingredients .nb-detail-photo-wrap {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 296px;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 12% 20%, rgba(255, 255, 255, .9) 0 1px, transparent 2px),
+        radial-gradient(circle at 86% 22%, rgba(255, 255, 255, .75) 0 1px, transparent 2px),
+        radial-gradient(circle at 84% 82%, rgba(255, 255, 255, .8) 0 1px, transparent 2px),
+        radial-gradient(circle at 16% 78%, rgba(255, 255, 255, .65) 0 1px, transparent 2px);
+}
+
+#nb-ingredients .nb-detail-photo-wrap::before,
+#nb-ingredients .nb-detail-photo-wrap::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    content: '';
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+#nb-ingredients .nb-detail-photo-wrap::before {
+    z-index: -1;
+    width: min(74%, 220px);
+    background: radial-gradient(circle at 35% 35%, #2a4a2a, #0d2a0d 78%);
+    box-shadow: 0 0 42px rgba(0, 214, 143, .2), inset 0 0 34px rgba(255, 255, 255, .05);
+}
+
+#nb-ingredients .nb-detail-photo-wrap::after {
+    z-index: 0;
+    width: min(92%, 272px);
+    border: 1px solid rgba(255, 255, 255, .12);
+    box-shadow: 0 0 0 12px rgba(255, 255, 255, .025), 0 0 0 25px rgba(255, 255, 255, .018);
+}
 
 #nb-ingredients .nb-detail-photo {
+    position: relative;
+    z-index: 1;
     display: block;
-    width: 100%;
-    height: 265px;
-    border-radius: 28px;
-    background: #fff;
-    object-fit: cover;
+    width: min(100%, 270px);
+    aspect-ratio: 1;
+    height: auto;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, .2));
 }
 
 #nb-ingredients .nb-detail-copy { min-width: 0; }
@@ -24772,16 +24813,25 @@ textarea.contact-form-control {
         cursor: default;
     }
     #nb-ingredients .nb-mob-card-emoji {
-        width: 66px;
-        height: 66px;
-        border-radius: 10px;
+        width: 72px;
+        height: 72px;
+        border: 2px solid rgba(255, 255, 255, .92);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #2a4a2a, #0d2a0d 78%);
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, .04), 0 0 0 5px rgba(255, 255, 255, .14), 0 6px 16px rgba(0, 0, 0, .2);
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex: 0 0 66px;
+        flex: 0 0 72px;
     }
-    #nb-ingredients .nb-mob-card-emoji img { width: 100%; height: 100%; object-fit: cover; }
+    #nb-ingredients .nb-mob-card-emoji img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: transparent;
+        object-fit: contain;
+    }
     #nb-ingredients .nb-mob-card-heading { min-width: 0; }
     #nb-ingredients .nb-mob-card-name {
         color: #fff;
@@ -24825,16 +24875,36 @@ textarea.contact-form-control {
         line-height: 1.65;
     }
     #nb-ingredients .nb-mob-read-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0;
         border: 0;
         background: transparent;
         color: #d5b9f1;
         font-family: 'Nunito', sans-serif;
         font-size: 13px;
         font-weight: 800;
+        line-height: 1.2;
+        white-space: nowrap;
         cursor: pointer;
     }
-    #nb-ingredients .nb-mob-read-more { padding: 0; }
-    #nb-ingredients .nb-mob-read-more span { margin-left: 8px; font-size: 16px; }
+    #nb-ingredients .nb-mob-read-more:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 3px;
+    }
+    #nb-ingredients .nb-mob-read-more-chevron {
+        width: 7px;
+        height: 7px;
+        flex: 0 0 auto;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+    }
+    #nb-ingredients .nb-mob-read-more[aria-expanded="true"] .nb-mob-read-more-chevron {
+        transform: rotate(225deg);
+    }
     #nb-ingredients .nb-mob-card-benefits {
         display: flex;
         flex-wrap: wrap;

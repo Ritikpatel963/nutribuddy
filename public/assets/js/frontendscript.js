@@ -2565,7 +2565,7 @@ document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
     mobCardsEl.innerHTML = `
       <div class="nb-mob-card nb-mob-open" data-mobid="${i.id}">
         <div class="nb-mob-card-head">
-          <div class="nb-mob-card-emoji" style="background:${i.emojiBg || 'rgba(255,255,255,0.05)'}">
+          <div class="nb-mob-card-emoji">
             <img src="${i.image || 'img/logo.png'}" alt="${i.name}" loading="lazy">
           </div>
           <div class="nb-mob-card-heading">
@@ -2577,7 +2577,10 @@ document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
         <div class="nb-mob-card-body">
           <div class="nb-mob-card-amount"><b>AMOUNT PER GUMMY</b><strong>${i.dosage || 'See product label'}</strong></div>
           <div class="nb-mob-card-desc">${i.desc}</div>
-          <button class="nb-mob-read-more" type="button" aria-expanded="false">Read more <span aria-hidden="true">⌄</span></button>
+          <button class="nb-mob-read-more" type="button" aria-expanded="false">
+            <span class="nb-mob-read-more-label">Read more</span>
+            <span class="nb-mob-read-more-chevron" aria-hidden="true"></span>
+          </button>
           <div class="nb-mob-card-benefits" hidden>
             ${i.benefits.map(b => `<span class="nb-mob-benefit">${b}</span>`).join('')}
           </div>
@@ -2589,7 +2592,8 @@ document.querySelectorAll('.reveal').forEach(r => ro.observe(r));
       const benefits = mobCardsEl.querySelector('.nb-mob-card-benefits');
       const expanded = button.getAttribute('aria-expanded') === 'true';
       button.setAttribute('aria-expanded', String(!expanded));
-      button.querySelector('span').textContent = expanded ? '⌄' : '⌃';
+      const label = button.querySelector('.nb-mob-read-more-label');
+      if (label) label.textContent = expanded ? 'Read more' : 'Read less';
       if (benefits) benefits.hidden = expanded;
     });
   }
