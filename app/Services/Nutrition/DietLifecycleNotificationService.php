@@ -2,6 +2,8 @@
 
 namespace App\Services\Nutrition;
 
+use App\Mail\DietChartApprovedCustomerMail;
+use App\Mail\DietSubscriptionActivatedCustomerMail;
 use App\Models\DietSubscription;
 use App\Models\Nutrition\ChildAssessment;
 use App\Models\Nutrition\DietPlan;
@@ -9,8 +11,9 @@ use App\Models\NutritionLead;
 use App\Models\User;
 use App\Notifications\DietLifecycleNotification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
-/** Sends admin feed alerts for diet subscription and chart lifecycle events. */
+/** Sends admin feed alerts and customer emails for diet subscription and chart lifecycle events. */
 class DietLifecycleNotificationService
 {
     public function subscriptionActivated(DietSubscription $subscription): void
@@ -20,6 +23,10 @@ class DietLifecycleNotificationService
             $userName = $subscription->user?->name ?? 'A customer';
             $planName = $subscription->subscriptionPlan?->name ?? $subscription->model ?? 'Diet plan';
             $childName = $subscription->child?->name;
+
+            if ($subscription->user?->email) {
+                Mail::to($subscription->user->email)->queue(new DietSubscriptionActivatedCustomerMail($subscription));
+            }
 
             $this->notifyAdmins([
                 'event' => 'subscription_activated',
@@ -51,8 +58,12 @@ class DietLifecycleNotificationService
     public function chartApproved(NutritionLead $lead, DietPlan $dietPlan): void
     {
         $this->safely('diet_chart_approved', function () use ($lead, $dietPlan): void {
-            $lead->loadMissing('child');
+            $lead->loadMissing(['child', 'customer']);
             $childName = $lead->child?->name ?? 'A child';
+
+            if ($lead->customer?->email) {
+                Mail::to($lead->customer->email)->queue(new DietChartApprovedCustomerMail($lead, $dietPlan));
+            }
 
             $this->notifyAdmins([
                 'event' => 'diet_chart_approved',

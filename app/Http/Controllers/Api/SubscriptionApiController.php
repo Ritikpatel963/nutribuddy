@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\DietSubscriptionCancelledCustomerMail;
+use App\Mail\DietSubscriptionPaymentFailedMail;
+use App\Mail\DietSubscriptionRenewalSuccessMail;
 use App\Models\DietSubscription;
 use App\Models\Payment;
 use App\Models\Subscription;
@@ -17,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class SubscriptionApiController extends Controller
@@ -403,13 +407,19 @@ class SubscriptionApiController extends Controller
                         ]);
                     }
 
-                    if ($dietSub && $dietSub->payment_status !== 'paid') {
-                        $dietSub->update([
-                            'status' => 'active',
-                            'payment_status' => 'paid',
-                            'razorpay_payment_id' => $cfPaymentId,
-                        ]);
-                        $this->chartService->generateIfReady($dietSub);
+                    if ($dietSub) {
+                        if ($dietSub->payment_status !== 'paid') {
+                            $dietSub->update([
+                                'status' => 'active',
+                                'payment_status' => 'paid',
+                                'razorpay_payment_id' => $cfPaymentId,
+                            ]);
+                            $this->chartService->generateIfReady($dietSub);
+                        } else {
+                            if ($dietSub->user?->email) {
+                                Mail::to($dietSub->user->email)->queue(new DietSubscriptionRenewalSuccessMail($dietSub, $amount));
+                            }
+                        }
                     }
                     break;
 
@@ -433,6 +443,10 @@ class SubscriptionApiController extends Controller
                             'failure_reason' => $paymentData['failure_reason'] ?? 'Payment failed',
                             'gateway_payload' => $payload,
                         ]);
+
+                        if ($dietSub?->user?->email) {
+                            Mail::to($dietSub->user->email)->queue(new DietSubscriptionPaymentFailedMail($dietSub, $paymentData['failure_reason'] ?? 'Payment failed'));
+                        }
                     }
                     break;
             }
@@ -472,12 +486,21 @@ class SubscriptionApiController extends Controller
                 'status' => 'CANCELLED',
             ]);
 
+            $dietSub = DietSubscription::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->latest()
+                ->first();
+
             DietSubscription::where('user_id', $user->id)
                 ->where('status', 'active')
                 ->update([
                     'status' => 'cancelled',
                     'cancelled_at' => now(),
                 ]);
+
+            if ($dietSub && $user->email) {
+                Mail::to($user->email)->queue(new DietSubscriptionCancelledCustomerMail($dietSub));
+            }
 
             return response()->json([
                 'success' => true,
