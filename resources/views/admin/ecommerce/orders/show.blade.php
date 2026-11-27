@@ -111,11 +111,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="mb-3">
+                             <div class="mb-3">
                             <label class="form-label">Payment Status</label>
-                            <div class="form-control-plaintext">{{ ucfirst(str_replace('_', ' ', $order->payment_status)) }}
-                                <small class="text-secondary-light d-block">Change it in the Payment card below.</small>
-                            </div>
+                            <select name="payment_status" class="form-select">
+                                @foreach (\App\Support\OrderFlow::PAYMENT_STATUSES as $paymentStatus)
+                                    <option value="{{ $paymentStatus }}" {{ $order->payment_status === $paymentStatus ? 'selected' : '' }}>
+                                        {{ ucfirst(str_replace('_', ' ', $paymentStatus)) }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="mb-3">
@@ -123,6 +127,19 @@
                             <textarea name="admin_note" rows="4" class="form-control">{{ $order->admin_note }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Status</button>
+                    </form>
+                        <form method="POST" action="{{ route('admin.ecommerce.orders.awb.update', $order) }}" class="mt-4 pt-3 border-top">
+                        @csrf
+                        @method('PUT')
+                        <div class="mb-3">
+                            <label class="form-label">AWB / Tracking number</label>
+                            <input type="text" name="awb_code" value="{{ old('awb_code', $order->awb_code) }}" maxlength="100" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Courier name</label>
+                            <input type="text" name="courier_name" value="{{ old('courier_name', $order->courier_name) }}" maxlength="100" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary">Save AWB</button>
                     </form>
                 </div>
             </div>
@@ -170,7 +187,12 @@
                         <div class="col-md-6"><strong>Placed At:</strong>
                             {{ optional($order->placed_at)->format('d M Y H:i') ?? (optional($order->created_at)->format('d M Y H:i') ?? 'N/A') }}
                         </div>
-                        <div class="col-md-6"><strong>Customer:</strong> {{ $order->customer_name }}
+                            <div class="col-md-6"><strong>Customer:</strong>
+                            @if($order->user_id && auth('admin')->user()?->canAny(['view customers', 'manage customers']))
+                                <a href="{{ route('admin.ecommerce.customers.show', $order->user_id) }}" class="text-primary-600 fw-semibold">{{ $order->customer_name }}</a>
+                            @else
+                                {{ $order->customer_name }}
+                            @endif
                             ({{ $order->customer_phone }})</div>
                         <div class="col-md-6"><strong>Email:</strong> {{ $order->customer_email ?: 'N/A' }}</div>
                         <div class="col-md-6"><strong>Payment:</strong> {{ strtoupper($order->payment_method) }} /
@@ -394,6 +416,35 @@
                         </div>
                         <div class="amount-flow-row">
                             <div>
+                                   @if ((float) data_get($order->pricing_snapshot, 'online_switch_discount', 0) > 0)
++                            <div class="amount-flow-row text-success-600">
++                                <div>
++                                    <span class="amount-flow-label">Online payment discount</span>
++                                    <span class="amount-flow-note">Switched from COD to online</span>
++                                </div>
++                                <strong>- INR {{ number_format((float) data_get($order->pricing_snapshot, 'online_switch_discount', 
+0), 2) }}</strong>
++                            </div>
++                        @endif
++                        @if ((float) data_get($order->pricing_snapshot, 'cod_fee', 0) > 0)
++                            <div class="amount-flow-row">
++                                <div>
++                                    <span class="amount-flow-label">COD fee</span>
++                                    <span class="amount-flow-note">Not refunded on returns</span>
++                                </div>
++                                <strong>+ INR {{ number_format((float) data_get($order->pricing_snapshot, 'cod_fee', 0), 2) }}</stro
+ng>
++                            </div>
+                            @if ((float) data_get($order->pricing_snapshot, 'cod_fee_tax', 0) > 0)
+                                <div class="amount-flow-row">
+                                    <div>
+                                        <span class="amount-flow-label">GST included in COD fee</span>
+                                        <span class="amount-flow-note">Not refunded on returns</span>
+                                    </div>
+                                    <strong>INR {{ number_format((float) data_get($order->pricing_snapshot, 'cod_fee_tax', 0), 2) }}</strong>
+                                </div>
+                            @endif
++                        @endif
                                 <span class="amount-flow-label">Total savings</span>
                             </div>
                             <strong>INR {{ number_format($totalDiscount, 2) }}</strong>
@@ -414,7 +465,6 @@
                 </div>
             </div>
 
-            @include('admin.ecommerce.orders.partials.payment-adjustments')
 
             <div class="card">
                 <div class="card-header">

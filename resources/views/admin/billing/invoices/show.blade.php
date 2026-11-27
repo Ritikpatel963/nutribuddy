@@ -918,6 +918,25 @@
                             <span class="tl-value">₹{{ number_format($order->shipping_total, 2) }}</span>
                         </div>
 
+                        @if((float) data_get($order->pricing_snapshot, 'cod_fee', 0) > 0.01)
+                            <div class="inv-total-line">
+                                <span class="tl-label">COD Fee</span>
+                                
+                                <span class="tl-value">₹{{ number_format((float) data_get($order->pricing_snapshot, 'cod_fee', 0), 2) }}</span>
+                            </div>
+                             @if((float) data_get($order->pricing_snapshot, 'cod_fee_tax', 0) > 0.01)
+                            <div class="inv-total-line">
+                                <span class="tl-label">GST included in COD Fee</span>
+                                <span class="tl-value">₹{{ number_format((float) data_get($order->pricing_snapshot, 'cod_fee_tax', 0), 2) }}</span>
+                            </div>
+                        @endif
+                        @endif
+                        @if((float) data_get($order->pricing_snapshot, 'online_switch_discount', 0) > 0.01)
+                            <div class="inv-total-line">
+                                <span class="tl-label">Online Payment Discount</span>
+                                <span class="tl-value">− ₹{{ number_format((float) data_get($order->pricing_snapshot, 'online_switch_discount', 0), 2) }}</span>
+                            </div>
+                        @endif
                         <div class="inv-total-line grand-tot">
                             <span class="tl-label">Grand Total</span>
                             <span class="tl-value">₹{{ number_format($order->grand_total, 2) }}</span>

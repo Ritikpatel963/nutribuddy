@@ -92,6 +92,7 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
     
     // -- Products Management --
     Route::middleware('permission:view products|manage products,admin')->group(function () {
+           Route::get('products/{product}/preview', [\App\Http\Controllers\Admin\Ecommerce\ProductPreviewController::class, 'show'])->name('products.preview');
         Route::resource('categories', AdminCategoryController::class)->only(['index', 'show']);
         Route::resource('attributes', AdminAttributeController::class)->only(['index', 'show']);
         Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'show']);
@@ -207,10 +208,8 @@ Route::post('orders/{order}/shipping/label', [\App\Http\Controllers\Admin\Ecomme
 Route::post('orders/{order}/shipping/track', [\App\Http\Controllers\Admin\Ecommerce\OrderShipmentController::class, 'track'])->name('orders.shipping.track');
 Route::post('orders/{order}/shipping/cancel', [\App\Http\Controllers\Admin\Ecommerce\OrderShipmentController::class, 'cancel'])->name('orders.shipping.cancel');
 Route::post('orders/{order}/shipping/ndr', [\App\Http\Controllers\Admin\Ecommerce\OrderShipmentController::class, 'ndr'])->name('orders.shipping.ndr');
-        Route::post('orders/{order}/payment-adjustments', [\App\Http\Controllers\Admin\Ecommerce\OrderPaymentAdjustmentController::class, 'store'])
-        ->middleware('permission:manage administration,admin')
-        ->name('orders.payment-adjustments.store');
         Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::put('orders/{order}/awb', [\App\Http\Controllers\Admin\Ecommerce\OrderAwbController::class, 'update'])->name('orders.awb.update');
         Route::resource('order-returns', \App\Http\Controllers\Admin\Ecommerce\OrderReturnController::class)->except(['index', 'show']);
         Route::resource('invoices', \App\Http\Controllers\Admin\Billing\InvoiceController::class)->except(['index', 'show']); // typically invoices aren't edited but preserving existing routes
     });
@@ -335,3 +334,11 @@ Route::middleware('auth:admin')->prefix('admin/2fa')->name('admin.2fa.')->group(
         ->middleware('throttle:admin-login')
         ->name('verify');
 });
+// -- Customer notification templates (point 26) --------------------------------
+Route::middleware(['auth:admin', 'permission:manage administration,admin'])
+    ->prefix('admin/system')
+    ->name('admin.system.')
+    ->group(function () {
+        Route::get('notification-templates', [\App\Http\Controllers\Admin\System\NotificationTemplateController::class, 'index'])->name('notification-templates.index');
+        Route::put('notification-templates/{template}', [\App\Http\Controllers\Admin\System\NotificationTemplateController::class, 'update'])->name('notification-templates.update');
+    });
