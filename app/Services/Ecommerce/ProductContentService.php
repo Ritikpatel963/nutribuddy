@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 class ProductContentService
 {
-
     public function storeProductCardImages(Request $request, Product $product): void
     {
         $updates = [];
@@ -34,7 +33,6 @@ class ProductContentService
             $product->forceFill($updates)->save();
         }
     }
-
 
     public function prepareProductTags(Request $request): array
     {
@@ -65,13 +63,20 @@ class ProductContentService
             ->all();
     }
 
-
     private function transformSectionValidationRules(): array
     {
         return [
             'transform_description' => ['nullable', 'string', 'max:1000'],
             'transform_main_image' => ['nullable', 'string', 'max:255'],
             'transform_main_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'transform_before_image' => ['nullable', 'string', 'max:255'],
+            'transform_before_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'transform_before_label' => ['nullable', 'string', 'max:100'],
+            'transform_before_sublabel' => ['nullable', 'string', 'max:150'],
+            'transform_after_image' => ['nullable', 'string', 'max:255'],
+            'transform_after_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'transform_after_label' => ['nullable', 'string', 'max:100'],
+            'transform_after_sublabel' => ['nullable', 'string', 'max:150'],
             'transform_results' => ['nullable', 'array'],
             'transform_results.*.image' => ['nullable', 'string', 'max:255'],
             'transform_results.*.title' => ['nullable', 'string', 'max:150'],
@@ -92,9 +97,40 @@ class ProductContentService
             'problem_cards.*.description' => ['nullable', 'string', 'max:1000'],
             'problem_card_images' => ['nullable', 'array'],
             'problem_card_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'features_heading' => ['nullable', 'string', 'max:255'],
+            'features_title' => ['nullable', 'string', 'max:500'],
+            'features_subtitle' => ['nullable', 'string', 'max:1000'],
+            'features_items' => ['nullable', 'array'],
+            'features_item_images' => ['nullable', 'array'],
+            'features_item_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'features_comparison_title' => ['nullable', 'string', 'max:255'],
+            'features_comparison_rows' => ['nullable', 'array'],
+            'formula_eyebrow' => ['nullable', 'string', 'max:255'],
+            'formula_heading' => ['nullable', 'string', 'max:500'],
+            'formula_subheading' => ['nullable', 'string', 'max:255'],
+            'formula_tag' => ['nullable', 'string', 'max:255'],
+            'formula_bg_word' => ['nullable', 'string', 'max:50'],
+            'formula_image' => ['nullable', 'string', 'max:255'],
+            'formula_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'formula_stat_left_num' => ['nullable', 'string', 'max:50'],
+            'formula_stat_left_title' => ['nullable', 'string', 'max:150'],
+            'formula_stat_left_sub' => ['nullable', 'string', 'max:150'],
+            'formula_stat_right_num' => ['nullable', 'string', 'max:50'],
+            'formula_stat_right_title' => ['nullable', 'string', 'max:150'],
+            'formula_stat_right_sub' => ['nullable', 'string', 'max:150'],
+            'formula_badges' => ['nullable', 'array'],
+            'formula_caption' => ['nullable', 'string', 'max:500'],
+            'formula_button_primary_text' => ['nullable', 'string', 'max:100'],
+            'formula_button_primary_url' => ['nullable', 'string', 'max:255'],
+            'formula_button_secondary_text' => ['nullable', 'string', 'max:100'],
+            'formula_button_secondary_url' => ['nullable', 'string', 'max:255'],
+            'formula_footnote' => ['nullable', 'string', 'max:255'],
+            'banner_image' => ['nullable', 'string', 'max:255'],
+            'banner_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'faq_title' => ['nullable', 'string', 'max:255'],
+            'faqs' => ['nullable', 'array'],
         ];
     }
-
 
     public function unsetTransformSectionFields(array &$validated): void
     {
@@ -103,7 +139,6 @@ class ProductContentService
         }
     }
 
-
     public function saveTransformSectionContent(Request $request, Product $product): void
     {
         $mainImage = trim((string) $request->input('transform_main_image', '')) ?: null;
@@ -111,6 +146,18 @@ class ProductContentService
         if ($request->hasFile('transform_main_image_file')) {
             $this->deleteTransformImage($product->transform_main_image);
             $mainImage = $request->file('transform_main_image_file')->store('product-transforms', 'public');
+        }
+
+        $beforeImage = trim((string) $request->input('transform_before_image', '')) ?: null;
+        if ($request->hasFile('transform_before_image_file')) {
+            $this->deleteTransformImage($product->transform_before_image);
+            $beforeImage = $request->file('transform_before_image_file')->store('product-transforms', 'public');
+        }
+
+        $afterImage = trim((string) $request->input('transform_after_image', '')) ?: null;
+        if ($request->hasFile('transform_after_image_file')) {
+            $this->deleteTransformImage($product->transform_after_image);
+            $afterImage = $request->file('transform_after_image_file')->store('product-transforms', 'public');
         }
 
         $results = $request->input('transform_results', []);
@@ -155,10 +202,15 @@ class ProductContentService
         $product->forceFill([
             'transform_description' => trim((string) $request->input('transform_description', '')) ?: null,
             'transform_main_image' => $mainImage,
+            'transform_before_image' => $beforeImage,
+            'transform_before_label' => trim((string) $request->input('transform_before_label', '')) ?: null,
+            'transform_before_sublabel' => trim((string) $request->input('transform_before_sublabel', '')) ?: null,
+            'transform_after_image' => $afterImage,
+            'transform_after_label' => trim((string) $request->input('transform_after_label', '')) ?: null,
+            'transform_after_sublabel' => trim((string) $request->input('transform_after_sublabel', '')) ?: null,
             'transform_results' => $results,
         ])->save();
     }
-
 
     public function saveBenefitsCardsContent(Request $request, Product $product): void
     {
@@ -210,7 +262,6 @@ class ProductContentService
             'benefits_cards' => $cards,
         ])->save();
     }
-
 
     public function saveProblemSectionContent(Request $request, Product $product): void
     {
@@ -266,6 +317,146 @@ class ProductContentService
         ])->save();
     }
 
+    public function saveFeaturesSectionContent(Request $request, Product $product): void
+    {
+        $items = $request->input('features_items', []);
+        $items = is_array($items) ? $items : [];
+        $deletions = $request->input('delete_features_item_icon', []);
+
+        foreach ($deletions as $index => $shouldDelete) {
+            if ($shouldDelete == '1' && isset($items[$index])) {
+                $items[$index]['icon'] = '';
+            }
+        }
+
+        if ($request->hasFile('features_item_images')) {
+            foreach ($request->file('features_item_images') as $index => $file) {
+                if (! $file) {
+                    continue;
+                }
+
+                if (! isset($items[$index]) || ! is_array($items[$index])) {
+                    $items[$index] = [];
+                }
+
+                $items[$index]['icon'] = $file->store('product-features', 'public');
+            }
+        }
+
+        $items = collect($items)
+            ->filter(fn ($item) => is_array($item) && (
+                trim((string) ($item['icon'] ?? '')) !== '' ||
+                trim((string) ($item['title'] ?? '')) !== '' ||
+                trim((string) ($item['description'] ?? '')) !== ''
+            ))
+            ->map(fn ($item) => [
+                'icon' => trim((string) ($item['icon'] ?? '')),
+                'title' => trim((string) ($item['title'] ?? '')),
+                'description' => trim((string) ($item['description'] ?? '')),
+            ])
+            ->values()
+            ->all();
+
+        $keptImages = collect($items)->pluck('icon')->filter()->all();
+        collect($product->features_items ?? [])
+            ->pluck('icon')
+            ->filter(fn ($path) => $path && ! in_array($path, $keptImages, true))
+            ->each(fn ($path) => $this->deleteTransformImage($path));
+
+        $comparisonRows = $request->input('features_comparison_rows', []);
+        $comparisonRows = is_array($comparisonRows) ? $comparisonRows : [];
+        $comparisonRows = collect($comparisonRows)
+            ->filter(fn ($row) => is_array($row) && trim((string) ($row['feature'] ?? '')) !== '')
+            ->map(fn ($row) => [
+                'feature' => trim((string) ($row['feature'] ?? '')),
+                'us' => trim((string) ($row['us'] ?? 'yes')),
+                'others' => trim((string) ($row['others'] ?? 'no')),
+            ])
+            ->values()
+            ->all();
+
+        $product->forceFill([
+            'features_heading' => trim((string) $request->input('features_heading', '')) ?: null,
+            'features_title' => trim((string) $request->input('features_title', '')) ?: null,
+            'features_subtitle' => trim((string) $request->input('features_subtitle', '')) ?: null,
+            'features_items' => ! empty($items) ? $items : null,
+            'features_comparison_title' => trim((string) $request->input('features_comparison_title', '')) ?: null,
+            'features_comparison_rows' => ! empty($comparisonRows) ? $comparisonRows : null,
+        ])->save();
+    }
+
+    public function saveFormulaSectionContent(Request $request, Product $product): void
+    {
+        $formulaImage = trim((string) $request->input('formula_image', '')) ?: null;
+        if ($request->hasFile('formula_image_file')) {
+            $this->deleteTransformImage($product->formula_image);
+            $formulaImage = $request->file('formula_image_file')->store('product-formula', 'public');
+        }
+
+        $badges = $request->input('formula_badges', []);
+        $badges = is_array($badges) ? array_values(array_filter(array_map('trim', $badges))) : null;
+
+        $product->forceFill([
+            'formula_eyebrow' => trim((string) $request->input('formula_eyebrow', '')) ?: null,
+            'formula_heading' => trim((string) $request->input('formula_heading', '')) ?: null,
+            'formula_subheading' => trim((string) $request->input('formula_subheading', '')) ?: null,
+            'formula_tag' => trim((string) $request->input('formula_tag', '')) ?: null,
+            'formula_bg_word' => trim((string) $request->input('formula_bg_word', '')) ?: null,
+            'formula_image' => $formulaImage,
+            'formula_stat_left_num' => trim((string) $request->input('formula_stat_left_num', '')) ?: null,
+            'formula_stat_left_title' => trim((string) $request->input('formula_stat_left_title', '')) ?: null,
+            'formula_stat_left_sub' => trim((string) $request->input('formula_stat_left_sub', '')) ?: null,
+            'formula_stat_right_num' => trim((string) $request->input('formula_stat_right_num', '')) ?: null,
+            'formula_stat_right_title' => trim((string) $request->input('formula_stat_right_title', '')) ?: null,
+            'formula_stat_right_sub' => trim((string) $request->input('formula_stat_right_sub', '')) ?: null,
+            'formula_badges' => ! empty($badges) ? $badges : null,
+            'formula_caption' => trim((string) $request->input('formula_caption', '')) ?: null,
+            'formula_button_primary_text' => trim((string) $request->input('formula_button_primary_text', '')) ?: null,
+            'formula_button_primary_url' => trim((string) $request->input('formula_button_primary_url', '')) ?: null,
+            'formula_button_secondary_text' => trim((string) $request->input('formula_button_secondary_text', '')) ?: null,
+            'formula_button_secondary_url' => trim((string) $request->input('formula_button_secondary_url', '')) ?: null,
+            'formula_footnote' => trim((string) $request->input('formula_footnote', '')) ?: null,
+        ])->save();
+    }
+
+    public function saveFaqContent(Request $request, Product $product): void
+    {
+        $faqs = $request->input('faqs', []);
+        $faqs = is_array($faqs) ? $faqs : [];
+
+        $cleanedFaqs = collect($faqs)
+            ->filter(fn ($faq) => is_array($faq) && (
+                trim((string) ($faq['question'] ?? '')) !== '' ||
+                trim((string) ($faq['answer'] ?? '')) !== ''
+            ))
+            ->map(fn ($faq) => [
+                'question' => trim((string) ($faq['question'] ?? '')),
+                'answer' => trim((string) ($faq['answer'] ?? '')),
+            ])
+            ->values()
+            ->all();
+
+        $product->forceFill([
+            'faq_title' => trim((string) $request->input('faq_title', '')) ?: null,
+            'faqs' => ! empty($cleanedFaqs) ? $cleanedFaqs : null,
+        ])->save();
+    }
+
+    public function saveBannerImageContent(Request $request, Product $product): void
+    {
+        $bannerImage = trim((string) $request->input('banner_image', '')) ?: null;
+        if ($request->input('delete_banner_image') == '1') {
+            $this->deleteTransformImage($product->banner_image);
+            $bannerImage = null;
+        } elseif ($request->hasFile('banner_image_file')) {
+            $this->deleteTransformImage($product->banner_image);
+            $bannerImage = $request->file('banner_image_file')->store('product-banner', 'public');
+        }
+
+        $product->forceFill([
+            'banner_image' => $bannerImage,
+        ])->save();
+    }
 
     public function deleteTransformImage(?string $path): void
     {
@@ -273,7 +464,6 @@ class ProductContentService
             Storage::disk('public')->delete($path);
         }
     }
-
 
     private function problemSolutionValidationRules(): array
     {
@@ -305,14 +495,12 @@ class ProductContentService
         ];
     }
 
-
     public function unsetProblemSolutionFields(array &$validated): void
     {
         foreach (array_keys($this->problemSolutionValidationRules()) as $field) {
             unset($validated[$field]);
         }
     }
-
 
     public function saveProblemSolutionContent(Request $request, Product $product): void
     {
@@ -336,7 +524,6 @@ class ProductContentService
         $product->forceFill($updates)->save();
     }
 
-
     public function prepareProblemSolutionTagline(array $items): array
     {
         return collect($items)
@@ -345,7 +532,6 @@ class ProductContentService
             ->values()
             ->all();
     }
-
 
     public function prepareProblemSolutionCards(Request $request, string $field, string $fileField): array
     {
@@ -381,11 +567,11 @@ class ProductContentService
             ->all();
     }
 
-
     public function replaceProblemSolutionImage(Request $request, Product $product, array &$updates, string $column, string $fileField): void
     {
         if (! $request->hasFile($fileField)) {
             $updates[$column] = trim((string) ($updates[$column] ?? '')) ?: null;
+
             return;
         }
 
@@ -395,7 +581,6 @@ class ProductContentService
 
         $updates[$column] = $request->file($fileField)->store('problem-solution', 'public');
     }
-
 
     public function defaultProblemSolutionContent(): array
     {

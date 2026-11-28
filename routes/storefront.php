@@ -6,6 +6,8 @@ use App\Http\Controllers\Frontend\Storefront\ContactController as FrontendContac
 use App\Http\Controllers\Frontend\Storefront\HomeController;
 use App\Http\Controllers\Frontend\Storefront\NewsletterSubscriberController as FrontendNewsletterSubscriberController;
 use App\Http\Controllers\Frontend\Storefront\ProductController;
+use App\Http\Controllers\Frontend\ProductSubscriptionController;
+use App\Http\Controllers\Api\Webhooks\ProductSubscriptionWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -53,6 +55,12 @@ Route::view('/cart', 'frontend.storefront.checkout.cart')->name('cart.page');
 
 Route::get('/contact', [FrontendContactController::class, 'index'])->name('contact');
 Route::post('/contact', [FrontendContactController::class, 'store'])->middleware('throttle:form-submit')->name('contact.store');
+
+// Product Subscribe & Save Pipeline (Isolated Pipeline)
+Route::get('/subscribe/checkout', [ProductSubscriptionController::class, 'checkout'])->name('subscribe.checkout');
+Route::post('/subscribe/initiate', [ProductSubscriptionController::class, 'initiate'])->name('subscribe.initiate');
+Route::get('/subscribe/payment/return', [ProductSubscriptionController::class, 'return'])->name('subscribe.return');
+Route::post('/webhooks/cashfree/product-subscription', [ProductSubscriptionWebhookController::class, 'handle'])->name('webhooks.cashfree.product-subscription');
 Route::post('/newsletter/subscribe', [FrontendNewsletterSubscriberController::class, 'store'])->middleware('throttle:form-submit')->name('newsletter.subscribe');
 
 Route::prefix('/guest/checkout')->name('guest.checkout.')->middleware('throttle:checkout')->group(function () {

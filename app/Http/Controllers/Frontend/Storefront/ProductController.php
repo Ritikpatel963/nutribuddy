@@ -56,7 +56,9 @@ class ProductController extends Controller
             ];
         });
 
-        $products = Product::where('is_active', true)
+        $type = strtolower(trim((string) ($request->input('type') ?: $request->input('tab') ?: 'all')));
+
+        $productsQuery = Product::where('is_active', true)
             ->select([
                 'id',
                 'category_id',
@@ -69,6 +71,9 @@ class ProductController extends Controller
                 'compare_at_price',
                 'shipping_price',
                 'is_active',
+                'is_combo',
+                'combo_tagline',
+                'combo_badge',
                 'is_featured',
                 'flavor',
                 'pack_size',
@@ -79,7 +84,17 @@ class ProductController extends Controller
                 'tags',
                 'deleted_at',
                 'is_variant_enabled',
-            ])
+            ]);
+
+        if (in_array($type, ['combos', 'combo'], true)) {
+            $productsQuery->where('is_combo', true);
+        } elseif (in_array($type, ['individual', 'single'], true)) {
+            $productsQuery->where(function ($q) {
+                $q->where('is_combo', false)->orWhereNull('is_combo');
+            });
+        }
+
+        $products = $productsQuery
             ->with([
                 'primaryImage:id,product_id,image_path,is_primary',
                 'category:id,name,slug,deleted_at',
@@ -91,6 +106,8 @@ class ProductController extends Controller
                     ->with(['inventory:id,product_variant_id,stock_qty,track_stock,is_in_stock'])
                     ->orderBy('position')
                     ->orderBy('id'),
+                'comboItems.childVariant.product',
+                'subscriptionPlans' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order'),
             ])
             ->withCount(['reviews' => fn ($query) => $query->where('is_active', true)])
             ->withAvg(['reviews' => fn ($query) => $query->where('is_active', true)], 'rating')
@@ -124,6 +141,9 @@ class ProductController extends Controller
                 ->orderBy('id'),
             'ingredients.benefits',
             'ingredients.category',
+            'comboItems.childVariant.product',
+            'subscriptionPlans' => fn ($query) => $query->where('is_active', true)->orderBy('sort_order')->orderBy('duration_months'),
+            'subscriptionPlans.freeGiftVariant',
         ])
             ->where('slug', $slug)
             ->where('is_active', true)

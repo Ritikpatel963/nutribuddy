@@ -787,6 +787,12 @@
                 if (selected) selectedPlan = plan;
             });
 
+            const subscriptionCta = document.getElementById('pdpSubscriptionCta');
+            if (subscriptionCta && selectedPlan) {
+                const m1 = selectedPlan.dataset.planM1 || '649';
+                subscriptionCta.textContent = `Start my subscription · ₹${Number(m1).toLocaleString('en-IN')} today`;
+            }
+
             if (!subscriptionSummary) return;
             subscriptionSummary.hidden = !selectedPlan;
             if (!selectedPlan) return;
@@ -807,6 +813,26 @@
             });
         };
 
+        const subscriptionCtaBtn = document.getElementById('pdpSubscriptionCta');
+        if (subscriptionCtaBtn) {
+            subscriptionCtaBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const selectedPlanInput = document.querySelector('input[name="pdpSubscriptionPlan"]:checked');
+                if (!selectedPlanInput) {
+                    if (typeof nbToast === 'function') {
+                        nbToast('Please select a 2, 3, or 4-month subscription plan.', 'error');
+                    } else {
+                        alert('Please select a 2, 3, or 4-month subscription plan.');
+                    }
+                    return;
+                }
+                const planId = selectedPlanInput.value;
+                const variantId = selectedVariantId || (pdpVariants && pdpVariants[0] ? pdpVariants[0].id : '');
+                const subscribeCheckoutUrl = config.subscribeCheckoutUrl || '/subscribe/checkout';
+                window.location.href = `${subscribeCheckoutUrl}?plan_id=${encodeURIComponent(planId)}&variant_id=${encodeURIComponent(variantId)}`;
+            });
+        }
+
         subscriptionPlanLabels.forEach(label => {
             label.querySelector('input[name="pdpSubscriptionPlan"]')?.addEventListener('change', () => {
                 subscriptionPlanLabels.forEach(plan => {
@@ -822,6 +848,13 @@
         if (stickyPurchaseBar) {
             document.querySelectorAll('[data-pdp-sticky-action]').forEach(button => {
                 button.addEventListener('click', () => {
+                    if (isSubscriptionPreviewSelected()) {
+                        const subCta = document.getElementById('pdpSubscriptionCta');
+                        if (subCta) {
+                            subCta.click();
+                            return;
+                        }
+                    }
                     const targetId = button.dataset.pdpStickyAction === 'buy' ? 'pdpBuyNowBtn' : 'pdpAddToCartBtn';
                     document.getElementById(targetId)?.click();
                 });
@@ -939,8 +972,11 @@
             addToCartBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (isSubscriptionPreviewSelected()) {
-                    if (typeof nbToast === 'function') nbToast('Subscription checkout is not connected yet.', 'warning');
-                    return;
+                    const subCta = document.getElementById('pdpSubscriptionCta');
+                    if (subCta) {
+                        subCta.click();
+                        return;
+                    }
                 }
                 handleAddToCart(config.productId, this);
             });
@@ -951,8 +987,11 @@
             buyNowBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (isSubscriptionPreviewSelected()) {
-                    if (typeof nbToast === 'function') nbToast('Subscription checkout is not connected yet.', 'warning');
-                    return;
+                    const subCta = document.getElementById('pdpSubscriptionCta');
+                    if (subCta) {
+                        subCta.click();
+                        return;
+                    }
                 }
                 handleBuyNow(config.productId, this);
             });

@@ -110,6 +110,25 @@
                     </div>
                 </div>
 
+                {{-- Product Type Filter Tabs (All / Individual / Combos) --}}
+                <div class="plp-type-tabs" style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
+                    <a href="{{ request()->fullUrlWithQuery(['type' => 'all', 'tab' => null]) }}"
+                       class="plp-tab-btn {{ (!request('type') || request('type') === 'all') ? 'active' : '' }}"
+                       style="padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:700;text-decoration:none;border:1.5px solid #e2e8f0;color:{{ (!request('type') || request('type') === 'all') ? '#fff' : '#475569' }};background:{{ (!request('type') || request('type') === 'all') ? '#6b21a8' : '#fff' }};">
+                        All Products
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['type' => 'individual', 'tab' => 'individual']) }}"
+                       class="plp-tab-btn {{ request('type') === 'individual' ? 'active' : '' }}"
+                       style="padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:700;text-decoration:none;border:1.5px solid #e2e8f0;color:{{ request('type') === 'individual' ? '#fff' : '#475569' }};background:{{ request('type') === 'individual' ? '#6b21a8' : '#fff' }};">
+                        Single Products
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['type' => 'combos', 'tab' => 'combos']) }}"
+                       class="plp-tab-btn {{ request('type') === 'combos' ? 'active' : '' }}"
+                       style="padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:700;text-decoration:none;border:1.5px solid #e2e8f0;color:{{ request('type') === 'combos' ? '#fff' : '#475569' }};background:{{ request('type') === 'combos' ? '#6b21a8' : '#fff' }};">
+                        Combo Packs
+                    </a>
+                </div>
+
                 {{-- 3-column product grid --}}
                 <div class="plp-grid" id="plpGrid">
                     @foreach ($productsList as $index => $product)
@@ -190,7 +209,9 @@
                                             alt="{{ $product->name }}" class="hover-img" loading="lazy" decoding="async">
                                     @endif
                                 </a>
-                                @if ($cardComparePrice > $cardPrice || $product->is_featured)
+                                @if ($product->is_combo)
+                                    <div class="pc-badge" style="background:#7c3aed;color:#fff;">{{ $product->combo_badge ?: 'Combo Pack' }}</div>
+                                @elseif ($cardComparePrice > $cardPrice || $product->is_featured)
                                     <div class="pc-badge">{{ $cardComparePrice > $cardPrice ? 'Offer' : 'Best Seller' }}
                                     </div>
                                 @endif
@@ -210,6 +231,23 @@
                                     <a href="{{ route('product.show', $product->slug) }}"
                                         style="color:inherit;text-decoration:none">{{ $product->name }}</a>
                                 </div>
+
+                                @if ($product->is_combo && $product->comboItems->isNotEmpty())
+                                    <div class="pc-combo-summary" style="font-size:0.75rem;color:#6b21a8;font-weight:700;margin:4px 0 2px;">
+                                        <span style="background:#f3e8ff;padding:2px 8px;border-radius:12px;border:1px solid #d8b4fe;">
+                                            {{ $product->comboItems->count() }} Items Bundle
+                                        </span>
+                                        @if ($product->combo_tagline)
+                                            <span style="color:#64748b;font-weight:500;display:block;margin-top:2px;">{{ $product->combo_tagline }}</span>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                @if ($product->subscriptionPlans->isNotEmpty())
+                                    <div class="pc-sub-teaser" style="font-size:0.75rem;color:#059669;font-weight:700;margin-bottom:6px;">
+                                        Subscribe from ₹{{ number_format($product->subscriptionPlans->min('recurring_price'), 0) }}<small>/mo</small>
+                                    </div>
+                                @endif
 
                                 <div class="pc-foot">
                                     <div class="pc-price" data-price-label>

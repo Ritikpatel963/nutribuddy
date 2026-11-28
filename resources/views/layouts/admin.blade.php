@@ -21,6 +21,8 @@
             <x-breadcrumb title='{{ isset($title) ? $title : "" }}' subTitle='{{ isset($subTitle) ? $subTitle : "" }}' />
             <!-- ..::  header area end ::.. -->
 
+            @include('admin.partials.messages')
+
             @yield('content')
         
         </div>

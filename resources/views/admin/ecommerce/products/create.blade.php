@@ -7,9 +7,11 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-lg-12">
-            <form action="{{ route('admin.ecommerce.products.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.ecommerce.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
                 @csrf
                 <input type="hidden" name="product_type" value="simple">
+
+                @include('admin.ecommerce.products.partials.accordion-cards-manager')
 
                 <!-- 1. GENERAL INFORMATION -->
                 <div class="card border-0 radius-12 mb-24">
@@ -156,21 +158,11 @@
 
                 @include('admin.ecommerce.products._attribute_variations', ['attributes' => $attributes])
 
-                <!-- 4. DESCRIPTIONS -->
-                <div class="card border-0 radius-12 mb-24">
-                    <div class="card-header bg-base border-bottom py-16 px-24">
-                        <h5 class="card-title mb-0">Content & Descriptions</h5>
-                    </div>
-                    <div class="card-body p-24">
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Full Detailed Description</label>
-                                <textarea name="description" id="editor"
-                                    class="form-control">{{ old('description') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 3.5. SUBSCRIBE & SAVE PLANS -->
+                @include('admin.ecommerce.products.partials.subscription-plans-settings', ['availableVariants' => $availableVariants])
+
+                <!-- 4. ACCORDION DESCRIPTIONS -->
+                @include('admin.ecommerce.products.partials.accordion-descriptions')
 
                 <!-- 5. CARD MEDIA -->
                 <div class="card border-0 radius-12 mb-24">
@@ -244,6 +236,10 @@
                 </div>
 
                 @include('admin.ecommerce.products.partials.transform-section-fields')
+                @include('admin.ecommerce.products.partials.features-section-fields')
+                @include('admin.ecommerce.products.partials.formula-section-fields')
+                @include('admin.ecommerce.products.partials.banner-section-fields')
+                @include('admin.ecommerce.products.partials.faq-section-fields')
 
                 <!-- 6. KIDS FACE REAL PROBLEMS -->
                 <div class="card border-0 radius-12 mb-24 shadow-sm">
@@ -387,7 +383,9 @@
     <!-- SCRIPTS -->
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
-        ClassicEditor.create(document.querySelector('#editor')).catch(e => console.error(e));
+        if (document.querySelector('#editor')) {
+            ClassicEditor.create(document.querySelector('#editor')).catch(e => console.error(e));
+        }
 
         // ============================================================
         // TAGS MANAGEMENT

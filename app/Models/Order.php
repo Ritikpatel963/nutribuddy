@@ -17,6 +17,7 @@ class Order extends Model
         'invoice_number',
         'checkout_token',
         'user_id',
+        'product_subscription_id',
         'coupon_id',
         'status',
         'fulfillment_status',
@@ -77,6 +78,11 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function productSubscription(): BelongsTo
+    {
+        return $this->belongsTo(ProductSubscription::class, 'product_subscription_id');
     }
 
     public function coupon(): BelongsTo

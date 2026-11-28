@@ -1,13 +1,19 @@
-@php $resultImage = $result['image'] ?? ''; @endphp
+@php
+    $resultImage = $result['image'] ?? '';
+    $fallbackImage = isset($transformDefaults) && count($transformDefaults) > 0
+        ? ($transformDefaults[$index % count($transformDefaults)]['image'] ?? 'img/immune.png')
+        : 'img/immune.png';
+    $resolvedImg = $transformImageUrl($resultImage, $fallbackImage);
+@endphp
 <div class='transform-result-row border rounded-3 p-3 mb-3 bg-light'>
     <input type='hidden' name='transform_results[{{ $index }}][image]' data-field='image' value='{{ $resultImage }}'>
     <div class='row g-3 align-items-start'>
         <div class='col-md-2'>
             <div class='border rounded-3 bg-white d-flex align-items-center justify-content-center overflow-hidden' style='width:72px;height:72px'>
-                @if ($transformImageUrl($resultImage))
-                    <img src='{{ $transformImageUrl($resultImage) }}' class='w-100 h-100 object-fit-contain' alt=''>
+                @if ($resolvedImg)
+                    <img src='{{ $resolvedImg }}' class='w-100 h-100 object-fit-contain p-1' alt='Result Icon'>
                 @else
-                    <iconify-icon icon='lucide:image' class='text-secondary-light'></iconify-icon>
+                    <iconify-icon icon='lucide:image' class='text-secondary-light fs-4'></iconify-icon>
                 @endif
             </div>
             <input type='file' data-field='image-file' class='form-control form-control-sm mt-2' accept='image/jpeg,image/png,image/webp'>

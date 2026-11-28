@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class RolePermissionSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Create basic permissions based on the sidebar sections
         $permissions = [
@@ -23,6 +24,7 @@ class RolePermissionSeeder extends Seeder
             'manage dashboard',
             'view analytics',
             'manage diet chart',
+            'view products',
             'manage products',
             'manage orders',
             'manage customers',
@@ -34,6 +36,7 @@ class RolePermissionSeeder extends Seeder
             'manage assessment',
             'manage roles', // Added for the new Role & Access section
             'manage users', // Added for the new Users section
+            'view audit log',
         ];
 
         foreach ($permissions as $permission) {
@@ -43,7 +46,7 @@ class RolePermissionSeeder extends Seeder
         // Create roles and assign created permissions
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'admin']);
         $superAdminRole->syncPermissions(Permission::where('guard_name', 'admin')->get());
-        
+
         $editorRole = Role::firstOrCreate(['name' => 'Editor', 'guard_name' => 'admin']);
         $editorRole->syncPermissions(['manage products', 'manage content', 'manage orders']);
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Ecommerce\AttributeController as AdminAttributeCo
 use App\Http\Controllers\Admin\Content\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\Content\BlogPostController as AdminBlogPostController;
 use App\Http\Controllers\Admin\Ecommerce\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\Ecommerce\ComboProductController;
 use App\Http\Controllers\Admin\CRM\ContactLeadController as AdminContactLeadController;
 use App\Http\Controllers\Admin\Ecommerce\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\Dashboard\DashboardController;
@@ -97,6 +98,7 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
         Route::resource('attributes', AdminAttributeController::class)->only(['index', 'show']);
         Route::resource('ingredient-categories', AdminIngredientCategoryController::class)->only(['index', 'show']);
         Route::get('products-trash', [AdminProductController::class, 'trash'])->name('products.trash');
+        Route::get('combos', [ComboProductController::class, 'index'])->name('combos.index');
         Route::get('products/problem-solution', [AdminProductController::class, 'problemSolutionIndex'])->name('products.problem-solution.index');
         Route::resource('products', AdminProductController::class)->only(['index', 'show']);
         Route::resource('ingredients', AdminIngredientController::class)->only(['index', 'show']);
@@ -112,6 +114,11 @@ Route::prefix('admin/ecommerce')->name('admin.ecommerce.')->middleware('auth:adm
         Route::delete('products-trash/bulk-force-delete', [AdminProductController::class, 'bulkForceDestroy'])->name('products.bulk-force-destroy');
         Route::patch('products-trash/{product}/restore', [AdminProductController::class, 'restore'])->name('products.restore');
         Route::delete('products-trash/{product}/force-delete', [AdminProductController::class, 'forceDestroy'])->name('products.force-destroy');
+        Route::get('combos/create', [ComboProductController::class, 'create'])->name('combos.create');
+        Route::post('combos', [ComboProductController::class, 'store'])->name('combos.store');
+        Route::get('combos/{product}/edit', [ComboProductController::class, 'edit'])->name('combos.edit');
+        Route::put('combos/{product}', [ComboProductController::class, 'update'])->name('combos.update');
+        Route::delete('combos/{product}', [ComboProductController::class, 'destroy'])->name('combos.destroy');
         Route::get('products/{product}/problem-solution', [AdminProductController::class, 'problemSolution'])->name('products.problem-solution.edit');
         Route::post('products/{product}/problem-solution', [AdminProductController::class, 'updateProblemSolution'])->name('products.problem-solution.update');
         Route::resource('products', AdminProductController::class)->except(['index', 'show']);

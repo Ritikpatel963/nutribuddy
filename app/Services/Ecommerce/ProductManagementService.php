@@ -2,11 +2,16 @@
 
 namespace App\Services\Ecommerce;
 
+use App\Models\Attribute;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\ProductComboItem;
+use App\Models\ProductImage;
+use App\Models\ProductSubscriptionPlan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -17,10 +22,8 @@ class ProductManagementService
         private readonly ProductContentService $content
     ) {}
 
-
     public function store(Request $request, array $validated): RedirectResponse
     {
-        
 
         $variations = $this->variants->normalizedVariations($validated['variations'] ?? []);
         $this->variants->validateVariationSkus($variations);
@@ -29,75 +32,95 @@ class ProductManagementService
             ? collect($variations)->sum(fn ($variation) => (int) ($variation['stock_qty'] ?? 0))
             : (int) $request->input('stock_qty', 0);
 
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueProductSlug($validated['name'], null, $validated['slug'] ?? null);
         $validated['sku'] = $this->variants->uniqueProductSku($validated['sku'] ?? null, $validated['name']);
         $validated['currency'] = 'INR';
         $validated['product_type'] = $hasVariations ? 'variable' : 'simple';
         $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
+        $validated['is_combo'] = (bool) ($validated['is_combo'] ?? false);
+        $validated['combo_tagline'] = $validated['combo_tagline'] ?? null;
+        $validated['combo_badge'] = $validated['combo_badge'] ?? null;
         $variantTypes = [];
         $submittedAttrValues = $request->input('product_attribute_values') ?? [];
-        if (!empty($submittedAttrValues)) {
-            $attributesList = \App\Models\Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
+        if (! empty($submittedAttrValues)) {
+            $attributesList = Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
             foreach ($attributesList as $attr) {
                 $variantTypes[$attr->name] = $submittedAttrValues[$attr->id] ?? [];
             }
         }
         $validated['variant_types'] = $variantTypes;
 
+        $accordionTabs = $this->prepareAccordionTabs($request->input('accordion_tabs', []));
+        $validated['accordion_tabs'] = $accordionTabs;
+        if (empty($validated['description']) && ! empty($accordionTabs)) {
+            $firstContentTab = collect($accordionTabs)->first(fn ($t) => ! empty($t['content']));
+            if ($firstContentTab) {
+                $validated['description'] = $firstContentTab['content'];
+            }
+        }
+
         unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
         unset($validated['images'], $validated['card_image'], $validated['card_hover_image'], $validated['tag_images']);
+        unset($validated['combo_items'], $validated['has_custom_subscriptions'], $validated['subscription_plans']);
         $this->content->unsetTransformSectionFields($validated);
 
-        $product = Product::create($validated);
-        $this->content->storeProductCardImages($request, $product);
-        $this->content->saveTransformSectionContent($request, $product);
-        $this->content->saveBenefitsCardsContent($request, $product);
-        $this->content->saveProblemSectionContent($request, $product);
+        DB::transaction(function () use ($validated, $request, $hasVariations, $variations, $parentStockQty) {
+            $product = Product::create($validated);
+            $this->syncComboItems($product, $request);
+            $this->syncSubscriptionPlans($product, $request);
+            $this->content->storeProductCardImages($request, $product);
+            $this->content->saveTransformSectionContent($request, $product);
+            $this->content->saveBenefitsCardsContent($request, $product);
+            $this->content->saveProblemSectionContent($request, $product);
+            $this->content->saveFeaturesSectionContent($request, $product);
+            $this->content->saveFormulaSectionContent($request, $product);
+            $this->content->saveBannerImageContent($request, $product);
+            $this->content->saveFaqContent($request, $product);
 
-        $product->update(['tags' => $this->content->prepareProductTags($request)]);
+            $product->update(['tags' => $this->content->prepareProductTags($request)]);
 
-        if ($hasVariations) {
-            $this->variants->syncProductVariations($product, $variations);
-        } else {
-            $variant = $this->variants->ensureSimpleVariant($product);
+            if ($hasVariations) {
+                $this->variants->syncProductVariations($product, $variations);
+            } else {
+                $variant = $this->variants->ensureSimpleVariant($product);
+
+                Inventory::create([
+                    'product_id' => $product->id,
+                    'product_variant_id' => $variant->id,
+                    'track_stock' => (bool) ($request->track_stock ?? true),
+                    'stock_qty' => $parentStockQty,
+                    'is_in_stock' => $parentStockQty > 0,
+                ]);
+            }
 
             Inventory::create([
                 'product_id' => $product->id,
-                'product_variant_id' => $variant->id,
+                'product_variant_id' => null,
                 'track_stock' => (bool) ($request->track_stock ?? true),
                 'stock_qty' => $parentStockQty,
                 'is_in_stock' => $parentStockQty > 0,
             ]);
-        }
 
-        Inventory::create([
-            'product_id' => $product->id,
-            'product_variant_id' => null,
-            'track_stock' => (bool) ($request->track_stock ?? true),
-            'stock_qty' => $parentStockQty,
-            'is_in_stock' => $parentStockQty > 0,
-        ]);
-
-        // Handle Image Uploads
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('products', 'public');
-                \App\Models\ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'is_primary' => $index === 0,
-                    'sort_order' => $index,
-                ]);
+            // Handle Image Uploads
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('products', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,
+                        'is_primary' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
+                }
             }
-        }
+        });
 
         $this->forgetStorefrontCatalogCache();
 
         return redirect()->route('admin.ecommerce.products.index')->with('success', 'Product created successfully.');
     }
-
 
     public function updateProblemSolution(Request $request, Product $product, array $validated): RedirectResponse
     {
@@ -155,10 +178,8 @@ class ProductManagementService
         return redirect($redirectRoute)->with('success', 'Problem solution section updated successfully.');
     }
 
-
     public function update(Request $request, Product $product, array $validated): RedirectResponse
     {
-        
 
         $variations = $this->variants->normalizedVariations($validated['variations'] ?? []);
         $this->variants->validateVariationSkus($variations, $product);
@@ -167,82 +188,102 @@ class ProductManagementService
             ? collect($variations)->sum(fn ($variation) => (int) ($variation['stock_qty'] ?? 0))
             : (int) $request->input('stock_qty', 0);
 
-        $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['slug'] = $this->uniqueProductSlug($validated['name'], $product->id, $validated['slug'] ?? null);
         $validated['sku'] = $this->variants->uniqueProductSku($validated['sku'] ?? null, $validated['name'], $product->id);
         $validated['currency'] = 'INR';
         $validated['product_type'] = $hasVariations ? 'variable' : 'simple';
         $validated['is_variant_enabled'] = $hasVariations;
         $validated['is_active'] = (bool) ($validated['is_active'] ?? false);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
+        $validated['is_combo'] = (bool) ($validated['is_combo'] ?? false);
+        $validated['combo_tagline'] = $validated['combo_tagline'] ?? null;
+        $validated['combo_badge'] = $validated['combo_badge'] ?? null;
         $variantTypes = [];
         $submittedAttrValues = $request->input('product_attribute_values') ?? [];
-        if (!empty($submittedAttrValues)) {
-            $attributesList = \App\Models\Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
+        if (! empty($submittedAttrValues)) {
+            $attributesList = Attribute::whereIn('id', array_keys($submittedAttrValues))->get();
             foreach ($attributesList as $attr) {
                 $variantTypes[$attr->name] = $submittedAttrValues[$attr->id] ?? [];
             }
         }
         $validated['variant_types'] = $variantTypes;
 
+        $accordionTabs = $this->prepareAccordionTabs($request->input('accordion_tabs', []));
+        $validated['accordion_tabs'] = $accordionTabs;
+        if (empty($validated['description']) && ! empty($accordionTabs)) {
+            $firstContentTab = collect($accordionTabs)->first(fn ($t) => ! empty($t['content']));
+            if ($firstContentTab) {
+                $validated['description'] = $firstContentTab['content'];
+            }
+        }
+
         unset($validated['product_attributes'], $validated['product_attribute_values'], $validated['variations']);
         unset($validated['images'], $validated['card_image'], $validated['card_hover_image'], $validated['tag_images']);
+        unset($validated['combo_items'], $validated['has_custom_subscriptions'], $validated['subscription_plans']);
         $this->content->unsetProblemSolutionFields($validated);
         $this->content->unsetTransformSectionFields($validated);
 
-        $product->update($validated);
-        $this->content->storeProductCardImages($request, $product);
+        DB::transaction(function () use ($product, $validated, $request, $hasVariations, $variations, $parentStockQty) {
+            $product->update($validated);
+            $this->syncComboItems($product, $request);
+            $this->syncSubscriptionPlans($product, $request);
+            $this->content->storeProductCardImages($request, $product);
 
-        $product->update(['tags' => $this->content->prepareProductTags($request)]);
-        $this->content->saveProblemSolutionContent($request, $product);
-        $this->content->saveTransformSectionContent($request, $product);
-        $this->content->saveBenefitsCardsContent($request, $product);
-        $this->content->saveProblemSectionContent($request, $product);
+            $product->update(['tags' => $this->content->prepareProductTags($request)]);
+            $this->content->saveProblemSolutionContent($request, $product);
+            $this->content->saveTransformSectionContent($request, $product);
+            $this->content->saveBenefitsCardsContent($request, $product);
+            $this->content->saveProblemSectionContent($request, $product);
+            $this->content->saveFeaturesSectionContent($request, $product);
+            $this->content->saveFormulaSectionContent($request, $product);
+            $this->content->saveBannerImageContent($request, $product);
+            $this->content->saveFaqContent($request, $product);
 
-        if ($hasVariations) {
-            $this->variants->syncProductVariations($product, $variations, true);
-        } else {
-            $this->variants->deactivateMissingProductVariations($product);
-            $variant = $this->variants->ensureSimpleVariant($product);
+            if ($hasVariations) {
+                $this->variants->syncProductVariations($product, $variations, true);
+            } else {
+                $this->variants->deactivateMissingProductVariations($product);
+                $variant = $this->variants->ensureSimpleVariant($product);
+
+                Inventory::updateOrCreate(
+                    ['product_variant_id' => $variant->id],
+                    [
+                        'product_id' => $product->id,
+                        'track_stock' => (bool) ($request->track_stock ?? true),
+                        'stock_qty' => $parentStockQty,
+                        'is_in_stock' => $parentStockQty > 0,
+                    ]
+                );
+            }
 
             Inventory::updateOrCreate(
-                ['product_variant_id' => $variant->id],
+                ['product_id' => $product->id, 'product_variant_id' => null],
                 [
-                    'product_id' => $product->id,
                     'track_stock' => (bool) ($request->track_stock ?? true),
                     'stock_qty' => $parentStockQty,
                     'is_in_stock' => $parentStockQty > 0,
                 ]
             );
-        }
 
-        Inventory::updateOrCreate(
-            ['product_id' => $product->id, 'product_variant_id' => null],
-            [
-                'track_stock' => (bool) ($request->track_stock ?? true),
-                'stock_qty' => $parentStockQty,
-                'is_in_stock' => $parentStockQty > 0,
-            ]
-        );
-
-        // Handle Additional Image Uploads
-        if ($request->hasFile('images')) {
-            $lastSortOrder = $product->images()->max('sort_order') ?? -1;
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('products', 'public');
-                \App\Models\ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'is_primary' => !$product->images()->where('is_primary', true)->exists() && $index === 0,
-                    'sort_order' => $lastSortOrder + $index + 1,
-                ]);
+            // Handle Additional Image Uploads
+            if ($request->hasFile('images')) {
+                $lastSortOrder = $product->images()->max('sort_order') ?? -1;
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('products', 'public');
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,
+                        'is_primary' => ! $product->images()->where('is_primary', true)->exists() && $index === 0,
+                        'sort_order' => $lastSortOrder + $index + 1,
+                    ]);
+                }
             }
-        }
+        });
 
         $this->forgetStorefrontCatalogCache();
 
         return redirect()->route('admin.ecommerce.products.index')->with('success', 'Product updated successfully.');
     }
-
 
     public function destroy(Product $product): RedirectResponse
     {
@@ -252,7 +293,6 @@ class ProductManagementService
         return back()->with('success', 'Product moved to trash successfully.');
     }
 
-
     public function restore(int $product): RedirectResponse
     {
         $trashedProduct = Product::onlyTrashed()->findOrFail($product);
@@ -261,7 +301,6 @@ class ProductManagementService
 
         return back()->with('success', 'Product restored successfully.');
     }
-
 
     public function forceDestroy(int $product): RedirectResponse
     {
@@ -273,10 +312,8 @@ class ProductManagementService
         return back()->with('success', 'Product permanently deleted successfully.');
     }
 
-
     public function bulkForceDestroy(array $validated): RedirectResponse
     {
-        
 
         $products = Product::onlyTrashed()
             ->with(['images'])
@@ -288,9 +325,8 @@ class ProductManagementService
         }
         $this->forgetStorefrontCatalogCache();
 
-        return back()->with('success', $products->count() . ' product(s) permanently deleted successfully.');
+        return back()->with('success', $products->count().' product(s) permanently deleted successfully.');
     }
-
 
     private function permanentlyDeleteProduct(Product $product): void
     {
@@ -314,10 +350,8 @@ class ProductManagementService
         $product->forceDelete();
     }
 
-
     public function updateInventory(Product $product, array $validated): RedirectResponse
     {
-        
 
         Inventory::updateOrCreate(
             ['product_id' => $product->id, 'product_variant_id' => null],
@@ -334,8 +368,7 @@ class ProductManagementService
         return back()->with('success', 'Product inventory updated successfully.');
     }
 
-
-    public function deleteImage(\App\Models\ProductImage $image): RedirectResponse
+    public function deleteImage(ProductImage $image): RedirectResponse
     {
         Storage::disk('public')->delete($image->image_path);
 
@@ -345,10 +378,126 @@ class ProductManagementService
         return back()->with('success', 'Image removed successfully.');
     }
 
+    public function prepareAccordionTabs(array $tabs): array
+    {
+        $cleaned = [];
+        foreach ($tabs as $tab) {
+            $title = trim((string) ($tab['title'] ?? ''));
+            $content = trim((string) ($tab['content'] ?? ''));
+            if ($title !== '' || $content !== '') {
+                $cleaned[] = [
+                    'title' => $title,
+                    'content' => $content,
+                ];
+            }
+        }
+
+        return $cleaned;
+    }
 
     private function forgetStorefrontCatalogCache(): void
     {
         Cache::forget('storefront.product_catalog_meta.v1');
         Cache::forget('storefront.product_catalog_meta.v2');
+    }
+
+    protected function syncComboItems(Product $product, Request $request): void
+    {
+        $isCombo = (bool) $request->input('is_combo', false);
+        if (! $isCombo) {
+            $product->comboItems()->delete();
+
+            return;
+        }
+
+        $comboItems = $request->input('combo_items', []);
+        $product->comboItems()->delete();
+
+        // Aggregate quantities by child_variant_id to prevent any duplicate key violations
+        $aggregated = [];
+        foreach ($comboItems as $item) {
+            $variantId = (int) ($item['child_variant_id'] ?? 0);
+            $qty = (int) ($item['quantity'] ?? 0);
+            if ($variantId > 0 && $qty > 0) {
+                $aggregated[$variantId] = ($aggregated[$variantId] ?? 0) + $qty;
+            }
+        }
+
+        foreach ($aggregated as $variantId => $quantity) {
+            ProductComboItem::create([
+                'combo_product_id' => $product->id,
+                'child_variant_id' => $variantId,
+                'quantity' => $quantity,
+            ]);
+        }
+    }
+
+    protected function syncSubscriptionPlans(Product $product, Request $request): void
+    {
+        $hasCustom = (bool) $request->input('has_custom_subscriptions', false);
+        if (! $hasCustom) {
+            $product->subscriptionPlans()->delete();
+
+            return;
+        }
+
+        $submittedPlans = $request->input('subscription_plans', []);
+        $existingPlanIds = $product->subscriptionPlans()->pluck('id')->all();
+        $keptPlanIds = [];
+
+        foreach ($submittedPlans as $index => $planData) {
+            if (empty($planData['duration_months']) || ! isset($planData['month_1_price']) || ! isset($planData['recurring_price'])) {
+                continue;
+            }
+
+            $planAttributes = [
+                'product_id' => $product->id,
+                'duration_months' => (int) $planData['duration_months'],
+                'month_1_price' => (float) $planData['month_1_price'],
+                'recurring_price' => (float) $planData['recurring_price'],
+                'badge_text' => ! empty($planData['badge_text']) ? trim($planData['badge_text']) : null,
+                'free_gift_variant_id' => ! empty($planData['free_gift_variant_id']) ? (int) $planData['free_gift_variant_id'] : null,
+                'free_gift_label' => ! empty($planData['free_gift_label']) ? trim($planData['free_gift_label']) : null,
+                'is_active' => isset($planData['is_active']) ? (bool) $planData['is_active'] : true,
+                'sort_order' => isset($planData['sort_order']) ? (int) $planData['sort_order'] : $index + 1,
+            ];
+
+            if (! empty($planData['id']) && in_array((int) $planData['id'], $existingPlanIds)) {
+                $plan = ProductSubscriptionPlan::find($planData['id']);
+                if ($plan) {
+                    $plan->update($planAttributes);
+                    $keptPlanIds[] = $plan->id;
+                }
+            } else {
+                $created = ProductSubscriptionPlan::create($planAttributes);
+                $keptPlanIds[] = $created->id;
+            }
+        }
+
+        $toDelete = array_diff($existingPlanIds, $keptPlanIds);
+        if (! empty($toDelete)) {
+            ProductSubscriptionPlan::whereIn('id', $toDelete)->delete();
+        }
+    }
+
+    public function uniqueProductSlug(string $name, ?int $ignoreProductId = null, ?string $customSlug = null): string
+    {
+        $baseSlug = Str::slug($customSlug ?: $name);
+        if ($baseSlug === '') {
+            $baseSlug = 'product-'.Str::lower(Str::random(6));
+        }
+
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Product::withTrashed()
+            ->where('slug', $slug)
+            ->when($ignoreProductId, fn ($q) => $q->where('id', '!=', $ignoreProductId))
+            ->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }

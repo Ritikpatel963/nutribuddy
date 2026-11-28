@@ -79,5 +79,59 @@ class StockService
                 ]);
             }
         }
+
+        // 3. Virtual Bundle Pattern: If item is a combo, adjust inventory of each mapped child variant
+        $product = $item->product ?: \App\Models\Product::with('comboItems.childVariant')->find($item->product_id);
+        if ($product && $product->is_combo) {
+            $comboItems = $product->comboItems ?: \App\Models\ProductComboItem::with('childVariant')->where('combo_product_id', $product->id)->get();
+            foreach ($comboItems as $comboItem) {
+                $childVariant = $comboItem->childVariant;
+                if (! $childVariant) {
+                    continue;
+                }
+
+                $childQtyChange = ($item->quantity * $comboItem->quantity) * $multiplier;
+
+                // Adjust child variant inventory
+                $childVariantInventory = Inventory::query()
+                    ->lockForUpdate()
+                    ->where('product_id', $childVariant->product_id)
+                    ->where('product_variant_id', $childVariant->id)
+                    ->first();
+
+                if ($childVariantInventory && $childVariantInventory->track_stock) {
+                    $newChildQty = (int) $childVariantInventory->stock_qty + $childQtyChange;
+                    if ($action === 'deduct' && $newChildQty < 0) {
+                        abort(422, "Item '{$childVariant->name}' in combo is out of stock.");
+                    }
+
+                    $childVariantInventory->update([
+                        'stock_qty' => max(0, $newChildQty),
+                        'is_in_stock' => $newChildQty > 0,
+                    ]);
+
+                    Log::info("Combo Child Stock {$action}ed for Child Variant #{$childVariant->id}: " . abs($childQtyChange) . ". New Qty: {$newChildQty}");
+                }
+
+                // Adjust child product's parent inventory row
+                $childMainInventory = Inventory::query()
+                    ->lockForUpdate()
+                    ->where('product_id', $childVariant->product_id)
+                    ->whereNull('product_variant_id')
+                    ->first();
+
+                if ($childMainInventory && $childMainInventory->track_stock) {
+                    $newChildMainQty = (int) $childMainInventory->stock_qty + $childQtyChange;
+                    if ($action === 'deduct' && $newChildMainQty < 0) {
+                        abort(422, "Item in combo is out of stock.");
+                    }
+
+                    $childMainInventory->update([
+                        'stock_qty' => max(0, $newChildMainQty),
+                        'is_in_stock' => $newChildMainQty > 0,
+                    ]);
+                }
+            }
+        }
     }
 }

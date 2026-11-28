@@ -99,6 +99,10 @@
                                 class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Products</a>
                     </li>
                     <li>
+                        <a href="{{ route('admin.ecommerce.combos.index') }}"><i
+                                class="ri-circle-fill circle-icon text-success-main w-auto"></i> Combo Packs</a>
+                    </li>
+                    <li>
                         <a href="{{ route('admin.ecommerce.products.trash') }}"><i
                                 class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Product Trash</a>
                     </li>

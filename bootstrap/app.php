@@ -45,10 +45,12 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'payment/cashfree/return',
             'diet-chart/payment/cashfree/return',
+            'subscribe/payment/return',
             'payment/cashfree/webhook',
             'payment/razorpay/webhook',
             'diet-chart/payment/cashfree/webhook',
             'api/webhooks/cashfree',
+            'webhooks/cashfree/product-subscription',
             'webhooks/aisensy',
         ]);
         

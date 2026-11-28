@@ -2,15 +2,23 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Setting;
+use App\Models\User;
+use App\Observers\OrderItemObserver;
+use App\Observers\OrderObserver;
+use App\Services\Payments\CashfreePaymentService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use App\Models\Setting;
-use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,20 +37,28 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        Gate::before(function ($user, $ability) {
+            if ($user instanceof User && ($user->role === 'admin' || $user->hasRole('Super Admin', 'admin'))) {
+                return true;
+            }
+
+            return null;
+        });
+
         // Block destructive database commands (migrate:fresh, db:wipe, etc.)
         // unless explicitly allowed via ALLOW_DB_RESET=true in .env
         if (! app()->environment('testing') && ! filter_var(env('ALLOW_DB_RESET', false), FILTER_VALIDATE_BOOLEAN)) {
             DB::prohibitDestructiveCommands();
         }
 
-        \App\Models\Order::observe(\App\Observers\OrderObserver::class);
-        \App\Models\OrderItem::observe(\App\Observers\OrderItemObserver::class);
+        Order::observe(OrderObserver::class);
+        OrderItem::observe(OrderItemObserver::class);
 
         if (! app()->environment('testing') && ! app()->runningInConsole() && config('services.cashfree.app_id')) {
             try {
-                \App\Services\Payments\CashfreePaymentService::bootCheck();
+                CashfreePaymentService::bootCheck();
             } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::critical('Cashfree configuration error: ' . $e->getMessage());
+                Log::critical('Cashfree configuration error: '.$e->getMessage());
                 if (config('app.debug')) {
                     throw $e;
                 }
@@ -53,8 +69,8 @@ class AppServiceProvider extends ServiceProvider
             $email = Str::lower(trim((string) $request->input('email')));
 
             return [
-                Limit::perMinute(10)->by('admin-login:ip:' . $request->ip()),
-                Limit::perMinute(5)->by('admin-login:email:' . ($email ?: $request->ip())),
+                Limit::perMinute(10)->by('admin-login:ip:'.$request->ip()),
+                Limit::perMinute(5)->by('admin-login:email:'.($email ?: $request->ip())),
             ];
         });
 
@@ -62,8 +78,8 @@ class AppServiceProvider extends ServiceProvider
             $phone = preg_replace('/\D+/', '', (string) $request->input('phone'));
 
             return [
-                Limit::perMinute(8)->by('otp-send:ip:' . $request->ip()),
-                Limit::perMinute(3)->by('otp-send:phone:' . ($phone ?: $request->ip())),
+                Limit::perMinute(8)->by('otp-send:ip:'.$request->ip()),
+                Limit::perMinute(3)->by('otp-send:phone:'.($phone ?: $request->ip())),
             ];
         });
 
@@ -71,34 +87,34 @@ class AppServiceProvider extends ServiceProvider
             $phone = preg_replace('/\D+/', '', (string) $request->input('phone'));
 
             return [
-                Limit::perMinute(15)->by('otp-verify:ip:' . $request->ip()),
-                Limit::perMinute(8)->by('otp-verify:phone:' . ($phone ?: $request->ip())),
+                Limit::perMinute(15)->by('otp-verify:ip:'.$request->ip()),
+                Limit::perMinute(8)->by('otp-verify:phone:'.($phone ?: $request->ip())),
             ];
         });
 
         RateLimiter::for('form-submit', function (Request $request) {
-            return Limit::perMinute(30)->by('form-submit:' . $request->ip());
+            return Limit::perMinute(30)->by('form-submit:'.$request->ip());
         });
 
         RateLimiter::for('cart', function (Request $request) {
-            return Limit::perMinute(240)->by('cart:' . ($request->user()?->id ?: $request->ip()));
+            return Limit::perMinute(240)->by('cart:'.($request->user()?->id ?: $request->ip()));
         });
 
         RateLimiter::for('checkout', function (Request $request) {
-            return Limit::perMinute(120)->by('checkout:' . ($request->user()?->id ?: $request->ip()));
+            return Limit::perMinute(120)->by('checkout:'.($request->user()?->id ?: $request->ip()));
         });
 
         RateLimiter::for('order-submit', function (Request $request) {
-            return Limit::perMinute(12)->by('order-submit:' . ($request->user()?->id ?: $request->ip()));
+            return Limit::perMinute(12)->by('order-submit:'.($request->user()?->id ?: $request->ip()));
         });
 
         View::composer('components.head', function ($view) {
             $data = $view->getData();
-            
+
             $siteName = Setting::get('site_name', 'NutriBuddy');
             $defaultDescription = Setting::get('meta_description', 'Your Health Partner Store');
             $defaultKeywords = Setting::get('meta_keywords', 'nutrition, wellness, health, supplements');
-            
+
             $metaTitle = $data['meta_title'] ?? null;
             $metaDescription = $data['meta_description'] ?? $defaultDescription;
             $metaKeywords = $data['meta_keywords'] ?? $defaultKeywords;
@@ -108,7 +124,7 @@ class AppServiceProvider extends ServiceProvider
                 $p = $data['product'];
                 $metaTitle = $p->meta_title ?: $p->name;
                 $metaDescription = $p->meta_description ?: Str::limit(strip_tags($p->description), 160);
-                $metaKeywords = $p->meta_keywords ?: $p->brand . ', ' . $p->name;
+                $metaKeywords = $p->meta_keywords ?: $p->brand.', '.$p->name;
             } elseif (isset($data['category'])) {
                 $c = $data['category'];
                 $metaTitle = $c->meta_title ?: $c->name;
@@ -134,9 +150,8 @@ class AppServiceProvider extends ServiceProvider
             $unreadCount = $admin?->unreadNotifications()->count() ?? 0;
             $view->with([
                 'navbarNotifications' => $notifications,
-                'unreadNotificationsCount' => $unreadCount
+                'unreadNotificationsCount' => $unreadCount,
             ]);
         });
     }
-
 }

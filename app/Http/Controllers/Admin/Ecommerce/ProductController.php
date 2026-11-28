@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Ecommerce;
 
+use App\Http\Controllers\Admin\ResourceIndexFallbacks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Ecommerce\BulkDeleteProductsRequest;
 use App\Http\Requests\Admin\Ecommerce\StoreProductRequest;
@@ -12,6 +13,7 @@ use App\Models\Attribute;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductVariant;
 use App\Models\TaxRate;
 use App\Services\Ecommerce\ProductContentService;
 use App\Services\Ecommerce\ProductManagementService;
@@ -21,7 +23,7 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    use \App\Http\Controllers\Admin\ResourceIndexFallbacks;
+    use ResourceIndexFallbacks;
 
     public function index(Request $request): View
     {
@@ -58,6 +60,9 @@ class ProductController extends Controller
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'taxRates' => TaxRate::where('is_active', true)->orderBy('sort_order')->get(['id', 'name', 'rate']),
             'attributes' => Attribute::where('is_active', true)->orderBy('position')->orderBy('name')->get(),
+            'availableVariants' => ProductVariant::with(['product:id,name', 'inventory:id,product_variant_id,stock_qty'])
+                ->where('is_active', true)
+                ->get(),
         ]);
     }
 
@@ -68,12 +73,17 @@ class ProductController extends Controller
 
     public function edit(Product $product, ProductContentService $content): View
     {
+        $product->load(['comboItems.childVariant.product', 'subscriptionPlans']);
+
         return view('admin.ecommerce.products.edit', [
             'product' => $product,
             'categories' => Category::where('is_active', true)->orderBy('name')->get(['id', 'name']),
             'taxRates' => TaxRate::where('is_active', true)->orderBy('sort_order')->get(['id', 'name', 'rate']),
             'attributes' => Attribute::where('is_active', true)->orderBy('position')->orderBy('name')->get(),
             'problemSolutionDefaults' => $content->defaultProblemSolutionContent(),
+            'availableVariants' => ProductVariant::with(['product:id,name', 'inventory:id,product_variant_id,stock_qty'])
+                ->where('is_active', true)
+                ->get(),
         ]);
     }
 

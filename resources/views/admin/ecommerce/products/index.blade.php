@@ -5,10 +5,6 @@
 @endphp
 
 @section('content')
-    @include('admin.partials.messages')
-
-
-
     <div class="card basic-data-table border-0 radius-12 mb-24">
         <div class="card-header bg-base border-bottom py-16 px-24 d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="d-flex align-items-center gap-3">
@@ -25,6 +21,9 @@
                 </form>
             </div>
             <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('admin.ecommerce.combos.index') }}" class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1">
+                    <iconify-icon icon="solar:box-minimalistic-bold-duotone"></iconify-icon> Combo Packs
+                </a>
                 <a href="{{ route('admin.ecommerce.products.trash') }}" class="btn btn-sm btn-outline-danger-600">
                     <i class="fas fa-trash"></i> Trash
                     @if(($trashCount ?? 0) > 0)
@@ -69,6 +68,9 @@
                                             @endif
                                             @if($product->is_featured)
                                                 <span class="badge text-xs bg-warning-100 text-warning-600 px-2 fw-medium">Featured</span>
+                                            @endif
+                                            @if($product->is_combo)
+                                                <a href="{{ route('admin.ecommerce.combos.edit', $product) }}" class="badge text-xs bg-success-100 text-success-700 px-2 fw-medium text-decoration-none">Combo Pack</a>
                                             @endif
                                         </div>
                                     </div>

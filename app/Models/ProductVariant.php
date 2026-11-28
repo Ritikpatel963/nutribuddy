@@ -51,6 +51,11 @@ class ProductVariant extends Model
         return $this->hasOne(Inventory::class);
     }
 
+    public function comboItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductComboItem::class, 'child_variant_id');
+    }
+
     /**
      * Get the price to be displayed on storefront.
      * Includes GST if 'show_in_checkout' is false.

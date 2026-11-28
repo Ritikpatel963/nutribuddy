@@ -12,6 +12,11 @@ class UpdateProductRequest extends ProductMutationRequest
 
         return $this->productRules($product instanceof Product ? $product : null)
             + $this->problemSolutionRules()
-            + $this->transformSectionRules();
+            + $this->transformSectionRules()
+            + $this->featuresSectionRules()
+            + $this->formulaSectionRules()
+            + $this->faqSectionRules()
+            + $this->comboRules()
+            + $this->subscriptionRules();
     }
 }

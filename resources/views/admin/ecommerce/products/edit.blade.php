@@ -20,10 +20,26 @@
 @section('content')
     <div class="row justify-content-center">
         <div class="col-lg-12">
-            <form action="{{ route('admin.ecommerce.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+            @if($product->is_combo)
+                <div class="alert alert-success d-flex align-items-center justify-content-between p-16 radius-12 mb-24">
+                    <div class="d-flex align-items-center gap-2">
+                        <iconify-icon icon="solar:box-minimalistic-bold-duotone" class="fs-4 text-success-600"></iconify-icon>
+                        <div>
+                            <strong>This is a Combo Pack.</strong> You can manage constituent bundle items and combo details in the dedicated editor.
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.ecommerce.combos.edit', $product) }}" class="btn btn-sm btn-success">
+                        Open Dedicated Combo Editor &rarr;
+                    </a>
+                </div>
+            @endif
+
+            <form action="{{ route('admin.ecommerce.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="productForm">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="product_type" value="{{ $product->product_type }}">
+
+                @include('admin.ecommerce.products.partials.accordion-cards-manager')
 
                 <!-- 1. GENERAL INFORMATION -->
                 <div class="card border-0 radius-12 mb-24">
@@ -150,20 +166,11 @@
 
                 @include('admin.ecommerce.products._attribute_variations', ['attributes' => $attributes, 'product' => $product])
 
-                <!-- 4. DESCRIPTIONS -->
-                <div class="card border-0 radius-12 mb-24">
-                    <div class="card-header bg-base border-bottom py-16 px-24">
-                        <h5 class="card-title mb-0">Content & Descriptions</h5>
-                    </div>
-                    <div class="card-body p-24">
-                        <div class="row g-4">
-                            <div class="col-12">
-                                <label class="form-label fw-bold">Full Detailed Description</label>
-                                <textarea name="description" id="editor" class="form-control">{{ old('description', $product->description) }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- 3.5. SUBSCRIBE & SAVE PLANS -->
+                @include('admin.ecommerce.products.partials.subscription-plans-settings', ['product' => $product, 'availableVariants' => $availableVariants])
+
+                <!-- 4. ACCORDION DESCRIPTIONS -->
+                @include('admin.ecommerce.products.partials.accordion-descriptions', ['product' => $product])
 
                 <!-- 5. CARD MEDIA -->
                 <div class="card border-0 radius-12 mb-24">
@@ -261,6 +268,10 @@
                 </div>
 
                 @include('admin.ecommerce.products.partials.transform-section-fields', ['product' => $product])
+                @include('admin.ecommerce.products.partials.features-section-fields', ['product' => $product])
+                @include('admin.ecommerce.products.partials.formula-section-fields', ['product' => $product])
+                @include('admin.ecommerce.products.partials.banner-section-fields', ['product' => $product])
+                @include('admin.ecommerce.products.partials.faq-section-fields', ['product' => $product])
 
                 <!-- 6. KIDS FACE REAL PROBLEMS -->
                 <div class="card border-0 radius-12 mb-24 shadow-sm">
@@ -562,7 +573,9 @@
 
     <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
-        ClassicEditor.create(document.querySelector('#editor')).catch(e => console.error(e));
+        if (document.querySelector('#editor')) {
+            ClassicEditor.create(document.querySelector('#editor')).catch(e => console.error(e));
+        }
 
         function renameProblemSolutionRow(row, side, index) {
             row.querySelector('[data-name="icon"]').name = `ps_${side}_cards[${index}][icon]`;

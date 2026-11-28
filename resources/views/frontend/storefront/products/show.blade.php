@@ -245,19 +245,63 @@
                 ];
             })
             ->values();
-        $problemSolutionAsset = function (?string $path) {
+
+        $dbPlans = $product->subscriptionPlans->isNotEmpty()
+            ? $product->subscriptionPlans
+            : \App\Models\ProductSubscriptionPlan::where(function ($q) use ($product) {
+                $q->where('product_id', $product->id)->orWhereNull('product_id');
+            })->where('is_active', true)->orderBy('sort_order')->orderBy('duration_months')->get();
+
+        if ($dbPlans->isEmpty()) {
+            $dbPlans = collect([
+                new \App\Models\ProductSubscriptionPlan(['id' => 1, 'duration_months' => 2, 'month_1_price' => 649, 'recurring_price' => 599, 'badge_text' => null, 'free_gift_label' => null]),
+                new \App\Models\ProductSubscriptionPlan(['id' => 2, 'duration_months' => 3, 'month_1_price' => 649, 'recurring_price' => 579, 'badge_text' => 'Recommended', 'free_gift_label' => null]),
+                new \App\Models\ProductSubscriptionPlan(['id' => 3, 'duration_months' => 4, 'month_1_price' => 649, 'recurring_price' => 569, 'badge_text' => 'Best value', 'free_gift_label' => 'Free Tasty Kadha']),
+            ]);
+        }
+
+        $subscriptionPlansList = $dbPlans->map(function ($plan) use ($initialComparePrice, $initialPrice) {
+            $calc = $plan->calculateTotal((float) ($initialComparePrice ?: $initialPrice));
+            return [
+                'id' => $plan->id,
+                'months' => (int) $plan->duration_months,
+                'month_1_price' => (float) $plan->month_1_price,
+                'monthly_price' => (float) $plan->recurring_price,
+                'total' => $calc['total'],
+                'saving' => $calc['saving'],
+                'badge' => $plan->badge_text,
+                'free_gift' => $plan->free_gift_label,
+            ];
+        })->values();
+
+        $lowestSubMonthly = $subscriptionPlansList->min('monthly_price') ?: 569;
+
+        $transformDefaults = [
+            ['image' => 'img/immune.png', 'title' => 'Supports Focus & Learning'],
+            ['image' => 'img/check-height.png', 'title' => 'Height & Growth Spurt'],
+            ['image' => 'img/energy-drink.png', 'title' => 'All-Day Energy'],
+            ['image' => 'img/mental-health.png', 'title' => 'Better Mood & Calm'],
+        ];
+
+        $problemSolutionAsset = function (?string $path, ?string $fallback = null) {
             $path = trim((string) $path);
-            if ($path === '') {
-                return '';
+            if ($path !== '') {
+                if (\Illuminate\Support\Str::startsWith($path, ['img/', 'assets/', '/img/', '/assets/'])) {
+                    return asset(ltrim($path, '/'));
+                }
+
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                    return route('storage.public', ['path' => $path]);
+                }
             }
 
-            if (\Illuminate\Support\Str::startsWith($path, ['img/', 'assets/'])) {
-                return asset($path);
+            if ($fallback) {
+                return \Illuminate\Support\Str::startsWith($fallback, ['img/', 'assets/', '/img/', '/assets/'])
+                    ? asset(ltrim($fallback, '/'))
+                    : asset('img/' . ltrim($fallback, '/'));
             }
 
-            return \Illuminate\Support\Facades\Storage::disk('public')->exists($path)
-                ? route('storage.public', ['path' => $path])
-                : '';
+            return '';
         };
         $transformDescription = $product->transform_description;
         $transformMainImage = $problemSolutionAsset($product->transform_main_image);
@@ -553,7 +597,7 @@
                         <small>2, 3 or 4 months · Monthly delivery</small>
                     </span>
                     <span class="pdp-subscription-from">
-                        <strong>From ₹569<small>/month</small></strong>
+                        <strong>From ₹{{ number_format($lowestSubMonthly, 0) }}<small>/month</small></strong>
                         <small>Lower price from month 2</small>
                     </span>
                     <button type="button" class="pdp-subscription-toggle" id="pdpSubscriptionToggle"
@@ -566,38 +610,34 @@
                 <div class="pdp-subscription-panel" id="pdpSubscriptionPanel" hidden>
                     <span class="pdp-subscription-chip">Save from month 2 · Cancel anytime</span>
                     <div class="pdp-subscription-plans">
-                        <label class="pdp-subscription-plan" data-pdp-subscription-plan data-plan-months="2" data-plan-monthly="599" data-plan-total="1248" data-plan-saving="150">
-                            <input type="radio" name="pdpSubscriptionPlan" value="2">
-                            <span class="pdp-plan-copy">
-                                <span class="pdp-plan-heading"><b>2 months</b><strong>₹599<small>/month</small></strong></span>
-                                <small>₹649 today, then ₹599/month</small>
-                                <span class="pdp-plan-badges"><span class="pdp-plan-save">Save ₹150 vs. MRP</span></span>
-                            </span>
-                        </label>
-                        <label class="pdp-subscription-plan" data-pdp-subscription-plan data-plan-months="3" data-plan-monthly="579" data-plan-total="1807" data-plan-saving="290">
-                            <input type="radio" name="pdpSubscriptionPlan" value="3">
-                            <span class="pdp-plan-copy">
-                                <span class="pdp-plan-heading"><b>3 months</b><span class="pdp-plan-tag pdp-plan-recommended">Recommended</span><strong>₹579<small>/month</small></strong></span>
-                                <small>₹649 today, then ₹579/month</small>
-                                <span class="pdp-plan-badges"><span class="pdp-plan-save">Save ₹290 vs. MRP</span></span>
-                            </span>
-                        </label>
-                        <label class="pdp-subscription-plan" data-pdp-subscription-plan data-plan-months="4" data-plan-monthly="569" data-plan-total="2356" data-plan-saving="440">
-                            <input type="radio" name="pdpSubscriptionPlan" value="4">
-                            <span class="pdp-plan-copy">
-                                <span class="pdp-plan-heading"><b>4 months</b><span class="pdp-plan-tag pdp-plan-best">Best value</span><strong>₹569<small>/month</small></strong></span>
-                                <small>₹649 today, then ₹569/month</small>
-                                <span class="pdp-plan-badges">
-                                    <span class="pdp-plan-save">Save ₹440 vs. MRP</span>
-                                    <span class="pdp-plan-gift">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M3 9h18v12H3zM2 5h20v4H2zM12 5v16m0-16H7.5a2.5 2.5 0 1 1 2.5-2.5C10 4 12 5 12 5Zm0 0h4.5A2.5 2.5 0 1 0 14 2.5C14 4 12 5 12 5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        Free Tasty Kadha
+                        @foreach ($subscriptionPlansList as $planItem)
+                            <label class="pdp-subscription-plan" data-pdp-subscription-plan data-plan-id="{{ $planItem['id'] }}" data-plan-months="{{ $planItem['months'] }}" data-plan-m1="{{ $planItem['month_1_price'] }}" data-plan-monthly="{{ $planItem['monthly_price'] }}" data-plan-total="{{ $planItem['total'] }}" data-plan-saving="{{ $planItem['saving'] }}">
+                                <input type="radio" name="pdpSubscriptionPlan" value="{{ $planItem['id'] }}" data-months="{{ $planItem['months'] }}">
+                                <span class="pdp-plan-copy">
+                                    <span class="pdp-plan-heading">
+                                        <b>{{ $planItem['months'] }} months</b>
+                                        @if ($planItem['badge'])
+                                            <span class="pdp-plan-tag {{ strtolower($planItem['badge']) === 'best value' ? 'pdp-plan-best' : 'pdp-plan-recommended' }}">{{ $planItem['badge'] }}</span>
+                                        @endif
+                                        <strong>₹{{ number_format($planItem['monthly_price'], 0) }}<small>/month</small></strong>
+                                    </span>
+                                    <small>₹{{ number_format($planItem['month_1_price'], 0) }} today, then ₹{{ number_format($planItem['monthly_price'], 0) }}/month</small>
+                                    <span class="pdp-plan-badges">
+                                        @if ($planItem['saving'] > 0)
+                                            <span class="pdp-plan-save">Save ₹{{ number_format($planItem['saving'], 0) }} vs. MRP</span>
+                                        @endif
+                                        @if ($planItem['free_gift'])
+                                            <span class="pdp-plan-gift">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                    <path d="M3 9h18v12H3zM2 5h20v4H2zM12 5v16m0-16H7.5a2.5 2.5 0 1 1 2.5-2.5C10 4 12 5 12 5Zm0 0h4.5A2.5 2.5 0 1 0 14 2.5C14 4 12 5 12 5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+                                                {{ $planItem['free_gift'] }}
+                                            </span>
+                                        @endif
                                     </span>
                                 </span>
-                            </span>
-                        </label>
+                            </label>
+                        @endforeach
                     </div>
                     <div class="pdp-subscription-summary" id="pdpSubscriptionSummary" hidden aria-live="polite">
                         <div class="pdp-subscription-summary-head">
@@ -762,52 +802,65 @@
 
             <section class="pdp-accordion-section" aria-label="Product information">
                 <div class="pdp-accordions">
-                    <details class="pdp-accordion">
-                        <summary>Product description</summary>
-                        <div class="pdp-accordion-content">
-                            @if (!empty(trim((string) ($product->description ?? ''))))
-                                {!! $product->description !!}
-                            @else
-                                <p>{{ $product->short_description ?: $product->name }}</p>
+                    @if (!empty($product->accordion_tabs) && is_array($product->accordion_tabs))
+                        @foreach ($product->accordion_tabs as $index => $tab)
+                            @if (!empty(trim((string) ($tab['title'] ?? ''))))
+                                <details class="pdp-accordion">
+                                    <summary>{{ $tab['title'] }}</summary>
+                                    <div class="pdp-accordion-content">
+                                        {!! $tab['content'] ?? '' !!}
+                                    </div>
+                                </details>
                             @endif
-                        </div>
-                    </details>
-                    <details class="pdp-accordion">
-                        <summary>What’s inside?</summary>
-                        <div class="pdp-accordion-content">
-                            @if ($product->ingredients->isNotEmpty())
-                                <ul>
-                                    @foreach ($product->ingredients as $ingredient)
-                                        <li>{{ $ingredient->main_heading ?: $ingredient->short_heading }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p>Made with carefully selected ingredients for your daily wellness routine.</p>
-                            @endif
-                        </div>
-                    </details>
-                    <details class="pdp-accordion">
-                        <summary>How do I use it?</summary>
-                        <div class="pdp-accordion-content">
-                            <p>{{ $product->dosage ?: 'Follow the serving instructions printed on the product pack. For children, use under adult supervision.' }}</p>
-                            @if ($product->routine)
-                                <p>{{ $product->routine }}</p>
-                            @endif
-                        </div>
-                    </details>
-                    <details class="pdp-accordion">
-                        <summary>How does Subscribe &amp; Save work?</summary>
-                        <div class="pdp-accordion-content">
-                            <p>Choose a 2, 3, or 4 month plan for monthly delivery. Your first box is charged at the one-time price; the lower plan price applies from month 2. You can cancel anytime.</p>
-                        </div>
-                    </details>
-                    <details class="pdp-accordion">
-                        <summary>What are the shipping and return policies?</summary>
-                        <div class="pdp-accordion-content">
-                            <p>Free shipping is available on orders of ₹1,000 or more. Cash on delivery is available where serviceable. Delivery dates depend on your location.</p>
-                            <p>For return or damage assistance, contact NutriBuddy support with your order details and product photos.</p>
-                        </div>
-                    </details>
+                        @endforeach
+                    @else
+                        <details class="pdp-accordion">
+                            <summary>Product description</summary>
+                            <div class="pdp-accordion-content">
+                                @if (!empty(trim((string) ($product->description ?? ''))))
+                                    {!! $product->description !!}
+                                @else
+                                    <p>{{ $product->short_description ?: $product->name }}</p>
+                                @endif
+                            </div>
+                        </details>
+                        <details class="pdp-accordion">
+                            <summary>What’s inside?</summary>
+                            <div class="pdp-accordion-content">
+                                @if ($product->ingredients->isNotEmpty())
+                                    <ul>
+                                        @foreach ($product->ingredients as $ingredient)
+                                            <li>{{ $ingredient->main_heading ?: $ingredient->short_heading }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p>Made with carefully selected ingredients for your daily wellness routine.</p>
+                                @endif
+                            </div>
+                        </details>
+                        <details class="pdp-accordion">
+                            <summary>How do I use it?</summary>
+                            <div class="pdp-accordion-content">
+                                <p>{{ $product->dosage ?: 'Follow the serving instructions printed on the product pack. For children, use under adult supervision.' }}</p>
+                                @if ($product->routine)
+                                    <p>{{ $product->routine }}</p>
+                                @endif
+                            </div>
+                        </details>
+                        <details class="pdp-accordion">
+                            <summary>How does Subscribe &amp; Save work?</summary>
+                            <div class="pdp-accordion-content">
+                                <p>Choose a 2, 3, or 4 month plan for monthly delivery. Your first box is charged at the one-time price; the lower plan price applies from month 2. You can cancel anytime.</p>
+                            </div>
+                        </details>
+                        <details class="pdp-accordion">
+                            <summary>What are the shipping and return policies?</summary>
+                            <div class="pdp-accordion-content">
+                                <p>Free shipping is available on orders of ₹1,000 or more. Cash on delivery is available where serviceable. Delivery dates depend on your location.</p>
+                                <p>For return or damage assistance, contact NutriBuddy support with your order details and product photos.</p>
+                            </div>
+                        </details>
+                    @endif
                 </div>
             </section>
 
@@ -1058,16 +1111,26 @@
             <span class="sec-eye">Real Results</span>
             <h2 class="sec-title">Watch Your Child <span class="acc">Transform</span></h2>
             <p class="sec-sub">{{ $transformDescription }}</p>
+            @php
+                $beforeImgPath = $product->transform_before_image ?: $product->transform_main_image;
+                $afterImgPath = $product->transform_after_image;
+                $beforeImg = $problemSolutionAsset($beforeImgPath, 'assets/brain/routine-before.png');
+                $afterImg = $problemSolutionAsset($afterImgPath, 'assets/brain/routine-after.webp');
+                $beforeLabel = $product->transform_before_label ?: 'Before';
+                $beforeSublabel = $product->transform_before_sublabel ?: 'Getting started';
+                $afterLabel = $product->transform_after_label ?: 'After';
+                $afterSublabel = $product->transform_after_sublabel ?: 'A shared little habit';
+            @endphp
             <div class="transform-grid">
                 <figure class="transform-visual pdp-before-after" style="--split: 50%">
                     <img class="pdp-before-after-image pdp-before-after-after"
-                        src="{{ asset('assets/brain/routine-after.webp') }}"
-                        alt="After: a mother and children enjoying their shared puzzle routine" loading="lazy" decoding="async">
+                        src="{{ $afterImg }}"
+                        alt="{{ $afterLabel }}: {{ $afterSublabel }}" loading="lazy" decoding="async">
                     <img class="pdp-before-after-image pdp-before-after-before"
-                        src="{{ asset('assets/brain/routine-before.png') }}"
-                        alt="Before: the same family getting ready to begin a puzzle activity" loading="lazy" decoding="async">
-                    <span class="pdp-before-after-label pdp-before-label">Before<small>Getting started</small></span>
-                    <span class="pdp-before-after-label pdp-after-label">After<small>A shared little habit</small></span>
+                        src="{{ $beforeImg }}"
+                        alt="{{ $beforeLabel }}: {{ $beforeSublabel }}" loading="lazy" decoding="async">
+                    <span class="pdp-before-after-label pdp-before-label">{{ $beforeLabel }}<small>{{ $beforeSublabel }}</small></span>
+                    <span class="pdp-before-after-label pdp-after-label">{{ $afterLabel }}<small>{{ $afterSublabel }}</small></span>
                     <span class="pdp-before-after-divider" aria-hidden="true"><span>← →</span></span>
                     <input type="range" min="0" max="100" value="50"
                         aria-label="Reveal before and after routine images"
@@ -1078,7 +1141,8 @@
                 <div class="transform-list">
                     @foreach ($transformResults as $index => $result)
                         @php
-                            $resultImage = $problemSolutionAsset($result['image'] ?? null, $transformDefaults[$index]['image'] ?? 'img/immune.png');
+                            $defaultFallback = $transformDefaults[$index % count($transformDefaults)]['image'] ?? 'img/immune.png';
+                            $resultImage = $problemSolutionAsset($result['image'] ?? null, $defaultFallback);
                             $resultColor = $transformColors[$index % count($transformColors)];
                         @endphp
                         <div class="tr-item">
@@ -1104,56 +1168,80 @@
     <!-- ══════════════════════════════
                                                  FEATURES — NO GELATIN etc.
                                             ══════════════════════════════ -->
+    @php
+        $defaultFeaturesItems = [
+            [
+                'icon' => 'img/vegan-1.png',
+                'title' => 'Zero Gelatin — 100% Vegetarian',
+                'description' => 'Most international gummies use animal gelatin (pig or bovine). All NutriBuddy gummies use plant-based pectin. Completely safe for every Indian family regardless of dietary beliefs.',
+            ],
+            [
+                'icon' => 'img/sug-1.png',
+                'title' => 'No Refined Sugar',
+                'description' => 'We sweeten with Fructooligosaccharides (FOS), a prebiotic dietary fibre derived from chicory root. FOS feeds beneficial gut bacteria, supports digestive health, provides mild sweetness with fewer calories than regular sugar, and is not considered refined sugar.',
+            ],
+            [
+                'icon' => 'img/pro-1.png',
+                'title' => 'No Artificial Colors or Flavors',
+                'description' => 'Our vibrant colors come from beetroot, turmeric, and spirulina. Our fruity burst flavors come from real fruit concentrates — not synthetic flavor chemicals tied to hyperactivity in children.',
+            ],
+        ];
+
+        $defaultComparisonRows = [
+            ['feature' => 'Ayurvedic herbs', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Zero Gelatin', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'No refined sugar', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Third-party lab tested', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Transparent batch results', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Pediatrician approved', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Age 2+ safe', 'us' => 'yes', 'others' => 'no'],
+            ['feature' => 'Price per day', 'us' => '~₹20', 'others' => 'Varies'],
+        ];
+
+        $featuresHeading = $product->features_heading ?: "What's NOT in it";
+        $featuresTitle = $product->features_title ?: 'Pure as<br><span class="acc">Nature Intended</span> 🍃';
+        $featuresSubtitle = $product->features_subtitle ?: "We obsessed over every ingredient that goes in — and even more over what we keep OUT. Because your child's body deserves only the best.";
+        $featuresItems = is_array($product->features_items) && count($product->features_items) > 0 ? $product->features_items : $defaultFeaturesItems;
+        $comparisonTitle = $product->features_comparison_title ?: 'NutriBuddy vs. Other Brands';
+        $comparisonRows = is_array($product->features_comparison_rows) && count($product->features_comparison_rows) > 0 ? $product->features_comparison_rows : $defaultComparisonRows;
+
+        $featureItemBgColors = ['var(--mnl)', 'var(--pkl)', 'var(--yel)'];
+    @endphp
+
     <section class="features-section reveal" id="features">
         <div class="feat-inner">
             <div class="feat-layout">
                 <div>
-                    <span class="sec-eye"> What's NOT in it</span>
-                    <h2 class="feat-title">Pure as<br><span class="acc">Nature Intended</span> 🍃</h2>
-                    <p class="feat-sub">We obsessed over every ingredient that goes in — and even more over what we keep
-                        OUT.
-                        Because your child's body deserves only the best.</p>
+                    <span class="sec-eye">{{ $featuresHeading }}</span>
+                    <h2 class="feat-title">{!! $featuresTitle !!}</h2>
+                    <p class="feat-sub">{{ $featuresSubtitle }}</p>
                     <div class="feat-list">
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--mnl)"><img src="/img/vegan-1.png" alt="">
+                        @foreach ($featuresItems as $fIndex => $fItem)
+                            @php
+                                $fIconFallback = $defaultFeaturesItems[$fIndex % count($defaultFeaturesItems)]['icon'] ?? 'img/vegan-1.png';
+                                $fIconUrl = $problemSolutionAsset($fItem['icon'] ?? null, $fIconFallback);
+                                $fBgColor = $featureItemBgColors[$fIndex % count($featureItemBgColors)];
+                            @endphp
+                            <div class="feat-item">
+                                <div class="feat-item-icon" style="background:{{ $fBgColor }}">
+                                    @if ($fIconUrl)
+                                        <img src="{{ $fIconUrl }}" alt="{{ $fItem['title'] ?? '' }}" loading="lazy" decoding="async">
+                                    @else
+                                        <iconify-icon icon="lucide:check-circle" class="fs-4 text-success"></iconify-icon>
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="feat-item-title">{{ $fItem['title'] ?? '' }}</div>
+                                    <div class="feat-item-desc">{{ $fItem['description'] ?? '' }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="feat-item-title">Zero Gelatin — 100% Vegetarian</div>
-                                <div class="feat-item-desc">Most international gummies use animal gelatin (pig or bovine).
-                                    All
-                                    NutriBuddy gummies use plant-based pectin. Completely safe for every Indian family
-                                    regardless of
-                                    dietary beliefs.</div>
-                            </div>
-                        </div>
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--pkl)"><img src="/img/sug-1.png" alt="">
-                            </div>
-                            <div>
-                                <div class="feat-item-title">No Refined Sugar</div>
-                                <div class="feat-item-desc">We sweeten with Fructooligosaccharides (FOS), a prebiotic dietary fibre derived from chicory root. FOS feeds beneficial gut bacteria, supports digestive health, provides mild sweetness with fewer calories than regular sugar, and is not considered refined sugar.</div>
-                            </div>
-                        </div>
-
-                        <div class="feat-item">
-                            <div class="feat-item-icon" style="background:var(--yel)"><img src="/img/pro-1.png" alt="">
-                            </div>
-                            <div>
-                                <div class="feat-item-title">No Artificial Colors or Flavors</div>
-                                <div class="feat-item-desc">Our vibrant colors come from beetroot, turmeric, and spirulina.
-                                    Our fruity
-                                    burst flavors come from real fruit concentrates — not synthetic flavor chemicals tied to
-                                    hyperactivity
-                                    in children.</div>
-                            </div>
-                        </div>
-
+                        @endforeach
                     </div>
                 </div>
 
                 <!-- Comparison Table -->
                 <div class="comparison-box">
-                    <div class="comp-title">NutriBuddy vs. Other Brands</div>
+                    <div class="comp-title">{{ $comparisonTitle }}</div>
                     <table class="comp-table">
                         <thead>
                             <tr>
@@ -1163,46 +1251,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="comp-us">
-                                <td>Ayurvedic herbs</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Zero Gelatin</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>No refined sugar</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Third-party lab tested</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>Transparent batch results</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Pediatrician approved</td>
-                                <td class="comp-us"><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr class="comp-us">
-                                <td>Age 2+ safe</td>
-                                <td><span class="check">✓</span></td>
-                                <td><span class="cross">✗</span></td>
-                            </tr>
-                            <tr>
-                                <td>Price per day</td>
-                                <td class="comp-us" style="color:var(--mn);font-weight:800">~₹20</td>
-                                <td>Varies</td>
-                            </tr>
+                            @foreach ($comparisonRows as $rIndex => $cRow)
+                                @php
+                                    $isUsHighlighted = $rIndex % 2 === 0;
+                                    $usVal = strtolower(trim((string) ($cRow['us'] ?? '')));
+                                    $otherVal = strtolower(trim((string) ($cRow['others'] ?? '')));
+                                @endphp
+                                <tr class="{{ $isUsHighlighted ? 'comp-us' : '' }}">
+                                    <td>{{ $cRow['feature'] ?? '' }}</td>
+                                    <td class="{{ ! $isUsHighlighted ? 'comp-us' : '' }}" {!! $usVal === '~₹20' ? 'style="color:var(--mn);font-weight:800"' : '' !!}>
+                                        @if (in_array($usVal, ['yes', '1', 'true', '✓', 'check']))
+                                            <span class="check">✓</span>
+                                        @elseif (in_array($usVal, ['no', '0', 'false', '✗', 'cross']))
+                                            <span class="cross">✗</span>
+                                        @else
+                                            {{ $cRow['us'] ?? '' }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if (in_array($otherVal, ['yes', '1', 'true', '✓', 'check']))
+                                            <span class="check">✓</span>
+                                        @elseif (in_array($otherVal, ['no', '0', 'false', '✗', 'cross']))
+                                            <span class="cross">✗</span>
+                                        @else
+                                            {{ $cRow['others'] ?? '' }}
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -1260,41 +1336,129 @@
 
         </div>
 
+    @php
+        $formulaEyebrow = $product->formula_eyebrow ?: 'Meet your nutrition buddy';
+        $formulaHeading = $product->formula_heading ?: 'Little gummy. <em>Thoughtful formula.</em>';
+        $formulaSubheading = $product->formula_subheading ?: ($product->name ?? 'Brain Booster Gummies');
+        $formulaTag = $product->formula_tag ?: 'Ayurveda + nutraceutical';
+
+        $computeDefaultBgWord = function ($productModel, $isBrain) {
+            if ($isBrain) {
+                return 'BRAIN';
+            }
+            $name = trim((string) ($productModel->name ?? ''));
+            if ($name === '') {
+                return 'NUTRI';
+            }
+            $lower = strtolower($name);
+            if (str_contains($lower, 'immunity')) {
+                return 'IMMUNE';
+            }
+            if (str_contains($lower, 'kadha')) {
+                return 'KADHA';
+            }
+            if (str_contains($lower, 'calcium')) {
+                return 'CALCIUM';
+            }
+            if (str_contains($lower, 'sleep')) {
+                return 'SLEEP';
+            }
+            if (str_contains($lower, 'vitamin')) {
+                return 'VITAMIN';
+            }
+            $words = preg_split('/\s+/', $name);
+            foreach ($words as $w) {
+                $clean = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $w));
+                if ($clean !== '' && ! in_array($clean, ['NUTRIBUDDY', 'KIDS', 'THE', 'ORGANIC', 'SUPER', 'GUMMIES', 'GUMMY', 'PACK', 'COMBO'])) {
+                    return mb_substr($clean, 0, 10);
+                }
+            }
+            return 'NUTRI';
+        };
+
+        $formulaBgWord = $product->formula_bg_word ?: $computeDefaultBgWord($product, $isBrainBoosterProduct);
+        $formulaHeroImg = $problemSolutionAsset($product->formula_image, 'assets/brain/hero-reveal.webp');
+
+        $statLeftNum = $product->formula_stat_left_num ?: '2';
+        $statLeftTitle = $product->formula_stat_left_title ?: 'Ayurvedic botanicals';
+        $statLeftSub = $product->formula_stat_left_sub ?: 'Brahmi & Shankhpushpi';
+
+        $statRightNum = $product->formula_stat_right_num ?: '20 mg';
+        $statRightTitle = $product->formula_stat_right_title ?: 'algal DHA';
+        $statRightSub = $product->formula_stat_right_sub ?: 'in every gummy';
+
+        $defaultFormulaBadges = ['No preservatives', 'No added colours', 'No refined sugar', '100% vegetarian'];
+        $productFormulaBadges = is_array($product->formula_badges) && count($product->formula_badges) > 0 ? $product->formula_badges : $defaultFormulaBadges;
+
+        $formulaCaption = $product->formula_caption ?: 'To complement a varied diet, when supplementation is needed.';
+        $formulaBtnPrimaryText = $product->formula_button_primary_text ?: 'Choose your plan';
+        $formulaBtnPrimaryUrl = $product->formula_button_primary_url ?: '#pdpAddToCartBtn';
+        $formulaBtnSecondaryText = $product->formula_button_secondary_text ?: 'Explore ingredients';
+        $formulaBtnSecondaryUrl = $product->formula_button_secondary_url ?: '#nb-ingredients';
+        $formulaFootnote = $product->formula_footnote ?: 'One-time purchase or Subscribe & Save';
+
+        $formulaBadgeSvgs = [
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6m-5 0v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9V3M8 15h8"/></svg>',
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.8 1.8 0 0 1 1.4-3h1.4A3.5 3.5 0 0 0 21 11.2C21 6.7 17 3 12 3Z"/><circle cx="7.5" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="8" r="1"/></svg>',
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3h8m-6 0v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L12 9V3M7.5 16h9"/><path d="m4 20 16-16"/></svg>',
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 4c-8 0-14 4-14 11a5 5 0 0 0 5 5c7 0 9-8 9-16Z"/><path d="M4 21c3-5 6-8 11-11"/></svg>',
+        ];
+    @endphp
+
     <section class="pdp-formula-reveal" aria-labelledby="pdp-formula-title">
                 <div class="pdp-formula-shell">
                     <header class="pdp-formula-heading section-heading center">
-                        <p class="pdp-formula-eyebrow eyebrow">Meet your nutrition buddy</p>
-                        <h2 id=".pdp-family-heading h2">Little gummy. <em>Thoughtful formula.</em></h2>
+                        <p class="pdp-formula-eyebrow eyebrow">{{ $formulaEyebrow }}</p>
+                        <h2 id="pdp-formula-title">{!! $formulaHeading !!}</h2>
                     </header>
-                    <h3 class="pdp-formula-product-name">Brain Booster Gummies</h3>
+                    <h3 class="pdp-formula-product-name">{{ $formulaSubheading }}</h3>
+                    @if(!empty($formulaTag))
                     <div class="pdp-ayurveda-pill">
                         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6m-5 0v6l-5.5 9.2A1.9 1.9 0 0 0 6.1 21h11.8a1.9 1.9 0 0 0 1.6-2.8L14 9V3M8 15h8"/></svg>
-                        Ayurveda + nutraceutical
+                        {{ $formulaTag }}
                     </div>
+                    @endif
                     <div class="pdp-formula-stage">
-                        <span class="pdp-formula-word brain-hero-word" aria-hidden="true">BRAIN</span>
-                        <img src="{{ asset('assets/brain/hero-reveal.webp') }}" alt="NutriBuddy Brain Booster Gummies with grapes and botanicals">
+                        @if(!empty($formulaBgWord))
+                            <span class="pdp-formula-word brain-hero-word" aria-hidden="true">{{ $formulaBgWord }}</span>
+                        @endif
+                        <img src="{{ $formulaHeroImg }}" alt="{{ $formulaSubheading }}">
                         <div class="pdp-formula-stat pdp-formula-stat--left">
-                            <strong>2</strong>
-                            <b>Ayurvedic botanicals<br><small>Brahmi &amp; Shankhpushpi</small></b>
+                            <strong>{{ $statLeftNum }}</strong>
+                            <b>{{ $statLeftTitle }}@if(!empty($statLeftSub))<br><small>{{ $statLeftSub }}</small>@endif</b>
                         </div>
                         <div class="pdp-formula-stat pdp-formula-stat--right">
-                            <strong>20 mg</strong>
-                            <b>algal DHA<br><small>in every gummy</small></b>
+                            <strong>{{ $statRightNum }}</strong>
+                            <b>{{ $statRightTitle }}@if(!empty($statRightSub))<br><small>{{ $statRightSub }}</small>@endif</b>
                         </div>
                     </div>
+                    @if(count($productFormulaBadges) > 0)
                     <div class="pdp-formula-badges" aria-label="Product qualities">
-                        <div><span class="pdp-formula-icon tone-0" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6m-5 0v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9V3M8 15h8"/></svg></span><b>No preservatives</b></div>
-                        <div><span class="pdp-formula-icon tone-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.5-3.3 1.8 1.8 0 0 1 1.4-3h1.4A3.5 3.5 0 0 0 21 11.2C21 6.7 17 3 12 3Z"/><circle cx="7.5" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="8" r="1"/></svg></span><b>No added colours</b></div>
-                        <div><span class="pdp-formula-icon tone-2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3h8m-6 0v6l-5.4 9a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L12 9V3M7.5 16h9"/><path d="m4 20 16-16"/></svg></span><b>No refined sugar</b></div>
-                        <div><span class="pdp-formula-icon tone-3" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 4c-8 0-14 4-14 11a5 5 0 0 0 5 5c7 0 9-8 9-16Z"/><path d="M4 21c3-5 6-8 11-11"/></svg></span><b>100% vegetarian</b></div>
+                        @foreach($productFormulaBadges as $idx => $badgeText)
+                            @if(!empty($badgeText))
+                                @php
+                                    $toneClass = 'tone-' . ($idx % 4);
+                                    $badgeSvg = $formulaBadgeSvgs[$idx % 4];
+                                @endphp
+                                <div><span class="pdp-formula-icon {{ $toneClass }}" aria-hidden="true">{!! $badgeSvg !!}</span><b>{{ $badgeText }}</b></div>
+                            @endif
+                        @endforeach
                     </div>
-                    <p class="pdp-formula-caption">To complement a varied diet, when supplementation is needed.</p>
+                    @endif
+                    @if(!empty($formulaCaption))
+                        <p class="pdp-formula-caption">{{ $formulaCaption }}</p>
+                    @endif
                     <div class="pdp-formula-actions">
-                        <a class="pdp-formula-primary" href="#pdpAddToCartBtn">Choose your plan <span aria-hidden="true">→</span></a>
-                        <a class="pdp-formula-secondary" href="#nb-ingredients">Explore ingredients <span aria-hidden="true">→</span></a>
+                        @if(!empty($formulaBtnPrimaryText))
+                            <a class="pdp-formula-primary" href="{{ $formulaBtnPrimaryUrl }}">{{ $formulaBtnPrimaryText }} <span aria-hidden="true">→</span></a>
+                        @endif
+                        @if(!empty($formulaBtnSecondaryText))
+                            <a class="pdp-formula-secondary" href="{{ $formulaBtnSecondaryUrl }}">{{ $formulaBtnSecondaryText }} <span aria-hidden="true">→</span></a>
+                        @endif
                     </div>
-                    <p class="pdp-formula-note">One-time purchase or Subscribe &amp; Save</p>
+                    @if(!empty($formulaFootnote))
+                        <p class="pdp-formula-note">{{ $formulaFootnote }}</p>
+                    @endif
                 </div>
     </section>
 
@@ -1351,6 +1515,14 @@
 
         </div>
     </section>
+
+    @if(!empty($product->banner_image))
+    <section class="pdp-showcase-banner reveal" aria-label="Product Showcase Banner" style="max-width:1200px;margin:40px auto;padding:0 20px;">
+        <div style="border-radius:24px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,0.06);background:#fff;">
+            <img src="{{ $problemSolutionAsset($product->banner_image) }}" alt="{{ $product->name }} Banner" style="width:100%;height:auto;display:block;">
+        </div>
+    </section>
+    @endif
 
     <!-- ════════════════════════════════════════════════   ══════════════════════════════════════════
                                                      PARENT REVIEWS
@@ -1491,7 +1663,10 @@
     <!-- ══════════════════════════════════════════
                                                      FAQ
                                                 ══════════════════════════════════════════ -->
-    @include('partials.faq-section')
+    @include('partials.faq-section', [
+        'faqs' => $product->faqs,
+        'faqTitle' => $product->faq_title,
+    ])
 
     <div class="newsletter reveal">
         <span class="sec-eye">Stay in the Loop</span>
@@ -1541,9 +1716,15 @@
 
             'enabled' => true,
 
+            'productId' => (string) $product->id,
+
             'selectedVariantId' => (string) ($defVariant?->id ?? ''),
 
             'variants' => $frontendVariants,
+
+            'subscriptionPlans' => $subscriptionPlansList,
+
+            'subscribeCheckoutUrl' => route('subscribe.checkout'),
 
             'selectedAttributes' => $initialSelectedAttributes,
 

@@ -10,37 +10,128 @@
         ? '90 days of ' . $transformProduct->name . ' — visible, measurable, life-changing results reported by thousands of parents.'
         : '90 days of consistent use — visible, measurable, life-changing results reported by thousands of parents.';
     $transformDescription = old('transform_description', $transformProduct?->transform_description ?: $descriptionDefault);
-    $transformMainImage = old('transform_main_image', $transformProduct?->transform_main_image ?: 'img/tt1.jpeg');
+    $transformMainImage = old('transform_main_image', $transformProduct?->transform_main_image ?: '');
+    $transformBeforeImage = old('transform_before_image', $transformProduct?->transform_before_image ?: ($transformProduct?->transform_main_image ?: 'assets/brain/routine-before.png'));
+    $transformBeforeLabel = old('transform_before_label', $transformProduct?->transform_before_label ?: 'Before');
+    $transformBeforeSublabel = old('transform_before_sublabel', $transformProduct?->transform_before_sublabel ?: 'Getting started');
+    $transformAfterImage = old('transform_after_image', $transformProduct?->transform_after_image ?: 'assets/brain/routine-after.webp');
+    $transformAfterLabel = old('transform_after_label', $transformProduct?->transform_after_label ?: 'After');
+    $transformAfterSublabel = old('transform_after_sublabel', $transformProduct?->transform_after_sublabel ?: 'A shared little habit');
     $savedTransformResults = $transformProduct?->transform_results;
     $transformResults = old('transform_results', is_array($savedTransformResults) ? $savedTransformResults : $transformDefaults);
-    $transformImageUrl = function (?string $path): ?string {
-        if (!$path) return null;
-        return \Illuminate\Support\Str::startsWith($path, ['img/', 'assets/']) ? asset($path) : asset('storage/' . $path);
+    $transformImageUrl = function (?string $path, ?string $fallback = null): ?string {
+        $path = trim((string) $path);
+        if ($path !== '') {
+            if (\Illuminate\Support\Str::startsWith($path, ['img/', 'assets/', '/img/', '/assets/'])) {
+                return asset(ltrim($path, '/'));
+            }
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                return asset('storage/' . $path);
+            }
+        }
+        if ($fallback) {
+            return \Illuminate\Support\Str::startsWith($fallback, ['img/', 'assets/'])
+                ? asset($fallback)
+                : asset('img/' . ltrim($fallback, '/'));
+        }
+        return null;
     };
 @endphp
 
 <div class='card border-0 radius-12 mb-24'>
     <div class='card-header bg-base border-bottom py-16 px-24'>
         <h5 class='card-title mb-0'>Real Results / Transformation Section</h5>
-        <p class='text-secondary-light mb-0 mt-1'>Controls the paragraph, large left image, and result cards on this product detail page.</p>
+        <p class='text-secondary-light mb-0 mt-1'>Controls the paragraph, dynamic Before & After split slider images, and result cards on this product detail page.</p>
     </div>
     <div class='card-body p-24'>
-        <div class='row g-4'>
-            <div class='col-lg-8'>
-                <label class='form-label fw-bold'>Section Paragraph</label>
-                <textarea name='transform_description' rows='3' class='form-control' maxlength='1000'>{{ $transformDescription }}</textarea>
-                @error('transform_description')<span class='text-danger small d-block'>{{ $message }}</span>@enderror
+        <div class='mb-20'>
+            <label class='form-label fw-bold'>Section Paragraph</label>
+            <textarea name='transform_description' rows='2' class='form-control' maxlength='1000' placeholder='Section introduction paragraph'>{{ $transformDescription }}</textarea>
+            @error('transform_description')<span class='text-danger small d-block'>{{ $message }}</span>@enderror
+        </div>
+
+        <!-- DYNAMIC BEFORE & AFTER SLIDER IMAGES -->
+        <div class='border rounded-3 p-20 mb-24 bg-light-50'>
+            <div class='d-flex align-items-center justify-content-between mb-16'>
+                <div>
+                    <h6 class='mb-1 fw-bold text-dark'>Interactive Before & After Comparison Visuals</h6>
+                    <small class='text-secondary'>Upload custom Before and After images for the draggable PDP comparison slider.</small>
+                </div>
             </div>
-            <div class='col-lg-4'>
-                <label class='form-label fw-bold'>Large Left Image</label>
-                <input type='hidden' name='transform_main_image' value='{{ $transformMainImage }}'>
-                <input type='file' name='transform_main_image_file' class='form-control' accept='image/jpeg,image/png,image/webp'>
-                @if ($transformImageUrl($transformMainImage))
-                    <img src='{{ $transformImageUrl($transformMainImage) }}' class='mt-3 border radius-8 object-fit-cover' style='width:150px;height:110px' alt='Current transformation image'>
-                @endif
-                @error('transform_main_image_file')<span class='text-danger small d-block'>{{ $message }}</span>@enderror
+            <div class='row g-4'>
+                <!-- BEFORE IMAGE -->
+                <div class='col-md-6'>
+                    <div class='bg-white p-16 rounded-3 border h-100'>
+                        <div class='d-flex align-items-center justify-content-between mb-12'>
+                            <span class='badge bg-danger-50 text-danger-600 px-12 py-6 rounded-pill fw-bold'>
+                                <i class='ri-history-line me-1'></i> Before State Visual
+                            </span>
+                            <small class='text-muted'>Starting routine</small>
+                        </div>
+                        <div class='mb-12 text-center bg-light p-2 rounded-2 border' style='min-height:160px; display:flex; align-items:center; justify-content:center;'>
+                            @php
+                                $beforePreview = $transformImageUrl($transformBeforeImage, 'assets/brain/routine-before.png');
+                            @endphp
+                            @if ($beforePreview)
+                                <img src='{{ $beforePreview }}' class='rounded object-fit-cover w-100' style='max-height:150px;' alt='Before Preview'>
+                            @else
+                                <div class='text-muted small py-4'><iconify-icon icon='lucide:image' class='fs-1 opacity-50'></iconify-icon><br>Upload Before Image</div>
+                            @endif
+                        </div>
+                        <input type='hidden' name='transform_before_image' value='{{ $transformBeforeImage }}'>
+                        <label class='form-label small fw-bold mb-1'>Upload New Before Image</label>
+                        <input type='file' name='transform_before_image_file' class='form-control form-control-sm mb-12' accept='image/jpeg,image/png,image/webp'>
+                        <div class='row g-2'>
+                            <div class='col-6'>
+                                <label class='form-label small fw-semibold mb-1'>Badge Title</label>
+                                <input type='text' name='transform_before_label' class='form-control form-control-sm' value='{{ $transformBeforeLabel }}' placeholder='e.g. Before'>
+                            </div>
+                            <div class='col-6'>
+                                <label class='form-label small fw-semibold mb-1'>Badge Sub-text</label>
+                                <input type='text' name='transform_before_sublabel' class='form-control form-control-sm' value='{{ $transformBeforeSublabel }}' placeholder='e.g. Getting started'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AFTER IMAGE -->
+                <div class='col-md-6'>
+                    <div class='bg-white p-16 rounded-3 border h-100'>
+                        <div class='d-flex align-items-center justify-content-between mb-12'>
+                            <span class='badge bg-success-50 text-success-600 px-12 py-6 rounded-pill fw-bold'>
+                                <i class='ri-sparkling-line me-1'></i> After State Visual
+                            </span>
+                            <small class='text-muted'>Transformed habit</small>
+                        </div>
+                        <div class='mb-12 text-center bg-light p-2 rounded-2 border' style='min-height:160px; display:flex; align-items:center; justify-content:center;'>
+                            @php
+                                $afterPreview = $transformImageUrl($transformAfterImage, 'assets/brain/routine-after.webp');
+                            @endphp
+                            @if ($afterPreview)
+                                <img src='{{ $afterPreview }}' class='rounded object-fit-cover w-100' style='max-height:150px;' alt='After Preview'>
+                            @else
+                                <div class='text-muted small py-4'><iconify-icon icon='lucide:image' class='fs-1 opacity-50'></iconify-icon><br>Upload After Image</div>
+                            @endif
+                        </div>
+                        <input type='hidden' name='transform_after_image' value='{{ $transformAfterImage }}'>
+                        <label class='form-label small fw-bold mb-1'>Upload New After Image</label>
+                        <input type='file' name='transform_after_image_file' class='form-control form-control-sm mb-12' accept='image/jpeg,image/png,image/webp'>
+                        <div class='row g-2'>
+                            <div class='col-6'>
+                                <label class='form-label small fw-semibold mb-1'>Badge Title</label>
+                                <input type='text' name='transform_after_label' class='form-control form-control-sm' value='{{ $transformAfterLabel }}' placeholder='e.g. After'>
+                            </div>
+                            <div class='col-6'>
+                                <label class='form-label small fw-semibold mb-1'>Badge Sub-text</label>
+                                <input type='text' name='transform_after_sublabel' class='form-control form-control-sm' value='{{ $transformAfterSublabel }}' placeholder='e.g. A shared little habit'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <input type='hidden' name='transform_main_image' value='{{ $transformMainImage }}'>
 
         <div class='border rounded-3 mt-4'>
             <div class='border-bottom py-14 px-16 d-flex align-items-center justify-content-between'>
@@ -52,7 +143,7 @@
             </div>
             <div class='p-16' data-transform-results>
                 @foreach ($transformResults as $index => $result)
-                    @include('admin.ecommerce.products.partials.transform-result-row', compact('index', 'result', 'transformImageUrl'))
+                    @include('admin.ecommerce.products.partials.transform-result-row', compact('index', 'result', 'transformImageUrl', 'transformDefaults'))
                 @endforeach
             </div>
         </div>
