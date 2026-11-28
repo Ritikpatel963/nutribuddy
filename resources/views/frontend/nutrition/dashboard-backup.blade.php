@@ -111,20 +111,20 @@
             @endif
 
             <!-- Tabs -->
-            <div class="nutri-tabs" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="nutri-tabs-header-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px; position:relative; overflow:visible !important; z-index:1000;">
+                <div class="nutri-tabs" style="margin-bottom:0; padding-bottom:0; display:flex; gap:8px; flex-wrap:wrap; overflow:visible !important;">
                     <div class="nutri-tab active" data-target="tab-food">Food View</div>
                     <div class="nutri-tab" data-target="tab-nutri">Nutri View</div>
                     <div class="nutri-tab" data-target="tab-calories">Daily Calories</div>
                     <div class="nutri-tab" data-target="tab-insights">Insights & Progress</div>
                 </div>
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; position:relative; overflow:visible !important; z-index:1001;">
                     @if(!empty($child))
-                        <div style="position:relative; display:inline-block;" id="downloadPdfDropdownWrap">
+                        <div style="position:relative; display:inline-block; overflow:visible !important; z-index:1002;" id="downloadPdfDropdownWrap">
                             <button type="button" id="btnDownloadPdf" class="btn btn-primary" onclick="togglePdfDownloadMenu(event)" style="background:#7B2CBF; color:white; border:none; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(123,44,191,0.2);">
                                 📥 Download PDF <span style="font-size:10px; margin-left:2px;">▼</span>
                             </button>
-                            <div id="pdfDownloadDropdown" style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:white; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.18); border:1px solid #e0e0e0; min-width:270px; z-index:99999; padding:8px 0;">
+                            <div id="pdfDownloadDropdown" style="display:none; position:absolute; right:0; top:calc(100% + 8px); background:white; border-radius:12px; box-shadow:0 14px 40px rgba(0,0,0,0.25); border:1px solid #e2e8f0; min-width:280px; z-index:999999; padding:8px 0;">
                                 <a id="pdfDownloadActiveDayLink" href="{{ route('child.diet-chart.download-pdf', ['child' => $child->id, 'day_index' => $activeDayIndex ?? 0]) }}" style="display:flex; flex-direction:column; padding:10px 16px; text-decoration:none; color:#333; border-bottom:1px solid #f0f0f0; transition:background 0.15s;" onmouseover="this.style.background='#F3E8FF'" onmouseout="this.style.background='white'">
                                     <span style="font-weight:700; font-size:13px; color:#7B2CBF;">📄 Download Selected Day</span>
                                     <span id="pdfActiveDayLabel" style="font-size:11px; color:#666; margin-top:2px;">Day {{ ($activeDayIndex ?? 0) + 1 }} ({{ $activeDayLabel ?? 'Today' }})</span>
