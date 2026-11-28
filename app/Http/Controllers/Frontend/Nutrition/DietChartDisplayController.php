@@ -66,6 +66,10 @@ class DietChartDisplayController extends Controller
 
             $clinicalTips = $this->chartDisplay->getClinicalTips($assessment, $nutrientGaps);
 
+            $planSlug = \App\Support\PlanAccess::slugForChild($child) ?? $assessment->model_level ?? 'basic';
+            $shoppingList = $this->chartDisplay->getWeeklyShoppingList($dietPlan);
+            $healthScore  = $this->chartDisplay->calculateHealthScore($assessment, $nutrientGaps);
+
             return view('child-profile.diet-chart-display', [
                 'child'          => $child,
                 'assessment'     => $assessment,
@@ -77,6 +81,9 @@ class DietChartDisplayController extends Controller
                 'nutrientGaps'   => $nutrientGaps,
                 'clinicalTips'   => $clinicalTips,
                 'dailyNutrients' => $planData['daily_nutrients'] ?? [],
+                'planSlug'       => $planSlug,
+                'shoppingList'   => $shoppingList,
+                'healthScore'    => $healthScore,
             ]);
 
         } catch (AuthorizationException $e) {

@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const statusClasses = {
         active: 'bg-success-focus text-success-main',
+        paused: 'bg-warning-focus text-warning-main',
         expired: 'bg-danger-focus text-danger-main',
         pending: 'bg-warning-focus text-warning-main',
         cancelled: 'bg-secondary-focus text-secondary-main',

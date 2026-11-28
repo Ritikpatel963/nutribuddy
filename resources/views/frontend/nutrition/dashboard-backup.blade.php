@@ -111,11 +111,30 @@
             @endif
 
             <!-- Tabs -->
-            <div class="nutri-tabs">
-                <div class="nutri-tab active" data-target="tab-food">Food View</div>
-                <div class="nutri-tab" data-target="tab-nutri">Nutri View</div>
-                <div class="nutri-tab" data-target="tab-calories">Daily Calories</div>
-                <div class="nutri-tab" data-target="tab-insights">Insights & Progress</div>
+            <div class="nutri-tabs" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <div class="nutri-tab active" data-target="tab-food">Food View</div>
+                    <div class="nutri-tab" data-target="tab-nutri">Nutri View</div>
+                    <div class="nutri-tab" data-target="tab-calories">Daily Calories</div>
+                    <div class="nutri-tab" data-target="tab-insights">Insights & Progress</div>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    @if(!empty($child))
+                        <a href="{{ route('child.diet-chart.download-pdf', $child->id) }}" class="btn btn-primary" style="background:#7B2CBF; color:white; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(123,44,191,0.2);">
+                            📥 Download PDF
+                        </a>
+                    @endif
+                    @if(!empty($shoppingList) && \App\Support\PlanAccess::allows($planSlug ?? 'basic', 'shopping_list'))
+                        <button type="button" class="btn btn-success" style="background:#2E7D32; color:white; border:none; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer;" onclick="openShoppingListModal()">
+                            🛒 Shopping List
+                        </button>
+                    @endif
+                    @if(!empty($healthScore) && \App\Support\PlanAccess::allows($planSlug ?? 'basic', 'health_score'))
+                        <button type="button" class="btn btn-info" style="background:#4CAF50; color:white; border:none; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer;" onclick="openHealthScoreModal()">
+                            💚 Score: {{ $healthScore['total'] }}/100
+                        </button>
+                    @endif
+                </div>
             </div>
 
             <!-- TAB 1: FOOD VIEW -->
@@ -411,6 +430,29 @@
                                         <div>
                                             <div class="food-name">{{ $item['food_name'] }}</div>
                                             <div class="food-details">{{ $portion }} · P: {{ $p }}g · C: {{ $c }}g · F: {{ $f }}g</div>
+                                            <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+                                                @if(!empty($item['cook_min']))
+                                                    <span class="cook-time-badge" style="font-size:10px; color:#7B2CBF; background:#F3E8FF; padding:1px 6px; border-radius:4px; font-weight:600;">⏱️ {{ $item['cook_min'] }} mins</span>
+                                                @endif
+                                                @if(\App\Support\PlanAccess::allows($planSlug ?? 'basic', 'full_recipes'))
+                                                    <button type="button" class="btn-recipe-action"
+                                                        style="background:#7B2CBF; color:white; border:none; border-radius:5px; padding:2px 8px; font-size:11px; font-weight:600; cursor:pointer;"
+                                                        data-name="{{ $item['food_name'] ?? '' }}"
+                                                        data-cook="{{ $item['cook_min'] ?? 15 }}"
+                                                        data-portion="{{ $portion }}"
+                                                        data-ingredients="{{ $item['ingredients'] ?? '' }}"
+                                                        data-method="{{ $item['method'] ?? '' }}"
+                                                        onclick="event.stopPropagation(); showRecipe(this)">
+                                                        👨‍🍳 View Recipe
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="btn-recipe-action locked"
+                                                        style="background:#f3f3f3; color:#777; border:1px solid #ddd; border-radius:5px; padding:2px 8px; font-size:11px; cursor:pointer;"
+                                                        onclick="event.stopPropagation(); alert('Step-by-step recipes are available on Pro and Premium plans!')">
+                                                        🔒 Recipe (Pro/Premium)
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </div>
                                         <div style="display: flex; align-items: center; gap: 16px;">
                                             <div class="meal-check"></div>
@@ -939,6 +981,121 @@
     </div>
 </div>
 
+<!-- Recipe Modal -->
+<div id="recipeModal" class="nutri-full-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:999999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;" onclick="if(event.target === this) closeRecipeModal()">
+    <div style="background:white; border-radius:16px; max-width:620px; width:100%; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 24px; border-bottom:1px solid #eee; background:#fafafa;">
+            <div>
+                <h3 id="recipeTitle" style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">Dish Name</h3>
+                <div style="display:flex; gap:12px; font-size:12px; color:#666;">
+                    <span id="recipePortion"></span>
+                    <span id="recipeCook"></span>
+                </div>
+            </div>
+            <button type="button" style="background:none; border:none; font-size:26px; line-height:1; color:#888; cursor:pointer;" onclick="closeRecipeModal()">&times;</button>
+        </div>
+        <div style="padding:24px; overflow-y:auto; flex:1;">
+            <div style="margin-bottom:20px;">
+                <h4 style="font-size:13px; font-weight:700; color:#7B2CBF; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.05em;">🛒 Ingredients per Serving</h4>
+                <ul id="recipeIngredientsList" style="margin:0; padding-left:20px; font-size:13px; color:#444; line-height:1.6;"></ul>
+            </div>
+            <div>
+                <h4 style="font-size:13px; font-weight:700; color:#7B2CBF; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.05em;">👩‍🍳 Preparation & Cooking Method</h4>
+                <div id="recipeMethodContent" style="font-size:13px; color:#444; line-height:1.6; background:#f9f9f9; padding:14px 16px; border-radius:10px; border-left:4px solid #7B2CBF;"></div>
+            </div>
+        </div>
+        <div style="padding:16px 24px; border-top:1px solid #eee; background:#fafafa; display:flex; justify-content:flex-end;">
+            <button type="button" class="btn btn-secondary" style="background:#e0e0e0; border:none; border-radius:8px; padding:8px 18px; font-size:13px; cursor:pointer;" onclick="closeRecipeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Shopping List Modal -->
+@if(!empty($shoppingList))
+<div id="shoppingListModal" class="nutri-full-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:999999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;" onclick="if(event.target === this) closeShoppingListModal()">
+    <div style="background:white; border-radius:16px; max-width:650px; width:100%; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 24px; border-bottom:1px solid #eee; background:#fafafa;">
+            <div>
+                <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">🛒 Weekly Grocery Shopping List</h3>
+                <p style="margin:0; font-size:12px; color:#666;">Categorized ingredients for {{ $child->name ?? 'Child' }}'s active plan</p>
+            </div>
+            <button type="button" style="background:none; border:none; font-size:26px; line-height:1; color:#888; cursor:pointer;" onclick="closeShoppingListModal()">&times;</button>
+        </div>
+        <div style="padding:24px; overflow-y:auto; flex:1;">
+            <div id="shoppingListText" style="display:none;">@foreach($shoppingList as $category => $items)
+{{ $category }}:
+@foreach($items as $item => $count)
+- {{ $item }} ({{ $count }} meals)
+@endforeach
+
+@endforeach</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+                @foreach($shoppingList as $category => $items)
+                    <div style="background:#fdfdfd; border:1px solid #e8e8e8; border-radius:10px; padding:14px 16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:13px; color:#2E7D32; border-bottom:1px dashed #ddd; padding-bottom:8px; margin-bottom:10px; text-transform:uppercase;">
+                            <span>{{ $category }}</span>
+                            <span style="background:#E8F5E9; color:#2E7D32; font-size:11px; padding:2px 8px; border-radius:10px;">{{ count($items) }} items</span>
+                        </div>
+                        <ul style="list-style:none; margin:0; padding:0; font-size:13px; color:#444;">
+                            @foreach($items as $item => $count)
+                                <li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f6f6f6;">
+                                    <span>{{ $item }}</span>
+                                    <span style="font-size:11px; color:#888; background:#f0f0f0; padding:1px 6px; border-radius:4px;">{{ $count }}x</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        <div style="padding:16px 24px; border-top:1px solid #eee; background:#fafafa; display:flex; justify-content:space-between;">
+            <button type="button" style="background:#7B2CBF; color:white; border:none; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer;" onclick="copyShoppingList()">📋 Copy Full List</button>
+            <button type="button" style="background:#e0e0e0; border:none; border-radius:8px; padding:8px 18px; font-size:13px; cursor:pointer;" onclick="closeShoppingListModal()">Close</button>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- Health Score Modal -->
+@if(!empty($healthScore))
+<div id="healthScoreModal" class="nutri-full-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:999999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;" onclick="if(event.target === this) closeHealthScoreModal()">
+    <div style="background:white; border-radius:16px; max-width:620px; width:100%; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 24px; border-bottom:1px solid #eee; background:#fafafa;">
+            <div>
+                <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">Child Health Scorecard</h3>
+                <p style="margin:0; font-size:12px; color:#666;">Comprehensive 6-area assessment for {{ $child->name ?? 'Child' }}</p>
+            </div>
+            <button type="button" style="background:none; border:none; font-size:26px; line-height:1; color:#888; cursor:pointer;" onclick="closeHealthScoreModal()">&times;</button>
+        </div>
+        <div style="padding:24px; overflow-y:auto; flex:1;">
+            <div style="display:flex; align-items:center; gap:20px; background:linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%); border:1px solid #C8E6C9; padding:20px; border-radius:12px; margin-bottom:24px;">
+                <div style="font-size:42px; font-weight:800; color:#2E7D32; line-height:1;">{{ $healthScore['total'] }}<span style="font-size:16px; color:#888;">/100</span></div>
+                <div>
+                    <span style="display:inline-block; background:#2E7D32; color:white; padding:4px 12px; border-radius:12px; font-size:12px; font-weight:700; text-transform:uppercase;">{{ $healthScore['grade'] }}</span>
+                    <p style="margin:4px 0 0; font-size:12px; color:#666;">Calibrated against ICMR-NIN 2024 Pediatric Guidelines</p>
+                </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                @foreach($healthScore['breakdown'] as $area => $data)
+                    <div style="background:#fdfdfd; border:1px solid #f0f0f0; padding:12px 16px; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; margin-bottom:6px; color:#333;">
+                            <span>{{ $area }}</span>
+                            <span style="color:#7B2CBF; font-weight:700; font-size:12px;">{{ $data['score'] }} / {{ $data['max'] }} pts</span>
+                        </div>
+                        <div style="height:8px; background:#eee; border-radius:4px; overflow:hidden;">
+                            <div style="height:100%; width:{{ ($data['score'] / $data['max']) * 100 }}%; background:linear-gradient(90deg, #7B2CBF, #2E7D32); border-radius:4px;"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        <div style="padding:16px 24px; border-top:1px solid #eee; background:#fafafa; display:flex; justify-content:flex-end;">
+            <button type="button" style="background:#e0e0e0; border:none; border-radius:8px; padding:8px 18px; font-size:13px; cursor:pointer;" onclick="closeHealthScoreModal()">Close</button>
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- Inline JS for week/day navigation --}}
 <script>
 (function () {
@@ -1087,6 +1244,85 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.textContent = 'Submit Check-in Data';
         }
     });
+});
+
+// Recipe Modal handlers
+function showRecipe(btn) {
+    const name = btn.dataset.name || 'Recipe';
+    const cook = btn.dataset.cook ? `${btn.dataset.cook} mins` : '';
+    const portion = btn.dataset.portion ? `${btn.dataset.portion}` : '';
+    const rawIngredients = btn.dataset.ingredients || '';
+    const method = btn.dataset.method || 'Standard healthy preparation as per nutritionist guidelines.';
+
+    document.getElementById('recipeTitle').textContent = name;
+    document.getElementById('recipePortion').textContent = portion ? `🍽️ ${portion}` : '';
+    document.getElementById('recipeCook').textContent = cook ? `⏱️ Cook time: ${cook}` : '';
+
+    const ingListEl = document.getElementById('recipeIngredientsList');
+    ingListEl.innerHTML = '';
+    if (rawIngredients.trim()) {
+        const items = rawIngredients.split(/[·\n,]/).map(s => s.trim()).filter(Boolean);
+        items.forEach(ing => {
+            const li = document.createElement('li');
+            li.textContent = ing;
+            ingListEl.appendChild(li);
+        });
+    } else {
+        const li = document.createElement('li');
+        li.textContent = 'Standard fresh ingredients as per local preparation.';
+        ingListEl.appendChild(li);
+    }
+
+    document.getElementById('recipeMethodContent').textContent = method;
+    document.getElementById('recipeModal').style.display = 'flex';
+}
+
+function closeRecipeModal() {
+    const m = document.getElementById('recipeModal');
+    if (m) m.style.display = 'none';
+}
+
+function openShoppingListModal() {
+    const m = document.getElementById('shoppingListModal');
+    if (m) m.style.display = 'flex';
+}
+
+function closeShoppingListModal() {
+    const m = document.getElementById('shoppingListModal');
+    if (m) m.style.display = 'none';
+}
+
+function copyShoppingList() {
+    const textEl = document.getElementById('shoppingListText');
+    if (!textEl) return;
+    const text = textEl.textContent.trim();
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Weekly shopping list copied to clipboard!');
+        }).catch(() => {
+            prompt('Copy your shopping list:', text);
+        });
+    } else {
+        prompt('Copy your shopping list:', text);
+    }
+}
+
+function openHealthScoreModal() {
+    const m = document.getElementById('healthScoreModal');
+    if (m) m.style.display = 'flex';
+}
+
+function closeHealthScoreModal() {
+    const m = document.getElementById('healthScoreModal');
+    if (m) m.style.display = 'none';
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeRecipeModal();
+        closeShoppingListModal();
+        closeHealthScoreModal();
+    }
 });
 </script>
 

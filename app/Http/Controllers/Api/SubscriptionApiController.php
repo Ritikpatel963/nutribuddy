@@ -358,20 +358,26 @@ class SubscriptionApiController extends Controller
 
             switch ($eventType) {
                 case 'SUBSCRIPTION_STATUS_CHANGE':
-                    $newStatus = strtoupper($subDetails['subscription_status'] ?? '');
+                    $newStatus = strtoupper(str_replace(' ', '_', $subDetails['subscription_status'] ?? ''));
                     if ($subscription) {
                         $subscription->update(['status' => $newStatus]);
                     }
 
-                    if ($newStatus === 'ACTIVE' && $dietSub && $dietSub->payment_status !== 'paid') {
-                        $dietSub->update([
-                            'status' => 'active',
-                            'payment_status' => 'paid',
-                            'razorpay_payment_id' => $subDetails['cf_subscription_id'] ?? null,
-                        ]);
-                        // Generate diet chart with review_status = 'pending_review'
-                        $this->chartService->generateIfReady($dietSub);
-                    } elseif (in_array($newStatus, ['CANCELLED', 'EXPIRED'], true)) {
+                    if ($newStatus === 'ACTIVE') {
+                        $updateData = ['status' => 'active'];
+                        if ($dietSub && $dietSub->payment_status !== 'paid') {
+                            $updateData['payment_status'] = 'paid';
+                            $updateData['razorpay_payment_id'] = $subDetails['cf_subscription_id'] ?? null;
+                        }
+                        if ($dietSub) {
+                            $dietSub->update($updateData);
+                            $this->chartService->generateIfReady($dietSub);
+                        }
+                    } elseif (in_array($newStatus, ['PAUSED', 'CUSTOMER_PAUSED'], true)) {
+                        if ($dietSub) {
+                            $dietSub->update(['status' => 'paused']);
+                        }
+                    } elseif (in_array($newStatus, ['CANCELLED', 'CUSTOMER_CANCELLED', 'EXPIRED', 'COMPLETED'], true)) {
                         if ($dietSub) {
                             $dietSub->update(['status' => 'cancelled', 'cancelled_at' => now()]);
                         }
@@ -468,35 +474,54 @@ class SubscriptionApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
         }
 
+        $subParam = $request->input('subscription_id');
+
         $subscription = Subscription::where('user_id', $user->id)
-            ->whereIn('status', ['ACTIVE', 'INITIALIZED'])
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('cashfree_subscription_id', $subParam)))
+            ->whereIn('status', ['ACTIVE', 'INITIALIZED', 'PAUSED'])
             ->latest()
             ->first();
 
-        if (! $subscription) {
-            return response()->json(['success' => false, 'message' => 'No active subscription found.'], 404);
+        $dietSub = DietSubscription::where('user_id', $user->id)
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('razorpay_order_id', $subParam)))
+            ->whereIn('status', ['active', 'paused'])
+            ->latest()
+            ->first();
+
+        $subId = $subscription?->cashfree_subscription_id ?? $dietSub?->razorpay_order_id;
+
+        if (! $subscription && ! $dietSub) {
+            return response()->json(['success' => false, 'message' => 'No active or paused subscription found to cancel.'], 404);
         }
 
         try {
-            $this->cashfree->manageSubscription($subscription->cashfree_subscription_id, 'CANCEL');
+            if ($subId && str_starts_with($subId, 'sub_')) {
+                try {
+                    $this->cashfree->manageSubscription($subId, 'CANCEL');
+                } catch (\Throwable $cfEx) {
+                    Log::warning('Cashfree cancel call warning: ' . $cfEx->getMessage());
+                }
+            }
 
-            $subscription->update([
+            $subscription?->update([
                 'cancel_at_period_end' => true,
                 'cancelled_at' => now(),
                 'status' => 'CANCELLED',
             ]);
 
-            $dietSub = DietSubscription::where('user_id', $user->id)
-                ->where('status', 'active')
-                ->latest()
-                ->first();
+            if (! $dietSub) {
+                $dietSub = DietSubscription::where('user_id', $user->id)
+                    ->where('status', 'active')
+                    ->latest()
+                    ->first();
+            }
 
-            DietSubscription::where('user_id', $user->id)
-                ->where('status', 'active')
-                ->update([
+            if ($dietSub) {
+                $dietSub->update([
                     'status' => 'cancelled',
                     'cancelled_at' => now(),
                 ]);
+            }
 
             if ($dietSub && $user->email) {
                 Mail::to($user->email)->queue(new DietSubscriptionCancelledCustomerMail($dietSub));
@@ -506,16 +531,138 @@ class SubscriptionApiController extends Controller
                 'success' => true,
                 'message' => 'Subscription cancelled successfully.',
             ]);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error('Cancel subscription failed', [
                 'user_id' => $user->id,
-                'subscription_id' => $subscription->cashfree_subscription_id,
+                'subscription_id' => $subId,
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to cancel subscription: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Pause Subscription
+     * POST /api/subscriptions/pause
+     */
+    public function pause(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $subParam = $request->input('subscription_id');
+
+        $subscription = Subscription::where('user_id', $user->id)
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('cashfree_subscription_id', $subParam)))
+            ->whereIn('status', ['ACTIVE', 'INITIALIZED'])
+            ->latest()
+            ->first();
+
+        $dietSub = DietSubscription::where('user_id', $user->id)
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('razorpay_order_id', $subParam)))
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        $subId = $subscription?->cashfree_subscription_id ?? $dietSub?->razorpay_order_id;
+
+        if (! $subscription && ! $dietSub) {
+            return response()->json(['success' => false, 'message' => 'No active subscription found to pause.'], 404);
+        }
+
+        try {
+            if ($subId && str_starts_with($subId, 'sub_')) {
+                try {
+                    $this->cashfree->manageSubscription($subId, 'PAUSE');
+                } catch (\Throwable $cfEx) {
+                    Log::warning('Cashfree pause call warning: ' . $cfEx->getMessage());
+                }
+            }
+
+            $subscription?->update(['status' => 'PAUSED']);
+            $dietSub?->update(['status' => 'paused']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscription paused successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Pause subscription failed', [
+                'user_id' => $user->id,
+                'subscription_id' => $subId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to pause subscription: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Resume Subscription
+     * POST /api/subscriptions/resume
+     */
+    public function resume(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $subParam = $request->input('subscription_id');
+
+        $subscription = Subscription::where('user_id', $user->id)
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('cashfree_subscription_id', $subParam)))
+            ->where('status', 'PAUSED')
+            ->latest()
+            ->first();
+
+        $dietSub = DietSubscription::where('user_id', $user->id)
+            ->when($subParam, fn ($q) => $q->where(fn ($sq) => $sq->where('id', $subParam)->orWhere('razorpay_order_id', $subParam)))
+            ->where('status', 'paused')
+            ->latest()
+            ->first();
+
+        $subId = $subscription?->cashfree_subscription_id ?? $dietSub?->razorpay_order_id;
+
+        if (! $subscription && ! $dietSub) {
+            return response()->json(['success' => false, 'message' => 'No paused subscription found to resume.'], 404);
+        }
+
+        try {
+            if ($subId && str_starts_with($subId, 'sub_')) {
+                try {
+                    $this->cashfree->manageSubscription($subId, 'RESUME');
+                } catch (\Throwable $cfEx) {
+                    Log::warning('Cashfree resume call warning: ' . $cfEx->getMessage());
+                }
+            }
+
+            $subscription?->update(['status' => 'ACTIVE']);
+            $dietSub?->update(['status' => 'active']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Subscription resumed successfully.',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Resume subscription failed', [
+                'user_id' => $user->id,
+                'subscription_id' => $subId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to resume subscription: ' . $e->getMessage(),
             ], 500);
         }
     }

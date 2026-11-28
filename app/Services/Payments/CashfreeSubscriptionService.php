@@ -127,8 +127,12 @@ class CashfreeSubscriptionService
      */
     public function manageSubscription(string $subscriptionId, string $action, ?string $newPlanId = null): array
     {
-        $payload = ['action' => strtoupper($action)];
-        if ($newPlanId !== null && strtoupper($action) === 'CHANGE_PLAN') {
+        $normalizedAction = strtoupper($action);
+        if ($normalizedAction === 'RESUME') {
+            $normalizedAction = 'ACTIVATE';
+        }
+        $payload = ['action' => $normalizedAction];
+        if ($newPlanId !== null && $normalizedAction === 'CHANGE_PLAN') {
             $payload['plan_id'] = $newPlanId;
         }
 

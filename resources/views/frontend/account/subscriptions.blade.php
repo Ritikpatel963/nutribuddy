@@ -22,26 +22,56 @@
             @endif
 
 
+            @php($activeSub = $subscriptions->first(fn($s) => in_array($s->status, ['active', 'paused'])))
             <!-- CURRENT PLAN BANNER -->
             <div class="current-plan">
-                <div class="cp-left">
-                    <div class="cp-badge">⚡ Active Plan</div>
-                    <div class="cp-name">Growth Plan</div>
-                    <div class="cp-desc">Unlocking the best nutrition for Jaydafsdf's little ones </div>
-                </div>
-                <div class="cp-right">
-                    <div class="cp-price">₹299</div>
-                    <div class="cp-period">/month</div>
-                    <div class="cp-renew">🔄 Renews on May 3, 2026</div>
-                    <button class="cp-manage-btn" onclick="showToast('Opening billing portal...')">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5">
-                            <rect x="1" y="4" width="22" height="16" rx="2" />
-                            <line x1="1" y1="10" x2="23" y2="10" />
-                        </svg>
-                        Manage Billing
-                    </button>
-                </div>
+                @if ($activeSub)
+                    <div class="cp-left">
+                        <div class="cp-badge" style="{{ $activeSub->status === 'paused' ? 'background:#fef3c7;color:#b45309;' : '' }}">
+                            {{ $activeSub->status === 'paused' ? '⏸️ Paused Plan' : '⚡ Active Plan' }}
+                        </div>
+                        <div class="cp-name">{{ $activeSub->subscriptionPlan?->name ?? 'Diet Plan' }}</div>
+                        <div class="cp-desc">
+                            {{ $activeSub->child?->name ? "Unlocking personalized nutrition for " . $activeSub->child->name : "Personalized nutrition plan" }}
+                        </div>
+                    </div>
+                    <div class="cp-right">
+                        <div class="cp-price">₹{{ number_format($activeSub->amount_paid, 0) }}</div>
+                        <div class="cp-period">/cycle</div>
+                        <div class="cp-renew">
+                            @if ($activeSub->status === 'paused')
+                                ⏸️ AutoPay Paused (Valid till {{ $activeSub->expires_at ? $activeSub->expires_at->format('M d, Y') : 'N/A' }})
+                            @else
+                                🔄 Renews on {{ $activeSub->expires_at ? $activeSub->expires_at->format('M d, Y') : 'N/A' }}
+                            @endif
+                        </div>
+                        <div class="d-flex gap-2 mt-2">
+                            @if ($activeSub->status === 'active')
+                                <button class="cp-manage-btn" style="background:#f59e0b;" onclick="handleSubAction('pause', {{ $activeSub->id }})">
+                                    ⏸️ Pause Plan
+                                </button>
+                            @elseif ($activeSub->status === 'paused')
+                                <button class="cp-manage-btn" style="background:#10b981;" onclick="handleSubAction('resume', {{ $activeSub->id }})">
+                                    ▶️ Resume Plan
+                                </button>
+                            @endif
+                            <button class="cp-manage-btn" style="background:#ef4444;" onclick="handleSubAction('cancel', {{ $activeSub->id }})">
+                                ✖ Cancel
+                            </button>
+                        </div>
+                    </div>
+                @else
+                    <div class="cp-left">
+                        <div class="cp-badge" style="background:#e5e7eb;color:#374151">No Active Plan</div>
+                        <div class="cp-name">No Active Subscription</div>
+                        <div class="cp-desc">Choose a plan below to start personalized nutrition for your child.</div>
+                    </div>
+                    <div class="cp-right">
+                        <div class="cp-price">₹0</div>
+                        <div class="cp-period">/month</div>
+                        <div class="cp-renew">Inactive</div>
+                    </div>
+                @endif
             </div>
 
             <!-- BILLING TOGGLE -->
@@ -254,6 +284,7 @@
                 </div>
             </div>
 
+            @if ($activeSub)
             <!-- CANCEL ZONE -->
             <div class="cancel-zone">
                 <div class="cancel-head">
@@ -262,13 +293,12 @@
                 </div>
                 <div class="cancel-body">
                     <div class="cancel-info">
-                        <p>Cancelling will downgrade your account to the Starter (Free) plan at the end of your current
-                            billing cycle on <strong>May 3, 2026</strong>. You won't be charged again and will retain access
-                            until then.</p>
+                        <p>Cancelling will stop AutoPay recurring charges immediately. You will retain full access until <strong>{{ $activeSub->expires_at ? $activeSub->expires_at->format('M d, Y') : 'the end of your billing cycle' }}</strong>.</p>
                     </div>
-                    <button class="cancel-btn" onclick="showToast('Cancellation request sent.')">Cancel Plan</button>
+                    <button class="cancel-btn" onclick="handleSubAction('cancel', {{ $activeSub->id }})">Cancel Subscription</button>
                 </div>
             </div>
+            @endif
 
         </div><!-- /page -->
     </div><!-- /main -->
@@ -298,12 +328,64 @@
                 });
             }
 
+            /* Subscriptions Actions (Pause, Resume, Cancel) */
+            async function handleSubAction(action, subId) {
+                const actionLabels = {
+                    pause: 'pause your subscription? Your AutoPay recurring charge will be paused.',
+                    resume: 'resume your subscription? AutoPay recurring charges will be reactivated.',
+                    cancel: 'cancel your subscription? AutoPay recurring mandate will be cancelled permanently.'
+                };
+
+                if (!confirm('Are you sure you want to ' + (actionLabels[action] || action + ' this subscription?'))) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/subscriptions/' + action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ subscription_id: subId })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        if (typeof nbToast === 'function') {
+                            nbToast(data.message, 'success');
+                        } else {
+                            showToast(data.message);
+                        }
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        if (typeof nbToast === 'function') {
+                            nbToast(data.message || 'Operation failed', 'error');
+                        } else {
+                            showToast(data.message || 'Operation failed');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    if (typeof nbToast === 'function') {
+                        nbToast('An unexpected error occurred.', 'error');
+                    } else {
+                        showToast('An unexpected error occurred.');
+                    }
+                }
+            }
+
             /* Toast */
             function showToast(msg) {
                 const t = document.getElementById('toast');
-                document.getElementById('toastMsg').textContent = msg;
-                t.classList.add('show');
-                setTimeout(() => t.classList.remove('show'), 3000);
+                if (t) {
+                    document.getElementById('toastMsg').textContent = msg;
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 3000);
+                } else if (typeof nbToast === 'function') {
+                    nbToast(msg, 'info');
+                } else {
+                    alert(msg);
+                }
             }
         </script>
     @endpush

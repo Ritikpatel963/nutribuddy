@@ -43,9 +43,15 @@
                         <span class="stat-label">Days</span>
                     </div>
                 @endif
+                @if(!empty($healthScore) && \App\Support\PlanAccess::allows($planSlug, 'health_score'))
+                    <div class="stat-card health-score-card" style="cursor: pointer; background: rgba(76, 175, 80, 0.2); border: 2px solid #4CAF50;" onclick="openHealthScoreModal()" title="Click to view health score breakdown">
+                        <span class="stat-value" style="color: #4CAF50;">{{ $healthScore['total'] }}/100</span>
+                        <span class="stat-label">Health Score ℹ️</span>
+                    </div>
+                @endif
                 <div class="stat-card active">
-                    <span class="stat-value">Active</span>
-                    <span class="stat-label">Plan</span>
+                    <span class="stat-value">{{ ucfirst($planSlug ?? 'Basic') }}</span>
+                    <span class="stat-label">Plan Tier</span>
                 </div>
             </div>
         </div>
@@ -53,13 +59,20 @@
         @if($hasPlan)
             {{-- MEAL PLAN SECTION --}}
             <div class="meal-plan-section">
-                <div class="plan-header">
-                    <h2>Meal Plan</h2>
-                    <div class="plan-meta">
-                        <span class="child-name">{{ $child->name }}</span>
-                        <span class="child-age">{{ $child->age }} years</span>
-                        <span class="diet-type">{{ ucfirst($assessment->diet_type ?? 'N/A') }} Diet</span>
-                        <span class="region">{{ ucfirst($assessment->region ?? 'N/A') }}</span>
+                <div class="plan-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h2>Meal Plan</h2>
+                        <div class="plan-meta">
+                            <span class="child-name">{{ $child->name }}</span>
+                            <span class="child-age">{{ $child->age }} years</span>
+                            <span class="diet-type">{{ ucfirst($assessment->diet_type ?? 'N/A') }} Diet</span>
+                            <span class="region">{{ ucfirst($assessment->region ?? 'N/A') }}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <a href="{{ route('child.diet-chart.download-pdf', $child->id) }}" class="btn btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; font-size: 13px;">
+                            📥 Download PDF
+                        </a>
                     </div>
                 </div>
 
@@ -147,6 +160,26 @@
                                                                 <p class="regional-name">{{ $item['regional_name'] }}</p>
                                                             @endif
                                                             <p class="meal-portion">{{ $item['portion_g'] ?? 'N/A' }}g serving</p>
+                                                            @if(!empty($item['cook_min']))
+                                                                <span class="cook-time-badge">⏱️ {{ $item['cook_min'] }} mins</span>
+                                                            @endif
+                                                            <div class="recipe-btn-wrapper">
+                                                                @if(\App\Support\PlanAccess::allows($planSlug, 'full_recipes'))
+                                                                    <button type="button" class="btn-recipe-action"
+                                                                        data-name="{{ $item['food_name'] ?? '' }}"
+                                                                        data-cook="{{ $item['cook_min'] ?? 15 }}"
+                                                                        data-portion="{{ $item['portion_g'] ?? '' }}"
+                                                                        data-ingredients="{{ $item['ingredients'] ?? '' }}"
+                                                                        data-method="{{ $item['method'] ?? '' }}"
+                                                                        onclick="showRecipe(this)">
+                                                                        👨‍🍳 View Recipe
+                                                                    </button>
+                                                                @else
+                                                                    <button type="button" class="btn-recipe-action locked" onclick="alert('Step-by-step recipes are available on Pro and Premium plans!')">
+                                                                        🔒 Recipe (Pro/Premium)
+                                                                    </button>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                         <div class="meal-nutrients">
                                                             <div class="nutrient">
@@ -259,10 +292,134 @@
 
             {{-- ACTION BUTTONS --}}
             <div class="plan-actions">
-                <button class="btn btn-primary" id="downloadPdf">📥 Download Plan as PDF</button>
+                <a href="{{ route('child.diet-chart.download-pdf', $child->id) }}" class="btn btn-primary" id="downloadPdf">📥 Download Plan as PDF</a>
+                @if(!empty($shoppingList) && \App\Support\PlanAccess::allows($planSlug, 'shopping_list'))
+                    <button type="button" class="btn btn-success" style="background:#2E7D32; color:white;" onclick="openShoppingListModal()">🛒 Weekly Shopping List</button>
+                @endif
+                @if(\App\Support\PlanAccess::allows($planSlug, 'nutritionist_chat'))
+                    <a href="https://wa.me/919999999999?text=Hello%20NutriBuddy%20Nutritionist,%20I%20have%20a%20question%20about%20{{ urlencode($child->name) }}%27s%20Premium%20diet%20chart" target="_blank" class="btn btn-whatsapp" style="background:#25D366; color:white;">💬 1-on-1 Nutritionist Chat</a>
+                @endif
                 <button class="btn btn-secondary" id="sharePlan">🔗 Share Plan</button>
                 <button class="btn btn-warning" id="updatePlan">♻️ Regenerate Plan</button>
             </div>
+
+            {{-- RECIPE MODAL --}}
+            <div id="recipeModal" class="nutri-modal-overlay" style="display:none;" onclick="if(event.target === this) closeRecipeModal()">
+                <div class="nutri-modal-dialog">
+                    <div class="nutri-modal-header">
+                        <div>
+                            <h3 id="recipeTitle" style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">Dish Name</h3>
+                            <div style="display:flex; gap:12px; font-size:12px; color:#666;">
+                                <span id="recipePortion"></span>
+                                <span id="recipeCook"></span>
+                            </div>
+                        </div>
+                        <button type="button" class="nutri-modal-close" onclick="closeRecipeModal()">&times;</button>
+                    </div>
+                    <div class="nutri-modal-body">
+                        <div style="margin-bottom:20px;">
+                            <h4 style="font-size:13px; font-weight:700; color:#7B2CBF; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.05em;">🛒 Ingredients per Serving</h4>
+                            <ul id="recipeIngredientsList" style="margin:0; padding-left:20px; font-size:13px; color:#444; line-height:1.6;"></ul>
+                        </div>
+                        <div>
+                            <h4 style="font-size:13px; font-weight:700; color:#7B2CBF; text-transform:uppercase; margin-bottom:8px; letter-spacing:0.05em;">👩‍🍳 Preparation & Cooking Method</h4>
+                            <div id="recipeMethodContent" style="font-size:13px; color:#444; line-height:1.6; background:#f9f9f9; padding:14px 16px; border-radius:10px; border-left:4px solid #7B2CBF;"></div>
+                        </div>
+                    </div>
+                    <div class="nutri-modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeRecipeModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- SHOPPING LIST MODAL --}}
+            @if(!empty($shoppingList))
+            <div id="shoppingListModal" class="nutri-modal-overlay" style="display:none;" onclick="if(event.target === this) closeShoppingListModal()">
+                <div class="nutri-modal-dialog">
+                    <div class="nutri-modal-header">
+                        <div>
+                            <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">🛒 Weekly Grocery Shopping List</h3>
+                            <p style="margin:0; font-size:12px; color:#666;">Categorized ingredients for {{ $child->name }}'s active plan</p>
+                        </div>
+                        <button type="button" class="nutri-modal-close" onclick="closeShoppingListModal()">&times;</button>
+                    </div>
+                    <div class="nutri-modal-body">
+                        <div id="shoppingListText" style="display:none;">@foreach($shoppingList as $category => $items)
+{{ $category }}:
+@foreach($items as $item => $count)
+- {{ $item }} ({{ $count }} meals)
+@endforeach
+
+@endforeach</div>
+                        <div class="shopping-categories-grid">
+                            @foreach($shoppingList as $category => $items)
+                                <div class="shopping-cat-card">
+                                    <div class="shopping-cat-header">
+                                        <span>{{ $category }}</span>
+                                        <span class="shopping-badge">{{ count($items) }} items</span>
+                                    </div>
+                                    <ul class="shopping-cat-items">
+                                        @foreach($items as $item => $count)
+                                            <li>
+                                                <span>{{ $item }}</span>
+                                                <span class="item-count">{{ $count }}x</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="nutri-modal-footer" style="justify-content:space-between;">
+                        <button type="button" class="btn btn-primary" onclick="copyShoppingList()">📋 Copy Full List</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeShoppingListModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- HEALTH SCORE MODAL --}}
+            @if(!empty($healthScore))
+            <div id="healthScoreModal" class="nutri-modal-overlay" style="display:none;" onclick="if(event.target === this) closeHealthScoreModal()">
+                <div class="nutri-modal-dialog">
+                    <div class="nutri-modal-header">
+                        <div>
+                            <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">Child Health Scorecard</h3>
+                            <p style="margin:0; font-size:12px; color:#666;">Comprehensive 6-area assessment for {{ $child->name }}</p>
+                        </div>
+                        <button type="button" class="nutri-modal-close" onclick="closeHealthScoreModal()">&times;</button>
+                    </div>
+                    <div class="nutri-modal-body">
+                        <div class="score-summary-banner">
+                            <div class="score-number">{{ $healthScore['total'] }}<span style="font-size:16px; color:#888;">/100</span></div>
+                            <div class="score-meta">
+                                <span class="score-grade-badge">{{ $healthScore['grade'] }}</span>
+                                <p style="margin:4px 0 0; font-size:12px; color:#666;">Calibrated against ICMR-NIN 2024 Pediatric Guidelines</p>
+                            </div>
+                        </div>
+
+                        <div class="score-breakdown-list">
+                            @foreach($healthScore['breakdown'] as $area => $data)
+                                <div class="score-area-item">
+                                    <div class="area-header">
+                                        <span class="area-name">{{ $area }}</span>
+                                        <span class="area-points">{{ $data['score'] }} / {{ $data['max'] }} pts</span>
+                                    </div>
+                                    <div class="area-progress">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: {{ ($data['score'] / $data['max']) * 100 }}%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="nutri-modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeHealthScoreModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+            @endif
 
         @else
             {{-- NO PLAN --}}
@@ -432,6 +589,44 @@
         .btn-lg { min-width: 250px; }
         .info-text { font-size: 13px; color: #666; margin-top: 15px; }
 
+        /* MEAL ITEM ACTIONS & BADGES */
+        .cook-time-badge { display: inline-block; font-size: 11px; color: #7B2CBF; font-weight: 600; background: #F3E8FF; padding: 2px 8px; border-radius: 6px; margin-top: 4px; }
+        .recipe-btn-wrapper { margin-top: 8px; }
+        .btn-recipe-action { background: #F3E8FF; color: #7B2CBF; border: 1px solid #D8B4FE; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all .2s; }
+        .btn-recipe-action:hover { background: #7B2CBF; color: white; border-color: #7B2CBF; }
+        .btn-recipe-action.locked { background: #f3f3f3; color: #888; border-color: #ddd; cursor: pointer; }
+        .btn-recipe-action.locked:hover { background: #e8e8e8; color: #555; }
+
+        /* MODALS */
+        .nutri-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .nutri-modal-dialog { background: white; border-radius: 16px; max-width: 650px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; animation: popIn .2s ease; }
+        @keyframes popIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .nutri-modal-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 24px; border-bottom: 1px solid #eee; background: #fafafa; }
+        .nutri-modal-close { background: none; border: none; font-size: 26px; line-height: 1; color: #888; cursor: pointer; padding: 0; margin-left: 10px; }
+        .nutri-modal-close:hover { color: #222; }
+        .nutri-modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .nutri-modal-footer { padding: 16px 24px; border-top: 1px solid #eee; background: #fafafa; display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* SHOPPING LIST */
+        .shopping-categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+        .shopping-cat-card { background: #fdfdfd; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 16px; }
+        .shopping-cat-header { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 13px; color: #2E7D32; border-bottom: 1px dashed #ddd; padding-bottom: 8px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .shopping-badge { background: #E8F5E9; color: #2E7D32; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .shopping-cat-items { list-style: none; margin: 0; padding: 0; font-size: 13px; color: #444; }
+        .shopping-cat-items li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #f6f6f6; }
+        .item-count { font-size: 11px; color: #888; background: #f0f0f0; padding: 1px 6px; border-radius: 4px; }
+
+        /* HEALTH SCORECARD */
+        .score-summary-banner { display: flex; align-items: center; gap: 20px; background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%); border: 1px solid #C8E6C9; padding: 20px; border-radius: 12px; margin-bottom: 24px; }
+        .score-number { font-size: 42px; font-weight: 800; color: #2E7D32; line-height: 1; }
+        .score-grade-badge { display: inline-block; background: #2E7D32; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .score-breakdown-list { display: flex; flex-direction: column; gap: 14px; }
+        .score-area-item { background: #fdfdfd; border: 1px solid #f0f0f0; padding: 12px 16px; border-radius: 8px; }
+        .area-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333; }
+        .area-points { color: #7B2CBF; font-weight: 700; font-size: 12px; }
+        .area-progress .progress-bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .area-progress .progress-fill { height: 100%; background: linear-gradient(90deg, #7B2CBF, #2E7D32); border-radius: 4px; }
+
         @media (max-width: 768px) {
             .diet-chart-hero { flex-direction: column; text-align: center; gap: 20px; }
             .hero-stats { width: 100%; justify-content: center; }
@@ -475,8 +670,85 @@
             if (dayEl) dayEl.style.display = '';
         });
 
-        document.getElementById('downloadPdf')?.addEventListener('click', function () {
-            alert('PDF download functionality coming soon!');
+        // Recipe Modal handlers
+        function showRecipe(btn) {
+            const name = btn.dataset.name || 'Recipe';
+            const cook = btn.dataset.cook ? `${btn.dataset.cook} mins` : '';
+            const portion = btn.dataset.portion ? `${btn.dataset.portion}g serving` : '';
+            const rawIngredients = btn.dataset.ingredients || '';
+            const method = btn.dataset.method || 'Standard healthy preparation as per nutritionist guidelines.';
+
+            document.getElementById('recipeTitle').textContent = name;
+            document.getElementById('recipePortion').textContent = portion ? `🍽️ ${portion}` : '';
+            document.getElementById('recipeCook').textContent = cook ? `⏱️ Cook time: ${cook}` : '';
+
+            const ingListEl = document.getElementById('recipeIngredientsList');
+            ingListEl.innerHTML = '';
+            if (rawIngredients.trim()) {
+                const items = rawIngredients.split(/[·\n,]/).map(s => s.trim()).filter(Boolean);
+                items.forEach(ing => {
+                    const li = document.createElement('li');
+                    li.textContent = ing;
+                    ingListEl.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Standard fresh ingredients as per local preparation.';
+                ingListEl.appendChild(li);
+            }
+
+            document.getElementById('recipeMethodContent').textContent = method;
+            document.getElementById('recipeModal').style.display = 'flex';
+        }
+
+        function closeRecipeModal() {
+            document.getElementById('recipeModal').style.display = 'none';
+        }
+
+        // Shopping List Modal handlers
+        function openShoppingListModal() {
+            const m = document.getElementById('shoppingListModal');
+            if (m) m.style.display = 'flex';
+        }
+
+        function closeShoppingListModal() {
+            const m = document.getElementById('shoppingListModal');
+            if (m) m.style.display = 'none';
+        }
+
+        function copyShoppingList() {
+            const textEl = document.getElementById('shoppingListText');
+            if (!textEl) return;
+            const text = textEl.textContent.trim();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Weekly shopping list copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy your shopping list:', text);
+                });
+            } else {
+                prompt('Copy your shopping list:', text);
+            }
+        }
+
+        // Health Score Modal handlers
+        function openHealthScoreModal() {
+            const m = document.getElementById('healthScoreModal');
+            if (m) m.style.display = 'flex';
+        }
+
+        function closeHealthScoreModal() {
+            const m = document.getElementById('healthScoreModal');
+            if (m) m.style.display = 'none';
+        }
+
+        // Global Escape key listener to close modals
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeRecipeModal();
+                closeShoppingListModal();
+                closeHealthScoreModal();
+            }
         });
 
         document.getElementById('sharePlan')?.addEventListener('click', function () {

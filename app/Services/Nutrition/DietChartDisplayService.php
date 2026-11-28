@@ -93,6 +93,9 @@ class DietChartDisplayService
                         'food_name'     => $food->food_name,
                         'regional_name' => $food->regional_name,
                         'portion_g'     => $portionG,
+                        'cook_min'      => $food->cook_min ?? 15,
+                        'ingredients'   => $food->ingredient_list_per_serving,
+                        'method'        => $food->method,
                         'nutrients'     => $this->extractNutrientsFromArray($scaledNutrients),
                         'pairing_notes' => $this->generatePairingNotes($food, $assessment),
                     ];
@@ -461,5 +464,118 @@ class DietChartDisplayService
         if ($adequacy >= 70) return 'Partial gap';
         if ($adequacy >= 50) return 'Significant gap';
         return 'Critical gap';
+    }
+
+    /**
+     * Consolidate ingredients for a given week (7 days) into grocery categories.
+     */
+    public function getWeeklyShoppingList(DietPlan $dietPlan, int $week = 1): array
+    {
+        $meals = $dietPlan->meals()->with('items.food')->get();
+        $startDay = ($week - 1) * 7;
+        $endDay = $startDay + 6;
+
+        $categories = [
+            'Grains & Flours' => [],
+            'Dals & Pulses' => [],
+            'Dairy' => [],
+            'Vegetables & Greens' => [],
+            'Spices, Oils & Other' => [],
+        ];
+
+        foreach ($meals as $meal) {
+            $dayIdx = $meal->day_index ?? 0;
+            if ($dayIdx < $startDay || $dayIdx > $endDay) {
+                continue;
+            }
+
+            foreach ($meal->items ?? [] as $item) {
+                $food = $item->food;
+                $ingList = $food?->ingredient_list_per_serving;
+                if (! $ingList) {
+                    continue;
+                }
+
+                $parts = preg_split('/\s*·\s*|,\s*|;\s*/u', (string) $ingList);
+                foreach ($parts as $part) {
+                    $part = trim($part);
+                    if ($part === '') {
+                        continue;
+                    }
+
+                    $pLower = strtolower($part);
+                    if (str_contains($pLower, 'atta') || str_contains($pLower, 'flour') || str_contains($pLower, 'rice') || str_contains($pLower, 'wheat') || str_contains($pLower, 'ragi') || str_contains($pLower, 'jowar') || str_contains($pLower, 'bajra') || str_contains($pLower, 'suji') || str_contains($pLower, 'poha') || str_contains($pLower, 'dalia') || str_contains($pLower, 'oats')) {
+                        $cat = 'Grains & Flours';
+                    } elseif (str_contains($pLower, 'dal') || str_contains($pLower, 'chana') || str_contains($pLower, 'rajma') || str_contains($pLower, 'chole') || str_contains($pLower, 'lobia') || str_contains($pLower, 'sprout') || str_contains($pLower, 'pulse') || str_contains($pLower, 'soybean') || str_contains($pLower, 'mung') || str_contains($pLower, 'urad') || str_contains($pLower, 'kulthi')) {
+                        $cat = 'Dals & Pulses';
+                    } elseif (str_contains($pLower, 'milk') || str_contains($pLower, 'paneer') || str_contains($pLower, 'curd') || str_contains($pLower, 'dahi') || str_contains($pLower, 'cheese') || str_contains($pLower, 'butter')) {
+                        $cat = 'Dairy';
+                    } elseif (str_contains($pLower, 'potato') || str_contains($pLower, 'onion') || str_contains($pLower, 'tomato') || str_contains($pLower, 'palak') || str_contains($pLower, 'spinach') || str_contains($pLower, 'gajar') || str_contains($pLower, 'carrot') || str_contains($pLower, 'methi') || str_contains($pLower, 'peas') || str_contains($pLower, 'matar') || str_contains($pLower, 'ginger') || str_contains($pLower, 'chilli') || str_contains($pLower, 'coriander') || str_contains($pLower, 'lemon') || str_contains($pLower, 'veg')) {
+                        $cat = 'Vegetables & Greens';
+                    } else {
+                        $cat = 'Spices, Oils & Other';
+                    }
+
+                    $categories[$cat][$part] = ($categories[$cat][$part] ?? 0) + 1;
+                }
+            }
+        }
+
+        return array_filter($categories, fn ($items) => ! empty($items));
+    }
+
+    /**
+     * Calculates the Child Health Score (0-100) across 6 clinical & dietary areas.
+     */
+    public function calculateHealthScore(ChildAssessment $assessment, array $nutrientGaps): array
+    {
+        // 1. Growth & BMI status (max 15)
+        $bmi = (float) ($assessment->bmi ?? 16);
+        $growthScore = ($bmi >= 14 && $bmi <= 18) ? 15 : (($bmi >= 13 && $bmi <= 20) ? 12 : 9);
+
+        // 2. Calorie Adequacy (max 20)
+        $energyAdequacy = (float) ($nutrientGaps['energy_kcal']['adequacy_percent'] ?? 100);
+        $dietScore = ($energyAdequacy >= 90 && $energyAdequacy <= 115) ? 20 : (($energyAdequacy >= 75) ? 15 : 10);
+
+        // 3. Protein & Micronutrients (max 20)
+        $proteinAdequacy = (float) ($nutrientGaps['protein_g']['adequacy_percent'] ?? 100);
+        $microScore = ($proteinAdequacy >= 90) ? 20 : (($proteinAdequacy >= 70) ? 15 : 10);
+
+        // 4. Gut & Digestion (max 15)
+        $gutScore = 15;
+        $gutAnswer = strtolower((string) $assessment->answers()->whereHas('question', fn ($q) => $q->where('sort_order', 24))->value('answer_value'));
+        if (str_contains($gutAnswer, 'constipat') || str_contains($gutAnswer, 'gas') || str_contains($gutAnswer, 'loose')) {
+            $gutScore = 10;
+        }
+
+        // 5. Immunity & Resilience (max 15)
+        $immScore = 15;
+        $illAnswer = strtolower((string) $assessment->answers()->whereHas('question', fn ($q) => $q->where('sort_order', 25))->value('answer_value'));
+        if (str_contains($illAnswer, 'frequent') || str_contains($illAnswer, 'often')) {
+            $immScore = 9;
+        }
+
+        // 6. Lifestyle & Activity (max 15)
+        $lifeScore = 15;
+        $act = strtolower((string) $assessment->activity_level);
+        if ($act === 'sedentary') {
+            $lifeScore = 10;
+        }
+
+        $totalScore = $growthScore + $dietScore + $microScore + $gutScore + $immScore + $lifeScore;
+        $grade = $totalScore >= 85 ? 'Excellent' : ($totalScore >= 70 ? 'Good' : 'Needs Attention');
+
+        return [
+            'total'     => min(100, $totalScore),
+            'grade'     => $grade,
+            'breakdown' => [
+                'Growth & BMI Status'       => ['score' => $growthScore, 'max' => 15],
+                'Calorie Adequacy'         => ['score' => $dietScore, 'max' => 20],
+                'Protein & Micronutrients' => ['score' => $microScore, 'max' => 20],
+                'Gut & Digestion'          => ['score' => $gutScore, 'max' => 15],
+                'Immunity & Resilience'    => ['score' => $immScore, 'max' => 15],
+                'Lifestyle & Activity'     => ['score' => $lifeScore, 'max' => 15],
+            ],
+        ];
     }
 }

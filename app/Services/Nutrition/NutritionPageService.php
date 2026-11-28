@@ -93,6 +93,7 @@ class NutritionPageService
         $diet = trim((string) ($assessment?->diet_type ?? ''));
 
         return [
+            'id'   => $child->id,
             'name' => (string) $child->name,
             'age'  => $age === null ? null : $age . ' ' . ($age === 1 ? 'year' : 'years'),
             'diet' => $diet !== '' ? ucfirst($diet) : null,
@@ -296,6 +297,13 @@ class NutritionPageService
             ->pluck('food_id')
             ->toArray();
 
+        $planSlug = \App\Support\PlanAccess::slugForChild($child) ?? $assessment->model_level ?? 'basic';
+        $shoppingList = $this->chartDisplay->getWeeklyShoppingList($dietPlan);
+        $planData = is_string($dietPlan->plan_data) ? json_decode($dietPlan->plan_data, true) : ($dietPlan->plan_data ?? []);
+        $rawGaps = $planData['nutrient_gaps'] ?? ($planData['daily_gaps'] ?? []);
+        $nutrientGaps = DietChartDisplayService::summarizeGaps($rawGaps);
+        $healthScore = $this->chartDisplay->calculateHealthScore($assessment, $nutrientGaps);
+
         return [
             'child' => $child,
             'assessment' => $assessment,
@@ -307,7 +315,10 @@ class NutritionPageService
                 'assessment',
                 'consumedItems',
                 'latestPlan',
-                'todayTarget'
+                'todayTarget',
+                'planSlug',
+                'shoppingList',
+                'healthScore'
             ),
         ];
     }

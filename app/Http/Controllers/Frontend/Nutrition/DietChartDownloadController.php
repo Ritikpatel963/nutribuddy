@@ -19,17 +19,36 @@ class DietChartDownloadController extends Controller
         try {
             $this->chartDisplay->authorizeChildAccess($child);
             $assessment = $child->assessments()->latest()->first();
-            $dietPlan = $assessment?->dietPlans()->where('status', 'active')->latest()->first();
+            $dietPlan = $assessment?->dietPlans()->where('status', 'active')->where('review_status', 'approved')->latest()->first()
+                ?? $assessment?->dietPlans()->latest()->first();
 
             if (! $dietPlan) {
-                return redirect()->back()->with('error', 'No active diet plan found');
+                return redirect()->back()->with('error', 'No diet plan found to download');
             }
 
-            return redirect()->back()->with('info', 'PDF generation coming soon!');
+            $formattedPlan = $this->chartDisplay->formatPlan($dietPlan, $assessment);
+            $planData = $dietPlan->plan_data;
+            if (is_string($planData)) {
+                $planData = json_decode($planData, true) ?? [];
+            }
+            $rawGaps = $planData['nutrient_gaps'] ?? ($planData['daily_gaps'] ?? []);
+            $nutrientGaps = DietChartDisplayService::summarizeGaps($rawGaps);
+            $clinicalTips = $this->chartDisplay->getClinicalTips($assessment, $nutrientGaps);
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.diet-chart', [
+                'child'         => $child,
+                'assessment'    => $assessment,
+                'dietPlan'      => $dietPlan,
+                'formattedPlan' => $formattedPlan,
+                'nutrientGaps'  => $nutrientGaps,
+                'clinicalTips'  => $clinicalTips,
+            ])->setPaper('a4', 'portrait');
+
+            return $pdf->download("NutriBuddy-Diet-Plan-{$child->name}.pdf");
         } catch (\Exception $e) {
             Log::error('PDF Download Error: '.$e->getMessage());
 
-            return redirect()->back()->with('error', 'Error downloading PDF');
+            return redirect()->back()->with('error', 'Error downloading PDF: '.$e->getMessage());
         }
     }
 }
