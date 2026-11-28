@@ -299,6 +299,7 @@ class NutritionPageService
 
         $planSlug = \App\Support\PlanAccess::slugForChild($child) ?? $assessment->model_level ?? 'basic';
         $shoppingList = $this->chartDisplay->getWeeklyShoppingList($dietPlan);
+        $shoppingListsData = $this->chartDisplay->getShoppingListsData($dietPlan, $planDays);
         $planData = is_string($dietPlan->plan_data) ? json_decode($dietPlan->plan_data, true) : ($dietPlan->plan_data ?? []);
         $rawGaps = $planData['nutrient_gaps'] ?? ($planData['daily_gaps'] ?? []);
         $nutrientGaps = DietChartDisplayService::summarizeGaps($rawGaps);
@@ -318,6 +319,7 @@ class NutritionPageService
                 'todayTarget',
                 'planSlug',
                 'shoppingList',
+                'shoppingListsData',
                 'healthScore'
             ),
         ];

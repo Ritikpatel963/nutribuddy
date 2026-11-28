@@ -68,22 +68,24 @@ class DietChartDisplayController extends Controller
 
             $planSlug = \App\Support\PlanAccess::slugForChild($child) ?? $assessment->model_level ?? 'basic';
             $shoppingList = $this->chartDisplay->getWeeklyShoppingList($dietPlan);
+            $shoppingListsData = $this->chartDisplay->getShoppingListsData($dietPlan, $formattedPlan);
             $healthScore  = $this->chartDisplay->calculateHealthScore($assessment, $nutrientGaps);
 
             return view('child-profile.diet-chart-display', [
-                'child'          => $child,
-                'assessment'     => $assessment,
-                'dietPlan'       => $dietPlan,
-                'hasPlan'        => true,
-                'purchasedPlans' => $purchasedPlans,
-                'formattedPlan'  => $formattedPlan,
-                'sevenDayPlan'   => $sevenDayPlan,
-                'nutrientGaps'   => $nutrientGaps,
-                'clinicalTips'   => $clinicalTips,
-                'dailyNutrients' => $planData['daily_nutrients'] ?? [],
-                'planSlug'       => $planSlug,
-                'shoppingList'   => $shoppingList,
-                'healthScore'    => $healthScore,
+                'child'             => $child,
+                'assessment'        => $assessment,
+                'dietPlan'          => $dietPlan,
+                'hasPlan'           => true,
+                'purchasedPlans'    => $purchasedPlans,
+                'formattedPlan'     => $formattedPlan,
+                'sevenDayPlan'      => $sevenDayPlan,
+                'nutrientGaps'      => $nutrientGaps,
+                'clinicalTips'      => $clinicalTips,
+                'dailyNutrients'    => $planData['daily_nutrients'] ?? [],
+                'planSlug'          => $planSlug,
+                'shoppingList'      => $shoppingList,
+                'shoppingListsData' => $shoppingListsData,
+                'healthScore'       => $healthScore,
             ]);
 
         } catch (AuthorizationException $e) {

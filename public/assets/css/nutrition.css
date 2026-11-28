@@ -99,7 +99,7 @@
     display: flex;
     gap: 12px;
     margin-bottom: 24px;
-    overflow-x: auto;
+    overflow: visible;
     padding-bottom: 8px;
 }
 
