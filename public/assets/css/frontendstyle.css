@@ -1456,7 +1456,7 @@ nav.scrolled {
     width: 520px !important;
     max-width: none;
     margin: 0;
-    transform: translateY(-115px);
+    transform: translateY(-30px);
     object-fit: contain;
     filter: drop-shadow(0 22px 28px rgba(76, 27, 158, .16));
 }
@@ -3945,9 +3945,19 @@ h1.htitle {
 }
 
 .feat-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-family: 'Fredoka', 'Fredoka One', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 600;
+    color: #281638;
+    line-height: 1.15;
     margin-bottom: 12px;
+}
+
+.feat-title .acc {
+    color: #f43791;
+    font-family: 'Fredoka', 'Fredoka One', sans-serif;
+    font-weight: 600;
+    font-style: normal;
 }
 
 .feat-sub {
@@ -10946,10 +10956,11 @@ testi-section {
 }
 
 .feat-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    color: var(--dk);
-    line-height: 1.2;
+    font-family: 'Fredoka', 'Fredoka One', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 600;
+    color: #281638;
+    line-height: 1.15;
     margin-bottom: 14px;
 }
 

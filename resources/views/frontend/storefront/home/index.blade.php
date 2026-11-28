@@ -126,6 +126,11 @@
         </div>
     </div>
 
+    <!-- ══════════════════════════════════════════
+         WORLD NUTRITION RESEARCH SECTION
+    ══════════════════════════════════════════ -->
+    @include('frontend.storefront.home.sections.world-nutrition')
+
 
     <!-- ══════════════════════════════════════════
                                                                                                                                                                        HOW IT WORKS

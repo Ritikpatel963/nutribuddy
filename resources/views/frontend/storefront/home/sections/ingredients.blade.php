@@ -15,7 +15,7 @@
             <button class="itab" data-ing="2"> <img src="img/haldi.webp" alt=""> Turmeric</button>
             <button class="itab" data-ing="3"> <img src="img/Amla.webp" alt=""> Amla</button>
             <button class="itab" data-ing="4"> <img src="img/flex.png" alt=""> Flaxseed Oil</button>
-            <button class="itab" data-ing="5"> <img src="img/vitamins.jpg" alt=""> Vitamins</button>
+            <button class="itab" data-ing="5"> <img src="img/vitamin.webp" alt=""> Vitamins</button>
             <button class="itab" data-ing="6"> <img src="img/min.png" alt=""> Minerals</button>
         </div>
 
@@ -126,7 +126,7 @@
                 <div class="for-large-img" style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#1A3A1A,#0A2A0A);--pglow:rgba(0,214,143,.3)">
-                        <img class="image-big" src="img/Amla.webp" alt="Amla">
+                        <img class="image-big" src="img/amla.webp" alt="Amla">
                         <div class="orbit-i" style="--orr:8.5s">⭐</div>
                         <div class="orbit-i" style="--orr:15s;font-size:.9rem">⭐</div>
                         <div class="orbit-i" style="--orr:18s">⭐</div>
@@ -191,7 +191,7 @@
                 <div class="for-large-img" style="display:flex;justify-content:center">
                     <div class="ing-planet"
                         style="background:radial-gradient(circle at 35% 35%,#2A4A2A,#0D2A0D);--pglow:rgba(0,214,143,.35)">
-                        <img class="image-big" src="img/vitamins.webp" alt="Vitamins">
+                        <img class="image-big" src="img/vitamin.webp" alt="Vitamins">
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:8s">⭐</div>
                         <div class="orbit-i" style="--orr:13s;font-size:1.1rem">⭐</div>

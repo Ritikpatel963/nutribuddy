@@ -370,7 +370,7 @@
                     </div>
                     <div class="jar-wrap fourth-jar-wrap">
                         <div class="jar-body1 fourth-jar-body">
-                            <img src="{{ asset('img/bann04.png') }}"
+                            <img src="{{ asset('img/04.png') }}"
                                 alt="NutriBuddy products with a personalised kids diet plan" loading="lazy"
                                 decoding="async">
                         </div>

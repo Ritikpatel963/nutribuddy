@@ -22,6 +22,45 @@ class ProductSectionRegressionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_mobile_product_rating_keeps_review_count_on_the_same_row(): void
+    {
+        $productCss = file_get_contents(public_path('assets/css/product.css'));
+
+        $this->assertMatchesRegularExpression(
+            '/\.pdp-hero \.pdp-info \.pdp-rating \{[^}]*flex-direction: row;[^}]*\}/s',
+            $productCss
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.pdp-hero \.pdp-info \.pdp-rating \.rating-count \{[^}]*flex-basis: auto;[^}]*white-space: nowrap;[^}]*\}/s',
+            $productCss
+        );
+    }
+
+    public function test_delivery_estimate_icon_aligns_with_its_text(): void
+    {
+        $productCss = file_get_contents(public_path('assets/css/product.css'));
+        $productView = file_get_contents(resource_path('views/frontend/storefront/products/show.blade.php'));
+
+        $this->assertMatchesRegularExpression(
+            '/\.pdp-hero \.pdp-info \.pdp-delivery-estimate \{[^}]*display: flex;[^}]*align-items: center;[^}]*\}/s',
+            $productCss
+        );
+        $this->assertStringContainsString(
+            '<span>Estimated delivery between <b>17 November – 19 November.</b></span>',
+            $productView
+        );
+    }
+
+    public function test_world_nutrition_map_omits_country_picker_and_research_notes(): void
+    {
+        $mapHtml = file_get_contents(public_path('assets/research/world-nutrition-map.html'));
+
+        $this->assertStringNotContainsString('EXPLORE A COUNTRY', $mapHtml);
+        $this->assertStringNotContainsString('class="nb-study-note"', $mapHtml);
+        $this->assertStringNotContainsString('<details class="nb-research">', $mapHtml);
+        $this->assertStringContainsString(".on('click', (_, d) => select(d.properties.id))", $mapHtml);
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -87,6 +126,8 @@ class ProductSectionRegressionTest extends TestCase
             'Suitable Age',
             '4+',
         ]);
+        $response->assertDontSee('Choose Your Option');
+        $response->assertDontSee('Choose the flavour, size, and suitable age before adding to cart.');
     }
 
     public function test_product_detail_page_loads_with_variants_and_inventory(): void
@@ -250,8 +291,12 @@ class ProductSectionRegressionTest extends TestCase
         $response->assertSee('data-gallery-prev', false);
         $response->assertSee('data-gallery-next', false);
         $response->assertSee('data-gallery-zoom', false);
+        $response->assertDontSee('pdp-zoom-source', false);
+        $response->assertDontSee('pdp-zoom-lens', false);
+        $response->assertDontSee('pdp-zoom-result', false);
         $zoomScript = file_get_contents(public_path('assets/js/pages/allfile.js'));
-        $this->assertStringContainsString("window.matchMedia('(max-width: 768px)').matches", $zoomScript);
+        $this->assertStringNotContainsString('initPdpImageZoom', $zoomScript);
+        $this->assertStringNotContainsString('pdp-zoom-source', $zoomScript);
         $this->assertStringContainsString('thumbRow.scrollTo({', $zoomScript);
         $this->assertStringNotContainsString('el.scrollIntoView({', $zoomScript);
         $this->assertStringContainsString("select.addEventListener('change'", $zoomScript);
