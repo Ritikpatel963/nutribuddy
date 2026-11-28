@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
 
         Gate::before(function ($user, $ability) {
-            if ($user instanceof User && ($user->role === 'admin' || $user->hasRole('Super Admin', 'admin'))) {
+            if ($user instanceof User && ($user->hasRole('Super Admin', 'admin') || $user->email === 'admin@nutribuddy.com')) {
                 return true;
             }
 

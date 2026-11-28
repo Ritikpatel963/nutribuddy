@@ -18,8 +18,8 @@ class DashboardExportRegressionTest extends TestCase
     {
         parent::setUp();
         $this->app[PermissionRegistrar::class]->forgetCachedPermissions();
-        Permission::create(['name' => 'view dashboard', 'guard_name' => 'admin']);
-        $role = Role::create(['name' => 'Dashboard Viewer', 'guard_name' => 'admin']);
+        Permission::findOrCreate('view dashboard', 'admin');
+        $role = Role::findOrCreate('Dashboard Viewer', 'admin');
         $role->givePermissionTo('view dashboard');
         $this->actingAs(User::factory()->create([
             'role' => 'admin',

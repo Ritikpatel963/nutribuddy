@@ -33,10 +33,10 @@
     <div class="card border-0 radius-12 mb-24">
         <div class="card-body p-24">
             <form method="GET" action="{{ route('admin.ecommerce.orders.index') }}" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Filter by Status</label>
+                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6">
+                    <label class="form-label fw-bold">Filter by Status</label>
                     <select name="status" class="form-select">
-                        <option value="">All</option>
+                        <option value="">All Statuses</option>
                         @foreach ($statuses as $status)
                             <option value="{{ $status }}" {{ $selectedStatus === $status ? 'selected' : '' }}>
                                 {{ ucfirst($status) }}
@@ -44,8 +44,31 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary" type="submit">Apply</button>
+                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                    <label class="form-label fw-bold">From Date</label>
+                    <input type="date" name="from_date" value="{{ $fromDate ?? '' }}" class="form-control">
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                    <label class="form-label fw-bold">To Date</label>
+                    <input type="date" name="to_date" value="{{ $toDate ?? '' }}" class="form-control">
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 d-flex gap-2">
+                    <button class="btn btn-primary-600 flex-grow-1 d-inline-flex align-items-center justify-content-center gap-1" type="submit">
+                        <iconify-icon icon="lucide:filter" style="font-size:16px;"></iconify-icon> Apply
+                    </button>
+                    @if(request()->hasAny(['status', 'from_date', 'to_date']))
+                        <a href="{{ route('admin.ecommerce.orders.index') }}" class="btn btn-light" title="Reset Filters">
+                            <iconify-icon icon="lucide:x" style="font-size:16px;"></iconify-icon>
+                        </a>
+                    @endif
+                </div>
+
+                <!-- Empty space on right: Download Excel & Summary -->
+                <div class="col-xl-3 col-lg-12 col-md-12 text-xl-end mt-xl-0 mt-3 d-flex justify-content-xl-end gap-2 flex-wrap">
+                    <a href="{{ route('admin.ecommerce.orders.export', request()->query()) }}" class="btn btn-success d-inline-flex align-items-center gap-2 shadow-xs" title="Download filtered orders and summary report in Excel (.xlsx)">
+                        <iconify-icon icon="lucide:file-spreadsheet" class="fs-5"></iconify-icon>
+                        <span class="fw-bold">Export Excel &amp; Summary</span>
+                    </a>
                 </div>
             </form>
         </div>

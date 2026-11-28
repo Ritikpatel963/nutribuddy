@@ -165,6 +165,11 @@
                         <div class="order-quick-label">Payment</div>
                         <div class="order-quick-value">{{ ucfirst($order->payment_status) }}</div>
                         <span class="amount-flow-note">{{ strtoupper($order->payment_method) }}</span>
+                        @if ($order->transaction_id)
+                            <small class="text-secondary-light d-block text-truncate mt-1" style="font-size: 11px;" title="Txn ID: {{ $order->transaction_id }}">
+                                Txn: {{ $order->transaction_id }}
+                            </small>
+                        @endif
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6">
@@ -198,6 +203,14 @@
                         <div class="col-md-6"><strong>Payment:</strong> {{ strtoupper($order->payment_method) }} /
                             {{ ucfirst($order->payment_status) }}</div>
                         <div class="col-md-6"><strong>Status:</strong> {{ ucfirst($order->status) }}</div>
+                        <div class="col-md-6">
+                            <strong>Payment Txn ID:</strong>
+                            @if ($order->transaction_id)
+                                <code class="text-primary-600 bg-primary-50 px-2 py-1 rounded border border-primary-100 fw-bold">{{ $order->transaction_id }}</code>
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
+                        </div>
 
                         <div class="col-md-6"><strong>Coupon:</strong> {{ $order->coupon_code ?: 'N/A' }}</div>
                         <div class="col-md-6">
@@ -364,6 +377,73 @@
                     </div>
                 </div>
             </div>
+
+            @if ($order->payments->isNotEmpty())
+            <div class="card">
+                <div class="card-header bg-base py-16 px-24 d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0">Payment Transactions</h5>
+                    <span class="badge bg-primary-50 text-primary-600 border border-primary-100 px-2 py-1">
+                        {{ $order->payments->count() }} {{ \Illuminate\Support\Str::plural('Record', $order->payments->count()) }}
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table bordered-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Gateway / Provider</th>
+                                    <th>Payment / Txn ID</th>
+                                    <th>Gateway Order ID</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($order->payments as $payment)
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-light text-dark fw-bold border">{{ strtoupper($payment->provider ?: $order->payment_method) }}</span>
+                                        </td>
+                                        <td>
+                                            @if ($payment->gateway_payment_id)
+                                                <code class="text-primary-600 bg-primary-50 px-2 py-1 rounded border border-primary-100 fw-bold">{{ $payment->gateway_payment_id }}</code>
+                                            @else
+                                                <span class="text-muted">N/A</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <small class="text-secondary">{{ $payment->gateway_order_id ?: $order->order_number }}</small>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $statusClass = match(strtolower((string)$payment->status)) {
+                                                    'success', 'paid', 'captured' => 'success',
+                                                    'failed', 'cancelled' => 'danger',
+                                                    'pending', 'initiated' => 'warning',
+                                                    default => 'secondary'
+                                                };
+                                            @endphp
+                                            <span class="badge bg-{{ $statusClass }}-100 text-{{ $statusClass }}-600">
+                                                {{ ucfirst($payment->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <strong>INR {{ number_format((float) ($payment->amount ?? $order->grand_total), 2) }}</strong>
+                                        </td>
+                                        <td>
+                                            <small class="text-secondary">
+                                                {{ optional($payment->paid_at ?? $payment->created_at)->format('d M Y H:i') ?? 'N/A' }}
+                                            </small>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <div class="card">
                 <div class="card-header">

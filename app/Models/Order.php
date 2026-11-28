@@ -117,6 +117,25 @@ class Order extends Model
 
     public function getDisplayInvoiceNumberAttribute(): string
     {
-        return $this->invoice_number ?: ('INV-' . $this->order_number);
+        return $this->invoice_number ?: ('INV-'.$this->order_number);
+    }
+
+    public function getTransactionIdAttribute(): ?string
+    {
+        $payment = $this->payments->first(fn ($p) => ! empty($p->gateway_payment_id))
+            ?? $this->latestPayment;
+
+        if ($payment?->gateway_payment_id) {
+            return (string) $payment->gateway_payment_id;
+        }
+
+        if ($payment?->gateway_order_id && $payment->gateway_order_id !== $this->order_number) {
+            return (string) $payment->gateway_order_id;
+        }
+
+        return $this->pricing_snapshot['transaction_id']
+            ?? $this->pricing_snapshot['payment_id']
+            ?? $this->pricing_snapshot['cf_payment_id']
+            ?? null;
     }
 }
