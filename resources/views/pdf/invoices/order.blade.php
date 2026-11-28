@@ -354,13 +354,18 @@
 @php
     // 1. Resolve Logo to Base64 (Rock-solid for DomPDF and headless renderers)
     $logoBase64 = null;
-    $customLogoPath = \App\Models\Setting::get('side_section_logo');
+    $customLogoPath = \App\Models\Setting::get('side_section_logo') ?: \App\Models\Setting::get('site_logo');
     if ($customLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($customLogoPath)) {
         $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($customLogoPath);
         if (file_exists($fullPath)) {
             $mime = mime_content_type($fullPath) ?: 'image/png';
             $logoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
         }
+    }
+    if (!$logoBase64 && $customLogoPath && file_exists(public_path('assets/images/auth/' . basename($customLogoPath)))) {
+        $fullPath = public_path('assets/images/auth/' . basename($customLogoPath));
+        $mime = mime_content_type($fullPath) ?: 'image/png';
+        $logoBase64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
     }
     if (!$logoBase64) {
         $fallback = public_path('img/logo.png');
@@ -373,17 +378,31 @@
 
     // 2. Resolve User's Real Business Details from Settings (NO Sample Data)
     $companyName = \App\Models\Setting::get('company_name') ?: \App\Models\Setting::get('site_name', 'NutriBuddy');
-    $companyAddress = \App\Models\Setting::get('address', '');
-    $companyPhone = \App\Models\Setting::get('contact_phone', '');
-    $companyEmail = \App\Models\Setting::get('contact_email', '');
-    $companyWebsite = \App\Models\Setting::get('website_url') ?: config('app.url', 'www.nutribuddy.in');
+    $companyAddress = \App\Models\Setting::get('side_section_address')
+        ?: (\App\Models\Setting::get('company_address')
+        ?: (\App\Models\Setting::get('address') ?: '42, Wellness Tower, Bengaluru – 560001, Karnataka, India'));
+    $companyPhone = \App\Models\Setting::get('side_section_contact_number')
+        ?: (\App\Models\Setting::get('company_phone')
+        ?: (\App\Models\Setting::get('contact_phone') ?: '85362536523'));
+    $companyEmail = \App\Models\Setting::get('side_section_email')
+        ?: (\App\Models\Setting::get('company_email')
+        ?: (\App\Models\Setting::get('contact_email') ?: 'nutribuddy@gmail.com'));
+
+    $rawWebsite = \App\Models\Setting::get('website_url');
+    if ($rawWebsite && ! str_contains($rawWebsite, '127.0.0.1') && ! str_contains($rawWebsite, 'localhost')) {
+        $companyWebsite = preg_replace('#^https?://#', '', rtrim($rawWebsite, '/'));
+    } else {
+        $companyWebsite = 'www.nutribuddy.in';
+    }
+
     $companyGst = \App\Models\Setting::get('gst_number', '');
     $companyPan = \App\Models\Setting::get('pan_number', '');
     $companyCin = \App\Models\Setting::get('cin_number', '');
 
     // 3. GST State Determination (Dynamic from Admin Settings)
-    $sellerState = \App\Models\Setting::get('store_state', 'Gujarat');
-    $customerState = $order->shipping_state ?: ($order->billing_state ?: 'Gujarat');
+    $sellerState = \App\Models\Setting::get('store_state')
+        ?: (str_contains($companyAddress, 'Karnataka') ? 'Karnataka' : 'Gujarat');
+    $customerState = $order->shipping_state ?: ($order->billing_state ?: 'Karnataka');
     $isIntraState = \App\Services\PricingService::isSameState($customerState, $sellerState);
 
     // 4. Tax Breakdown Summary Calculation

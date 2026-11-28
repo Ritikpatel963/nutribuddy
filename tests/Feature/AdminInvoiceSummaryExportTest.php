@@ -8,6 +8,7 @@ use App\Exports\Invoices\InvoicesSummarySheet;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
@@ -225,5 +226,30 @@ class AdminInvoiceSummaryExportTest extends TestCase
         $this->assertCount(2, $sheets);
         $this->assertInstanceOf(InvoicesSummarySheet::class, $sheets[0]);
         $this->assertInstanceOf(InvoicesRegisterSheet::class, $sheets[1]);
+    }
+
+    public function test_admin_invoice_show_displays_company_details_and_real_logo(): void
+    {
+        $order = Order::factory()->create([
+            'order_number' => 'NB2026SHOW01',
+            'placed_at' => now(),
+            'status' => 'delivered',
+        ]);
+
+        Setting::set('side_section_address', '42, Wellness Tower, Bengaluru – 560001, Karnataka, India');
+        Setting::set('side_section_contact_number', '85362536523');
+        Setting::set('side_section_email', 'nutribuddy@gmail.com');
+        Setting::set('website_url', 'https://www.nutribuddy.in');
+
+        $response = $this->actingAs($this->admin, 'admin')->get(route('admin.ecommerce.invoices.show', $order));
+
+        $response->assertOk();
+        $response->assertSee('42, Wellness Tower, Bengaluru – 560001, Karnataka, India');
+        $response->assertSee('85362536523');
+        $response->assertSee('nutribuddy@gmail.com');
+        $response->assertSee('www.nutribuddy.in');
+        $response->assertDontSee('123 Health St');
+        $response->assertDontSee('admin@nutribuddy.com');
+        $response->assertDontSee('+91 9876543211');
     }
 }

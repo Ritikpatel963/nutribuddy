@@ -596,23 +596,45 @@
 
                 {{-- ══ HEADER ══ --}}
                 @php
-                    $sideSectionLogo = \App\Models\Setting::get('side_section_logo');
-                    $sideSectionLogoExists = $sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo);
-                    $logoUrl = $sideSectionLogoExists
-                        ? asset('storage/' . $sideSectionLogo)
-                        : asset('assets/images/logo.png');
+                    $sideSectionLogo = \App\Models\Setting::get('side_section_logo') ?: \App\Models\Setting::get('site_logo');
+                    $logoUrl = null;
+                    if ($sideSectionLogo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sideSectionLogo)) {
+                        $logoUrl = asset('storage/' . $sideSectionLogo);
+                    } elseif ($sideSectionLogo && file_exists(public_path('storage/' . $sideSectionLogo))) {
+                        $logoUrl = asset('storage/' . $sideSectionLogo);
+                    } elseif ($sideSectionLogo && file_exists(public_path('assets/images/auth/' . basename($sideSectionLogo)))) {
+                        $logoUrl = asset('assets/images/auth/' . basename($sideSectionLogo));
+                    } elseif (file_exists(public_path('img/logo.png'))) {
+                        $logoUrl = asset('img/logo.png');
+                    } else {
+                        $logoUrl = asset('assets/images/logo.png');
+                    }
 
                     $companyName = \App\Models\Setting::get('company_name') ?: \App\Models\Setting::get('site_name', 'NutriBuddy');
-                    $companyAddress = \App\Models\Setting::get('address', '');
-                    $companyPhone = \App\Models\Setting::get('contact_phone', '');
-                    $companyEmail = \App\Models\Setting::get('contact_email', '');
-                    $companyWebsite = \App\Models\Setting::get('website_url') ?: config('app.url', 'www.nutribuddy.in');
+                    $companyAddress = \App\Models\Setting::get('side_section_address')
+                        ?: (\App\Models\Setting::get('company_address')
+                        ?: (\App\Models\Setting::get('address') ?: '42, Wellness Tower, Bengaluru – 560001, Karnataka, India'));
+                    $companyPhone = \App\Models\Setting::get('side_section_contact_number')
+                        ?: (\App\Models\Setting::get('company_phone')
+                        ?: (\App\Models\Setting::get('contact_phone') ?: '85362536523'));
+                    $companyEmail = \App\Models\Setting::get('side_section_email')
+                        ?: (\App\Models\Setting::get('company_email')
+                        ?: (\App\Models\Setting::get('contact_email') ?: 'nutribuddy@gmail.com'));
+
+                    $rawWebsite = \App\Models\Setting::get('website_url');
+                    if ($rawWebsite && ! str_contains($rawWebsite, '127.0.0.1') && ! str_contains($rawWebsite, 'localhost')) {
+                        $companyWebsite = preg_replace('#^https?://#', '', rtrim($rawWebsite, '/'));
+                    } else {
+                        $companyWebsite = 'www.nutribuddy.in';
+                    }
+
                     $companyGst = \App\Models\Setting::get('gst_number', '');
                     $companyPan = \App\Models\Setting::get('pan_number', '');
                     $companyCin = \App\Models\Setting::get('cin_number', '');
 
-                    $sellerState = \App\Models\Setting::get('store_state', 'Gujarat');
-                    $customerState = $order->shipping_state ?: ($order->billing_state ?: 'Gujarat');
+                    $sellerState = \App\Models\Setting::get('store_state')
+                        ?: (str_contains($companyAddress, 'Karnataka') ? 'Karnataka' : 'Gujarat');
+                    $customerState = $order->shipping_state ?: ($order->billing_state ?: 'Karnataka');
                     $isIntraState = \App\Services\PricingService::isSameState($customerState, $sellerState);
                 @endphp
                 <div class="inv-header">
