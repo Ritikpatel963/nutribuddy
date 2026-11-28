@@ -15,9 +15,10 @@
 
     .pdp-gallery .main-img-wrap .p-image img {
         height: 100%;
-        max-height: none;
+        max-height: 100%;
         max-width: 100%;
-        object-fit: cover;
+        object-fit: contain;
+        object-position: center;
         width: 100%;
     }
 
@@ -29,9 +30,10 @@
 
     #mainPdpImage {
         height: 100% !important;
-        max-height: none !important;
+        max-height: 100% !important;
         max-width: 100% !important;
-        object-fit: cover !important;
+        object-fit: contain !important;
+        object-position: center !important;
         width: 100% !important;
         pointer-events: none;
         user-select: none;
@@ -59,89 +61,11 @@
         display: none;
     }
 
-    .pdp-zoom-source {
-        
-        border-radius: inherit;
-        cursor: crosshair !important;
-        position: relative;
-    }
-
-    .pdp-zoom-source.is-zooming {
-        touch-action: none;
-    }
-
-    .pdp-zoom-lens {
-        position: absolute;
-        z-index: 5;
-        width: 118px;
-        height: 118px;
-        border: 2px solid rgba(255, 77, 143, 0.82);
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.28);
-        box-shadow: 0 10px 28px rgba(30, 24, 64, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.58);
-        display: none;
-        pointer-events: none;
-    }
-
-    .pdp-zoom-result {
-        position: absolute;
-        top: 0;
-        left: calc(100% + 18px);
-        z-index: 20;
-        width: min(370px, 42vw);
-        aspect-ratio: 1 / 1;
-        border: 2px solid rgba(255, 77, 143, 0.22);
-        border-radius: 20px;
-        background-color: #fff;
-        background-repeat: no-repeat;
-        box-shadow: 0 24px 60px rgba(30, 24, 64, 0.18);
-        display: none;
-        overflow: hidden;
-        pointer-events: none;
-    }
-
-    .pdp-gallery.is-zooming .pdp-zoom-lens,
-    .pdp-gallery.is-zooming .pdp-zoom-result {
-        display: block;
-    }
-
-    @media (max-width: 1100px) {
-        .pdp-zoom-result {
-            left: auto;
-            right: 14px;
-            top: 14px;
-            width: min(220px, 42vw);
-            border-radius: 16px;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .pdp-zoom-source {
-            cursor: default !important;
-        }
-
-        .pdp-zoom-lens {
-            display: none !important;
-            width: 92px;
-            height: 92px;
-            border-radius: 8px;
-        }
-
-        .pdp-zoom-result {
-            display: none !important;
-            bottom: 12px;
-            left: 12px;
-            right: auto;
-            top: auto;
-            width: min(156px, 42vw);
-            border-radius: 14px;
-        }
-    }
-
     @media (max-width: 640px) {
         .pdp-gallery .main-img-wrap {
             height: auto;
-            border-radius: 10px;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
             min-height: 0 !important;
             overflow: hidden;
             padding: 0 !important;
@@ -150,10 +74,14 @@
         .pdp-gallery .main-img-wrap .p-image,
         .pdp-gallery .main-img-wrap .p-image img,
         #mainPdpImage {
-            display: block !important;
-            height: auto !important;
-            max-height: none !important;
-            max-width: none !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            height: 100% !important;
+            max-height: 100% !important;
+            max-width: 100% !important;
+            object-fit: contain !important;
+            object-position: center !important;
             width: 100% !important;
         }
 
@@ -196,7 +124,7 @@
         padding: 11px 42px 11px 14px;
         border: 1px solid rgba(98, 43, 152, 0.2);
         border-radius: 13px;
-        background: linear-gradient(180deg, #fff 0%, #fffaff 100%);
+        background: #fbf5ff;
         box-shadow: 0 5px 14px rgba(65, 34, 88, 0.06);
         color: #362445;
         font: inherit;
@@ -645,7 +573,7 @@
     }
 
     .ps-problems-section {
-        padding: 2px 5% 5px;
+        padding: 30px 5% 5px;
         background:
             radial-gradient(circle at 8% 14%, rgba(255, 77, 143, 0.12), transparent 28%),
             radial-gradient(circle at 92% 8%, rgba(124, 58, 237, 0.1), transparent 30%),
@@ -1055,7 +983,7 @@
         }
 
         .pdp-hero .pdp-info .pdp-suitable-age .variant-label {
-            font-size: 11px;
+            font-size: 13px;
             letter-spacing: .03em;
             white-space: nowrap;
         }
@@ -2120,7 +2048,7 @@
         width: auto;
         height: auto;
         padding: 0;
-        margin: 0 0 18px;
+       
         justify-content: flex-start;
         background: transparent;
         backdrop-filter: none;
@@ -2148,21 +2076,31 @@
     .pdp-hero .pdp-gallery .main-img-wrap {
         grid-column: 2;
         grid-row: 1;
+        width: 100%;
+        aspect-ratio: 1 / 1;
         min-height: 0;
-        /* aspect-ratio: 1122 / 1402; */
         padding: 0;
         border: 0;
         border-radius: 20px;
         background: #f8f0e7;
+        position: relative;
+        overflow: hidden;
     }
 
     .pdp-hero .pdp-gallery .main-img-wrap .p-image {
         height: 100%;
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
     }
 
     .pdp-hero .pdp-gallery .main-img-wrap .p-image img {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
         max-height: 100%;
-        object-fit: contain;
+        object-fit: contain !important;
         object-position: center;
     }
 
@@ -2214,17 +2152,17 @@
         max-width: 580px;
         margin: 0;
         color: var(--pdp-ink);
-        font-family: 'Fredoka', 'Nunito', sans-serif;
-        font-size: clamp(32px, 3vw, 48px);
-        font-weight: 400;
+        font-family: 'Fredoka', 'Fredoka One', sans-serif;
+        font-size: clamp(34px, 3.5vw, 50px);
+        font-weight: 600;
         letter-spacing: -.6px;
-        line-height: 1.16;
+        line-height: 1.14;
     }
 
     .pdp-hero .pdp-info .pdp-subtitle {
         margin: 13px 0;
         color: var(--pdp-muted);
-        font-size: 20px;
+        font-size: 17px;
         line-height: 1.5;
     }
 
@@ -2274,8 +2212,8 @@
     .pdp-hero .pdp-info .pdp-rating .rating-count {
         display: block;
         margin-top: 4px;
-        color: var(--pdp-muted);
-        font-size: 12px;
+        color: var(--pdp-purple);
+        font-size: 14px;
         text-align: left;
     }
 
@@ -2297,7 +2235,10 @@
 
     .pdp-hero .pdp-info .price-now {
         color: var(--pdp-purple);
-        font-size: 38px;
+        font-family: 'Nunito', sans-serif;
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
         line-height: 1.15;
     }
 
@@ -2313,18 +2254,24 @@
     .pdp-hero .pdp-info .pdp-mrp {
         display: inline-flex;
         align-items: baseline;
-        gap: 4px;
+        gap: 5px;
         color: var(--pdp-muted);
-        font-size: 14px;
+        font-family: 'Nunito', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
     }
 
     .pdp-hero .pdp-info .pdp-mrp s {
         color: #998da0;
+        font-weight: 600;
     }
 
-    .pdp-hero .pdp-info .price-note {
+    .pdp-hero .pdp-info .price-note,
+    .pdp-hero .pdp-info .inclusive-text {
         color: var(--pdp-muted);
-        font-size: 12px;
+        font-family: 'Nunito', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
         white-space: nowrap;
     }
 
@@ -2889,7 +2836,7 @@
         padding: 0 0 12px;
         border-bottom: 1px solid #e9d7ed;
         color: #6b5879;
-        font-size: 15px;
+        font-size: 14px;
         line-height: 1.5;
     }
 
@@ -3057,7 +3004,7 @@
         min-height: 56px;
         border-color: #e4cbe8;
         border-radius: 15px;
-        background: linear-gradient(180deg, #fff 0%, #fff8ff 100%);
+        background: #fbf5ff;
     }
 
     .pdp-hero .pdp-info .pdp-action-row .btn-cart,
@@ -3085,7 +3032,7 @@
     @media (max-width: 900px) {
         .pdp-hero {
             grid-template-columns: minmax(0, 1fr);
-            gap: 26px;
+            gap: 16px;
             padding: 90px 20px 56px;
         }
 
@@ -3098,8 +3045,10 @@
         .pdp-hero .pdp-gallery .main-img-wrap {
             order: 0;
             width: 100%;
-            aspect-ratio: 1122 / 1402;
+            aspect-ratio: 1 / 1;
             border-radius: 18px;
+            position: relative;
+            overflow: hidden;
         }
 
         .pdp-hero .pdp-gallery .thumb-row {
@@ -3131,12 +3080,18 @@
         }
 
         .pdp-hero .pdp-info .pdp-rating {
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 0;
             padding: 0;
         }
 
         .pdp-hero .pdp-info .pdp-rating .rating-count {
+            flex-basis: auto;
+            margin-top: 0;
             text-align: left;
+            white-space: nowrap;
         }
 
         .pdp-hero .pdp-info .pdp-price-line {
@@ -3156,7 +3111,8 @@
         .pdp-hero .pdp-info .pdp-variant-select {
             min-height: 48px;
             padding: 8px 32px 8px 10px;
-            font-size: clamp(10px, 2.8vw, 12px);
+            font-size: 18px;
+            background: #fbf5ff;
         }
 
         .pdp-hero .pdp-info .pdp-subscription-from strong,
@@ -3188,7 +3144,140 @@
         }
 
         .pdp-hero .pdp-info .price-now {
-            font-size: 33px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 34px;
+            font-weight: 800;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .pdp-hero .pdp-info .pdp-purchase-option {
+            min-height: 0;
+            padding: 14px 16px;
+            border-radius: 18px;
+            gap: 12px;
+        }
+
+        .pdp-hero .pdp-info .pdp-purchase-option input {
+            flex: 0 0 20px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .pdp-hero .pdp-info .pdp-purchase-copy b {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1c0e2d;
+            line-height: 1.25;
+        }
+
+        .pdp-hero .pdp-info .pdp-purchase-copy small {
+            font-size: 12.5px;
+            color: #72627e;
+            margin-top: 3px;
+        }
+
+        .pdp-hero .pdp-info .pdp-purchase-price {
+            font-size: 17px;
+            font-weight: 800;
+            color: #622b98;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option {
+            display: grid;
+            grid-template-columns: 20px 1fr auto;
+            grid-template-areas:
+                "radio copy toggle"
+                ". price price";
+            align-items: start;
+            row-gap: 10px;
+            column-gap: 12px;
+            padding: 16px 16px 14px;
+            border-radius: 18px;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option.selected.is-open {
+            border-radius: 18px 18px 0 0;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option input {
+            grid-area: radio;
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-purchase-copy {
+            grid-area: copy;
+            min-width: 0;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-purchase-copy b {
+            display: block;
+            color: #1c0e2d;
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.25;
+            letter-spacing: -0.2px;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-purchase-copy small {
+            display: block;
+            margin-top: 3px;
+            color: #72627e;
+            font-size: 12.5px;
+            font-weight: 400;
+            line-height: 1.35;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-subscription-toggle {
+            grid-area: toggle;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            margin-top: -3px;
+            margin-right: -4px;
+            color: #622b98;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-subscription-from {
+            grid-area: price;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 4px 8px;
+            text-align: left;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-subscription-from strong {
+            display: inline-flex;
+            align-items: baseline;
+            color: #622b98;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-subscription-from strong small {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #622b98;
+            margin-left: 1px;
+        }
+
+        .pdp-hero .pdp-info .pdp-subscription-option .pdp-subscription-from > small {
+            display: inline;
+            margin: 0;
+            color: #72627e;
+            font-size: 11.5px;
+            font-weight: 400;
+            line-height: 1.3;
+            white-space: nowrap;
         }
     }
 
@@ -3315,9 +3404,9 @@
         color: var(--product-muted);
     }
 
-    body:has(.pdp-hero) :where(.pdp-hero, .pdp-formula-reveal, .transform-section, .features-section, .ps-problems-section, .pdp-description-section) :where(.sec-title, .feat-title, .comp-title, .ps-title, .pdp-formula-title, .pdp-description-title) {
-        color: var(--product-ink);
-    }
+    /* body:has(.pdp-hero) :where(.pdp-hero, .pdp-formula-reveal, .transform-section, .features-section, .ps-problems-section, .pdp-description-section) :where(.sec-title, .feat-title, .comp-title, .ps-title, .pdp-formula-title, .pdp-description-title) {
+        color: var(--product-   );
+    } */
 
     body:has(.pdp-hero) :where(.pdp-hero, .pdp-formula-reveal, .transform-section, .features-section, .doc-section, .ps-problems-section, .pdp-description-section, .pdp-sticky-purchase, .pdp-coins-dialog) :where(button, input, select, textarea) {
         font-family: 'Nunito', sans-serif;
@@ -3332,7 +3421,7 @@
         max-width: 100vw;
         margin: 0 0 0 calc(50% - 50vw);
         background: linear-gradient(110deg, #fffcf8 0%, #f7f0fb 100%);
-        color: var(--product-ink);
+        color: var(--product-   );
         font-family: 'Nunito', sans-serif;
     }
 
@@ -3447,14 +3536,16 @@
         top: -.03em;
         left: 50%;
         width: 100%;
-        color: rgba(98, 43, 152, .05);
+          color: rgb(144 112 175 / 5%);
         font-family: 'Nunito', sans-serif;
         font-size: clamp(150px, 22vw, 310px);
         font-weight: 900;
         letter-spacing: .025em;
         line-height: 1;
         text-align: center;
-        -webkit-text-stroke: 1.5px rgba(98, 43, 152, .22);
+        
+    -webkit-text-stroke: 0.6px rgb(116 109 214 / 20%);
+
         transform: translateX(-50%);
         pointer-events: none;
         user-select: none;
@@ -4432,6 +4523,25 @@
         letter-spacing: 3px;
     }
 
+    /* ── Features Section ("Pure as Nature Intended") ── */
+    .features-section .feat-title,
+    .feat-title {
+        color: #281638 !important;
+        font-family: 'Fredoka', 'Fredoka One', sans-serif !important;
+        font-size: clamp(34px, 4vw, 56px) !important;
+        font-weight: 600 !important;
+        letter-spacing: -0.5px;
+        line-height: 1.15 !important;
+    }
+
+    .features-section .feat-title .acc,
+    .feat-title .acc {
+        color: #f43791 !important;
+        font-family: 'Fredoka', 'Fredoka One', sans-serif !important;
+        font-weight: 600 !important;
+        font-style: normal;
+    }
+
     .pdp-family-heading h2 {
         margin: 0;
         color: #281638;
@@ -4604,7 +4714,7 @@
 
     .pdp-family-card-copy > p {
         min-height: 42px;
-        margin: 0 0 14px;
+       
         color: #796985;
         font-size: 14px;
         line-height: 1.5;
@@ -4625,6 +4735,107 @@
         color: #6c5b7d;
         font-size: 11px;
         font-weight: 800;
+    }
+
+    /* ── PDP Family Card Variant Selectors ── */
+    .pdp-family-variants {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 14px 0 18px;
+    }
+
+    .pdp-family-variant-col {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pdp-family-variant-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #4a3a60;
+        font-family: 'Nunito', sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .pdp-family-select-wrap {
+        position: relative;
+        width: 100%;
+    }
+
+    .pdp-family-select {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 100%;
+        height: 42px;
+        padding: 6px 26px 6px 10px;
+        border: 1px solid #e4cbe8;
+        border-radius: 12px;
+        background: #fbf5ff;
+        color: #281638;
+        font-family: 'Nunito', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.2;
+        cursor: pointer;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .pdp-family-select:hover {
+        border-color: rgba(98, 43, 152, 0.45);
+        box-shadow: 0 4px 12px rgba(65, 34, 88, 0.08);
+    }
+
+    .pdp-family-select:focus-visible {
+        outline: 2px solid rgba(98, 43, 152, 0.3);
+        outline-offset: 1px;
+    }
+
+    .pdp-family-chevron {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 7px;
+        height: 7px;
+        border-right: 2px solid #622b98;
+        border-bottom: 2px solid #622b98;
+        pointer-events: none;
+        transform: translateY(-65%) rotate(45deg);
+    }
+
+    @media (max-width: 640px) {
+        .pdp-family-variants {
+            gap: 6px;
+            margin: 12px 0 14px;
+        }
+
+        .pdp-family-variant-label {
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .pdp-family-select {
+            height: 38px;
+            padding: 4px 20px 4px 7px;
+            font-size: 11.5px;
+            border-radius: 10px;
+        }
+
+        .pdp-family-chevron {
+            right: 8px;
+            width: 6px;
+            height: 6px;
+        }
     }
 
     .pdp-family-price {
@@ -5043,10 +5254,70 @@
         .transform-section,
         .features-section,
         .doc-section,
+        .pdp-promo-banner-section,
         .ps-problems-section,
         .pdp-description-section,
         .pdp-sticky-purchase,
         .pdp-coins-dialog
     ) * {
         font-family: 'Nunito', sans-serif;
+    }
+
+    /* ── PDP Mid Promo Banner Section ── */
+    .pdp-promo-banner-section {
+        width: 100%;
+        padding: 48px 24px;
+        background: linear-gradient(180deg, #f0f6ff 0%, #ffffff 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .pdp-promo-banner-wrap {
+        width: 100%;
+        max-width: 1328px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .pdp-promo-banner-img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: 20px;
+        box-shadow: 0 14px 40px rgba(50, 90, 140, 0.12);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pdp-promo-banner-img:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 48px rgba(50, 90, 140, 0.16);
+    }
+
+    @media (max-width: 768px) {
+        .pdp-promo-banner-section {
+            padding: 36px 16px;
+        }
+
+        .pdp-promo-banner-img {
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(50, 90, 140, 0.10);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .pdp-promo-banner-section {
+            padding: 24px 12px;
+        }
+
+        .pdp-promo-banner-img {
+            border-radius: 12px;
+        }
     }

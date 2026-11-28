@@ -67,131 +67,6 @@
         if (count && index > 0) count.textContent = `${index} / ${thumbs.length}`;
     }
 
-    function initPdpImageZoom() {
-        if (window.matchMedia('(max-width: 768px)').matches) {
-            return;
-        }
-
-        const gallery = document.querySelector('.pdp-gallery');
-        const source = document.querySelector('.pdp-zoom-source');
-        const mainImage = document.getElementById('mainPdpImage');
-        const lens = source?.querySelector('.pdp-zoom-lens');
-        const result = gallery?.querySelector('.pdp-zoom-result');
-
-        if (!gallery || !source || !mainImage || !lens || !result) return;
-
-        const zoom = Number(source.dataset.zoom || 2.25);
-        let activePointerId = null;
-        let lastPoint = null;
-
-        function clamp(value, min, max) {
-            return Math.min(Math.max(value, min), max);
-        }
-
-        function syncBackground() {
-            const src = mainImage.currentSrc || mainImage.src || '';
-            result.style.backgroundImage = src ? `url("${src}")` : '';
-        }
-
-        function hideZoom() {
-            gallery.classList.remove('is-zooming');
-            source.classList.remove('is-zooming');
-            activePointerId = null;
-            lastPoint = null;
-        }
-
-        function updateZoom(clientX, clientY) {
-            const imageRect = mainImage.getBoundingClientRect();
-            const sourceRect = source.getBoundingClientRect();
-
-            if (!imageRect.width || !imageRect.height) {
-                hideZoom();
-                return;
-            }
-
-            syncBackground();
-            gallery.classList.add('is-zooming');
-            source.classList.add('is-zooming');
-
-            const rawLensSize = lens.offsetWidth || 118;
-            const lensSize = Math.max(48, Math.min(rawLensSize, imageRect.width, imageRect.height));
-            const relativeX = clamp(clientX - imageRect.left, 0, imageRect.width);
-            const relativeY = clamp(clientY - imageRect.top, 0, imageRect.height);
-            const lensX = clamp(relativeX - lensSize / 2, 0, imageRect.width - lensSize);
-            const lensY = clamp(relativeY - lensSize / 2, 0, imageRect.height - lensSize);
-            const sourceOffsetX = imageRect.left - sourceRect.left;
-            const sourceOffsetY = imageRect.top - sourceRect.top;
-
-            lens.style.width = `${lensSize}px`;
-            lens.style.height = `${lensSize}px`;
-            lens.style.left = `${sourceOffsetX + lensX}px`;
-            lens.style.top = `${sourceOffsetY + lensY}px`;
-
-            const resultRect = result.getBoundingClientRect();
-            const resultWidth = resultRect.width || 320;
-            const resultHeight = resultRect.height || resultWidth;
-            const backgroundWidth = imageRect.width * zoom;
-            const backgroundHeight = imageRect.height * zoom;
-            const focusX = lensX + lensSize / 2;
-            const focusY = lensY + lensSize / 2;
-            const maxOffsetX = Math.max(0, backgroundWidth - resultWidth);
-            const maxOffsetY = Math.max(0, backgroundHeight - resultHeight);
-            const offsetX = clamp(focusX * zoom - resultWidth / 2, 0, maxOffsetX);
-            const offsetY = clamp(focusY * zoom - resultHeight / 2, 0, maxOffsetY);
-
-            result.style.backgroundSize = `${backgroundWidth}px ${backgroundHeight}px`;
-            result.style.backgroundPosition = `-${offsetX}px -${offsetY}px`;
-            lastPoint = { clientX, clientY };
-        }
-
-        source.addEventListener('pointerenter', event => {
-            if (event.pointerType === 'touch') return;
-            updateZoom(event.clientX, event.clientY);
-        });
-
-        source.addEventListener('pointermove', event => {
-            if (event.pointerType === 'touch' && activePointerId !== event.pointerId) return;
-            if (event.pointerType === 'touch') event.preventDefault();
-            updateZoom(event.clientX, event.clientY);
-        });
-
-        source.addEventListener('pointerleave', event => {
-            if (event.pointerType !== 'touch') hideZoom();
-        });
-
-        source.addEventListener('pointerdown', event => {
-            if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-            activePointerId = event.pointerId;
-            source.setPointerCapture?.(event.pointerId);
-            event.preventDefault();
-            updateZoom(event.clientX, event.clientY);
-        });
-
-        source.addEventListener('pointerup', event => {
-            if (activePointerId === event.pointerId) hideZoom();
-        });
-
-        source.addEventListener('pointercancel', event => {
-            if (activePointerId === event.pointerId) hideZoom();
-        });
-
-        mainImage.addEventListener('load', () => {
-            syncBackground();
-            if (lastPoint) updateZoom(lastPoint.clientX, lastPoint.clientY);
-        });
-
-        document.addEventListener('nb:pdp-image-changed', () => {
-            syncBackground();
-            hideZoom();
-        });
-
-        window.addEventListener('resize', () => {
-            if (lastPoint) updateZoom(lastPoint.clientX, lastPoint.clientY);
-        });
-
-        syncBackground();
-    }
-
     function initPdpGallerySwipe() {
         const galleryTarget = document.querySelector('.pdp-gallery .main-img-wrap .p-image');
         const mainImage = document.getElementById('mainPdpImage');
@@ -1012,7 +887,6 @@
             applyVariantToPage(null);
         }
         initPdpGallerySwipe();
-        initPdpImageZoom();
 
         const defaultVal = 5;
         document.querySelectorAll('.star-opt').forEach(s => {

@@ -334,15 +334,13 @@
                     <div class="badge-discount d-none" id="pdpDiscountBadge"></div>
                 @endif
 
-                <div class="p-image pdp-zoom-source" style="display:block;line-height:1" data-zoom="2.25">
+                <div class="p-image" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;line-height:1">
                     @if ($mainGalleryImage)
                         <img src="{{ $productImageUrl($mainGalleryImage->image_path) }}" alt="{{ $product->name }}"
                             id="mainPdpImage">
                     @endif
-                    <div class="pdp-zoom-lens" aria-hidden="true"></div>
                 </div>
             </div>
-            <div class="pdp-zoom-result" aria-hidden="true"></div>
             <div class="thumb-row">
                 @foreach ($product->images as $image)
                     @php
@@ -378,7 +376,7 @@
         <!-- RIGHT: Info -->
         <div class="pdp-info">
             <div class="pdp-title-line">
-                <h1 class=".pdp-family-heading h2">{{ $isBrainBoosterProduct ? 'Brain Booster Gummies' : $product->name }}</h1>
+                <h1 class="pdp-name">{{ $isBrainBoosterProduct ? 'Brain Booster Gummies' : $product->name }}</h1>
                 <a href="#reviews" class="pdp-rating" style="text-decoration: none;">
                     @if ($isBrainBoosterProduct)
                         <span class="pdp-rating-summary">
@@ -444,13 +442,6 @@
 
             @if (!empty($variantAttributeGroups))
                 <div class="pdp-variant-panel" id="pdpVariantPanel">
-                    <div class="pdp-variant-head">
-                        <div>
-                            <h3 class="pdp-variant-title">Choose Your Option</h3>
-                            <div class="pdp-variant-sub">Choose the flavour, size, and suitable age before adding to cart.</div>
-                        </div>
-                    </div>
-
                     <div class="pdp-variant-groups">
                         @foreach ($variantDisplayGroups as $group)
                             @if ($group['is_static_age'])
@@ -786,7 +777,7 @@
                             <circle cx="7.5" cy="18" r="2" fill="#fff" stroke="currentColor" stroke-width="1.8" />
                             <circle cx="17.5" cy="18" r="2" fill="#fff" stroke="currentColor" stroke-width="1.8" />
                         </svg>
-                        Free shipping ₹1000+
+                        Free shipping ₹500+
                     </span>
                     <span>COD Available</span>
                 </div>
@@ -796,7 +787,7 @@
                         <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8" />
                         <path d="M16 3v4M8 3v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                     </svg>
-                    Estimated delivery between <b>17 November – 19 November.</b>
+                    <span>Estimated delivery between <b>17 November – 19 November.</b></span>
                 </p>
             </div>
 
@@ -805,7 +796,7 @@
                     @if (!empty($product->accordion_tabs) && is_array($product->accordion_tabs))
                         @foreach ($product->accordion_tabs as $index => $tab)
                             @if (!empty(trim((string) ($tab['title'] ?? ''))))
-                                <details class="pdp-accordion">
+                                <details class="pdp-accordion" name="pdp-info-accordion">
                                     <summary>{{ $tab['title'] }}</summary>
                                     <div class="pdp-accordion-content">
                                         {!! $tab['content'] ?? '' !!}
@@ -814,7 +805,7 @@
                             @endif
                         @endforeach
                     @else
-                        <details class="pdp-accordion">
+                        <details class="pdp-accordion" name="pdp-info-accordion">
                             <summary>Product description</summary>
                             <div class="pdp-accordion-content">
                                 @if (!empty(trim((string) ($product->description ?? ''))))
@@ -824,7 +815,7 @@
                                 @endif
                             </div>
                         </details>
-                        <details class="pdp-accordion">
+                        <details class="pdp-accordion" name="pdp-info-accordion">
                             <summary>What’s inside?</summary>
                             <div class="pdp-accordion-content">
                                 @if ($product->ingredients->isNotEmpty())
@@ -838,7 +829,7 @@
                                 @endif
                             </div>
                         </details>
-                        <details class="pdp-accordion">
+                        <details class="pdp-accordion" name="pdp-info-accordion">
                             <summary>How do I use it?</summary>
                             <div class="pdp-accordion-content">
                                 <p>{{ $product->dosage ?: 'Follow the serving instructions printed on the product pack. For children, use under adult supervision.' }}</p>
@@ -847,13 +838,13 @@
                                 @endif
                             </div>
                         </details>
-                        <details class="pdp-accordion">
+                        <details class="pdp-accordion" name="pdp-info-accordion">
                             <summary>How does Subscribe &amp; Save work?</summary>
                             <div class="pdp-accordion-content">
                                 <p>Choose a 2, 3, or 4 month plan for monthly delivery. Your first box is charged at the one-time price; the lower plan price applies from month 2. You can cancel anytime.</p>
                             </div>
                         </details>
-                        <details class="pdp-accordion">
+                        <details class="pdp-accordion" name="pdp-info-accordion">
                             <summary>What are the shipping and return policies?</summary>
                             <div class="pdp-accordion-content">
                                 <p>Free shipping is available on orders of ₹1,000 or more. Cash on delivery is available where serviceable. Delivery dates depend on your location.</p>
@@ -960,62 +951,19 @@
             </div>
         </div>
     </section>
-    <section class="pdp-world-nutrition" aria-label="Children’s nutrition research around the world">
-        <iframe
-            class="pdp-world-nutrition-frame"
-            src="{{ asset('assets/research/world-nutrition-map.html') }}"
-            title="Children’s supplement use around the world"
-            loading="lazy"
-            scrolling="no"></iframe>
-    </section>
+
     <!-- ════════════════════════════════════════════════
-                                                 PRODUCT DESCRIPTION SECTION
-                                            ════════════════════════════════════════════════ -->
-    @php
-        $initialResearchCard = [
-            'country' => 'United States',
-            'year' => '2021–2023',
-            'number' => 42,
-            'copy' => 'Children aged 2–11 used a dietary supplement in the previous 30 days.',
-            'source' => 'CDC / NCHS',
-            'url' => 'https://www.cdc.gov/nchs/products/databriefs/db561.htm',
-        ];
-    @endphp
-    <section class="pdp-parent-question" aria-label="Children's supplement use research">
-        <div class="pdp-parent-question-shell">
-            <article class="pdp-research-card" data-pdp-research-card>
-                <div class="pdp-research-stat" aria-label="{{ $initialResearchCard['number'] }} out of 100">
-                    <span class="pdp-research-stat-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                            <circle cx="9" cy="7" r="3"></circle>
-                            <circle cx="17" cy="8" r="2.5"></circle>
-                            <path d="M3.5 19c.3-3.2 2.2-5 5.5-5s5.2 1.8 5.5 5M14 14.5c2.8-.4 5.1 1.1 5.5 4.5"></path>
-                        </svg>
-                    </span>
-                    <div>
-                        <strong data-research-number>{{ $initialResearchCard['number'] }}</strong><span>/ 100</span>
-                        <b>children reported use</b>
-                    </div>
-                    <div class="pdp-research-progress" aria-hidden="true">
-                        <span data-research-progress style="width: {{ $initialResearchCard['number'] }}%"></span>
-                        <em data-research-percent>{{ $initialResearchCard['number'] }}%</em>
-                    </div>
-                </div>
-                <div class="pdp-research-copy">
-                    <div class="pdp-research-location">
-                        <h3 data-research-country>{{ $initialResearchCard['country'] }}</h3>
-                        <span data-research-year>{{ $initialResearchCard['year'] }}</span>
-                    </div>
-                    <p data-research-summary>{{ $initialResearchCard['copy'] }}</p>
-                    <a data-research-source href="{{ $initialResearchCard['url'] }}" target="_blank" rel="noreferrer noopener">
-                        {{ $initialResearchCard['source'] }} <span aria-hidden="true">↗</span>
-                    </a>
-                </div>
-            </article>
+                             PDP PROMO BANNER SECTION
+    ════════════════════════════════════════════════ -->
+    <section class="pdp-promo-banner-section" aria-label="Special featured collection">
+        <div class="pdp-promo-banner-wrap">
+            <img
+                src="{{ asset('img/rishi.jpg') }}"
+                alt="Disney Frozen Collection - You Cannot Let It Go"
+                class="pdp-promo-banner-img"
+                loading="lazy">
         </div>
     </section>
-
-    <!-- Product Description Section -->
 
     <!-- ════════════════════════════════════════════════
                                                  NUTRIBUDDY INGREDIENT SECTION
@@ -1555,6 +1503,57 @@
                             $familyPrice = $familyVariant?->display_price ?? $familyProduct->display_price;
                             $familyComparePrice = $familyVariant?->display_compare_price ?? $familyProduct->display_compare_price;
                             $familyDescription = $familyProduct->short_description ?: $familyProduct->description;
+
+                            $famVariants = $familyProduct->variants->filter(fn($v) => $v->is_active && !empty($v->attributes));
+                            $famDefaultVariant = $familyProduct->variants->firstWhere('is_default', true)
+                                ?: $familyProduct->variants->first(fn($v) => $v->is_active)
+                                ?: $famVariants->first();
+                            $famDefAttrs = $famDefaultVariant?->attributes ?? [];
+
+                            $famFlavors = collect();
+                            foreach ($famVariants as $v) {
+                                if (is_array($v->attributes)) {
+                                    foreach ($v->attributes as $k => $val) {
+                                        if (strcasecmp(trim((string) $k), 'flavour') === 0 || strcasecmp(trim((string) $k), 'flavor') === 0) {
+                                            $famFlavors->push(trim((string) $val));
+                                        }
+                                    }
+                                }
+                            }
+                            $famFlavors = $famFlavors->filter()->unique()->values();
+                            if ($famFlavors->isEmpty()) {
+                                $famFlavors = collect([$familyProduct->flavor ?: ($famDefAttrs['Flavour'] ?? $famDefAttrs['flavor'] ?? 'Lemon Ginger')]);
+                            }
+
+                            $famSizes = collect();
+                            foreach ($famVariants as $v) {
+                                if (is_array($v->attributes)) {
+                                    foreach ($v->attributes as $k => $val) {
+                                        if ($isSizeAttribute($k)) {
+                                            $famSizes->push(trim((string) $val));
+                                        }
+                                    }
+                                }
+                            }
+                            $famSizes = $famSizes->filter()->unique()->values();
+                            if ($famSizes->isEmpty()) {
+                                $famSizes = collect([$familyProduct->pack_size ?: ($famDefAttrs['Pack Size'] ?? $famDefAttrs['Size'] ?? $famDefAttrs['size'] ?? '15pcs')]);
+                            }
+
+                            $famAges = collect();
+                            foreach ($famVariants as $v) {
+                                if (is_array($v->attributes)) {
+                                    foreach ($v->attributes as $k => $val) {
+                                        if ($isAgeAttribute($k)) {
+                                            $famAges->push(trim((string) $val));
+                                        }
+                                    }
+                                }
+                            }
+                            $famAges = $famAges->filter()->unique()->values();
+                            if ($famAges->isEmpty()) {
+                                $famAges = collect([$familyProduct->age_group ?: ($famDefAttrs['Suitable Age'] ?? $famDefAttrs['Age'] ?? $famDefAttrs['age'] ?? '4+')]);
+                            }
                         @endphp
                         <article class="pdp-family-card">
                             <a class="pdp-family-image" href="{{ route('product.show', $familyProduct->slug) }}" aria-label="Explore {{ $familyProduct->name }}">
@@ -1564,10 +1563,40 @@
                                 <span class="pdp-family-chip">{{ $familyProduct->category?->name ?: 'NutriBuddy favourite' }}</span>
                                 <h3>{{ $familyProduct->name }}</h3>
                                 <p>{{ \Illuminate\Support\Str::limit(strip_tags((string) $familyDescription), 105) }}</p>
-                                <div class="pdp-family-facts">
-                                    @if ($familyProduct->flavor)<span>{{ $familyProduct->flavor }}</span>@endif
-                                    @if ($familyProduct->pack_size)<span>{{ $familyProduct->pack_size }}</span>@endif
-                                    @if ($familyProduct->age_group)<span>{{ $familyProduct->age_group }}</span>@endif
+                                <div class="pdp-family-variants" aria-label="Options for {{ $familyProduct->name }}">
+                                    <div class="pdp-family-variant-col">
+                                        <label class="pdp-family-variant-label" for="famFlavour_{{ $familyProduct->id }}">FLAVOUR</label>
+                                        <div class="pdp-family-select-wrap">
+                                            <select id="famFlavour_{{ $familyProduct->id }}" class="pdp-family-select" aria-label="Flavour">
+                                                @foreach ($famFlavors as $flavorOption)
+                                                    <option value="{{ $flavorOption }}">{{ $flavorOption }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="pdp-family-chevron" aria-hidden="true"></span>
+                                        </div>
+                                    </div>
+                                    <div class="pdp-family-variant-col">
+                                        <label class="pdp-family-variant-label" for="famSize_{{ $familyProduct->id }}">SIZE</label>
+                                        <div class="pdp-family-select-wrap">
+                                            <select id="famSize_{{ $familyProduct->id }}" class="pdp-family-select" aria-label="Size">
+                                                @foreach ($famSizes as $sizeOption)
+                                                    <option value="{{ $sizeOption }}">{{ $sizeOption }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="pdp-family-chevron" aria-hidden="true"></span>
+                                        </div>
+                                    </div>
+                                    <div class="pdp-family-variant-col">
+                                        <label class="pdp-family-variant-label" for="famAge_{{ $familyProduct->id }}">SUITABLE AGE</label>
+                                        <div class="pdp-family-select-wrap">
+                                            <select id="famAge_{{ $familyProduct->id }}" class="pdp-family-select" aria-label="Suitable Age">
+                                                @foreach ($famAges as $ageOption)
+                                                    <option value="{{ $ageOption }}">{{ $ageOption }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="pdp-family-chevron" aria-hidden="true"></span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="pdp-family-price">
                                     <strong>₹{{ number_format((float) $familyPrice, 0) }}</strong>
@@ -1753,41 +1782,6 @@
     <script id="nbPdpConfig" type="application/json">@json($nbPdpConfig)</script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const mapFrame = document.querySelector('.pdp-world-nutrition-frame');
-            const card = document.querySelector('[data-pdp-research-card]');
-
-            if (!mapFrame || !card) return;
-
-            const number = card.querySelector('[data-research-number]');
-            const progress = card.querySelector('[data-research-progress]');
-            const percent = card.querySelector('[data-research-percent]');
-            const country = card.querySelector('[data-research-country]');
-            const year = card.querySelector('[data-research-year]');
-            const summary = card.querySelector('[data-research-summary]');
-            const source = card.querySelector('[data-research-source]');
-
-            window.addEventListener('message', function (event) {
-                if (event.source !== mapFrame.contentWindow || event.data?.type !== 'nb-world-location-selected') return;
-
-                const location = event.data.location;
-                if (!location || !Number.isFinite(Number(location.number))) return;
-
-                const value = Math.max(0, Math.min(100, Number(location.number)));
-                number.textContent = value;
-                number.parentElement.parentElement.setAttribute('aria-label', value + ' out of 100');
-                progress.style.width = value + '%';
-                percent.textContent = value + '%';
-                country.textContent = location.country || '';
-                year.textContent = location.year || '';
-                summary.textContent = location.copy || '';
-                source.textContent = (location.source || 'Read the study') + ' ↗';
-                source.href = location.url || '#';
-            });
-        });
-    </script>
-
-    <script>
 
         document.addEventListener('DOMContentLoaded', function () {
 
@@ -1840,6 +1834,19 @@
 
                 setSubscriptionPanel(selectedPurchaseInput?.value === 'subscribe');
             }
+
+            const pdpAccordions = Array.from(document.querySelectorAll('.pdp-accordions details.pdp-accordion'));
+            pdpAccordions.forEach(function (detail) {
+                detail.addEventListener('toggle', function () {
+                    if (detail.open) {
+                        pdpAccordions.forEach(function (other) {
+                            if (other !== detail && other.open) {
+                                other.open = false;
+                            }
+                        });
+                    }
+                });
+            });
 
             document.querySelectorAll('.ps-problems-section .problem-grid').forEach(function (grid, gridIndex) {
 

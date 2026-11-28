@@ -19,6 +19,7 @@ yarn-error.log
 /.vscode
 /.agents
 _nutribuddy.zip
+*.zip
 /scratch
 /storage/framework/PsySH/
 .agents/skills/cashfree-skills/
