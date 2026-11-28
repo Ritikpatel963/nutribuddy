@@ -54,6 +54,29 @@
                     </div>
                 @endif
 
+                @php
+                    $bloodQ31 = \App\Models\Nutrition\QuestionnaireQuestion::where('sort_order', 31)->first();
+                    $bloodAnswer = $bloodQ31 && $assessment ? $assessment->answers->firstWhere('question_id', $bloodQ31->id) : null;
+                    $bloodPath = $bloodAnswer?->answer_value;
+                    $bloodPath = is_string($bloodPath) && str_starts_with($bloodPath, 'blood_reports/') ? $bloodPath : null;
+                @endphp
+
+                @if ($bloodPath)
+                    <div class="card mb-3 border-primary" style="background:#f0f4ff; border-radius:10px; border:1.5px solid #6366f1;">
+                        <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 text-primary fw-bold"><i class="ri-file-text-line me-1"></i> 🩸 Blood Report Uploaded</h6>
+                                <p class="mb-0 text-muted" style="font-size:12px;">Parent uploaded report for clinical review (Q31)</p>
+                            </div>
+                            <a href="{{ route('admin.nutrition.blood-report.download', $assessment) }}"
+                               class="btn btn-sm btn-primary"
+                               target="_blank" rel="noopener">
+                                <i class="ri-file-download-line me-1" aria-hidden="true"></i> View Blood Report
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 <section class="lead-diet-context" aria-labelledby="lead-diet-context-heading">
                     <h5 id="lead-diet-context-heading">Dietary requirements</h5>
                     <dl class="lead-context-list">
