@@ -8,6 +8,7 @@
     $planName = $subscription->subscriptionPlan?->name ?: ($subscription->model ?: 'Unknown plan');
     $statusClasses = [
         'active' => 'success',
+        'paused' => 'warning',
         'pending' => 'warning',
         'expired' => 'danger',
         'cancelled' => 'secondary',
@@ -55,16 +56,68 @@
         <div>
             <p class="mb-0">Subscription #{{ $subscription->id }} · {{ $planName }}</p>
         </div>
-        <a href="{{ route('admin.nutrition.diet-subscriptions.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
-            <iconify-icon icon="solar:arrow-left-linear"></iconify-icon> Back to subscriptions
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            @if ($subscription->status === 'active')
+                <form action="{{ route('admin.nutrition.diet-subscriptions.pause', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to pause this subscription? AutoPay recurring debits will be paused.');">
+                    @csrf
+                    <button type="submit" class="btn btn-warning d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:pause-circle-linear"></iconify-icon> Pause AutoPay
+                    </button>
+                </form>
+                <form action="{{ route('admin.nutrition.diet-subscriptions.cancel', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this subscription? AutoPay recurring mandate will be cancelled permanently.');">
+                    @csrf
+                    <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:close-circle-linear"></iconify-icon> Cancel Subscription
+                    </button>
+                </form>
+            @elseif ($subscription->status === 'paused')
+                <form action="{{ route('admin.nutrition.diet-subscriptions.resume', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to resume this subscription? AutoPay will be reactivated.');">
+                    @csrf
+                    <button type="submit" class="btn btn-success d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:play-circle-linear"></iconify-icon> Resume AutoPay
+                    </button>
+                </form>
+                <form action="{{ route('admin.nutrition.diet-subscriptions.cancel', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this subscription? AutoPay recurring mandate will be cancelled permanently.');">
+                    @csrf
+                    <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-1">
+                        <iconify-icon icon="solar:close-circle-linear"></iconify-icon> Cancel Subscription
+                    </button>
+                </form>
+            @else
+                <span class="badge bg-secondary-focus text-secondary-main fs-6 px-12 py-6">Subscription {{ ucfirst($subscription->status) }}</span>
+            @endif
+
+            @if ($subscription->razorpay_order_id && str_starts_with($subscription->razorpay_order_id, 'sub_'))
+                <form action="{{ route('admin.nutrition.diet-subscriptions.sync', $subscription->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-primary d-inline-flex align-items-center gap-1" title="Fetch real-time status from Cashfree">
+                        <iconify-icon icon="solar:refresh-linear"></iconify-icon> Sync Cashfree Status
+                    </button>
+                </form>
+            @endif
+
+            <a href="{{ route('admin.nutrition.diet-subscriptions.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2">
+                <iconify-icon icon="solar:arrow-left-linear"></iconify-icon> Back to subscriptions
+            </a>
+        </div>
     </div>
 
     <div class="row g-3 mb-20">
         <div class="col-6 col-xl-3">
             <div class="card nb-summary-card"><div class="card-body p-20">
                 <div class="nb-summary-label">Subscription status</div>
-                <div class="nb-summary-value"><span class="badge bg-{{ $statusClasses[strtolower((string) $subscription->status)] ?? 'secondary' }}-focus text-{{ $statusClasses[strtolower((string) $subscription->status)] ?? 'secondary' }}-main">{{ ucfirst((string) $subscription->status) }}</span></div>
+                <div class="nb-summary-value">
+                    <span class="badge bg-{{ $statusClasses[strtolower((string) $subscription->status)] ?? 'secondary' }}-focus text-{{ $statusClasses[strtolower((string) $subscription->status)] ?? 'secondary' }}-main">{{ ucfirst((string) $subscription->status) }}</span>
+                    @php
+                        $subGatewayStatus = \App\Models\Subscription::where('cashfree_subscription_id', $subscription->razorpay_order_id)->value('status');
+                        $normalizedGatewayStatus = strtoupper(str_replace(' ', '_', (string) $subGatewayStatus));
+                    @endphp
+                    @if ($normalizedGatewayStatus === 'CUSTOMER_PAUSED')
+                        <div class="text-warning small mt-1" style="font-size: 11px; font-weight: 600;"><iconify-icon icon="solar:info-circle-linear"></iconify-icon> Paused by customer via UPI app</div>
+                    @elseif ($normalizedGatewayStatus === 'CUSTOMER_CANCELLED')
+                        <div class="text-danger small mt-1" style="font-size: 11px; font-weight: 600;"><iconify-icon icon="solar:info-circle-linear"></iconify-icon> Cancelled by customer via UPI app</div>
+                    @endif
+                </div>
             </div></div>
         </div>
         <div class="col-6 col-xl-3">

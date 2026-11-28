@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function () {
 
     // Section 3 PDF Subscriptions APIs
     Route::post('/api/subscriptions/checkout', [\App\Http\Controllers\Api\SubscriptionApiController::class, 'checkout'])->name('subscription.checkout');
+    Route::post('/api/subscriptions/pause', [\App\Http\Controllers\Api\SubscriptionApiController::class, 'pause'])->name('subscription.pause');
+    Route::post('/api/subscriptions/resume', [\App\Http\Controllers\Api\SubscriptionApiController::class, 'resume'])->name('subscription.resume');
     Route::post('/api/subscriptions/cancel', [\App\Http\Controllers\Api\SubscriptionApiController::class, 'cancel'])->name('subscription.cancel');
     Route::get('/api/subscriptions/current', [\App\Http\Controllers\Api\SubscriptionApiController::class, 'current'])->name('subscription.current');
 });

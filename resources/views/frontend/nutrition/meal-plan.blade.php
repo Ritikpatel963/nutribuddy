@@ -25,19 +25,28 @@
 <div class="page">
 
   <!-- Header: real child, no hard-coded values -->
-  <div class="page-header">
-    <h1 class="page-title">{{ $titleText }}</h1>
-    @if (!empty($metaParts))
-    <p class="page-meta">
-      @foreach ($metaParts as $i => $part)
-        @if ($i > 0)<span class="sep">&middot;</span>@endif
-        {{ $part }}
-      @endforeach
-      @if ($mealPlan)
-        <span class="sep">&middot;</span>
-        {{ $totalDays }} days from {{ \Carbon\Carbon::parse($mealPlan['start_date'])->format('j M Y') }}
+  <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+    <div>
+      <h1 class="page-title">{{ $titleText }}</h1>
+      @if (!empty($metaParts))
+      <p class="page-meta">
+        @foreach ($metaParts as $i => $part)
+          @if ($i > 0)<span class="sep">&middot;</span>@endif
+          {{ $part }}
+        @endforeach
+        @if ($mealPlan)
+          <span class="sep">&middot;</span>
+          {{ $totalDays }} days from {{ \Carbon\Carbon::parse($mealPlan['start_date'])->format('j M Y') }}
+        @endif
+      </p>
       @endif
-    </p>
+    </div>
+    @if (!empty($mealChild['id']) && $mealPlan)
+      <div>
+        <a href="{{ route('child.diet-chart.download-pdf', $mealChild['id']) }}" class="btn btn-primary" style="background:#7B2CBF; color:white; border-radius:10px; padding:10px 18px; font-size:13px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 4px 12px rgba(123,44,191,0.2);">
+          📥 Download PDF
+        </a>
+      </div>
     @endif
   </div>
 

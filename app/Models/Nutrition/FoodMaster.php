@@ -16,8 +16,8 @@ class FoodMaster extends Model
         'contains_dairy'              => 'boolean',
         'contains_nuts'               => 'boolean',
         'contains_gluten'             => 'boolean',
-        'ingredient_list_per_serving' => 'json',
-        'method'                      => 'json',
+        'ingredient_list_per_serving' => 'string',
+        'method'                      => 'string',
         'goal_tags'                   => 'json',
     ];
 

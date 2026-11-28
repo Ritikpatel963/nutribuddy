@@ -299,6 +299,10 @@ Route::prefix('admin/nutrition')->name('admin.nutrition.')->middleware('auth:adm
     
     Route::middleware('permission:manage diet chart,admin')->group(function () {
         Route::resource('questions', \App\Http\Controllers\Admin\Nutrition\QuestionnaireAdminController::class)->except(['index', 'show', 'destroy']);
+        Route::post('diet-subscriptions/{subscription}/pause', [\App\Http\Controllers\Admin\Nutrition\DietSubscriptionController::class, 'pause'])->name('diet-subscriptions.pause');
+        Route::post('diet-subscriptions/{subscription}/resume', [\App\Http\Controllers\Admin\Nutrition\DietSubscriptionController::class, 'resume'])->name('diet-subscriptions.resume');
+        Route::post('diet-subscriptions/{subscription}/cancel', [\App\Http\Controllers\Admin\Nutrition\DietSubscriptionController::class, 'cancel'])->name('diet-subscriptions.cancel');
+        Route::post('diet-subscriptions/{subscription}/sync', [\App\Http\Controllers\Admin\Nutrition\DietSubscriptionController::class, 'syncStatus'])->name('diet-subscriptions.sync');
         Route::resource('diet-subscriptions', \App\Http\Controllers\Admin\Nutrition\DietSubscriptionController::class)->except(['index', 'show']);
         Route::get('leads', [\App\Http\Controllers\Admin\Nutrition\NutritionLeadController::class, 'index'])->name('leads.index');
         Route::get('leads/data', [\App\Http\Controllers\Admin\Nutrition\NutritionLeadController::class, 'data'])->name('leads.data');

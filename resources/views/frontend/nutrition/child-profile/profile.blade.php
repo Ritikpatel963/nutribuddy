@@ -71,6 +71,10 @@
           <div class="ir"><span class="ik">Current plan</span><span class="iv gr">{{ $subscription->subscriptionPlan?->name ?? $subscription->model }}</span></div>
           <div class="ir"><span class="ik">Plan invoice</span><a class="iv gr" href="{{ route('diet-subscriptions.invoice-download', $subscription) }}">Download PDF</a></div>
         @endif
+        @if($dietPlan)
+          <div class="ir"><span class="ik">Meal Plan</span><a class="iv gr" href="{{ route('child.diet-chart.show', $child->id) }}">View Full Diet Chart &rarr;</a></div>
+          <div class="ir"><span class="ik">Diet Chart PDF</span><a class="iv gr" href="{{ route('child.diet-chart.download-pdf', $child->id) }}">📥 Download PDF</a></div>
+        @endif
         <div class="ir"><span class="ik">Age phase</span><span class="iv" id="ptPhase">{{ $childAge === null ? $notProvided : 'Phase ' . ($childAge <= 6 ? '1' : ($childAge <= 9 ? '2' : '3')) }}</span></div>
         <div class="ir"><span class="ik">Diet type</span><span class="iv" id="ptDiet">{{ $assessment?->diet_type ? ucfirst($assessment->diet_type) : $notProvided }}</span></div>
         <div class="ir"><span class="ik">Appetite</span><span class="iv" id="ptPicky">{{ $assessment?->picky_level ?: $notProvided }}</span></div>

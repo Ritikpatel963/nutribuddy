@@ -15,7 +15,7 @@ class AssessmentEngine
     {
         $level = $assessment->model_level; // basic, plus, pro, premium
         
-        $levelsToInclude = $this->getCumulativeLevels($level);
+        $levelsToInclude = \App\Support\PlanAccess::questionModels($level);
         
         $questions = QuestionnaireQuestion::whereIn('model', $levelsToInclude)
             ->orderBy('sort_order')
