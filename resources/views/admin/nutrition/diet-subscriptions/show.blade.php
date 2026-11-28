@@ -237,15 +237,7 @@
                                             @endphp
                                             <tr>
                                                 <td>{{ $answer->question?->question ?? 'Question no longer available' }}</td>
-                                                <td class="fw-semibold">
-                                                    @if (is_string($answerValue) && str_starts_with($answerValue, 'blood_reports/'))
-                                                        <a href="{{ route('admin.nutrition.blood-report.download', $assessment) }}" target="_blank" class="btn btn-sm btn-outline-primary" style="padding:2px 10px; font-size:12px;">
-                                                            <i class="ri-file-download-line me-1"></i> View / Download Blood Report
-                                                        </a>
-                                                    @else
-                                                        {{ $answerText !== '' ? $answerText : '—' }}
-                                                    @endif
-                                                </td>
+                                                <td class="fw-semibold">{{ $answerText !== '' ? $answerText : '—' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
