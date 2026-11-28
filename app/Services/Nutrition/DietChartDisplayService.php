@@ -467,13 +467,20 @@ class DietChartDisplayService
     }
 
     /**
-     * Consolidate ingredients for a given week (7 days) into grocery categories.
+     * Consolidate ingredients into grocery categories dynamically by day, week, or full plan.
      */
-    public function getWeeklyShoppingList(DietPlan $dietPlan, int $week = 1): array
+    public function getShoppingList(DietPlan $dietPlan, ?int $dayIndex = null, ?int $week = null): array
     {
-        $meals = $dietPlan->meals()->with('items.food')->get();
-        $startDay = ($week - 1) * 7;
-        $endDay = $startDay + 6;
+        $meals = $dietPlan->meals()->with('items.food')->orderBy('sort_order')->get();
+        $assessment = $dietPlan->assessment;
+        $slotsPerDay = 5;
+        if ($assessment) {
+            $slotsPerDay = match ($assessment->meal_pattern) {
+                '3 meals'    => 3,
+                '2 + snacks' => 4,
+                default      => 5,
+            };
+        }
 
         $categories = [
             'Grains & Flours' => [],
@@ -483,10 +490,19 @@ class DietChartDisplayService
             'Spices, Oils & Other' => [],
         ];
 
-        foreach ($meals as $meal) {
-            $dayIdx = $meal->day_index ?? 0;
-            if ($dayIdx < $startDay || $dayIdx > $endDay) {
+        foreach ($meals as $mealIndex => $meal) {
+            $dayIdx = $meal->day_index ?? intdiv($mealIndex, $slotsPerDay);
+
+            if ($dayIndex !== null && $dayIdx !== $dayIndex) {
                 continue;
+            }
+
+            if ($week !== null && $dayIndex === null) {
+                $startDay = ($week - 1) * 7;
+                $endDay = $startDay + 6;
+                if ($dayIdx < $startDay || $dayIdx > $endDay) {
+                    continue;
+                }
             }
 
             foreach ($meal->items ?? [] as $item) {
@@ -522,6 +538,50 @@ class DietChartDisplayService
         }
 
         return array_filter($categories, fn ($items) => ! empty($items));
+    }
+
+    /**
+     * Consolidate ingredients for a given week (7 days) into grocery categories.
+     */
+    public function getWeeklyShoppingList(DietPlan $dietPlan, int $week = 1): array
+    {
+        return $this->getShoppingList($dietPlan, null, $week);
+    }
+
+    /**
+     * Returns categorized shopping lists mapped by day, by week, and full plan.
+     */
+    public function getShoppingListsData(DietPlan $dietPlan, array $planDays): array
+    {
+        $byDay = [];
+        foreach ($planDays as $d) {
+            $idx = $d['index'];
+            $label = ($d['label'] ?? 'Day') . ', ' . Carbon::parse($d['date'])->format('d M');
+            $byDay[$idx] = [
+                'label'      => $label,
+                'categories' => $this->getShoppingList($dietPlan, $idx, null),
+            ];
+        }
+
+        $byWeek = [];
+        $totalWeeks = !empty($planDays) ? max(array_column($planDays, 'week')) : 1;
+        for ($w = 1; $w <= $totalWeeks; $w++) {
+            $byWeek[$w] = [
+                'label'      => "Week {$w}",
+                'categories' => $this->getShoppingList($dietPlan, null, $w),
+            ];
+        }
+
+        $full = [
+            'label'      => 'Full Plan (' . count($planDays) . ' Days)',
+            'categories' => $this->getShoppingList($dietPlan, null, null),
+        ];
+
+        return [
+            'by_day'  => $byDay,
+            'by_week' => $byWeek,
+            'full'    => $full,
+        ];
     }
 
     /**

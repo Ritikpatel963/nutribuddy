@@ -120,11 +120,29 @@
                 </div>
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                     @if(!empty($child))
-                        <a href="{{ route('child.diet-chart.download-pdf', $child->id) }}" class="btn btn-primary" style="background:#7B2CBF; color:white; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(123,44,191,0.2);">
-                            📥 Download PDF
-                        </a>
+                        <div style="position:relative; display:inline-block;" id="downloadPdfDropdownWrap">
+                            <button type="button" id="btnDownloadPdf" class="btn btn-primary" onclick="togglePdfDownloadMenu(event)" style="background:#7B2CBF; color:white; border:none; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(123,44,191,0.2);">
+                                📥 Download PDF <span style="font-size:10px; margin-left:2px;">▼</span>
+                            </button>
+                            <div id="pdfDownloadDropdown" style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:white; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.18); border:1px solid #e0e0e0; min-width:270px; z-index:99999; padding:8px 0;">
+                                <a id="pdfDownloadActiveDayLink" href="{{ route('child.diet-chart.download-pdf', ['child' => $child->id, 'day_index' => $activeDayIndex ?? 0]) }}" style="display:flex; flex-direction:column; padding:10px 16px; text-decoration:none; color:#333; border-bottom:1px solid #f0f0f0; transition:background 0.15s;" onmouseover="this.style.background='#F3E8FF'" onmouseout="this.style.background='white'">
+                                    <span style="font-weight:700; font-size:13px; color:#7B2CBF;">📄 Download Selected Day</span>
+                                    <span id="pdfActiveDayLabel" style="font-size:11px; color:#666; margin-top:2px;">Day {{ ($activeDayIndex ?? 0) + 1 }} ({{ $activeDayLabel ?? 'Today' }})</span>
+                                </a>
+                                @if(count($weekGroups ?? []) > 1)
+                                <a id="pdfDownloadActiveWeekLink" href="{{ route('child.diet-chart.download-pdf', ['child' => $child->id, 'week' => $activeWeekNo ?? 1]) }}" style="display:flex; flex-direction:column; padding:10px 16px; text-decoration:none; color:#333; border-bottom:1px solid #f0f0f0; transition:background 0.15s;" onmouseover="this.style.background='#F3E8FF'" onmouseout="this.style.background='white'">
+                                    <span style="font-weight:700; font-size:13px; color:#7B2CBF;">🗓️ Download Active Week</span>
+                                    <span id="pdfActiveWeekLabel" style="font-size:11px; color:#666; margin-top:2px;">Week {{ $activeWeekNo ?? 1 }}</span>
+                                </a>
+                                @endif
+                                <a href="{{ route('child.diet-chart.download-pdf', ['child' => $child->id, 'scope' => 'all']) }}" style="display:flex; flex-direction:column; padding:10px 16px; text-decoration:none; color:#333; transition:background 0.15s;" onmouseover="this.style.background='#F3E8FF'" onmouseout="this.style.background='white'">
+                                    <span style="font-weight:700; font-size:13px; color:#2E7D32;">📑 Download Complete Plan</span>
+                                    <span style="font-size:11px; color:#666; margin-top:2px;">All {{ count($planDays ?? []) }} Days (Full Chart)</span>
+                                </a>
+                            </div>
+                        </div>
                     @endif
-                    @if(!empty($shoppingList) && \App\Support\PlanAccess::allows($planSlug ?? 'basic', 'shopping_list'))
+                    @if((!empty($shoppingList) || !empty($shoppingListsData)) && \App\Support\PlanAccess::allows($planSlug ?? 'basic', 'shopping_list'))
                         <button type="button" class="btn btn-success" style="background:#2E7D32; color:white; border:none; border-radius:10px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer;" onclick="openShoppingListModal()">
                             🛒 Shopping List
                         </button>
@@ -1011,45 +1029,40 @@
 </div>
 
 <!-- Shopping List Modal -->
-@if(!empty($shoppingList))
+@if(!empty($shoppingList) || !empty($shoppingListsData))
 <div id="shoppingListModal" class="nutri-full-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:999999; justify-content:center; align-items:center; padding:20px; box-sizing:border-box;" onclick="if(event.target === this) closeShoppingListModal()">
-    <div style="background:white; border-radius:16px; max-width:650px; width:100%; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:20px 24px; border-bottom:1px solid #eee; background:#fafafa;">
-            <div>
-                <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">🛒 Weekly Grocery Shopping List</h3>
-                <p style="margin:0; font-size:12px; color:#666;">Categorized ingredients for {{ $child->name ?? 'Child' }}'s active plan</p>
+    <div style="background:white; border-radius:16px; max-width:680px; width:100%; max-height:88vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden;">
+        <div style="padding:20px 24px; border-bottom:1px solid #eee; background:#fafafa;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                <div>
+                    <h3 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#333;">🛒 Grocery Shopping List</h3>
+                    <p id="shoppingModalSubtitle" style="margin:0; font-size:12px; color:#666;">Categorized ingredients for {{ $child->name ?? 'Child' }}'s active plan</p>
+                </div>
+                <button type="button" style="background:none; border:none; font-size:26px; line-height:1; color:#888; cursor:pointer;" onclick="closeShoppingListModal()">&times;</button>
             </div>
-            <button type="button" style="background:none; border:none; font-size:26px; line-height:1; color:#888; cursor:pointer;" onclick="closeShoppingListModal()">&times;</button>
+            <!-- Scope Switcher Tabs -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="shopping-scope-tab active" data-scope="day" onclick="switchShoppingScope('day')" style="background:#2E7D32; color:white; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s;">
+                    📅 Selected Day (<span id="shoppingSelectedDayTitle">Day {{ ($activeDayIndex ?? 0) + 1 }}</span>)
+                </button>
+                <button type="button" class="shopping-scope-tab" data-scope="week" onclick="switchShoppingScope('week')" style="background:#f0f0f0; color:#555; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s;">
+                    🗓️ Active Week (<span id="shoppingSelectedWeekTitle">Week {{ $activeWeekNo ?? 1 }}</span>)
+                </button>
+                <button type="button" class="shopping-scope-tab" data-scope="full" onclick="switchShoppingScope('full')" style="background:#f0f0f0; color:#555; border:none; border-radius:8px; padding:6px 14px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s;">
+                    📦 Full Plan (<span id="shoppingTotalDaysTitle">{{ count($planDays ?? []) }} Days</span>)
+                </button>
+            </div>
         </div>
         <div style="padding:24px; overflow-y:auto; flex:1;">
-            <div id="shoppingListText" style="display:none;">@foreach($shoppingList as $category => $items)
-{{ $category }}:
-@foreach($items as $item => $count)
-- {{ $item }} ({{ $count }} meals)
-@endforeach
-
-@endforeach</div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
-                @foreach($shoppingList as $category => $items)
-                    <div style="background:#fdfdfd; border:1px solid #e8e8e8; border-radius:10px; padding:14px 16px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:13px; color:#2E7D32; border-bottom:1px dashed #ddd; padding-bottom:8px; margin-bottom:10px; text-transform:uppercase;">
-                            <span>{{ $category }}</span>
-                            <span style="background:#E8F5E9; color:#2E7D32; font-size:11px; padding:2px 8px; border-radius:10px;">{{ count($items) }} items</span>
-                        </div>
-                        <ul style="list-style:none; margin:0; padding:0; font-size:13px; color:#444;">
-                            @foreach($items as $item => $count)
-                                <li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f6f6f6;">
-                                    <span>{{ $item }}</span>
-                                    <span style="font-size:11px; color:#888; background:#f0f0f0; padding:1px 6px; border-radius:4px;">{{ $count }}x</span>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endforeach
+            <div id="shoppingListText" style="display:none;"></div>
+            <div id="shoppingListGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+                <!-- Populated dynamically by renderShoppingListModal() -->
             </div>
         </div>
-        <div style="padding:16px 24px; border-top:1px solid #eee; background:#fafafa; display:flex; justify-content:space-between;">
-            <button type="button" style="background:#7B2CBF; color:white; border:none; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer;" onclick="copyShoppingList()">📋 Copy Full List</button>
+        <div style="padding:16px 24px; border-top:1px solid #eee; background:#fafafa; display:flex; justify-content:space-between; align-items:center;">
+            <button type="button" style="background:#7B2CBF; color:white; border:none; border-radius:8px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;" onclick="copyShoppingList()">
+                📋 Copy List
+            </button>
             <button type="button" style="background:#e0e0e0; border:none; border-radius:8px; padding:8px 18px; font-size:13px; cursor:pointer;" onclick="closeShoppingListModal()">Close</button>
         </div>
     </div>
@@ -1282,9 +1295,145 @@ function closeRecipeModal() {
     if (m) m.style.display = 'none';
 }
 
+// Global Nutrition State
+window.NutriShoppingListsData = @json($shoppingListsData ?? []);
+window.NutriChildPdfBaseUrl   = "{{ !empty($child) ? route('child.diet-chart.download-pdf', $child->id) : '' }}";
+window.NutriCurrentDayIndex   = {{ $activeDayIndex ?? 0 }};
+window.NutriCurrentWeekNo     = {{ $activeWeekNo ?? 1 }};
+window.NutriCurrentDayLabel   = "{{ $activeDayLabel ?? 'Today' }}";
+let currentShoppingScope       = 'day';
+
+function togglePdfDownloadMenu(e) {
+    if (e) e.stopPropagation();
+    const dropdown = document.getElementById('pdfDownloadDropdown');
+    if (!dropdown) return;
+    const isShown = dropdown.style.display === 'block';
+    dropdown.style.display = isShown ? 'none' : 'block';
+}
+
+document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('downloadPdfDropdownWrap');
+    const dropdown = document.getElementById('pdfDownloadDropdown');
+    if (dropdown && wrap && !wrap.contains(e.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+function updatePdfDownloadLinks(dayIndex, weekNo, dayLabel) {
+    const dayLink = document.getElementById('pdfDownloadActiveDayLink');
+    const dayText = document.getElementById('pdfActiveDayLabel');
+    if (dayLink && window.NutriChildPdfBaseUrl) {
+        dayLink.href = window.NutriChildPdfBaseUrl + '?day_index=' + dayIndex;
+    }
+    if (dayText) {
+        dayText.textContent = 'Day ' + (dayIndex + 1) + ' (' + (dayLabel || 'Selected Day') + ')';
+    }
+
+    const weekLink = document.getElementById('pdfDownloadActiveWeekLink');
+    const weekText = document.getElementById('pdfActiveWeekLabel');
+    if (weekLink && window.NutriChildPdfBaseUrl) {
+        weekLink.href = window.NutriChildPdfBaseUrl + '?week=' + weekNo;
+    }
+    if (weekText) {
+        weekText.textContent = 'Week ' + weekNo;
+    }
+}
+
+function switchShoppingScope(scope) {
+    currentShoppingScope = scope;
+    renderShoppingListModal();
+}
+
+function renderShoppingListModal() {
+    const data = window.NutriShoppingListsData;
+    const container = document.getElementById('shoppingListGrid');
+    const textEl = document.getElementById('shoppingListText');
+    const subtitle = document.getElementById('shoppingModalSubtitle');
+    if (!container) return;
+
+    let targetData = null;
+    let titleStr = '';
+
+    if (currentShoppingScope === 'day') {
+        const dayInfo = data && data.by_day ? data.by_day[window.NutriCurrentDayIndex] : null;
+        targetData = dayInfo ? dayInfo.categories : {};
+        titleStr = dayInfo ? dayInfo.label : ('Day ' + (window.NutriCurrentDayIndex + 1));
+        if (subtitle) subtitle.textContent = 'Grocery ingredients for ' + titleStr;
+    } else if (currentShoppingScope === 'week') {
+        const weekInfo = data && data.by_week ? data.by_week[window.NutriCurrentWeekNo] : null;
+        targetData = weekInfo ? weekInfo.categories : {};
+        titleStr = weekInfo ? weekInfo.label : ('Week ' + window.NutriCurrentWeekNo);
+        if (subtitle) subtitle.textContent = 'Grocery ingredients for ' + titleStr;
+    } else {
+        const fullInfo = data ? data.full : null;
+        targetData = fullInfo ? fullInfo.categories : {};
+        titleStr = fullInfo ? fullInfo.label : 'Full Plan';
+        if (subtitle) subtitle.textContent = 'Grocery ingredients for ' + titleStr;
+    }
+
+    // Toggle active style on scope buttons
+    document.querySelectorAll('.shopping-scope-tab').forEach(function(btn) {
+        const isActive = btn.dataset.scope === currentShoppingScope;
+        btn.classList.toggle('active', isActive);
+        if (isActive) {
+            btn.style.background = '#2E7D32';
+            btn.style.color = '#fff';
+        } else {
+            btn.style.background = '#f0f0f0';
+            btn.style.color = '#555';
+        }
+    });
+
+    container.innerHTML = '';
+    let copyText = 'NutriBuddy Shopping List - ' + titleStr + '\n============================\n\n';
+
+    const categories = Object.keys(targetData || {});
+    if (categories.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:35px 20px; color:#888;"><div style="font-size:28px; margin-bottom:8px;">🛒</div>No specific grocery ingredients for this selection.</div>';
+        if (textEl) textEl.textContent = '';
+        return;
+    }
+
+    categories.forEach(function(cat) {
+        const items = targetData[cat] || {};
+        const itemNames = Object.keys(items);
+        if (itemNames.length === 0) return;
+
+        copyText += cat + ':\n';
+        itemNames.forEach(function(it) {
+            copyText += '  • ' + it + ' (' + items[it] + 'x)\n';
+        });
+        copyText += '\n';
+
+        const card = document.createElement('div');
+        card.style.cssText = 'background:#fdfdfd; border:1px solid #e8e8e8; border-radius:10px; padding:14px 16px;';
+
+        let itemsHtml = '';
+        itemNames.forEach(function(it) {
+            itemsHtml += '<li style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #f6f6f6;">' +
+                         '<span style="font-size:13px; color:#333;">' + it + '</span>' +
+                         '<span style="font-size:11px; color:#2E7D32; background:#E8F5E9; padding:2px 7px; border-radius:4px; font-weight:600;">' + items[it] + 'x</span>' +
+                         '</li>';
+        });
+
+        card.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:12px; color:#2E7D32; border-bottom:1px dashed #ddd; padding-bottom:8px; margin-bottom:10px; text-transform:uppercase;">' +
+                         '<span>' + cat + '</span>' +
+                         '<span style="background:#E8F5E9; color:#2E7D32; font-size:11px; padding:2px 8px; border-radius:10px;">' + itemNames.length + ' items</span>' +
+                         '</div>' +
+                         '<ul style="list-style:none; margin:0; padding:0;">' + itemsHtml + '</ul>';
+
+        container.appendChild(card);
+    });
+
+    if (textEl) textEl.textContent = copyText.trim();
+}
+
 function openShoppingListModal() {
     const m = document.getElementById('shoppingListModal');
-    if (m) m.style.display = 'flex';
+    if (m) {
+        renderShoppingListModal();
+        m.style.display = 'flex';
+    }
 }
 
 function closeShoppingListModal() {
@@ -1296,9 +1445,13 @@ function copyShoppingList() {
     const textEl = document.getElementById('shoppingListText');
     if (!textEl) return;
     const text = textEl.textContent.trim();
+    if (!text) {
+        alert('No ingredients to copy for this selection.');
+        return;
+    }
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
-            alert('Weekly shopping list copied to clipboard!');
+            alert('Shopping list copied to clipboard!');
         }).catch(() => {
             prompt('Copy your shopping list:', text);
         });
@@ -1306,6 +1459,34 @@ function copyShoppingList() {
         prompt('Copy your shopping list:', text);
     }
 }
+
+// React dynamically when date chips are clicked
+document.addEventListener('nutriDayChanged', function(e) {
+    const di = e.detail.dayIndex;
+    const wn = e.detail.weekNo;
+    window.NutriCurrentDayIndex = di;
+    window.NutriCurrentWeekNo   = wn;
+
+    const chip = document.querySelector('.nutri-date-item[data-day-index="' + di + '"]');
+    const dayLabel = chip ? (chip.dataset.dayLabel || ('Day ' + (di + 1))) : ('Day ' + (di + 1));
+    window.NutriCurrentDayLabel = dayLabel;
+
+    // Update header labels on modal tabs
+    const dayTabTitle = document.getElementById('shoppingSelectedDayTitle');
+    if (dayTabTitle) dayTabTitle.textContent = 'Day ' + (di + 1);
+
+    const weekTabTitle = document.getElementById('shoppingSelectedWeekTitle');
+    if (weekTabTitle) weekTabTitle.textContent = 'Week ' + wn;
+
+    // Update PDF links dynamically
+    updatePdfDownloadLinks(di, wn, dayLabel);
+
+    // If modal is visible, re-render immediately
+    const modal = document.getElementById('shoppingListModal');
+    if (modal && modal.style.display === 'flex') {
+        renderShoppingListModal();
+    }
+});
 
 function openHealthScoreModal() {
     const m = document.getElementById('healthScoreModal');

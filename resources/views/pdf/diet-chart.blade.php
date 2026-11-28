@@ -55,8 +55,8 @@
     @endif
 
     {{-- MEAL SCHEDULE --}}
-    @foreach(array_slice($formattedPlan, 0, 7) as $dayData)
-        <div class="day-block">
+    @foreach($formattedPlan as $dayData)
+        <div class="day-block" @if(!$loop->last && count($formattedPlan) > 1) style="page-break-after: always;" @endif>
             <div class="day-title">{{ $dayData['label'] }}, {{ \Carbon\Carbon::parse($dayData['date'])->format('d M Y') }}</div>
             <table class="meal-table">
                 <thead>
